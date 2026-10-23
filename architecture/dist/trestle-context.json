@@ -110,6 +110,7 @@
       "model": "unityCatalogServer",
       "implements": [
         "icebergRestSpec",
+        "unityCatalogDeltaApiSpec",
         "unityCatalogSpec"
       ]
     }
@@ -437,6 +438,14 @@
       "description": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement.",
       "links": [
         "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+      ]
+    },
+    "unityCatalogDeltaApiSpec": {
+      "kind": "openSpecification",
+      "title": "Unity Catalog Delta API",
+      "description": "Open specification for catalog-managed Delta tables over REST: an engine\nnegotiates the protocol version, stages and creates a table with the\ntable features the catalog requires, and commits through intent-based\nupdates guarded by preconditions, all or nothing.",
+      "links": [
+        "https://github.com/unitycatalog/unitycatalog/blob/main/spec/protocols/ManagedDeltaTablesSpec.md"
       ]
     },
     "unityCatalogServer": {

@@ -1,0 +1,76 @@
+// LOGICAL LAYER (concrete technology) — Clients of a catalog's API (#client):
+// CLIs, SDKs, and agent-tool bridges.
+
+model {
+
+  // Unity Catalog's local clients are separate interfaces even though they
+  // ship from the same upstream repository and release.
+  unityCatalogCli = implementation "Unity Catalog CLI" {
+    #client #public
+
+    description "Command-line client for managing Unity Catalog objects and storage access."
+    link https://docs.unitycatalog.io/usage/cli/
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Java"
+    }
+  }
+  unityCatalogCli -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogCli -[operatesOn]-> lakehouse.namespace "manages"
+  unityCatalogCli -[operatesOn]-> lakehouse.table "manages"
+  unityCatalogCli -[operatesOn]-> lakehouse.volume "manages"
+  unityCatalogCli -[operatesOn]-> lakehouse.credential "manages"
+  unityCatalogCli -[operatesOn]-> lakehouse.externalLocation "manages"
+
+  unityCatalogPythonSdk = implementation "Unity Catalog Python SDK" {
+    #client #public
+
+    description "Generated asynchronous Python client for Unity Catalog REST APIs."
+    link https://pypi.org/project/unitycatalog-client/
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Python"
+    }
+  }
+  unityCatalogPythonSdk -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.namespace "manages"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.table "manages"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.volume "manages"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.metricView "stores definitions for"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.credential "manages"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.externalLocation "manages"
+
+  unityCatalogAi = implementation "unitycatalog-ai" {
+    #client #public
+
+    description "Python client library for registering and executing functions through Unity Catalog."
+    link https://github.com/unitycatalog/unitycatalog/tree/main/ai
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Python"
+    }
+  }
+  unityCatalogAi -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogAi -[operatesOn]-> lakehouse.function "registers and executes"
+
+  unityCatalogLangChain = implementation "unitycatalog-langchain" {
+    #client #public
+    description "LangChain integration that turns Unity Catalog functions into tools an agent can call."
+    link https://pypi.org/project/unitycatalog-langchain/
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Python"
+    }
+  }
+  unityCatalogLangChain -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogLangChain -[operatesOn]-> lakehouse.function "exposes as agent tools"
+
+}

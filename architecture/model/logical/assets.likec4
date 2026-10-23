@@ -142,19 +142,4 @@ model {
     externalLocation -[locatedAt]-> objectStorage
     externalLocation -[dependsOn]-> credential "reached with"
   }
-
-  unityCatalogSpec -[governs]-> lakehouse.namespace
-  unityCatalogSpec -[governs]-> lakehouse.table
-  unityCatalogSpec -[governs]-> lakehouse.volume
-  unityCatalogSpec -[governs]-> lakehouse.function
-  unityCatalogSpec -[governs]-> lakehouse.mlModel
-  unityCatalogSpec -[governs]-> lakehouse.agentSkill
-  unityCatalogSpec -[governs]-> lakehouse.sqlView
-  unityCatalogSpec -[governs]-> lakehouse.metricView
-  unityCatalogSpec -[governs]-> lakehouse.credential
-  unityCatalogSpec -[governs]-> lakehouse.externalLocation
-
-  icebergRestSpec -[governs]-> lakehouse.namespace
-  icebergRestSpec -[governs]-> lakehouse.table
-  icebergRestSpec -[governs]-> lakehouse.sqlView
 }

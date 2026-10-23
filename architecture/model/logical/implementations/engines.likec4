@@ -1,0 +1,247 @@
+// LOGICAL LAYER (concrete technology) — Query engines, and the integrations
+// that add a spec's support to one (host -[integrates]-> X; ADR-0008).
+
+model {
+
+  datafusion = implementation "Apache DataFusion" {
+    #library
+
+    description "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
+    link https://datafusion.apache.org
+
+    style {
+      icon https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg
+    }
+
+    metadata {
+      sourceRepo "apache/datafusion"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  datafusion -[realizes]-> lakehouse.queryEngine
+  datafusion -[consumes]-> s3Spec "reads data files via"
+
+  apacheSpark = implementation "Apache Spark" {
+    #service #public
+
+    description "Unified analytics engine for large-scale data processing."
+
+    link https://spark.apache.org
+
+    style {
+      icon https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png
+    }
+
+    metadata {
+      sourceRepo "apache/spark"
+      license "Apache-2.0"
+      language "Scala"
+    }
+  }
+  apacheSpark -[realizes]-> lakehouse.queryEngine
+  apacheSpark -[implements]-> sparkConnectSpec "serves"
+  apacheSpark -[operatesOn]-> lakehouse.namespace "creates and lists"
+  apacheSpark -[operatesOn]-> lakehouse.table "queries and changes"
+  apacheSpark -[operatesOn]-> lakehouse.metricView "defines and queries"
+
+  // Spark reaches catalogs and table formats through integrations that ship
+  // separately from Spark itself.
+  unityCatalogSpark = implementation "Unity Catalog Spark connector" {
+    #library #public
+
+    description "Spark catalog plugin that resolves tables, views, and credentials through a Unity Catalog server."
+    link https://github.com/unitycatalog/unitycatalog/tree/main/connectors/spark
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      package "io.unitycatalog:unitycatalog-spark"
+      license "Apache-2.0"
+      language "Scala"
+    }
+  }
+  apacheSpark -[integrates]-> unityCatalogSpark
+  unityCatalogSpark -[consumes]-> unityCatalogSpec "resolves tables via"
+  unityCatalogSpark -[consumes]-> unityCatalogDeltaApiSpec "commits catalog-managed tables through"
+
+  icebergSparkRuntime = implementation "Iceberg Spark runtime" {
+    #library #public
+
+    description "Apache Iceberg's Spark integration: Iceberg tables and catalogs, including REST catalogs, in Spark SQL and DataFrames."
+    link https://iceberg.apache.org/docs/latest/spark-getting-started/
+
+    metadata {
+      sourceRepo "apache/iceberg"
+      package "org.apache.iceberg:iceberg-spark-runtime"
+      license "Apache-2.0"
+      language "Java"
+    }
+  }
+  apacheSpark -[integrates]-> icebergSparkRuntime
+  icebergSparkRuntime -[implements]-> icebergSpec
+  icebergSparkRuntime -[realizes]-> lakehouse.tableFormat
+  icebergSparkRuntime -[consumes]-> icebergRestSpec "resolves tables via"
+
+  deltaSpark = implementation "Delta Spark" {
+    #library #public
+
+    description "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
+
+    link https://docs.delta.io
+
+    metadata {
+      sourceRepo "delta-io/delta"
+      license "Apache-2.0"
+      language "Scala"
+    }
+  }
+  deltaSpark -[implements]-> deltaSpec
+  apacheSpark -[integrates]-> deltaSpark
+  deltaSpark -[realizes]-> lakehouse.tableFormat
+  deltaSpark -[operatesOn]-> lakehouse.table "queries and changes"
+
+  duckdb = implementation "DuckDB" {
+    #library #public
+
+    description "In-process analytical SQL engine."
+
+    link https://duckdb.org
+
+    metadata {
+      sourceRepo "duckdb/duckdb"
+      license "MIT"
+      language "C++"
+    }
+  }
+  duckdb -[realizes]-> lakehouse.queryEngine
+  duckdb -[operatesOn]-> lakehouse.namespace "creates and lists"
+  duckdb -[operatesOn]-> lakehouse.table "queries and changes"
+
+  // DuckDB extensions: each is a separate artifact DuckDB installs and loads.
+  duckdbUnityCatalog = implementation "DuckDB unity_catalog extension" {
+    #library #public
+
+    description "DuckDB extension that attaches a Unity Catalog server as a database and reads and writes its tables."
+    link https://duckdb.org/docs/current/core_extensions/unity_catalog.html
+
+    metadata {
+      sourceRepo "duckdb/unity_catalog"
+      package "unity_catalog"
+      maturity "nightly"
+      license "MIT"
+      language "C++"
+    }
+  }
+  duckdb -[integrates]-> duckdbUnityCatalog
+  duckdbUnityCatalog -[consumes]-> unityCatalogSpec "resolves tables via"
+  duckdbUnityCatalog -[consumes]-> unityCatalogDeltaApiSpec "commits catalog-managed tables through"
+
+  duckdbDelta = implementation "DuckDB delta extension" {
+    #library #public
+
+    description "DuckDB extension that reads Delta tables and appends to them."
+    link https://duckdb.org/docs/current/core_extensions/delta.html
+
+    metadata {
+      sourceRepo "duckdb/duckdb-delta"
+      package "delta"
+      license "MIT"
+      language "C++"
+    }
+  }
+  duckdb -[integrates]-> duckdbDelta
+  duckdbDelta -[implements]-> deltaSpec "reads Delta tables and appends to them"
+  duckdbDelta -[realizes]-> lakehouse.tableFormat
+
+  duckdbIceberg = implementation "DuckDB iceberg extension" {
+    #library #public
+
+    description "DuckDB extension that reads and writes Iceberg tables and attaches Iceberg REST catalogs."
+    link https://duckdb.org/docs/current/core_extensions/iceberg/overview.html
+
+    metadata {
+      sourceRepo "duckdb/duckdb-iceberg"
+      package "iceberg"
+      license "MIT"
+      language "C++"
+    }
+  }
+  duckdb -[integrates]-> duckdbIceberg
+  duckdbIceberg -[implements]-> icebergSpec
+  duckdbIceberg -[realizes]-> lakehouse.tableFormat
+  duckdbIceberg -[consumes]-> icebergRestSpec "resolves tables via"
+
+  polars = implementation "Polars" {
+    #library #public
+
+    description "Fast DataFrame library written in Rust, with a Python API."
+
+    link https://pola.rs
+
+    style {
+      icon https://avatars.githubusercontent.com/u/83768144?s=200&v=4
+    }
+
+    metadata {
+      sourceRepo "pola-rs/polars"
+      license "MIT"
+      language "Rust"
+    }
+  }
+  polars -[realizes]-> lakehouse.queryEngine
+  polars -[integrates]-> deltaRs "reads and writes Delta tables through"
+  polars -[consumes]-> unityCatalogSpec "resolves tables via"
+  polars -[operatesOn]-> lakehouse.table "reads and appends"
+
+  daft = implementation "Daft" {
+    #library #public
+
+    description "Distributed Python DataFrame library with a Unity Catalog integration."
+    link https://docs.daft.ai/en/stable/connectors/unity_catalog/
+
+    metadata {
+      sourceRepo "Eventual-Inc/Daft"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  daft -[realizes]-> lakehouse.queryEngine
+  daft -[consumes]-> unityCatalogSpec "resolves tables via"
+  daft -[operatesOn]-> lakehouse.table "lists and reads"
+
+  // trustedCompute's hydrofoil is an instance of this. Fine-grained access is
+  // #partial: it decides and enforces in-plan, but needs the catalog's resource
+  // facts and a policy bundle to do it.
+  hydrofoil = implementation "hydrofoil" {
+    #service
+
+    description "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+    link https://github.com/open-lakehouse/hydrofoil
+
+    metadata {
+      sourceRepo "open-lakehouse/hydrofoil"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  hydrofoil -[realizes]-> lakehouse.queryEngine
+  hydrofoil -[implements]-> flightSqlSpec "serves"
+  hydrofoil -[consumes]-> unityCatalogSpec "resolves tables via"
+  hydrofoil -[builtOn]-> datafusion
+  hydrofoil -[realizes]-> lakehouse.governance.authorization "coarse allow/deny gate before planning" {
+    #partial
+  }
+  hydrofoil -[realizes]-> lakehouse.governance.fineGrainedAccess "rewrites plans with row filters + column masks" {
+    #partial
+  }
+
+  puppygraph = implementation "PuppyGraph" {
+    #service
+
+    description "Graph query engine that runs graph queries over existing tables without copying them into a graph database."
+    link https://www.puppygraph.com
+  }
+  puppygraph -[realizes]-> lakehouse.queryEngine "realizes graph queries over tables"
+  puppygraph -[implements]-> openCypherSpec "serves"
+
+}

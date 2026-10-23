@@ -3,6 +3,7 @@ title: The Unity Catalog Delta API
 summary: Unity Catalog's Delta API applies requirements and updates all or nothing, and carries Delta's own schema and table features on the wire.
 diataxis: explanation
 project: unitycatalog
+explains: unityCatalogDeltaApiSpec
 references:
   - unityCatalogServer
   - unityCatalogSpec

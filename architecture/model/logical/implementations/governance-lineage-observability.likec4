@@ -1,0 +1,71 @@
+// LOGICAL LAYER (concrete technology) — Implementations of the governance,
+// lineage, and observability concerns.
+
+model {
+
+  // headwaters is first-party; the technology catalog names our software too
+  // (ADR-0003 amendment), and trustedCompute's headwaters is an instance of it.
+  headwaters = implementation "headwaters" {
+    #service
+
+    description "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store."
+    link https://github.com/open-lakehouse/headwaters
+
+    metadata {
+      sourceRepo "open-lakehouse/headwaters"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  headwaters -[realizes]-> lakehouse.lineage
+  headwaters -[implements]-> openLineageSpec "emits + ingests"
+
+  authelia = implementation "Authelia" {
+    #service
+
+    description "Open source authentication and authorization server that fronts web services with single sign-on and access rules."
+    link https://www.authelia.com
+
+    metadata {
+      sourceRepo "authelia/authelia"
+      license "Apache-2.0"
+      language "Go"
+    }
+  }
+  authelia -[realizes]-> lakehouse.governance.authentication "single sign-on at the gateway"
+  authelia -[realizes]-> lakehouse.governance.authorization "access rules at the gateway" {
+    #partial
+  }
+
+  openPolicyAgent = implementation "Open Policy Agent" {
+    #service
+
+    description "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision."
+    link https://www.openpolicyagent.org
+
+    metadata {
+      sourceRepo "open-policy-agent/opa"
+      license "Apache-2.0"
+      language "Go"
+    }
+  }
+  openPolicyAgent -[realizes]-> lakehouse.governance.authorization "decides access policy" {
+    #partial
+  }
+
+  jaeger = implementation "Jaeger" {
+    #service
+
+    description "Open source distributed tracing backend: collects, stores, and visualizes traces."
+    link https://www.jaegertracing.io
+
+    metadata {
+      sourceRepo "jaegertracing/jaeger"
+      license "Apache-2.0"
+      language "Go"
+    }
+  }
+  jaeger -[realizes]-> lakehouse.observability "realizes tracing"
+  jaeger -[consumes]-> otlpSpec "receives traces via"
+
+}

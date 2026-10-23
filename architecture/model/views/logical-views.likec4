@@ -25,33 +25,87 @@ views {
     autoLayout LeftRight
   }
 
-  // --- Technology catalog: capabilities <- specifications <- implementations
+  // --- Technology catalog: capabilities <- specifications ---------------------
   view technologyCatalog {
-    title "Technology catalog — capabilities, specifications, implementations"
-    description "How concrete technology maps onto the reference architecture: a specification `specifies` the capability it defines; an implementation `implements` a specification or `realizes` a capability directly (query engines have no shared spec). Compute posture (#service / #library / #client / #infra) is intrinsic; running instances live in the deployment views."
+    title "Technology catalog — capabilities and specifications"
+    description "Which open specification specifies each capability and concern. The implementations that implement or realize them are in one view per area: techQueryEngines, techCatalogs, techFormatsStorage, techConcerns, techPlatform."
 
     include
       lakehouse.*,
-    // specifications (the open standards / APIs)
-      deltaSpec,
-      icebergSpec,
-      unityCatalogSpec,
-      icebergRestSpec,
-      openSharingSpec,
-      parquetSpec,
-      s3Spec,
-      azureBlobSpec,
-      openLineageSpec,
-      otlpSpec,
-      sparkConnectSpec,
-      flightSqlSpec,
-      openCypherSpec,
-    // implementations (concrete software)
-      element.kind == implementation,
+      element.kind == openSpecification
 
     exclude
       element.kind == asset,
       element.tag == #generated
+    autoLayout LeftRight
+  }
+
+  // The per-area views below list their elements by id, so every edge between
+  // them is drawn. Each implementation and specification belongs in at least
+  // one of them.
+
+  view techQueryEngines {
+    title "Technology — query engines and their integrations"
+    description "The engines that realize the query engine, the query APIs they serve, and the plugins and libraries each integrates for a catalog or table format, with the specs those carry (ADR-0008)."
+
+    include
+      lakehouse.queryEngine,
+      sparkConnectSpec, flightSqlSpec, openCypherSpec,
+      datafusion, apacheSpark, duckdb, polars, daft, hydrofoil, puppygraph,
+      unityCatalogSpark, icebergSparkRuntime, deltaSpark,
+      duckdbUnityCatalog, duckdbDelta, duckdbIceberg, deltaRs,
+      unityCatalogSpec, unityCatalogDeltaApiSpec, icebergRestSpec, deltaSpec, icebergSpec
+    autoLayout LeftRight
+  }
+
+  view techCatalogs {
+    title "Technology — catalogs and their clients"
+    description "The catalog specifications, the servers that implement them, the store they keep metadata in, and the clients that call them."
+
+    include
+      lakehouse.catalog, lakehouse.metadataStore,
+      unityCatalogSpec, unityCatalogDeltaApiSpec, icebergRestSpec,
+      unityCatalogServer, lakekeeper, mangrove, postgresql,
+      unityCatalogCli, unityCatalogPythonSdk, unityCatalogAi, unityCatalogLangChain, pyIceberg
+    autoLayout LeftRight
+  }
+
+  view techFormatsStorage {
+    title "Technology — table formats, file formats, and object storage"
+    description "The format and storage specifications, the libraries that read and write each format, and the stores that implement the storage APIs."
+
+    include
+      lakehouse.tableFormat, lakehouse.fileFormat, lakehouse.objectStorage,
+      deltaSpec, icebergSpec, parquetSpec, s3Spec, azureBlobSpec,
+      deltaRs, pyIceberg, deltaSpark, icebergSparkRuntime, duckdbDelta, duckdbIceberg,
+      rustfs, amazonS3, azurite, azureBlobStorage
+    autoLayout LeftRight
+  }
+
+  view techConcerns {
+    title "Technology — governance, lineage, and observability"
+    description "The implementations that realize each concern or one of governance's facets, #partial where they meet it only together with another contributor."
+
+    include
+      lakehouse.governance.authentication,
+      lakehouse.governance.authorization,
+      lakehouse.governance.fineGrainedAccess,
+      lakehouse.lineage, lakehouse.observability,
+      openLineageSpec, otlpSpec,
+      unityCatalogServer, lakekeeper, hydrofoil, authelia, openPolicyAgent,
+      headwaters, jaeger
+    autoLayout LeftRight
+  }
+
+  view techPlatform {
+    title "Technology — model tracking, notebooks, orchestration, sharing, and the gateway"
+    description "The platform capabilities beside the read path and what realizes them. Omnigent is agent tooling with no capability, and Envoy the gateway the docs environments route through."
+
+    include
+      lakehouse.modelTracking, lakehouse.interactiveDevelopment,
+      lakehouse.orchestration, lakehouse.sharing,
+      openSharingSpec,
+      mlflow, marimo, rivers, omnigent, envoy
     autoLayout LeftRight
   }
 

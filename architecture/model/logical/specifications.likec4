@@ -1,0 +1,152 @@
+// LOGICAL LAYER (concrete technology) — Specifications: the open standards and
+// APIs implementations implement or consume, and the capability each specifies.
+
+model {
+
+  deltaSpec = openSpecification "Delta Lake" {
+    #public
+    description "
+      Open table-format specification: ACID transactions,
+      schema evolution, and time travel over object storage.
+    "
+    link https://delta.io
+
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg
+    }
+  }
+  deltaSpec -[specifies]-> lakehouse.tableFormat
+
+  icebergSpec = openSpecification "Apache Iceberg" {
+    #public
+    description "
+      Open table-format specification for huge analytic datasets,
+      with hidden partitioning and snapshot isolation.
+    "
+
+    link https://iceberg.apache.org
+
+    style {
+      icon https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png
+    }
+  }
+  icebergSpec -[specifies]-> lakehouse.tableFormat
+
+  unityCatalogSpec = openSpecification "Unity Catalog" {
+    #public
+    description "
+      Open catalog specification for data & AI:
+      a catalog governing tables, files, functions, and models across engines.
+    "
+
+    link https://www.unitycatalog.io
+
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
+    }
+  }
+  unityCatalogSpec -[specifies]-> lakehouse.catalog
+  unityCatalogSpec -[governs]-> lakehouse.namespace
+  unityCatalogSpec -[governs]-> lakehouse.table
+  unityCatalogSpec -[governs]-> lakehouse.volume
+  unityCatalogSpec -[governs]-> lakehouse.function
+  unityCatalogSpec -[governs]-> lakehouse.mlModel
+  unityCatalogSpec -[governs]-> lakehouse.agentSkill
+  unityCatalogSpec -[governs]-> lakehouse.sqlView
+  unityCatalogSpec -[governs]-> lakehouse.metricView
+  unityCatalogSpec -[governs]-> lakehouse.credential
+  unityCatalogSpec -[governs]-> lakehouse.externalLocation
+
+  // Its own spec beside the Unity Catalog REST spec, the way the Iceberg REST
+  // Catalog sits beside Iceberg: the API catalog-managed Delta tables commit
+  // through (#272).
+  unityCatalogDeltaApiSpec = openSpecification "Unity Catalog Delta API" {
+    #public
+    description "
+      Open specification for catalog-managed Delta tables over REST: an engine
+      negotiates the protocol version, stages and creates a table with the
+      table features the catalog requires, and commits through intent-based
+      updates guarded by preconditions, all or nothing.
+    "
+    link https://github.com/unitycatalog/unitycatalog/blob/main/spec/protocols/ManagedDeltaTablesSpec.md
+  }
+  unityCatalogDeltaApiSpec -[specifies]-> lakehouse.catalog "specifies catalog-managed Delta tables"
+  unityCatalogDeltaApiSpec -[governs]-> lakehouse.table
+
+  icebergRestSpec = openSpecification "Iceberg REST Catalog" {
+    #public
+    description "
+      Open specification for an Iceberg catalog served over REST: engines use it
+      to create, load, and commit Iceberg tables through any conforming catalog.
+    "
+
+    link https://iceberg.apache.org/concepts/catalog/
+  }
+  icebergRestSpec -[specifies]-> lakehouse.catalog
+  icebergRestSpec -[governs]-> lakehouse.namespace
+  icebergRestSpec -[governs]-> lakehouse.table
+  icebergRestSpec -[governs]-> lakehouse.sqlView
+
+  openSharingSpec = openSpecification "Open Sharing" {
+    description "Open profile of the Delta Sharing protocol."
+    link https://delta.io/sharing/
+  }
+  openSharingSpec -[specifies]-> lakehouse.sharing
+
+  parquetSpec = openSpecification "Apache Parquet" {
+    #public
+    description "
+      Open columnar file format: column-wise storage with compression and
+      statistics, the data-file layer most table formats are written in.
+    "
+
+    link https://parquet.apache.org
+  }
+  parquetSpec -[specifies]-> lakehouse.fileFormat
+
+  s3Spec = openSpecification "S3 API" {
+    #public
+    description "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement."
+    link https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html
+  }
+  s3Spec -[specifies]-> lakehouse.objectStorage
+
+  // Query APIs: how a client reaches a served engine (a "warehouse" is a
+  // query engine behind one of these). Only protocols something here implements.
+  sparkConnectSpec = openSpecification "Spark Connect" {
+    description "Client-server protocol for Apache Spark: thin clients send unresolved plans over gRPC to a remote Spark server."
+    link https://spark.apache.org/docs/latest/spark-connect-overview.html
+  }
+  sparkConnectSpec -[specifies]-> lakehouse.queryEngine "specifies remote query submission"
+
+  flightSqlSpec = openSpecification "Arrow Flight SQL" {
+    description "Protocol for running SQL against a remote engine over Arrow Flight, returning Arrow record batches."
+    link https://arrow.apache.org/docs/format/FlightSql.html
+  }
+  flightSqlSpec -[specifies]-> lakehouse.queryEngine "specifies remote SQL"
+
+  openCypherSpec = openSpecification "openCypher" {
+    description "Open specification of the Cypher graph query language."
+    link https://opencypher.org
+  }
+  openCypherSpec -[specifies]-> lakehouse.queryEngine "specifies graph queries"
+
+  azureBlobSpec = openSpecification "Azure Blob Storage API" {
+    description "The REST interface to Azure Blob Storage, also served by local emulators."
+    link https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api
+  }
+  azureBlobSpec -[specifies]-> lakehouse.objectStorage
+
+  openLineageSpec = openSpecification "OpenLineage" {
+    description "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
+    link https://openlineage.io
+  }
+  openLineageSpec -[specifies]-> lakehouse.lineage "specifies the lineage event model"
+
+  otlpSpec = openSpecification "OpenTelemetry Protocol (OTLP)" {
+    description "The OpenTelemetry wire protocol for exporting traces, metrics, and logs to a backend."
+    link https://opentelemetry.io/docs/specs/otlp/
+  }
+  otlpSpec -[specifies]-> lakehouse.observability "specifies telemetry export"
+
+}

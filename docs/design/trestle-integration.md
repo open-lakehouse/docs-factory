@@ -125,7 +125,7 @@ kind, so moving an element between kinds changes no ID.
 ### Module → implementation
 
 Every module in the pinned catalog carries a `model:` ref that resolves to an
-implementation in `logical/technology-catalog.likec4`, where its edges live
+implementation in `logical/implementations/`, where its edges live
 (`unityCatalogServer implements icebergRestSpec`, `rustfs implements s3Spec`,
 `openPolicyAgent realizes governance.authorization #partial`, …):
 

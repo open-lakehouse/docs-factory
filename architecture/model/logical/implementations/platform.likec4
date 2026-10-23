@@ -1,0 +1,72 @@
+// LOGICAL LAYER (concrete technology) — Model tracking, notebooks,
+// orchestration, and agent tooling.
+
+model {
+
+  mlflow = implementation "MLflow" {
+    #service
+
+    description "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
+
+    link https://mlflow.org
+
+    style {
+      icon https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg
+    }
+
+    metadata {
+      sourceRepo "mlflow/mlflow"
+      license "Apache-2.0"
+      language "Python"
+    }
+  }
+  mlflow -[realizes]-> lakehouse.modelTracking
+
+  marimo = implementation "marimo" {
+    #service
+
+    description "Reactive Python notebook, stored as plain Python files."
+    link https://marimo.io
+
+    metadata {
+      sourceRepo "marimo-team/marimo"
+      license "Apache-2.0"
+      language "Python"
+    }
+  }
+  marimo -[realizes]-> lakehouse.interactiveDevelopment "as a notebook"
+
+  rivers = implementation "Rivers" {
+    #service
+
+    description "Asset-based orchestrator for Python pipelines, with a run UI."
+    link https://orchestrator.rs
+
+    metadata {
+      sourceRepo "ion-elgreco/rivers"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  rivers -[realizes]-> lakehouse.orchestration
+
+  // Omnigent — Databricks' Apache-2.0 AI-agent meta-harness. Deliberately has NO
+  // capability edge: it is agent tooling, not a lakehouse capability.
+  omnigent = implementation "Omnigent" {
+    #service
+
+    description "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses."
+
+    link https://omnigent.ai
+    style {
+      icon https://raw.githubusercontent.com/omnigent-ai/omnigent/99e25f6de1ae8c9f31f2a70efbfc09d95fd8884c/editors/vscode/media/omnigent-icon.svg
+    }
+
+    metadata {
+      sourceRepo "omnigent-ai/omnigent"
+      license "Apache-2.0"
+      language "Python"
+    }
+  }
+
+}

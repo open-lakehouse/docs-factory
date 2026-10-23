@@ -47,7 +47,7 @@ vocabulary held up; how it was applied did not.
 
 ## Decision
 
-**Dependency refinements.** Five kinds refine `dependsOn`. A coarse traversal
+**Dependency refinements.** Six kinds refine `dependsOn`. A coarse traversal
 takes their union with `dependsOn`.
 
 | Kind | Source → target | Meaning |
@@ -55,18 +55,18 @@ takes their union with `dependsOn`.
 | `registeredIn` | asset → catalog | The catalog records the asset. Every asset kind has one. |
 | `locatedAt` | asset → objectStorage or volume | The asset names a path there. |
 | `derivedFrom` | asset → asset | Type-level: an instance can be defined over instances of the target. One edge per allowed source kind. LikeC4 allows no self-edge, so a kind that can derive from itself (a view over views) says so in its description. |
-| `builtOn` | implementation → implementation | The required core the implementation can't run without. |
+| `builtOn` | implementation → implementation | The required core the implementation can't run without (hydrofoil on DataFusion). |
+| `integrates` | host engine → implementation | The plugin or library that adds a spec's support to the host: Delta Spark, the Iceberg Spark runtime, and the Unity Catalog connector in Spark; DuckDB's extensions; delta-rs in Polars. |
 | `uses` | person → capability; deployment node → node | A caller and what it calls. |
 
 `dependsOn` remains for what no refinement fits: the capability chain
 (`queryEngine → catalog → tableFormat → fileFormat → objectStorage`), a
-credential's issuer, a concern's dependency on a capability, and an optional
-integration between implementations, which carries `#optional`
-(`polars -[dependsOn]-> deltaRs { #optional }`). `flows` is kept for data or
+credential's issuer, and a concern's dependency on a capability. `flows` is kept for data or
 control flow only: orchestration, gateway routes, and dynamic-view steps.
 
 `partOf` and `reads` are removed. Nesting already expresses composition inside
-the boundary, and `builtOn` covers composition between implementations.
+the boundary, and `builtOn` and `integrates` cover composition between
+implementations.
 
 **A volume stores nothing.** A volume is catalog metadata that names a path, so
 it is `locatedAt` object storage like an external location, never "stored in"
@@ -77,14 +77,26 @@ keeps the Unity Catalog term until a specification exists.
 capability or concern has a `realizes` edge to it, whether or not it also
 implements a specification. When it `implements` a spec that `specifies` a
 capability, it also `realizes` that capability, so the question "what realizes
-X?" is always one hop. A connector or extension is `builtOn` its host and does
-not realize the host's capability. When a connector ships separately from its
-engine (Spark's Unity Catalog connector, a DuckDB extension), the connector
-carries the `consumes` edge for the spec support it provides, not the engine.
-The model records what can work; which engine works against which catalog
-server, at which release, stays in the compatibility journeys. Clients (`#client`) are exempt: they
-consume specs and act on assets. So is software that provides no capability in
-the model, such as a gateway or agent tooling.
+X?" is always one hop. Clients (`#client`) are exempt: they consume specs and
+act on assets. So is software that provides no capability in the model, such
+as a gateway or agent tooling.
+
+**Spec support an engine gets from elsewhere sits on the integration.** A host
+engine `integrates` the plugin or library that adds a spec's support, whether
+it ships as a plugin (a Spark connector, a DuckDB extension) or as a library
+the engine calls (delta-rs in Polars). The integration carries the spec edge,
+not the engine, so "which formats and catalogs does engine X support?" is
+always `X -[integrates]-> I -[implements|consumes]-> spec`, plus X's own
+edges for support built into it. An integration doesn't realize its host's
+capability; one that implements a table format realizes the table format.
+
+**Formats are implemented; APIs are consumed.** Whatever reads or writes a
+format's bytes `implements` the format spec (Delta Lake, Iceberg, Parquet). A
+client of an API spec (Unity Catalog, Iceberg REST) `consumes` it, and a server
+`implements` it.
+
+The model records what can work. Which engine works against which catalog
+server, at which release, stays in the compatibility journeys.
 
 **A parent concern carries no `appliesTo` of its own.** When a concern has
 facets, its scope is the union of its facets' edges.

@@ -108,6 +108,8 @@ store; the local pattern's RustFS is another, reached through the AWS
 hostnames its stack imitates. Then the database credentials are the only
 secret the participants share:
 
+<!-- TODO(open question): which non-AWS stores with an STS AssumeRole API work as hybrid targets; these docs haven't verified one outside the local stack's emulated AWS hostnames. -->
+
 - **There is no access control between participants.** Each server runs with
   authorization disabled, and anyone with the database password can change
   the catalog directly. Share the credentials only with people you would make

@@ -1,6 +1,6 @@
 ---
 title: Manage SQL views
-summary: Create SQL views in Unity Catalog with Spark 4.2 or the REST API, query them from Spark 4.1 and 4.2, and drop and recreate them to change one.
+summary: Create, query, and inspect SQL views in Unity Catalog, and drop and recreate a view to change it.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -10,13 +10,11 @@ references:
 status: draft
 ---
 
-A SQL view stores its query text and output columns in Unity Catalog, with no
-data and no storage location. The engine that reads the view expands the query
-and runs it. For how views fit next to tables and metric views, see
+A SQL view stores its query text and output columns in Unity Catalog. The
+engine that reads the view expands the query and runs it. For how views fit next to tables and metric views, see
 [SQL views and metric views](../../explanation/views-and-metric-views/index.md).
 Creating a view with SQL needs Spark 4.2 and the Unity Catalog connector. You
-can also register one through the REST API. This guide builds views over the TPC-H sample
-tables in `samples.tpch`.
+can also register one through the REST API.
 
 :::prerequisites
 - The TPC-H sample in `samples.tpch`:
@@ -86,7 +84,7 @@ registers both catalogs. This view lives in `unity.default` and reads
 +--------+
 ```
 
-Going by the server's source, reading through a view also needs access to its
+Reading through a view also needs access to its
 source tables. See
 [permissions on views](../../explanation/views-and-metric-views/index.md#permissions).
 
@@ -121,10 +119,12 @@ SELECT o.o_orderkey, o.o_orderdate, o.o_totalprice, c.c_name, c.c_mktsegment
 
 ## Change or rename a view
 
+:::note
 A view can't be changed in place. `CREATE OR REPLACE VIEW`,
 `ALTER VIEW … AS`, and `ALTER VIEW … SET TBLPROPERTIES` fail with
 `Replacing a view is not supported yet`. `ALTER VIEW … RENAME TO` fails with
 `Renaming a view is not supported yet`.
+:::
 
 To change a view, drop it and create it again. This version adds the
 customer's nation:
@@ -157,7 +157,7 @@ From a Python session with the Unity Catalog client, with no
 `samples.tpch.orders_by_status` in the catalog yet:
 
 ```bash
-uv run --with unitycatalog-client==0.7.0 python
+uv run --with unitycatalog-client==0.7.0 python -m asyncio
 ```
 
 ```python file=./snippets/register_view.py start=start:register end=end:register
@@ -177,64 +177,6 @@ dependencies=[Dependency(table=TableDependency(table_full_name='samples.tpch.ord
 ```
 
 Spark 4.2 queries and lists a registered view like one it created.
-
-## Read views from Spark 4.1
-
-Spark 4.1 reads views that Spark 4.2 or the REST API created. Start Python with
-Spark 4.1:
-
-```bash
-uv run --with pyspark==4.1.0 python
-```
-
-Then create a session with the connector built for Spark 4.1:
-
-```python file=./snippets/sql_views_spark41.py start=start:session end=end:session
-```
-
-Query a view as you would on Spark 4.2. Here, `orders_by_status` counts the
-orders in each status and sums their revenue. It's the view you registered
-through the REST API:
-
-```python file=./snippets/sql_views_spark41.py start=start:query end=end:query
-```
-
-```text
-+-------------+------+-------------+
-|o_orderstatus|orders|      revenue|
-+-------------+------+-------------+
-|            F|  7304|1035681023.49|
-|            O|  7333|1028376331.21|
-|            P|   363|  63339475.32|
-+-------------+------+-------------+
-```
-
-Views that Spark 4.2 created, such as `customer_orders`, read the same way.
-To list views, use `SHOW TABLES`, which returns them with the schema's tables.
-`SHOW VIEWS` fails on Spark 4.1:
-
-```python file=./snippets/sql_views_spark41.py start=start:list end=end:list
-```
-
-```text
-+---------+----------------+-----------+
-|namespace|       tableName|isTemporary|
-+---------+----------------+-----------+
-|     tpch|        customer|      false|
-|     tpch| customer_orders|      false|
-|     tpch|        lineitem|      false|
-|     tpch|          nation|      false|
-|     tpch|          orders|      false|
-|     tpch|orders_by_status|      false|
-|     tpch|            part|      false|
-|     tpch|        partsupp|      false|
-|     tpch|          region|      false|
-|     tpch|        supplier|      false|
-+---------+----------------+-----------+
-```
-
-Spark 4.1 can't create, change, or drop a view. Use Spark 4.2 or the REST API
-for those.
 
 ## Drop a view
 

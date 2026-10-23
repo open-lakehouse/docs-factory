@@ -37,31 +37,26 @@ from pathlib import Path
 # --8<-- [start:session]
 from pyspark.sql import SparkSession
 
+UC_SPARK = "io.unitycatalog:unitycatalog-spark_4.2_2.13:0.7.0"
+DELTA_SPARK = "io.delta:delta-spark_4.2_2.13:4.4.1"
+CATALOG = "spark.sql.catalog.samples"
 
-def uc_catalog(builder, name):
-    prefix = f"spark.sql.catalog.{name}"
-    return (
-        builder.config(prefix, "io.unitycatalog.spark.UCSingleCatalog")
-        .config(f"{prefix}.uri", "http://localhost:8080")
-        .config(f"{prefix}.auth.type", "static")
-        .config(f"{prefix}.auth.token", "not-used")
-    )
-
-
-builder = (
-    SparkSession.builder.appName("sql-views")
-    .config(
-        "spark.jars.packages",
-        "io.unitycatalog:unitycatalog-spark_4.2_2.13:0.7.0,"
-        "io.delta:delta-spark_4.2_2.13:4.4.1",
-    )
-    .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
-    .config(
+options = [
+    ("spark.jars.packages", f"{UC_SPARK},{DELTA_SPARK}"),
+    ("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension"),
+    (
         "spark.sql.catalog.spark_catalog",
         "org.apache.spark.sql.delta.catalog.DeltaCatalog",
-    )
-)
-spark = uc_catalog(builder, "samples").getOrCreate()
+    ),
+    (CATALOG, "io.unitycatalog.spark.UCSingleCatalog"),
+    (f"{CATALOG}.uri", "http://localhost:8080"),
+    (f"{CATALOG}.auth.type", "static"),
+    (f"{CATALOG}.auth.token", "not-used"),
+]
+builder = SparkSession.builder.appName("sql-views")
+for key, value in options:
+    builder = builder.config(key, value)
+spark = builder.getOrCreate()
 # --8<-- [end:session]
 spark.sparkContext.setLogLevel("ERROR")
 
@@ -231,10 +226,13 @@ assert views == {"customer_orders", "orders_by_customer"}, views
 spark.sql("DROP VIEW samples.tpch.orders_by_customer")
 
 # --8<-- [start:second-catalog]
-spark.conf.set("spark.sql.catalog.unity", "io.unitycatalog.spark.UCSingleCatalog")
-spark.conf.set("spark.sql.catalog.unity.uri", "http://localhost:8080")
-spark.conf.set("spark.sql.catalog.unity.auth.type", "static")
-spark.conf.set("spark.sql.catalog.unity.auth.token", "not-used")
+for key, value in [
+    ("spark.sql.catalog.unity", "io.unitycatalog.spark.UCSingleCatalog"),
+    ("spark.sql.catalog.unity.uri", "http://localhost:8080"),
+    ("spark.sql.catalog.unity.auth.type", "static"),
+    ("spark.sql.catalog.unity.auth.token", "not-used"),
+]:
+    spark.conf.set(key, value)
 
 spark.sql("""
     CREATE VIEW unity.default.open_orders

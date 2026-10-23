@@ -7,6 +7,10 @@
 //   canonicalDoc  — path (relative to architecture/) of the design doc for this
 //                   element.
 //   sourceRepo    — org/repo of an implementation or deployment service.
+//   package       — the coordinate an implementation installs by: a Maven
+//                   artifact, a PyPI name, or a DuckDB extension name.
+//   maturity      — the release channel, when it isn't a stable release
+//                   ("nightly", "preview").
 //   trestleModule / trestleEdge — written by `docsnip envs --fix` on generated
 //                   deployment nodes and edges; never by hand.
 

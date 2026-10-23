@@ -78,7 +78,11 @@ capability or concern has a `realizes` edge to it, whether or not it also
 implements a specification. When it `implements` a spec that `specifies` a
 capability, it also `realizes` that capability, so the question "what realizes
 X?" is always one hop. A connector or extension is `builtOn` its host and does
-not realize the host's capability. Clients (`#client`) are exempt: they
+not realize the host's capability. When a connector ships separately from its
+engine (Spark's Unity Catalog connector, a DuckDB extension), the connector
+carries the `consumes` edge for the spec support it provides, not the engine.
+The model records what can work; which engine works against which catalog
+server, at which release, stays in the compatibility journeys. Clients (`#client`) are exempt: they
 consume specs and act on assets. So is software that provides no capability in
 the model, such as a gateway or agent tooling.
 

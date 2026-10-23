@@ -11,6 +11,11 @@
       "package": "pyspark",
       "model": "apacheSpark",
       "via": null,
+      "connectors": [
+        "unityCatalogSpark",
+        "deltaSpark",
+        "icebergSparkRuntime"
+      ],
       "viaVersion": null
     },
     {
@@ -20,6 +25,10 @@
       "package": "pyspark",
       "model": "apacheSpark",
       "via": null,
+      "connectors": [
+        "unityCatalogSpark",
+        "deltaSpark"
+      ],
       "viaVersion": null
     },
     {
@@ -29,6 +38,10 @@
       "package": "pyspark",
       "model": "apacheSpark",
       "via": null,
+      "connectors": [
+        "unityCatalogSpark",
+        "deltaSpark"
+      ],
       "viaVersion": null
     },
     {
@@ -38,6 +51,10 @@
       "package": "pyspark",
       "model": "apacheSpark",
       "via": null,
+      "connectors": [
+        "unityCatalogSpark",
+        "deltaSpark"
+      ],
       "viaVersion": null
     },
     {
@@ -47,6 +64,7 @@
       "package": "deltalake",
       "model": "deltaRs",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -56,6 +74,11 @@
       "package": "duckdb",
       "model": "duckdb",
       "via": null,
+      "connectors": [
+        "duckdbUnityCatalog",
+        "duckdbDelta",
+        "duckdbIceberg"
+      ],
       "viaVersion": null
     },
     {
@@ -65,6 +88,7 @@
       "package": "polars",
       "model": "polars",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -74,6 +98,7 @@
       "package": "daft",
       "model": "daft",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -83,6 +108,7 @@
       "package": "pandas",
       "model": "deltaRs",
       "via": "deltalake",
+      "connectors": [],
       "viaVersion": "1.6.6"
     },
     {
@@ -92,6 +118,7 @@
       "package": "pyiceberg",
       "model": "pyIceberg",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -101,6 +128,7 @@
       "package": null,
       "model": "ucCli",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -110,6 +138,7 @@
       "package": "unitycatalog-client",
       "model": "unityCatalogPythonSdk",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -119,6 +148,7 @@
       "package": "unitycatalog-ai",
       "model": "unityCatalogAI",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -128,6 +158,7 @@
       "package": "unitycatalog-langchain",
       "model": "unityCatalogLangChain",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     }
   ],
@@ -10333,58 +10364,6 @@
   "verifiedEdges": [
     {
       "source": "apacheSpark",
-      "kind": "consumes",
-      "target": "icebergRestSpec",
-      "interfaces": [
-        "spark"
-      ],
-      "journeys": [
-        "iceberg.append",
-        "iceberg.create",
-        "iceberg.delete",
-        "iceberg.drop",
-        "iceberg.join-delta",
-        "iceberg.merge",
-        "iceberg.namespace-drop",
-        "iceberg.namespace-list",
-        "iceberg.read",
-        "iceberg.rename",
-        "iceberg.schema-create",
-        "iceberg.update"
-      ]
-    },
-    {
-      "source": "apacheSpark",
-      "kind": "consumes",
-      "target": "ucSpec",
-      "interfaces": [
-        "spark",
-        "spark-4.2"
-      ],
-      "journeys": [
-        "iceberg.join-delta",
-        "managed.append",
-        "managed.create",
-        "managed.create-as-select",
-        "managed.delete",
-        "managed.drop",
-        "managed.overwrite",
-        "managed.overwrite-partitions",
-        "managed.read",
-        "managed.replace",
-        "managed.replace-where",
-        "managed.time-travel",
-        "managed.update",
-        "metricview.create",
-        "metricview.describe",
-        "metricview.drop",
-        "metricview.list",
-        "metricview.query",
-        "table.list"
-      ]
-    },
-    {
-      "source": "apacheSpark",
       "kind": "operatesOn",
       "target": "lakehouse.metricView",
       "interfaces": [
@@ -10495,41 +10474,6 @@
     },
     {
       "source": "duckdb",
-      "kind": "consumes",
-      "target": "icebergRestSpec",
-      "interfaces": [
-        "duckdb"
-      ],
-      "journeys": [
-        "iceberg.append",
-        "iceberg.create",
-        "iceberg.delete",
-        "iceberg.drop",
-        "iceberg.namespace-drop",
-        "iceberg.namespace-list",
-        "iceberg.read",
-        "iceberg.rename",
-        "iceberg.schema-create",
-        "iceberg.update"
-      ]
-    },
-    {
-      "source": "duckdb",
-      "kind": "consumes",
-      "target": "ucSpec",
-      "interfaces": [
-        "duckdb"
-      ],
-      "journeys": [
-        "external.read",
-        "external.read-format",
-        "managed.append",
-        "managed.read",
-        "table.list"
-      ]
-    },
-    {
-      "source": "duckdb",
       "kind": "operatesOn",
       "target": "lakehouse.namespace",
       "interfaces": [
@@ -10561,6 +10505,63 @@
         "managed.append",
         "managed.read",
         "table.list"
+      ]
+    },
+    {
+      "source": "duckdbIceberg",
+      "kind": "consumes",
+      "target": "icebergRestSpec",
+      "interfaces": [
+        "duckdb"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.schema-create",
+        "iceberg.update"
+      ]
+    },
+    {
+      "source": "duckdbUnityCatalog",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "duckdb"
+      ],
+      "journeys": [
+        "external.read",
+        "external.read-format",
+        "managed.append",
+        "managed.read",
+        "table.list"
+      ]
+    },
+    {
+      "source": "icebergSparkRuntime",
+      "kind": "consumes",
+      "target": "icebergRestSpec",
+      "interfaces": [
+        "spark"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.join-delta",
+        "iceberg.merge",
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.schema-create",
+        "iceberg.update"
       ]
     },
     {
@@ -10949,6 +10950,36 @@
         "volume.update",
         "volume.view",
         "volume.write-files"
+      ]
+    },
+    {
+      "source": "unityCatalogSpark",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "spark",
+        "spark-4.2"
+      ],
+      "journeys": [
+        "iceberg.join-delta",
+        "managed.append",
+        "managed.create",
+        "managed.create-as-select",
+        "managed.delete",
+        "managed.drop",
+        "managed.overwrite",
+        "managed.overwrite-partitions",
+        "managed.read",
+        "managed.replace",
+        "managed.replace-where",
+        "managed.time-travel",
+        "managed.update",
+        "metricview.create",
+        "metricview.describe",
+        "metricview.drop",
+        "metricview.list",
+        "metricview.query",
+        "table.list"
       ]
     }
   ],

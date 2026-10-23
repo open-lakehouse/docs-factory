@@ -544,6 +544,41 @@ def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:
     ]
 
 
+def _with_connector(root: Path, *, built_on: bool = True) -> Path:
+    """Move Spark's ucSpec edge onto a connector the interface names."""
+    model = json.loads(json.dumps(_MODEL))
+    model["elements"]["ucSpark"] = {"kind": "implementation", "title": "UC Spark"}
+    model["relations"]["r1"]["source"] = {"model": "ucSpark"}
+    if built_on:
+        model["relations"]["r6"] = {
+            "kind": "builtOn",
+            "source": {"model": "ucSpark"},
+            "target": {"model": "apacheSpark"},
+        }
+    (root / "architecture/dist/model.json").write_text(json.dumps(model))
+    matrix = root / "content/proj/compatibility.yml"
+    matrix.write_text(
+        matrix.read_text().replace(
+            "model: apacheSpark}", "model: apacheSpark, connectors: [ucSpark]}"
+        )
+    )
+    return root
+
+
+def test_a_connector_provides_its_engines_spec_edge(tmp_path) -> None:
+    data = _artifact(_with_connector(_modeled(_repo(tmp_path, _SPARK_READS))))
+    assert data["interfaces"][0]["connectors"] == ["ucSpark"]
+    edges = {(e["source"], e["kind"], e["target"]) for e in data["verifiedEdges"]}
+    assert ("ucSpark", "consumes", "ucSpec") in edges
+    assert "missing-edge" not in [d["kind"] for d in data["diagnostics"]]
+
+
+def test_a_connector_must_be_built_on_the_interface_model(tmp_path) -> None:
+    root = _with_connector(_modeled(_repo(tmp_path, "")), built_on=False)
+    errors, _ = compat.check(root)
+    assert any("'ucSpark' is not builtOn 'apacheSpark'" in e for e in errors), errors
+
+
 def test_a_missing_client_edge_is_reported_not_failed(tmp_path) -> None:
     root = _modeled(
         _repo(tmp_path, _SPARK_READS),

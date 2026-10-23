@@ -32,21 +32,7 @@ views {
 
     include
       lakehouse.*,
-    // specifications (the open standards / APIs)
-      deltaSpec,
-      icebergSpec,
-      unityCatalogSpec,
-      icebergRestSpec,
-      openSharingSpec,
-      parquetSpec,
-      s3Spec,
-      azureBlobSpec,
-      openLineageSpec,
-      otlpSpec,
-      sparkConnectSpec,
-      flightSqlSpec,
-      openCypherSpec,
-    // implementations (concrete software)
+      element.kind == openSpecification,
       element.kind == implementation,
 
     exclude

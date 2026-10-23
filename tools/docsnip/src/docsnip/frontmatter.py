@@ -127,7 +127,19 @@ def model_quality_gaps(model_json: Path) -> list[str]:
         if kind in _LINKED_KINDS and not el.get("links"):
             missing.append("no external link")
         if kind in _ANCHOR_EDGES:
-            if not outgoing.get(eid, set()) & _ANCHOR_EDGES[kind]:
+            # A parent concern's scope is its facets' edges (ADR-0008).
+            own = (
+                set().union(
+                    *(
+                        k
+                        for src, k in outgoing.items()
+                        if src == eid or src.startswith(eid + ".")
+                    )
+                )
+                if kind == "concern"
+                else outgoing.get(eid, set())
+            )
+            if not own & _ANCHOR_EDGES[kind]:
                 edges = "/".join(sorted(_ANCHOR_EDGES[kind]))
                 missing.append(f"no {edges} edge")
         if missing:

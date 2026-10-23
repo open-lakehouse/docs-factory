@@ -12,12 +12,11 @@ references:
 status: draft
 ---
 
-A catalog-managed [Delta](model:deltaSpec) table lives where
-[Unity Catalog](model:unityCatalogServer) puts it, and a write becomes the table's
-next version only when the server accepts the commit. So every client reaches
-the table by its catalog name, never by its path; see
+For catalog-managed [Delta](model:deltaSpec) tables, the catalog brokers all
+reads and writes, enabling advanced features, better performance, and higher
+reliability. See
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md)
-for why.
+for details.
 
 :::prerequisites
 - A schema in a catalog with a storage root, such as `inventory.stock`:
@@ -76,8 +75,7 @@ Create the table in Spark:
 
 The connector creates it as a catalog-managed table and sets
 `delta.feature.catalogManaged` for you. You don't choose where it lives: the
-server allocates a path under the nearest storage root, the schema's, else the
-catalog's, else the metastore's.
+server allocates a path under the nearest storage root.
 
 DuckDB can't create tables.
 
@@ -220,8 +218,7 @@ files once `server.storage-cleanup.initial-delay` has passed, 7 days by
 default. Keep a copy of any data you need before you drop the table.
 :::
 
-The server deletes the files only if it can write to them. With the upstream
-image on Linux and a bind-mounted folder, it can't.
+The server deletes the files only if it can write to them.
 
 ## Required privileges
 

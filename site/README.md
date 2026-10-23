@@ -9,9 +9,9 @@ blocks and interactive LikeC4 diagrams, inside the review workspace:
   comments. Narrow screens get the dashboard until a page is opened.
 - **`/review/dashboard`**: pending work, latest comments, review requests.
 - **`/plan`**: planning, reviewer-only. A summary of every project, then the
-  docs roadmap (`nav.yml` slots by stage), the compatibility matrix, the blog
-  pipeline, content-request triage, and product changes. Filters live in the
-  query string, so a view can be shared.
+  docs roadmap (`nav.yml` slots by stage), the compatibility explorer, the
+  blog pipeline, content-request triage, and product changes. Filters live in
+  the query string, so a view can be shared.
 - **`/model`**: the estate LikeC4 model, reviewer-only. The explorer renders
   every view; selecting an element shows what the docs derive from it (the
   pages that explain, reference, or `model:`-link it, its journeys and
@@ -62,8 +62,31 @@ and stripped from prod builds.
 
 - **shadcn/ui** (new-york) for behavior primitives: Dialog, Tabs, DropdownMenu,
   HoverCard, Select, Alert.
+- **TanStack Table** (headless) for the compatibility explorer's sorting,
+  grouping, and column visibility; its look is plain CSS in `index.css`.
 - **Console chrome** in `index.css` for code blocks, journeys, and the mangrove
   palette — design tokens bridge shadcn components onto the DevHub/Delta look.
+
+## Compatibility dataset
+
+`/plan/compat` explores the committed `content/<project>/compatibility.json`
+artifacts as one dataset. `content-core/compat-dataset.mjs` flattens them to a
+row per project × journey × interface in scope: placed by a `tables[]` or
+`assets[]` entry, or claimed by a script or evidence. A cell nothing claims is
+an `unknown` row, so gaps are rows you can filter for. Each row carries flat
+dimensions (journey, family, asset, table placements, spec feature, interface,
+engine, versions) and measures (status, bucket, draft, proof and evidence
+counts, the version it was tested with); `COMPAT_DIMENSIONS` lists them for the
+pickers, so a new field is added in one place.
+
+The explorer (`components/plan/compat/`) offers three views over the filtered
+rows: the **matrix** (journeys × interfaces, a table per group; grouped by
+table it is the docs tables, with their journey requests), the **cells** list
+(any column, sort, group), and the **scorecard** (bucket counts per value of
+one dimension). Its state, codec, presets, and queries are pure
+(`lib/plan/compat-view.ts`) and live entirely in the URL; `PRESETS` names the
+saved views. The emitted docs sites still render their tables from
+`compatibility.json` directly.
 
 ## Remark pipeline
 

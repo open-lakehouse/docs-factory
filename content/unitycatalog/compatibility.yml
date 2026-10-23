@@ -24,6 +24,12 @@ interfaces:
   - unitycatalog-ai
   - unitycatalog-langchain
 
+# The implementation that plays each provider role in this project's cells: the
+# server the docs' environments run. What it doesn't serve
+# (architecture/journeys/evidence.yml) blocks the journeys that need it.
+providers:
+  catalog: unityCatalogServer
+
 tables:
   table-operations:
     title: Table operations

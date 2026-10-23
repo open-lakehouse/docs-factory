@@ -768,6 +768,7 @@ def test_coverage_counts_a_specs_obligations_per_role(tmp_path) -> None:
         "documented": 0,
         "fails": 0,
         "missing": 0,
+        "blocked": 0,
         "unknown": 1,
         "untracked": 1,
     }
@@ -779,7 +780,7 @@ def test_coverage_counts_a_specs_obligations_per_role(tmp_path) -> None:
     }
     assert compat.coverage_lines(root) == [
         "proj spark unityCatalogSpec client: 1/3 answered "
-        "(✓ 1, docs 0, ✗ 0, — 1, untracked 1)"
+        "(✓ 1, docs 0, ✗ 0, blocked 0, — 1, untracked 1)"
     ]
 
 
@@ -1234,3 +1235,110 @@ def test_a_client_can_implement_a_format_and_consume_an_api(tmp_path) -> None:
     assert ("apacheSpark", "consumes", "unityCatalogSpec") in edges
     assert ("apacheSpark", "implements", "icebergRestSpec") in edges
     assert "missing-edge" not in [d["kind"] for d in data["diagnostics"]]
+
+
+# --- facts about one implementation ---------------------------------------------
+
+_UC_OBLIGATIONS = (
+    "spec: unityCatalogSpec\nsource: https://example.com/uc\nroles: [client]\n"
+    "obligations:\n  getTable: {}\n  listTables: {}\n"
+)
+
+_FACT = """\
+- implementation: ucServer
+  obligations: [unityCatalogSpec:listTables]
+  outcome: missing
+  why: The server has no listTables endpoint.
+  source: proj:how-to/engine#read-it
+"""
+
+
+def _served(tmp_path: Path, claims: str = "", *, providers: bool = True) -> Path:
+    """table.write covers listTables, which the bound catalog server lacks."""
+    root = _obligations(
+        _modeled(_repo(tmp_path, claims)), _UC_OBLIGATIONS, spec="unityCatalogSpec"
+    )
+    model_path = root / "architecture/dist/model.json"
+    model = json.loads(model_path.read_text())
+    model["elements"]["ucServer"] = {"kind": "implementation", "title": "UC server"}
+    model_path.write_text(json.dumps(model))
+    _edit(
+        root,
+        f"{_CATALOG}/journeys/table.yml",
+        "summary: Append rows, asset: lakehouse.table, path: uc",
+        "summary: Append rows, asset: lakehouse.table, path: uc,"
+        " covers: [unityCatalogSpec:listTables]",
+    )
+    _append(root, f"{_CATALOG}/evidence.yml", _FACT)
+    if providers:
+        _append(
+            root, "content/proj/compatibility.yml", "providers:\n  catalog: ucServer\n"
+        )
+    return root
+
+
+def test_a_server_fact_blocks_the_journeys_that_need_it(tmp_path) -> None:
+    data = _artifact(_served(tmp_path, _SPARK_READS))
+    read, write = data["journeys"]
+    # Spark consumes unityCatalogSpec; DuckDB reaches no spec, so its cell is
+    # the plain evidence it already had.
+    cell = write["cells"]["spark"]
+    assert cell["status"] == "missing"
+    assert cell["evidence"][0]["implementation"] == "ucServer"
+    assert write["cells"]["duckdb"]["evidence"][0]["implementation"] is None
+    assert "spark" in read["cells"] and read["cells"]["spark"]["status"] == "tested"
+    (entry,) = data["coverage"]
+    assert entry["roles"]["client"]["blocked"] == 1
+    assert {e["obligation"]: e["status"] for e in entry["obligations"]} == {
+        "getTable": "untracked",
+        "listTables": "blocked",
+    }
+
+
+def test_a_fact_no_project_binds_is_an_error(tmp_path) -> None:
+    root = _served(tmp_path, providers=False)
+    errors, _ = compat.check(root)
+    assert any("the facts about ucServer block no journey" in e for e in errors), errors
+
+
+def test_a_claim_that_works_contradicts_a_server_fact(tmp_path) -> None:
+    root = _served(
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.write", region = "read" }]'),
+    )
+    errors, _ = compat.check(root)
+    assert any("evidence says spark table.write missing" in e for e in errors), errors
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        (
+            "outcome: missing\n  why: The server",
+            "outcome: works\n  why: The server",
+            "a server fact's outcome is fails or missing",
+        ),
+        (
+            "[unityCatalogSpec:listTables]",
+            "[unityCatalogSpec:nope]",
+            "'unityCatalogSpec:nope' is not an obligation",
+        ),
+        (
+            "implementation: ucServer",
+            "implementation: apacheSparkX",
+            "not in the estate model",
+        ),
+        (
+            "  why: The server has no listTables endpoint.\n",
+            "  why: The server has no listTables endpoint.\n  interfaces: [spark]\n",
+            "unknown key 'interfaces'",
+        ),
+    ],
+)
+def test_bad_server_facts_are_errors(
+    tmp_path, old: str, new: str, message: str
+) -> None:
+    root = _served(tmp_path)
+    _edit(root, f"{_CATALOG}/evidence.yml", old, new)
+    errors, _ = compat.check(root)
+    assert any(message in e for e in errors), errors

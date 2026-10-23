@@ -583,6 +583,11 @@ function EvidenceItem({ evidence }: { evidence: CompatEvidence }) {
       <span className={`compat-${evidence.outcome === "works" ? "documented" : "fails"}`}>
         {evidence.outcome}
       </span>{" "}
+      {evidence.implementation && (
+        <>
+          blocked by <ModelRef id={evidence.implementation} />:{" "}
+        </>
+      )}
       {evidence.why}
       <div className="muted">
         {evidence.page ? (

@@ -1702,7 +1702,8 @@
               "source": "unitycatalog:how-to/python-dataframes#list-tables",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2212,7 +2213,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "1.5.6",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -2330,7 +2332,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2551,7 +2554,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2989,7 +2993,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "1.44.2",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3009,7 +3014,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "0.7.25",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3029,7 +3035,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "2.3.3",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3049,7 +3056,8 @@
               "source": "unitycatalog:reference/features-and-limitations#namespace-and-assets",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3069,7 +3077,8 @@
               "source": "unitycatalog:reference/features-and-limitations#namespace-and-assets",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -3206,7 +3215,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "1.44.2",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3226,7 +3236,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "0.7.25",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3246,7 +3257,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "2.3.3",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3266,7 +3278,8 @@
               "source": "unitycatalog:reference/features-and-limitations#namespace-and-assets",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3286,7 +3299,8 @@
               "source": "unitycatalog:reference/features-and-limitations#namespace-and-assets",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4102,7 +4116,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "1.44.2",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4122,7 +4137,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "0.7.25",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4142,7 +4158,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "2.3.3",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5349,7 +5366,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5369,7 +5387,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5389,7 +5408,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5409,7 +5429,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5429,7 +5450,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5641,7 +5663,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": "4.1.0",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5661,7 +5684,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5681,7 +5705,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6637,7 +6662,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6657,7 +6683,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6677,7 +6704,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6697,7 +6725,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6717,7 +6746,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         }
@@ -6774,7 +6804,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6794,7 +6825,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6814,7 +6846,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6834,7 +6867,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6854,7 +6888,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         }
@@ -6916,7 +6951,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6936,7 +6972,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6956,7 +6993,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6976,7 +7014,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -6996,7 +7035,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         }
@@ -7053,7 +7093,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -7073,7 +7114,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -7093,7 +7135,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -7113,7 +7156,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -7133,7 +7177,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         }
@@ -7190,7 +7235,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -7210,7 +7256,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -7230,7 +7277,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -7250,7 +7298,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         },
@@ -7270,7 +7319,8 @@
               "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": "unityCatalogServer"
             }
           ]
         }
@@ -9323,7 +9373,8 @@
               "source": "unitycatalog:how-to/configure-aws-storage#check-that-the-server-vends-credentials",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -10354,7 +10405,8 @@
               "source": "unitycatalog:how-to/sql-views#register-a-view-through-the-rest-api",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -10442,7 +10494,8 @@
               "source": "unitycatalog:reference/features-and-limitations#namespace-and-assets",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -10530,7 +10583,8 @@
               "source": "unitycatalog:reference/features-and-limitations#namespace-and-assets",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -10935,7 +10989,8 @@
               "source": "unitycatalog:how-to/metric-views#register-a-definition-through-the-rest-api",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -10979,7 +11034,8 @@
               "source": "unitycatalog:how-to/metric-views#change-a-definition",
               "api": null,
               "verified": "4.2.0",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -10999,7 +11055,8 @@
               "source": "unitycatalog:reference/features-and-limitations#namespace-and-assets",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -11043,7 +11100,8 @@
               "source": "unitycatalog:how-to/metric-views#change-a-definition",
               "api": null,
               "verified": "4.2.0",
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -11063,7 +11121,8 @@
               "source": "unitycatalog:reference/features-and-limitations#namespace-and-assets",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -11927,6 +11986,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 9
         },
@@ -11935,6 +11995,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 22
         }
@@ -12152,7 +12213,8 @@
           "tested": 8,
           "documented": 0,
           "fails": 0,
-          "missing": 6,
+          "missing": 0,
+          "blocked": 6,
           "unknown": 4,
           "untracked": 7
         }
@@ -12272,7 +12334,7 @@
         {
           "obligation": "registerTable",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.register"
           ]
@@ -12296,7 +12358,7 @@
         {
           "obligation": "commitTransaction",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.transactions"
           ]
@@ -12304,7 +12366,7 @@
         {
           "obligation": "planTableScan",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.scan-planning"
           ]
@@ -12318,7 +12380,7 @@
         {
           "obligation": "signRequest",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.remote-signing"
           ]
@@ -12332,7 +12394,7 @@
         {
           "obligation": "loadView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -12340,7 +12402,7 @@
         {
           "obligation": "createView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -12362,6 +12424,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 11,
           "untracked": 7
         },
@@ -12370,6 +12433,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 16,
           "untracked": 2
         }
@@ -12656,6 +12720,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 9
         },
@@ -12664,6 +12729,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 22
         }
@@ -12881,7 +12947,8 @@
           "tested": 8,
           "documented": 0,
           "fails": 0,
-          "missing": 6,
+          "missing": 0,
+          "blocked": 6,
           "unknown": 4,
           "untracked": 7
         }
@@ -13001,7 +13068,7 @@
         {
           "obligation": "registerTable",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.register"
           ]
@@ -13025,7 +13092,7 @@
         {
           "obligation": "commitTransaction",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.transactions"
           ]
@@ -13033,7 +13100,7 @@
         {
           "obligation": "planTableScan",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.scan-planning"
           ]
@@ -13047,7 +13114,7 @@
         {
           "obligation": "signRequest",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.remote-signing"
           ]
@@ -13061,7 +13128,7 @@
         {
           "obligation": "loadView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -13069,7 +13136,7 @@
         {
           "obligation": "createView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -13091,6 +13158,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 11,
           "untracked": 7
         },
@@ -13099,6 +13167,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 16,
           "untracked": 2
         }
@@ -13385,6 +13454,7 @@
           "documented": 0,
           "fails": 1,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 9
         },
@@ -13393,6 +13463,7 @@
           "documented": 0,
           "fails": 1,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 22
         }
@@ -13610,7 +13681,8 @@
           "tested": 0,
           "documented": 0,
           "fails": 1,
-          "missing": 6,
+          "missing": 0,
+          "blocked": 6,
           "unknown": 11,
           "untracked": 7
         }
@@ -13730,7 +13802,7 @@
         {
           "obligation": "registerTable",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.register"
           ]
@@ -13754,7 +13826,7 @@
         {
           "obligation": "commitTransaction",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.transactions"
           ]
@@ -13762,7 +13834,7 @@
         {
           "obligation": "planTableScan",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.scan-planning"
           ]
@@ -13776,7 +13848,7 @@
         {
           "obligation": "signRequest",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.remote-signing"
           ]
@@ -13790,7 +13862,7 @@
         {
           "obligation": "loadView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -13798,7 +13870,7 @@
         {
           "obligation": "createView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -13820,6 +13892,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 11,
           "untracked": 7
         },
@@ -13828,6 +13901,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 16,
           "untracked": 2
         }
@@ -14114,6 +14188,7 @@
           "documented": 0,
           "fails": 1,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 9
         },
@@ -14122,6 +14197,7 @@
           "documented": 0,
           "fails": 1,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 22
         }
@@ -14339,7 +14415,8 @@
           "tested": 0,
           "documented": 0,
           "fails": 1,
-          "missing": 6,
+          "missing": 0,
+          "blocked": 6,
           "unknown": 11,
           "untracked": 7
         }
@@ -14459,7 +14536,7 @@
         {
           "obligation": "registerTable",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.register"
           ]
@@ -14483,7 +14560,7 @@
         {
           "obligation": "commitTransaction",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.transactions"
           ]
@@ -14491,7 +14568,7 @@
         {
           "obligation": "planTableScan",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.scan-planning"
           ]
@@ -14505,7 +14582,7 @@
         {
           "obligation": "signRequest",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.remote-signing"
           ]
@@ -14519,7 +14596,7 @@
         {
           "obligation": "loadView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -14527,7 +14604,7 @@
         {
           "obligation": "createView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -14549,6 +14626,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 11,
           "untracked": 7
         },
@@ -14557,6 +14635,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 16,
           "untracked": 2
         }
@@ -14843,6 +14922,7 @@
           "documented": 0,
           "fails": 1,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 9
         },
@@ -14851,6 +14931,7 @@
           "documented": 0,
           "fails": 1,
           "missing": 0,
+          "blocked": 0,
           "unknown": 0,
           "untracked": 22
         }
@@ -15068,7 +15149,8 @@
           "tested": 8,
           "documented": 0,
           "fails": 0,
-          "missing": 6,
+          "missing": 0,
+          "blocked": 6,
           "unknown": 4,
           "untracked": 7
         }
@@ -15188,7 +15270,7 @@
         {
           "obligation": "registerTable",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.register"
           ]
@@ -15212,7 +15294,7 @@
         {
           "obligation": "commitTransaction",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.transactions"
           ]
@@ -15220,7 +15302,7 @@
         {
           "obligation": "planTableScan",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.scan-planning"
           ]
@@ -15234,7 +15316,7 @@
         {
           "obligation": "signRequest",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.remote-signing"
           ]
@@ -15248,7 +15330,7 @@
         {
           "obligation": "loadView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -15256,7 +15338,7 @@
         {
           "obligation": "createView",
           "role": "client",
-          "status": "missing",
+          "status": "blocked",
           "journeys": [
             "iceberg.views"
           ]
@@ -15278,6 +15360,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 11,
           "untracked": 7
         },
@@ -15286,6 +15369,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 16,
           "untracked": 2
         }

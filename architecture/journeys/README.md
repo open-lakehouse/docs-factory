@@ -15,7 +15,7 @@ obligations/      what each spec asks of the roles that take part in it
 paths.yml         how participants reach the asset: the contract each role needs
 interfaces.yml    one engine or client through one language binding (the columns)
 journeys/*.yml    the journeys, one file per area; an id is unique across files
-evidence.yml      cells no script here proves, each with its source
+evidence.yml      cells no script here proves, and facts about one server
 aliases.yml       renamed journey ids → current ids
 ```
 

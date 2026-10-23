@@ -1,9 +1,5 @@
 import { useParams } from "react-router-dom";
-import {
-  ElementRef,
-  GraphSection,
-  PathRef,
-} from "../../components/model/graph/primitives";
+import { ElementRef, GraphSection, PathRef } from "../../components/model/graph/primitives";
 import RoleDiagram from "../../components/model/graph/RoleDiagram";
 import CompatTable from "../../components/plan/CompatTable";
 import { catalog } from "../../estate";

@@ -33,6 +33,7 @@ docs/
     docs-versioning.md               latest-only docs: one release manifest, pin lint, bump, release review
     information-system.md            how the site consumes the estate model
     interactive-docs-site.md         islands / roadmap / auth platform study
+    journey-graph.md                 one estate-wide journey catalog, spec obligations, coverage from the graph (proposal)
     multi-domain-single-deployment.md one deployment, three doc domains
     prompt-tracking.md               assistant prompts we track, each mapped to the page it should cite
     release-bump-agent.md            the Omnigent agent a bump could become (not built)

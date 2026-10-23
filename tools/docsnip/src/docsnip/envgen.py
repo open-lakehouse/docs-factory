@@ -48,7 +48,7 @@ FACTS_VERSION = 1
 # Roles whose providers store data rather than serve it.
 _DATASTORE_ROLES = {"relational_db", "object_store"}
 _CLIENTS = "@clients"
-# Trestle edge kind → (LikeC4 relationship, title) for the kinds that keep a fixed title.
+# Trestle edge kind → title, for the `uses` edges whose title is fixed.
 _VIA = {"authenticates": "authenticates via", "authorizes": "authorizes via"}
 
 
@@ -93,15 +93,6 @@ def _q(text: str) -> str:
 # --- projections --------------------------------------------------------------
 
 
-def _uses_kind(model: Model, roles: trestle.RoleMap, role: str) -> str:
-    """``consumes`` toward a capability some spec specifies (S3), else ``dependsOn``."""
-    entry = roles.roles.get(roles.canonical(role))
-    target = entry.target if entry else None
-    if target and any(k == "specifies" and t == target for k, _, t in model.edges):
-        return "consumes"
-    return "dependsOn"
-
-
 def _route_title(plan: dict, edge: dict) -> str:
     """``:<listener> <prefix>, …`` for the gateway routes that reach ``edge['to']``."""
     services = {s["name"] for s in plan["services"].get(edge["to"], [])}
@@ -115,9 +106,7 @@ def _route_title(plan: dict, edge: dict) -> str:
     return f":{edge.get('host_port')} {', '.join(prefixes)}".rstrip()
 
 
-def render_fragment(
-    name: str, plan: dict, model: Model, roles: trestle.RoleMap, errors: list[str]
-) -> str:
+def render_fragment(name: str, plan: dict, model: Model, errors: list[str]) -> str:
     where = f"{ENVS / name / PLAN}"
     env = ident(name)
     nodes = [n for n in plan["graph"].get("nodes") or [] if n.get("id") != _CLIENTS]
@@ -181,10 +170,9 @@ def render_fragment(
         if kind == "route":
             rel, title = "flows", _route_title(plan, edge)
         elif kind == "uses":
-            rel = _uses_kind(model, roles, str(edge.get("role")))
-            title = str(edge.get("protocol") or edge.get("role"))
+            rel, title = "uses", str(edge.get("protocol") or edge.get("role"))
         elif kind in _VIA:
-            rel, title = "dependsOn", _VIA[kind]
+            rel, title = "uses", _VIA[kind]
         else:
             errors.append(f"{where}: edge {edge.get('key')} has unknown kind {kind!r}")
             continue
@@ -335,7 +323,6 @@ def project(root: Path) -> tuple[dict[Path, str], list[str]]:
     try:
         pin = trestle.load_pin(root)
         catalog = trestle.load_catalog(root)
-        roles = trestle.load_map(root)
     except (OSError, ValueError) as exc:
         return {}, [str(exc)]
     for name in names(root):
@@ -361,9 +348,7 @@ def project(root: Path) -> tuple[dict[Path, str], list[str]]:
     out: dict[Path, str] = {}
     files: dict[str, list[str]] = {}
     for name, plan in plans.items():
-        out[FRAGMENTS / f"{name}.likec4"] = render_fragment(
-            name, plan, model, roles, errors
-        )
+        out[FRAGMENTS / f"{name}.likec4"] = render_fragment(name, plan, model, errors)
         try:
             files[name] = runtime_files(root, name, plan)
         except ValueError as exc:

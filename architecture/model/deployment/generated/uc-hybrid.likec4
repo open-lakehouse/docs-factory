@@ -27,10 +27,10 @@ deployment {
       instanceOf unityCatalogOSS
     }
 
-    ucHybrid.unityCatalog -[dependsOn]-> ucHybrid.hostedPostgres "PostgreSQL" {
+    ucHybrid.unityCatalog -[uses]-> ucHybrid.hostedPostgres "PostgreSQL" {
       metadata { trestleEdge "uses:unity-catalog→hosted-postgres:relational_db" }
     }
-    ucHybrid.unityCatalog -[consumes]-> ucHybrid.awsS3 "S3" {
+    ucHybrid.unityCatalog -[uses]-> ucHybrid.awsS3 "S3" {
       metadata { trestleEdge "uses:unity-catalog→aws-s3:object_store" }
     }
   }

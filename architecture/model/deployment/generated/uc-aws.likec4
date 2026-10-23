@@ -40,10 +40,10 @@ deployment {
     ucAws.envoy -[flows]-> ucAws.rustfs ":9000 /" {
       metadata { trestleEdge "route:envoy→rustfs:9000" }
     }
-    ucAws.unityCatalog -[dependsOn]-> ucAws.postgres "PostgreSQL" {
+    ucAws.unityCatalog -[uses]-> ucAws.postgres "PostgreSQL" {
       metadata { trestleEdge "uses:unity-catalog→postgres:relational_db" }
     }
-    ucAws.unityCatalog -[consumes]-> ucAws.rustfs "S3" {
+    ucAws.unityCatalog -[uses]-> ucAws.rustfs "S3" {
       metadata { trestleEdge "uses:unity-catalog→rustfs:object_store" }
     }
   }

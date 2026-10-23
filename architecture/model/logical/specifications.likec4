@@ -57,6 +57,22 @@ model {
   unityCatalogSpec -[governs]-> lakehouse.credential
   unityCatalogSpec -[governs]-> lakehouse.externalLocation
 
+  // Its own spec beside the Unity Catalog REST spec, the way the Iceberg REST
+  // Catalog sits beside Iceberg: the API catalog-managed Delta tables commit
+  // through (#272).
+  unityCatalogDeltaApiSpec = openSpecification "Unity Catalog Delta API" {
+    #public
+    description "
+      Open specification for catalog-managed Delta tables over REST: an engine
+      negotiates the protocol version, stages and creates a table with the
+      table features the catalog requires, and commits through intent-based
+      updates guarded by preconditions, all or nothing.
+    "
+    link https://github.com/unitycatalog/unitycatalog/blob/main/spec/protocols/ManagedDeltaTablesSpec.md
+  }
+  unityCatalogDeltaApiSpec -[specifies]-> lakehouse.catalog "specifies catalog-managed Delta tables"
+  unityCatalogDeltaApiSpec -[governs]-> lakehouse.table
+
   icebergRestSpec = openSpecification "Iceberg REST Catalog" {
     #public
     description "

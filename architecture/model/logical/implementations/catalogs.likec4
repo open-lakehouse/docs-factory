@@ -44,6 +44,7 @@ model {
   }
   unityCatalogServer -[implements]-> unityCatalogSpec
   unityCatalogServer -[implements]-> icebergRestSpec "serves Iceberg tables through"
+  unityCatalogServer -[implements]-> unityCatalogDeltaApiSpec
   unityCatalogServer -[realizes]-> lakehouse.catalog
   unityCatalogServer -[realizes]-> lakehouse.governance.authorization "grants + privileges on securables"
   unityCatalogServer -[realizes]-> lakehouse.governance.authentication "validates access tokens" {
@@ -67,6 +68,7 @@ model {
     }
   }
   mangrove -[implements]-> unityCatalogSpec
+  mangrove -[implements]-> unityCatalogDeltaApiSpec
   mangrove -[realizes]-> lakehouse.catalog
 
 }

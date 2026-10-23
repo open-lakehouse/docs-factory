@@ -62,6 +62,7 @@ model {
   }
   apacheSpark -[integrates]-> unityCatalogSpark
   unityCatalogSpark -[consumes]-> unityCatalogSpec "resolves tables via"
+  unityCatalogSpark -[consumes]-> unityCatalogDeltaApiSpec "commits catalog-managed tables through"
 
   icebergSparkRuntime = implementation "Iceberg Spark runtime" {
     #library #public
@@ -133,6 +134,7 @@ model {
   }
   duckdb -[integrates]-> duckdbUnityCatalog
   duckdbUnityCatalog -[consumes]-> unityCatalogSpec "resolves tables via"
+  duckdbUnityCatalog -[consumes]-> unityCatalogDeltaApiSpec "commits catalog-managed tables through"
 
   duckdbDelta = implementation "DuckDB delta extension" {
     #library #public

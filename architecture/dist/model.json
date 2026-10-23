@@ -1753,6 +1753,27 @@
       "kind": "openSpecification",
       "id": "unityCatalogSpec"
     },
+    "unityCatalogDeltaApiSpec": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle"
+      },
+      "links": [
+        {
+          "url": "https://github.com/unitycatalog/unitycatalog/blob/main/spec/protocols/ManagedDeltaTablesSpec.md"
+        }
+      ],
+      "tags": [
+        "public"
+      ],
+      "description": {
+        "txt": "Open specification for catalog-managed Delta tables over REST: an engine\nnegotiates the protocol version, stages and creates a table with the\ntable features the catalog requires, and commits through intent-based\nupdates guarded by preconditions, all or nothing."
+      },
+      "title": "Unity Catalog Delta API",
+      "kind": "openSpecification",
+      "id": "unityCatalogDeltaApiSpec"
+    },
     "icebergRestSpec": {
       "notation": "Specification / open standard",
       "style": {
@@ -2629,7 +2650,19 @@
       "kind": "implements",
       "id": "1krw6hm"
     },
-    "qc5n9j": {
+    "gs7rf8": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "unityCatalogServer"
+      },
+      "target": {
+        "model": "unityCatalogDeltaApiSpec"
+      },
+      "kind": "implements",
+      "id": "gs7rf8"
+    },
+    "6aiwyu": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -2639,9 +2672,9 @@
         "model": "lakehouse.catalog"
       },
       "kind": "realizes",
-      "id": "qc5n9j"
+      "id": "6aiwyu"
     },
-    "9ru1ym": {
+    "zpklbq": {
       "line": "dotted",
       "title": "grants + privileges on securables",
       "source": {
@@ -2651,9 +2684,9 @@
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "9ru1ym"
+      "id": "zpklbq"
     },
-    "fn47sd": {
+    "1tm0jkc": {
       "line": "dotted",
       "title": "validates access tokens",
       "tags": [
@@ -2666,9 +2699,9 @@
         "model": "lakehouse.governance.authentication"
       },
       "kind": "realizes",
-      "id": "fn47sd"
+      "id": "1tm0jkc"
     },
-    "nguklp": {
+    "51pito": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -2678,9 +2711,21 @@
         "model": "unityCatalogSpec"
       },
       "kind": "implements",
-      "id": "nguklp"
+      "id": "51pito"
     },
-    "1h5ckjj": {
+    "1nss1rf": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "mangrove"
+      },
+      "target": {
+        "model": "unityCatalogDeltaApiSpec"
+      },
+      "kind": "implements",
+      "id": "1nss1rf"
+    },
+    "gjf0ah": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -2690,7 +2735,7 @@
         "model": "lakehouse.catalog"
       },
       "kind": "realizes",
-      "id": "1h5ckjj"
+      "id": "gjf0ah"
     },
     "1a8md0": {
       "line": "dashed",
@@ -3003,7 +3048,19 @@
       "kind": "consumes",
       "id": "1mlk7rj"
     },
-    "dyck3w": {
+    "8hm1ak": {
+      "line": "dashed",
+      "title": "commits catalog-managed tables through",
+      "source": {
+        "model": "unityCatalogSpark"
+      },
+      "target": {
+        "model": "unityCatalogDeltaApiSpec"
+      },
+      "kind": "consumes",
+      "id": "8hm1ak"
+    },
+    "1jrltl7": {
       "title": "",
       "source": {
         "model": "apacheSpark"
@@ -3012,9 +3069,9 @@
         "model": "icebergSparkRuntime"
       },
       "kind": "integrates",
-      "id": "dyck3w"
+      "id": "1jrltl7"
     },
-    "subofq": {
+    "1b0ge2f": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3024,9 +3081,9 @@
         "model": "icebergSpec"
       },
       "kind": "implements",
-      "id": "subofq"
+      "id": "1b0ge2f"
     },
-    "gpq4gr": {
+    "1uc2m1k": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3036,9 +3093,9 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "realizes",
-      "id": "gpq4gr"
+      "id": "1uc2m1k"
     },
-    "plfyck": {
+    "14syw9x": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3048,9 +3105,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "consumes",
-      "id": "plfyck"
+      "id": "14syw9x"
     },
-    "1cb9dmu": {
+    "vygbqf": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3060,9 +3117,9 @@
         "model": "deltaSpec"
       },
       "kind": "implements",
-      "id": "1cb9dmu"
+      "id": "vygbqf"
     },
-    "187arjz": {
+    "1kw3q8l": {
       "title": "",
       "source": {
         "model": "apacheSpark"
@@ -3071,9 +3128,9 @@
         "model": "deltaSpark"
       },
       "kind": "integrates",
-      "id": "187arjz"
+      "id": "1kw3q8l"
     },
-    "xarbac": {
+    "11g3i85": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3083,9 +3140,9 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "realizes",
-      "id": "xarbac"
+      "id": "11g3i85"
     },
-    "1r3fcp2": {
+    "4vu2n9": {
       "line": "dashed",
       "title": "queries and changes",
       "source": {
@@ -3095,9 +3152,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "1r3fcp2"
+      "id": "4vu2n9"
     },
-    "177q0ea": {
+    "1vg4mcl": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3107,9 +3164,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "177q0ea"
+      "id": "1vg4mcl"
     },
-    "6c8nia": {
+    "bj715v": {
       "line": "dashed",
       "title": "creates and lists",
       "source": {
@@ -3119,9 +3176,9 @@
         "model": "lakehouse.namespace"
       },
       "kind": "operatesOn",
-      "id": "6c8nia"
+      "id": "bj715v"
     },
-    "fx07pa": {
+    "1i2men1": {
       "line": "dashed",
       "title": "queries and changes",
       "source": {
@@ -3131,9 +3188,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "fx07pa"
+      "id": "1i2men1"
     },
-    "1eqk7ug": {
+    "1prf9dj": {
       "title": "",
       "source": {
         "model": "duckdb"
@@ -3142,9 +3199,9 @@
         "model": "duckdbUnityCatalog"
       },
       "kind": "integrates",
-      "id": "1eqk7ug"
+      "id": "1prf9dj"
     },
-    "146h6rl": {
+    "149xmo": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3154,9 +3211,21 @@
         "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "146h6rl"
+      "id": "149xmo"
     },
-    "qh5e96": {
+    "hmng3s": {
+      "line": "dashed",
+      "title": "commits catalog-managed tables through",
+      "source": {
+        "model": "duckdbUnityCatalog"
+      },
+      "target": {
+        "model": "unityCatalogDeltaApiSpec"
+      },
+      "kind": "consumes",
+      "id": "hmng3s"
+    },
+    "tgvsx4": {
       "title": "",
       "source": {
         "model": "duckdb"
@@ -3165,9 +3234,9 @@
         "model": "duckdbDelta"
       },
       "kind": "integrates",
-      "id": "qh5e96"
+      "id": "tgvsx4"
     },
-    "85qdux": {
+    "1x7cizv": {
       "line": "dotted",
       "title": "reads Delta tables and appends to them",
       "source": {
@@ -3177,9 +3246,9 @@
         "model": "deltaSpec"
       },
       "kind": "implements",
-      "id": "85qdux"
+      "id": "1x7cizv"
     },
-    "1n7t1fn": {
+    "1fzed8l": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3189,9 +3258,9 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "realizes",
-      "id": "1n7t1fn"
+      "id": "1fzed8l"
     },
-    "1bs2y5n": {
+    "15w0621": {
       "title": "",
       "source": {
         "model": "duckdb"
@@ -3200,9 +3269,9 @@
         "model": "duckdbIceberg"
       },
       "kind": "integrates",
-      "id": "1bs2y5n"
+      "id": "15w0621"
     },
-    "bp4qul": {
+    "10sc7lb": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3212,9 +3281,9 @@
         "model": "icebergSpec"
       },
       "kind": "implements",
-      "id": "bp4qul"
+      "id": "10sc7lb"
     },
-    "rc9kn6": {
+    "dlbdcc": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3224,9 +3293,9 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "realizes",
-      "id": "rc9kn6"
+      "id": "dlbdcc"
     },
-    "15tsa7z": {
+    "1xrk4kx": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3236,9 +3305,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "consumes",
-      "id": "15tsa7z"
+      "id": "1xrk4kx"
     },
-    "1g6otr9": {
+    "190kpre": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3248,9 +3317,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "1g6otr9"
+      "id": "190kpre"
     },
-    "jdal7j": {
+    "q52ysd": {
       "title": "reads and writes Delta tables through",
       "source": {
         "model": "polars"
@@ -3259,9 +3328,9 @@
         "model": "deltaRs"
       },
       "kind": "integrates",
-      "id": "jdal7j"
+      "id": "q52ysd"
     },
-    "dy2c4u": {
+    "m8ifvw": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3271,9 +3340,9 @@
         "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "dy2c4u"
+      "id": "m8ifvw"
     },
-    "1rngn5f": {
+    "yer6yd": {
       "line": "dashed",
       "title": "reads and appends",
       "source": {
@@ -3283,9 +3352,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "1rngn5f"
+      "id": "yer6yd"
     },
-    "dsht3f": {
+    "11dsn2h": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3295,9 +3364,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "dsht3f"
+      "id": "11dsn2h"
     },
-    "1qd49ri": {
+    "giljl8": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3307,9 +3376,9 @@
         "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "1qd49ri"
+      "id": "giljl8"
     },
-    "1efs6ur": {
+    "dbkrr1": {
       "line": "dashed",
       "title": "lists and reads",
       "source": {
@@ -3319,9 +3388,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "1efs6ur"
+      "id": "dbkrr1"
     },
-    "j2ukwk": {
+    "1izv9h9": {
       "line": "dotted",
       "title": "",
       "source": {
@@ -3331,9 +3400,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "j2ukwk"
+      "id": "1izv9h9"
     },
-    "kp8ex7": {
+    "1j0n52a": {
       "line": "dotted",
       "title": "serves",
       "source": {
@@ -3343,9 +3412,9 @@
         "model": "flightSqlSpec"
       },
       "kind": "implements",
-      "id": "kp8ex7"
+      "id": "1j0n52a"
     },
-    "hizh7d": {
+    "gip9jv": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3355,9 +3424,9 @@
         "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "hizh7d"
+      "id": "gip9jv"
     },
-    "uu1mll": {
+    "1ha98ff": {
       "title": "",
       "source": {
         "model": "hydrofoil"
@@ -3366,9 +3435,9 @@
         "model": "datafusion"
       },
       "kind": "builtOn",
-      "id": "uu1mll"
+      "id": "1ha98ff"
     },
-    "19ndtmo": {
+    "5989vq": {
       "line": "dotted",
       "title": "coarse allow/deny gate before planning",
       "tags": [
@@ -3381,9 +3450,9 @@
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "19ndtmo"
+      "id": "5989vq"
     },
-    "5agmrs": {
+    "ponrbi": {
       "line": "dotted",
       "title": "rewrites plans with row filters + column masks",
       "tags": [
@@ -3396,9 +3465,9 @@
         "model": "lakehouse.governance.fineGrainedAccess"
       },
       "kind": "realizes",
-      "id": "5agmrs"
+      "id": "ponrbi"
     },
-    "mb3fik": {
+    "1q95zi": {
       "line": "dotted",
       "title": "realizes graph queries over tables",
       "source": {
@@ -3408,9 +3477,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "mb3fik"
+      "id": "1q95zi"
     },
-    "v24uyu": {
+    "pxfwo": {
       "line": "dotted",
       "title": "serves",
       "source": {
@@ -3420,7 +3489,7 @@
         "model": "openCypherSpec"
       },
       "kind": "implements",
-      "id": "v24uyu"
+      "id": "pxfwo"
     },
     "19u4pop": {
       "line": "dotted",
@@ -4092,7 +4161,29 @@
       "kind": "governs",
       "id": "1u7h26g"
     },
-    "1f35n4o": {
+    "zzte6x": {
+      "title": "specifies catalog-managed Delta tables",
+      "source": {
+        "model": "unityCatalogDeltaApiSpec"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "specifies",
+      "id": "zzte6x"
+    },
+    "twjc57": {
+      "title": "",
+      "source": {
+        "model": "unityCatalogDeltaApiSpec"
+      },
+      "target": {
+        "model": "lakehouse.table"
+      },
+      "kind": "governs",
+      "id": "twjc57"
+    },
+    "1apclz0": {
       "title": "",
       "source": {
         "model": "icebergRestSpec"
@@ -4101,9 +4192,9 @@
         "model": "lakehouse.catalog"
       },
       "kind": "specifies",
-      "id": "1f35n4o"
+      "id": "1apclz0"
     },
-    "1idfjuv": {
+    "v8gsh9": {
       "title": "",
       "source": {
         "model": "icebergRestSpec"
@@ -4112,9 +4203,9 @@
         "model": "lakehouse.namespace"
       },
       "kind": "governs",
-      "id": "1idfjuv"
+      "id": "v8gsh9"
     },
-    "nokt0b": {
+    "vxkng3": {
       "title": "",
       "source": {
         "model": "icebergRestSpec"
@@ -4123,9 +4214,9 @@
         "model": "lakehouse.table"
       },
       "kind": "governs",
-      "id": "nokt0b"
+      "id": "vxkng3"
     },
-    "mgfxkc": {
+    "1ckus4v": {
       "title": "",
       "source": {
         "model": "icebergRestSpec"
@@ -4134,9 +4225,9 @@
         "model": "lakehouse.sqlView"
       },
       "kind": "governs",
-      "id": "mgfxkc"
+      "id": "1ckus4v"
     },
-    "kghz2s": {
+    "lbegwj": {
       "title": "",
       "source": {
         "model": "openSharingSpec"
@@ -4145,9 +4236,9 @@
         "model": "lakehouse.sharing"
       },
       "kind": "specifies",
-      "id": "kghz2s"
+      "id": "lbegwj"
     },
-    "ky6dx1": {
+    "15sa4ly": {
       "title": "",
       "source": {
         "model": "parquetSpec"
@@ -4156,9 +4247,9 @@
         "model": "lakehouse.fileFormat"
       },
       "kind": "specifies",
-      "id": "ky6dx1"
+      "id": "15sa4ly"
     },
-    "18xgmx4": {
+    "1306qw7": {
       "title": "",
       "source": {
         "model": "s3Spec"
@@ -4167,9 +4258,9 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "specifies",
-      "id": "18xgmx4"
+      "id": "1306qw7"
     },
-    "108iukr": {
+    "113tb8j": {
       "title": "specifies remote query submission",
       "source": {
         "model": "sparkConnectSpec"
@@ -4178,9 +4269,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "specifies",
-      "id": "108iukr"
+      "id": "113tb8j"
     },
-    "1doc44x": {
+    "17vnodu": {
       "title": "specifies remote SQL",
       "source": {
         "model": "flightSqlSpec"
@@ -4189,9 +4280,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "specifies",
-      "id": "1doc44x"
+      "id": "17vnodu"
     },
-    "4enfs4": {
+    "drp41v": {
       "title": "specifies graph queries",
       "source": {
         "model": "openCypherSpec"
@@ -4200,9 +4291,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "specifies",
-      "id": "4enfs4"
+      "id": "drp41v"
     },
-    "zz6iup": {
+    "fiqfqq": {
       "title": "",
       "source": {
         "model": "azureBlobSpec"
@@ -4211,9 +4302,9 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "specifies",
-      "id": "zz6iup"
+      "id": "fiqfqq"
     },
-    "1s84pyp": {
+    "cu7n3y": {
       "title": "specifies the lineage event model",
       "source": {
         "model": "openLineageSpec"
@@ -4222,9 +4313,9 @@
         "model": "lakehouse.lineage"
       },
       "kind": "specifies",
-      "id": "1s84pyp"
+      "id": "cu7n3y"
     },
-    "xdetg1": {
+    "115ttfj": {
       "title": "specifies telemetry export",
       "source": {
         "model": "otlpSpec"
@@ -4233,7 +4324,7 @@
         "model": "lakehouse.observability"
       },
       "kind": "specifies",
-      "id": "xdetg1"
+      "id": "115ttfj"
     }
   },
   "globals": {
@@ -4340,9 +4431,9 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "qc5n9j",
-            "9ru1ym",
-            "fn47sd"
+            "6aiwyu",
+            "zpklbq",
+            "1tm0jkc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4359,7 +4450,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "1h5ckjj"
+            "gjf0ah"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4468,7 +4559,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "gpq4gr"
+            "1uc2m1k"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4482,8 +4573,8 @@
           "target": "lakehouse",
           "label": "queries and changes",
           "relations": [
-            "xarbac",
-            "1r3fcp2"
+            "11g3i85",
+            "4vu2n9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4496,9 +4587,9 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "177q0ea",
-            "6c8nia",
-            "fx07pa"
+            "1vg4mcl",
+            "bj715v",
+            "1i2men1"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4511,7 +4602,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "1n7t1fn"
+            "1fzed8l"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4525,7 +4616,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "rc9kn6"
+            "dlbdcc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4539,8 +4630,8 @@
           "target": "lakehouse",
           "label": "reads and appends",
           "relations": [
-            "1g6otr9",
-            "1rngn5f"
+            "190kpre",
+            "yer6yd"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4553,8 +4644,8 @@
           "target": "lakehouse",
           "label": "lists and reads",
           "relations": [
-            "dsht3f",
-            "1efs6ur"
+            "11dsn2h",
+            "dbkrr1"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4567,9 +4658,9 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "j2ukwk",
-            "19ndtmo",
-            "5agmrs"
+            "1izv9h9",
+            "5989vq",
+            "ponrbi"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4586,7 +4677,7 @@
           "target": "lakehouse",
           "label": "realizes graph queries over tables",
           "relations": [
-            "mb3fik"
+            "1q95zi"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4849,16 +4940,30 @@
           "head": "normal"
         },
         {
+          "id": "107nx1g",
+          "parent": null,
+          "source": "unityCatalogDeltaApiSpec",
+          "target": "lakehouse",
+          "label": "specifies catalog-managed Delta tables",
+          "relations": [
+            "zzte6x",
+            "twjc57"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal"
+        },
+        {
           "id": "lv7f45",
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "1f35n4o",
-            "1idfjuv",
-            "nokt0b",
-            "mgfxkc"
+            "1apclz0",
+            "v8gsh9",
+            "vxkng3",
+            "1ckus4v"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4871,7 +4976,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "kghz2s"
+            "lbegwj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4885,7 +4990,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "ky6dx1"
+            "15sa4ly"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4899,7 +5004,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "18xgmx4"
+            "1306qw7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4913,7 +5018,7 @@
           "target": "lakehouse",
           "label": "specifies remote query submission",
           "relations": [
-            "108iukr"
+            "113tb8j"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4927,7 +5032,7 @@
           "target": "lakehouse",
           "label": "specifies remote SQL",
           "relations": [
-            "1doc44x"
+            "17vnodu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4941,7 +5046,7 @@
           "target": "lakehouse",
           "label": "specifies graph queries",
           "relations": [
-            "4enfs4"
+            "drp41v"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4955,7 +5060,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "zz6iup"
+            "fiqfqq"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4969,7 +5074,7 @@
           "target": "lakehouse",
           "label": "specifies the lineage event model",
           "relations": [
-            "1s84pyp"
+            "cu7n3y"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4983,7 +5088,7 @@
           "target": "lakehouse",
           "label": "specifies telemetry export",
           "relations": [
-            "xdetg1"
+            "115ttfj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5019,6 +5124,20 @@
           "kind": "implements"
         },
         {
+          "id": "1wqw7ey",
+          "parent": null,
+          "source": "unityCatalogServer",
+          "target": "unityCatalogDeltaApiSpec",
+          "label": null,
+          "relations": [
+            "gs7rf8"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
           "id": "u9bajv",
           "parent": null,
           "source": "unityCatalogServer",
@@ -5039,7 +5158,21 @@
           "target": "unityCatalogSpec",
           "label": null,
           "relations": [
-            "nguklp"
+            "51pito"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "11wkmug",
+          "parent": null,
+          "source": "mangrove",
+          "target": "unityCatalogDeltaApiSpec",
+          "label": null,
+          "relations": [
+            "1nss1rf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5123,7 +5256,7 @@
           "target": "datafusion",
           "label": null,
           "relations": [
-            "uu1mll"
+            "1ha98ff"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5151,7 +5284,7 @@
           "target": "icebergSparkRuntime",
           "label": null,
           "relations": [
-            "dyck3w"
+            "1jrltl7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5165,7 +5298,7 @@
           "target": "deltaSpark",
           "label": null,
           "relations": [
-            "187arjz"
+            "1kw3q8l"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5201,13 +5334,27 @@
           "kind": "consumes"
         },
         {
+          "id": "79pyd0",
+          "parent": null,
+          "source": "unityCatalogSpark",
+          "target": "unityCatalogDeltaApiSpec",
+          "label": "commits catalog-managed tables through",
+          "relations": [
+            "8hm1ak"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
           "id": "88sjk8",
           "parent": null,
           "source": "icebergSparkRuntime",
           "target": "icebergSpec",
           "label": null,
           "relations": [
-            "subofq"
+            "1b0ge2f"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5221,7 +5368,7 @@
           "target": "icebergRestSpec",
           "label": "resolves tables via",
           "relations": [
-            "plfyck"
+            "14syw9x"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5235,7 +5382,7 @@
           "target": "deltaSpec",
           "label": null,
           "relations": [
-            "1cb9dmu"
+            "vygbqf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5249,7 +5396,7 @@
           "target": "duckdbUnityCatalog",
           "label": null,
           "relations": [
-            "1eqk7ug"
+            "1prf9dj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5263,7 +5410,7 @@
           "target": "duckdbDelta",
           "label": null,
           "relations": [
-            "qh5e96"
+            "tgvsx4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5277,7 +5424,7 @@
           "target": "duckdbIceberg",
           "label": null,
           "relations": [
-            "1bs2y5n"
+            "15w0621"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5291,7 +5438,21 @@
           "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "146h6rl"
+            "149xmo"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "8to9rk",
+          "parent": null,
+          "source": "duckdbUnityCatalog",
+          "target": "unityCatalogDeltaApiSpec",
+          "label": "commits catalog-managed tables through",
+          "relations": [
+            "hmng3s"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5305,7 +5466,7 @@
           "target": "deltaSpec",
           "label": "reads Delta tables and appends to them",
           "relations": [
-            "85qdux"
+            "1x7cizv"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5319,7 +5480,7 @@
           "target": "icebergSpec",
           "label": null,
           "relations": [
-            "bp4qul"
+            "10sc7lb"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5333,7 +5494,7 @@
           "target": "icebergRestSpec",
           "label": "resolves tables via",
           "relations": [
-            "15tsa7z"
+            "1xrk4kx"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5347,7 +5508,7 @@
           "target": "deltaRs",
           "label": "reads and writes Delta tables through",
           "relations": [
-            "jdal7j"
+            "q52ysd"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5361,7 +5522,7 @@
           "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "dy2c4u"
+            "m8ifvw"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5375,7 +5536,7 @@
           "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "1qd49ri"
+            "giljl8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5389,7 +5550,7 @@
           "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "hizh7d"
+            "gip9jv"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5403,7 +5564,7 @@
           "target": "flightSqlSpec",
           "label": "serves",
           "relations": [
-            "kp8ex7"
+            "1j0n52a"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5417,7 +5578,7 @@
           "target": "openCypherSpec",
           "label": "serves",
           "relations": [
-            "v24uyu"
+            "pxfwo"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5696,6 +5857,7 @@
           "outEdges": [
             "ii5wx0",
             "1sia3qi",
+            "1wqw7ey",
             "u9bajv"
           ],
           "title": "Unity Catalog (OSS)",
@@ -5738,7 +5900,8 @@
           "inEdges": [],
           "outEdges": [
             "8koh3a",
-            "k5bifc"
+            "k5bifc",
+            "11wkmug"
           ],
           "title": "mangrove",
           "modelRef": "mangrove",
@@ -6759,7 +6922,8 @@
             "1bpfu9k"
           ],
           "outEdges": [
-            "8o013o"
+            "8o013o",
+            "79pyd0"
           ],
           "title": "Unity Catalog Spark connector",
           "modelRef": "unityCatalogSpark",
@@ -6912,7 +7076,8 @@
             "nnjch2"
           ],
           "outEdges": [
-            "1est51s"
+            "1est51s",
+            "8to9rk"
           ],
           "title": "DuckDB unity_catalog extension",
           "modelRef": "duckdbUnityCatalog",
@@ -7266,6 +7431,42 @@
           "kind": "openSpecification"
         },
         {
+          "id": "unityCatalogDeltaApiSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1wqw7ey",
+            "11wkmug",
+            "79pyd0",
+            "8to9rk"
+          ],
+          "outEdges": [
+            "107nx1g"
+          ],
+          "title": "Unity Catalog Delta API",
+          "modelRef": "unityCatalogDeltaApiSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open specification for catalog-managed Delta tables over REST: an engine\nnegotiates the protocol version, stages and creates a table with the\ntable features the catalog requires, and commits through intent-based\nupdates guarded by preconditions, all or nothing."
+          },
+          "tags": [
+            "public"
+          ],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://github.com/unitycatalog/unitycatalog/blob/main/spec/protocols/ManagedDeltaTablesSpec.md"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
           "id": "icebergSpec",
           "parent": null,
           "level": 0,
@@ -7499,6 +7700,7 @@
             "1pfr91s",
             "1n3wkt1",
             "aqakf8",
+            "107nx1g",
             "lv7f45",
             "du97h0",
             "s3zh3y",
@@ -7551,7 +7753,7 @@
           }
         ]
       },
-      "hash": "PWJ338NBKJ7F4BAZG0L6FLaSsKCfrosr7obh81ahRPo"
+      "hash": "SOFwYtpiC5G8ugzA61bU4UbwCsKfO222VlokWq0_hWA"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -9902,13 +10104,27 @@
           "kind": "specifies"
         },
         {
+          "id": "15hw9vd",
+          "parent": null,
+          "source": "unityCatalogDeltaApiSpec",
+          "target": "lakehouse.catalog",
+          "label": "specifies catalog-managed Delta tables",
+          "relations": [
+            "zzte6x"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
           "id": "dton7c",
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse.catalog",
           "label": null,
           "relations": [
-            "1f35n4o"
+            "1apclz0"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9922,7 +10138,7 @@
           "target": "lakehouse.sharing",
           "label": null,
           "relations": [
-            "kghz2s"
+            "lbegwj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9936,7 +10152,7 @@
           "target": "lakehouse.fileFormat",
           "label": null,
           "relations": [
-            "ky6dx1"
+            "15sa4ly"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9950,49 +10166,7 @@
           "target": "lakehouse.objectStorage",
           "label": null,
           "relations": [
-            "18xgmx4"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "specifies"
-        },
-        {
-          "id": "zbgc40",
-          "parent": null,
-          "source": "azureBlobSpec",
-          "target": "lakehouse.objectStorage",
-          "label": null,
-          "relations": [
-            "zz6iup"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "specifies"
-        },
-        {
-          "id": "15tgtjm",
-          "parent": null,
-          "source": "openLineageSpec",
-          "target": "lakehouse.lineage",
-          "label": "specifies the lineage event model",
-          "relations": [
-            "1s84pyp"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "specifies"
-        },
-        {
-          "id": "1g7d124",
-          "parent": null,
-          "source": "otlpSpec",
-          "target": "lakehouse.observability",
-          "label": "specifies telemetry export",
-          "relations": [
-            "xdetg1"
+            "1306qw7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10006,7 +10180,7 @@
           "target": "lakehouse.queryEngine",
           "label": "specifies remote query submission",
           "relations": [
-            "108iukr"
+            "113tb8j"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10020,7 +10194,7 @@
           "target": "lakehouse.queryEngine",
           "label": "specifies remote SQL",
           "relations": [
-            "1doc44x"
+            "17vnodu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10034,7 +10208,49 @@
           "target": "lakehouse.queryEngine",
           "label": "specifies graph queries",
           "relations": [
-            "4enfs4"
+            "drp41v"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "zbgc40",
+          "parent": null,
+          "source": "azureBlobSpec",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "fiqfqq"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "15tgtjm",
+          "parent": null,
+          "source": "openLineageSpec",
+          "target": "lakehouse.lineage",
+          "label": "specifies the lineage event model",
+          "relations": [
+            "cu7n3y"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "1g7d124",
+          "parent": null,
+          "source": "otlpSpec",
+          "target": "lakehouse.observability",
+          "label": "specifies telemetry export",
+          "relations": [
+            "115ttfj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10094,7 +10310,7 @@
           "target": "lakehouse.catalog",
           "label": null,
           "relations": [
-            "qc5n9j"
+            "6aiwyu"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10108,8 +10324,8 @@
           "target": "lakehouse.governance",
           "label": "[...]",
           "relations": [
-            "9ru1ym",
-            "fn47sd"
+            "zpklbq",
+            "1tm0jkc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10127,6 +10343,20 @@
           "label": null,
           "relations": [
             "1lfa77e"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1wqw7ey",
+          "parent": null,
+          "source": "unityCatalogServer",
+          "target": "unityCatalogDeltaApiSpec",
+          "label": null,
+          "relations": [
+            "gs7rf8"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10154,7 +10384,7 @@
           "target": "lakehouse.catalog",
           "label": null,
           "relations": [
-            "1h5ckjj"
+            "gjf0ah"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10168,7 +10398,21 @@
           "target": "unityCatalogSpec",
           "label": null,
           "relations": [
-            "nguklp"
+            "51pito"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "11wkmug",
+          "parent": null,
+          "source": "mangrove",
+          "target": "unityCatalogDeltaApiSpec",
+          "label": null,
+          "relations": [
+            "1nss1rf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10302,13 +10546,27 @@
           "kind": "consumes"
         },
         {
+          "id": "79pyd0",
+          "parent": null,
+          "source": "unityCatalogSpark",
+          "target": "unityCatalogDeltaApiSpec",
+          "label": "commits catalog-managed tables through",
+          "relations": [
+            "8hm1ak"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
           "id": "1pxiy78",
           "parent": null,
           "source": "icebergSparkRuntime",
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "gpq4gr"
+            "1uc2m1k"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10322,7 +10580,7 @@
           "target": "icebergSpec",
           "label": null,
           "relations": [
-            "subofq"
+            "1b0ge2f"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10336,7 +10594,7 @@
           "target": "icebergRestSpec",
           "label": "resolves tables via",
           "relations": [
-            "plfyck"
+            "14syw9x"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10350,7 +10608,7 @@
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "xarbac"
+            "11g3i85"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10364,7 +10622,7 @@
           "target": "deltaSpec",
           "label": null,
           "relations": [
-            "1cb9dmu"
+            "vygbqf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10378,7 +10636,7 @@
           "target": "lakehouse.queryEngine",
           "label": null,
           "relations": [
-            "177q0ea"
+            "1vg4mcl"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10392,7 +10650,21 @@
           "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "146h6rl"
+            "149xmo"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "8to9rk",
+          "parent": null,
+          "source": "duckdbUnityCatalog",
+          "target": "unityCatalogDeltaApiSpec",
+          "label": "commits catalog-managed tables through",
+          "relations": [
+            "hmng3s"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10406,7 +10678,7 @@
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "1n7t1fn"
+            "1fzed8l"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10420,7 +10692,7 @@
           "target": "deltaSpec",
           "label": "reads Delta tables and appends to them",
           "relations": [
-            "85qdux"
+            "1x7cizv"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10434,7 +10706,7 @@
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "rc9kn6"
+            "dlbdcc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10448,7 +10720,7 @@
           "target": "icebergSpec",
           "label": null,
           "relations": [
-            "bp4qul"
+            "10sc7lb"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10462,7 +10734,7 @@
           "target": "icebergRestSpec",
           "label": "resolves tables via",
           "relations": [
-            "15tsa7z"
+            "1xrk4kx"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10476,7 +10748,7 @@
           "target": "lakehouse.queryEngine",
           "label": null,
           "relations": [
-            "1g6otr9"
+            "190kpre"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10490,7 +10762,7 @@
           "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "dy2c4u"
+            "m8ifvw"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10504,7 +10776,7 @@
           "target": "lakehouse.queryEngine",
           "label": null,
           "relations": [
-            "dsht3f"
+            "11dsn2h"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10518,7 +10790,7 @@
           "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "1qd49ri"
+            "giljl8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10532,7 +10804,7 @@
           "target": "lakehouse.queryEngine",
           "label": null,
           "relations": [
-            "j2ukwk"
+            "1izv9h9"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10546,8 +10818,8 @@
           "target": "lakehouse.governance",
           "label": "[...]",
           "relations": [
-            "19ndtmo",
-            "5agmrs"
+            "5989vq",
+            "ponrbi"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10564,7 +10836,7 @@
           "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "hizh7d"
+            "gip9jv"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10578,7 +10850,7 @@
           "target": "flightSqlSpec",
           "label": "serves",
           "relations": [
-            "kp8ex7"
+            "1j0n52a"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10592,7 +10864,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes graph queries over tables",
           "relations": [
-            "mb3fik"
+            "1q95zi"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10606,7 +10878,7 @@
           "target": "openCypherSpec",
           "label": "serves",
           "relations": [
-            "v24uyu"
+            "pxfwo"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10977,7 +11249,7 @@
           "target": "datafusion",
           "label": null,
           "relations": [
-            "uu1mll"
+            "1ha98ff"
           ],
           "color": "gray",
           "line": "dashed",
@@ -11005,7 +11277,7 @@
           "target": "icebergSparkRuntime",
           "label": null,
           "relations": [
-            "dyck3w"
+            "1jrltl7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -11019,7 +11291,7 @@
           "target": "deltaSpark",
           "label": null,
           "relations": [
-            "187arjz"
+            "1kw3q8l"
           ],
           "color": "gray",
           "line": "dashed",
@@ -11033,7 +11305,7 @@
           "target": "duckdbUnityCatalog",
           "label": null,
           "relations": [
-            "1eqk7ug"
+            "1prf9dj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -11047,7 +11319,7 @@
           "target": "duckdbDelta",
           "label": null,
           "relations": [
-            "qh5e96"
+            "tgvsx4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -11061,7 +11333,7 @@
           "target": "duckdbIceberg",
           "label": null,
           "relations": [
-            "1bs2y5n"
+            "15w0621"
           ],
           "color": "gray",
           "line": "dashed",
@@ -11075,7 +11347,7 @@
           "target": "deltaRs",
           "label": "reads and writes Delta tables through",
           "relations": [
-            "jdal7j"
+            "q52ysd"
           ],
           "color": "gray",
           "line": "dashed",
@@ -11193,6 +11465,7 @@
             "1nv6pnd",
             "p21qxw",
             "1sia3qi",
+            "1wqw7ey",
             "u9bajv"
           ],
           "title": "Unity Catalog (OSS)",
@@ -11235,7 +11508,8 @@
           "inEdges": [],
           "outEdges": [
             "9wcsu3",
-            "k5bifc"
+            "k5bifc",
+            "11wkmug"
           ],
           "title": "mangrove",
           "modelRef": "mangrove",
@@ -12224,7 +12498,8 @@
             "1bpfu9k"
           ],
           "outEdges": [
-            "8o013o"
+            "8o013o",
+            "79pyd0"
           ],
           "title": "Unity Catalog Spark connector",
           "modelRef": "unityCatalogSpark",
@@ -12346,7 +12621,8 @@
             "nnjch2"
           ],
           "outEdges": [
-            "1est51s"
+            "1est51s",
+            "8to9rk"
           ],
           "title": "DuckDB unity_catalog extension",
           "modelRef": "duckdbUnityCatalog",
@@ -12700,6 +12976,42 @@
           "kind": "openSpecification"
         },
         {
+          "id": "unityCatalogDeltaApiSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1wqw7ey",
+            "11wkmug",
+            "79pyd0",
+            "8to9rk"
+          ],
+          "outEdges": [
+            "15hw9vd"
+          ],
+          "title": "Unity Catalog Delta API",
+          "modelRef": "unityCatalogDeltaApiSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open specification for catalog-managed Delta tables over REST: an engine\nnegotiates the protocol version, stages and creates a table with the\ntable features the catalog requires, and commits through intent-based\nupdates guarded by preconditions, all or nothing."
+          },
+          "tags": [
+            "public"
+          ],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://github.com/unitycatalog/unitycatalog/blob/main/spec/protocols/ManagedDeltaTablesSpec.md"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
           "id": "icebergSpec",
           "parent": null,
           "level": 0,
@@ -12913,16 +13225,17 @@
             "1qkmdr7",
             "67455y",
             "1h4glsp",
+            "15hw9vd",
             "dton7c",
             "g3s102",
             "1p0amr9",
             "12hek22",
-            "zbgc40",
-            "15tgtjm",
-            "1g7d124",
             "fkkefb",
             "1d5mogk",
             "2u2en7",
+            "zbgc40",
+            "15tgtjm",
+            "1g7d124",
             "1ylu6cf",
             "14s78i",
             "1nv6pnd",
@@ -13215,6 +13528,7 @@
             "zvpyvr",
             "1078ltw",
             "1h4glsp",
+            "15hw9vd",
             "dton7c",
             "1ylu6cf",
             "1nv6pnd",
@@ -13424,7 +13738,7 @@
           }
         ]
       },
-      "hash": "83HZRA3FejRAgdbt2KmGExPSoIF5_Br6yX4SCY1Db7g"
+      "hash": "ocV0kzfyv3S1pDU48rIau_mECaGMpOQRXKAfkOXiUgc"
     },
     "concernMatrix": {
       "_type": "element",
@@ -14880,7 +15194,7 @@
           "target": "lakehouse.namespace",
           "label": null,
           "relations": [
-            "1idfjuv"
+            "v8gsh9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14894,7 +15208,7 @@
           "target": "lakehouse.table",
           "label": null,
           "relations": [
-            "nokt0b"
+            "vxkng3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14908,7 +15222,7 @@
           "target": "lakehouse.sqlView",
           "label": null,
           "relations": [
-            "mgfxkc"
+            "1ckus4v"
           ],
           "color": "gray",
           "line": "dashed",

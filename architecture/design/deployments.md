@@ -17,8 +17,8 @@ Inside the trusted boundary:
 | **hydrofoil** | service | `hydrofoil` | The catalog-native query engine; enforces full FGAC in-plan, embedding breakwater's decide/enforce split. |
 | **mangrove** | service | `mangrove` | Governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check. |
 | **headwaters** | service | `headwaters` | Captures column-level lineage at planning time. Its dynamic lineage / taint input to policy decisions is designed, not built. |
-| Object storage | datastore | `lakehouse.objectStorage` | S3-compatible storage for table files. |
-| Postgres | datastore | — | Relational store backing the catalog and lineage services. |
+| Object storage | datastore | — | S3-compatible storage for table files. |
+| Postgres | datastore | `postgresql` | Relational store backing the catalog and lineage services. |
 
 Which zero-trust point each service plays is described in
 [`governance.md`](./governance.md).

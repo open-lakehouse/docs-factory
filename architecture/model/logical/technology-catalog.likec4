@@ -144,12 +144,42 @@ model {
     }
   }
   apacheSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
-  apacheSpark -[consumes]-> icebergRestSpec "reads via"
-  apacheSpark -[consumes]-> ucSpec "resolves tables via"
   apacheSpark -[implements]-> sparkConnectSpec "serves"
   apacheSpark -[operatesOn]-> lakehouse.namespace "creates and lists"
   apacheSpark -[operatesOn]-> lakehouse.table "queries and changes"
   apacheSpark -[operatesOn]-> lakehouse.metricView "defines and queries"
+
+  // Spark reaches catalogs and table formats through connectors that ship
+  // separately from Spark itself.
+  unityCatalogSpark = implementation "Unity Catalog Spark connector" {
+    #library #public
+
+    description "Spark catalog plugin that resolves tables, views, and credentials through a Unity Catalog server."
+    link https://github.com/unitycatalog/unitycatalog/tree/main/connectors/spark
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      package "io.unitycatalog:unitycatalog-spark"
+    }
+  }
+  unityCatalogSpark -[builtOn]-> apacheSpark
+  unityCatalogSpark -[consumes]-> ucSpec "resolves tables via"
+
+  icebergSparkRuntime = implementation "Iceberg Spark runtime" {
+    #library #public
+
+    description "Apache Iceberg's Spark integration: Iceberg tables and catalogs, including REST catalogs, in Spark SQL and DataFrames."
+    link https://iceberg.apache.org/docs/latest/spark-getting-started/
+
+    metadata {
+      sourceRepo "apache/iceberg"
+      package "org.apache.iceberg:iceberg-spark-runtime"
+    }
+  }
+  icebergSparkRuntime -[builtOn]-> apacheSpark
+  icebergSparkRuntime -[implements]-> icebergSpec
+  icebergSparkRuntime -[realizes]-> lakehouse.tableFormat
+  icebergSparkRuntime -[consumes]-> icebergRestSpec "resolves tables via"
 
   deltaRs = implementation "delta-rs" {
     #library #public
@@ -184,11 +214,53 @@ model {
     link https://duckdb.org
   }
   duckdb -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
-  duckdb -[consumes]-> deltaSpec "reads Delta tables via"
-  duckdb -[consumes]-> icebergRestSpec "reads Iceberg tables via"
-  duckdb -[consumes]-> ucSpec "resolves tables via"
   duckdb -[operatesOn]-> lakehouse.namespace "creates and lists"
   duckdb -[operatesOn]-> lakehouse.table "queries and changes"
+
+  // DuckDB extensions: each is a separate artifact DuckDB installs and loads.
+  duckdbUnityCatalog = implementation "DuckDB unity_catalog extension" {
+    #library #public
+
+    description "DuckDB extension that attaches a Unity Catalog server as a database and reads and writes its tables."
+    link https://duckdb.org/docs/current/core_extensions/unity_catalog.html
+
+    metadata {
+      sourceRepo "duckdb/unity_catalog"
+      package "unity_catalog"
+      maturity "nightly"
+    }
+  }
+  duckdbUnityCatalog -[builtOn]-> duckdb
+  duckdbUnityCatalog -[consumes]-> ucSpec "resolves tables via"
+
+  duckdbDelta = implementation "DuckDB delta extension" {
+    #library #public
+
+    description "DuckDB extension that reads Delta tables and appends to them."
+    link https://duckdb.org/docs/current/core_extensions/delta.html
+
+    metadata {
+      sourceRepo "duckdb/duckdb-delta"
+      package "delta"
+    }
+  }
+  duckdbDelta -[builtOn]-> duckdb
+  duckdbDelta -[consumes]-> deltaSpec "reads and appends to Delta tables via"
+
+  duckdbIceberg = implementation "DuckDB iceberg extension" {
+    #library #public
+
+    description "DuckDB extension that reads and writes Iceberg tables and attaches Iceberg REST catalogs."
+    link https://duckdb.org/docs/current/core_extensions/iceberg/overview.html
+
+    metadata {
+      sourceRepo "duckdb/duckdb-iceberg"
+      package "iceberg"
+    }
+  }
+  duckdbIceberg -[builtOn]-> duckdb
+  duckdbIceberg -[consumes]-> icebergSpec "reads and writes Iceberg tables via"
+  duckdbIceberg -[consumes]-> icebergRestSpec "resolves tables via"
 
   polars = implementation "Polars" {
     #library #public

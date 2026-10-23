@@ -65,12 +65,14 @@ interfaces:
     label: DuckDB · SQL
     package: duckdb
     model: duckdb
+    connectors: [duckdbDelta, duckdbUnityCatalog]
   # The same engine and SQL as duckdb-sql, so no table gives it a column; it
   # labels the tab and holds the claims of scripts that drive DuckDB from Python.
   duckdb-python:
     label: DuckDB · Python
     package: duckdb
     model: duckdb
+    connectors: [duckdbDelta]
 
 journeys:
   create.table:

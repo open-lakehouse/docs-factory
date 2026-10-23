@@ -11,6 +11,7 @@
       "package": "pyspark",
       "model": "deltaSpark",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -20,6 +21,7 @@
       "package": "pyspark",
       "model": "deltaSpark",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -29,6 +31,7 @@
       "package": "delta-spark",
       "model": "deltaSpark",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -38,6 +41,7 @@
       "package": "delta-spark",
       "model": "deltaSpark",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -47,6 +51,7 @@
       "package": "deltalake",
       "model": "deltaRs",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -56,6 +61,7 @@
       "package": "deltalake",
       "model": "deltaRs",
       "via": null,
+      "connectors": [],
       "viaVersion": null
     },
     {
@@ -65,6 +71,10 @@
       "package": "duckdb",
       "model": "duckdb",
       "via": null,
+      "connectors": [
+        "duckdbDelta",
+        "duckdbUnityCatalog"
+      ],
       "viaVersion": null
     },
     {
@@ -74,6 +84,9 @@
       "package": "duckdb",
       "model": "duckdb",
       "via": null,
+      "connectors": [
+        "duckdbDelta"
+      ],
       "viaVersion": null
     }
   ],
@@ -8233,8 +8246,8 @@
     },
     {
       "source": "duckdb",
-      "kind": "consumes",
-      "target": "deltaSpec",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
       "interfaces": [
         "duckdb-sql"
       ],
@@ -8249,9 +8262,9 @@
       ]
     },
     {
-      "source": "duckdb",
-      "kind": "operatesOn",
-      "target": "lakehouse.table",
+      "source": "duckdbDelta",
+      "kind": "consumes",
+      "target": "deltaSpec",
       "interfaces": [
         "duckdb-sql"
       ],

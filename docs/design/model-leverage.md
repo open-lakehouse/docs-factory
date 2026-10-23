@@ -115,7 +115,7 @@ internal: its deployment layer names our services and unbuilt designs.
 
 Every page-worthy element without an `explains:` page is a content request,
 then a `planned:` nav slot. An agent drafts the page from the element, its
-neighbors, its `canonicalDoc`, and upstream docs. The review app is the curation
+neighbors, its `designDoc`, and upstream docs. The review app is the curation
 gate, and approval sets `status: ready`. Pages get generated only where there is
 substance to say. The reverse check is as useful: flag prose claiming "X
 supports Y" when the model has no such edge, and edges no page mentions.

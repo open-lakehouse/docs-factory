@@ -10,7 +10,7 @@ model {
         other securables are organized and governed within.
       "
 
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata { designDoc "design/asset-kinds.md" }
     }
     namespace -[registeredIn]-> catalog
 
@@ -20,7 +20,7 @@ model {
       description "
         A table is the tabular asset kind: schema'd rows and columns with ACID table semantics.
       "
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata { designDoc "design/asset-kinds.md" }
     }
     table -[registeredIn]-> catalog "registered in, and commits coordinated by"
     table -[dependsOn]-> tableFormat "laid out in"
@@ -35,7 +35,7 @@ model {
         expands it at query time against the tables and other views it
         selects from.
       "
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata { designDoc "design/asset-kinds.md" }
     }
     sqlView -[registeredIn]-> catalog
     sqlView -[derivedFrom]-> table "selects from"
@@ -49,7 +49,7 @@ model {
         and the dimensions they can be grouped by, over a source view or table.
         Queries name a measure instead of re-writing its aggregation.
       "
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata { designDoc "design/asset-kinds.md" }
     }
     metricView -[registeredIn]-> catalog
     metricView -[derivedFrom]-> table "defines measures over"
@@ -67,7 +67,7 @@ model {
         stay at the path it names.
       "
       metadata {
-        canonicalDoc "design/asset-kinds.md"
+        designDoc "design/asset-kinds.md"
         aliases "directory"
       }
     }
@@ -81,7 +81,7 @@ model {
         A function is the executable asset kind: a registered, reusable unit of
         computation (a UDF or routine) that the query engine can resolve and run.
       "
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata { designDoc "design/asset-kinds.md" }
     }
     function -[registeredIn]-> catalog
     function -[dependsOn]-> queryEngine "resolved and run by"
@@ -93,7 +93,7 @@ model {
         A model is the ML asset kind: a trained machine-learning artifact with
         versions and lifecycle stages, tracked and governed as a catalogued asset.
       "
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata { designDoc "design/asset-kinds.md" }
     }
     mlModel -[registeredIn]-> catalog
     mlModel -[locatedAt]-> objectStorage
@@ -109,7 +109,7 @@ model {
 
       link https://agentskills.io
 
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata { designDoc "design/asset-kinds.md" }
     }
     agentSkill -[registeredIn]-> catalog
     agentSkill -[locatedAt]-> volume "keeps its files in"
@@ -123,7 +123,7 @@ model {
         identity, a service account) in the catalog. The catalog never hands it
         out: it uses it to ask the issuer for short-lived, narrowed credentials.
       "
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata { designDoc "design/asset-kinds.md" }
     }
     credential -[registeredIn]-> catalog
     credential -[dependsOn]-> credentialIssuer "exchanged for scoped credentials through"
@@ -136,7 +136,7 @@ model {
         the catalog can authorize access to anything under that path and vend
         credentials for it.
       "
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata { designDoc "design/asset-kinds.md" }
     }
     externalLocation -[registeredIn]-> catalog
     externalLocation -[locatedAt]-> objectStorage

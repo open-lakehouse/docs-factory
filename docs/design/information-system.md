@@ -110,7 +110,7 @@ tag unity-catalog
   └─ element: unityCatalogSpec                           (specification, stable id)
        ├─ externalRefs → unitycatalog.io, docs.unitycatalog.io   (expert sites)
        ├─ -[specifies]-> lakehouse.catalog      (capability, may churn)
-       │      └─ metadata.canonicalDoc → design/catalog-plane.md
+       │      └─ metadata.designDoc → design/catalog-plane.md
        │      └─ instanceOf (inverse) → mangrove (service, sourceRepo)
        └─ implemented by unityCatalogServer -[implements]-> unityCatalogSpec  (implementation)
 ```
@@ -189,22 +189,15 @@ the element, or a sibling `architecture/aliases.yaml` if the DSL is awkward). Th
 same alias set doubles as a **disambiguation dictionary** for agents (§7): `"uc"`,
 `"Unity Catalog"`, and `"the catalog"` all resolve to one canonical id.
 
-## 5. `canonicals.yaml`
+## 5. Element metadata (was `canonicals.yaml`)
 
-[`../../architecture/canonicals.yaml`](../../architecture/canonicals.yaml) is a small
-hand-curated registry mapping capability/service → design-doc → source-repo. Much of
-it overlaps `metadata.canonicalDoc` (logical elements) and `metadata.sourceRepo`
-(deployment services), both already in `model.json`; a residue (per-service
-`realizes` role lists, per-topology `trust`/`note`, prose notes) has no model home
-today.
-
-Because the site reads the model live rather than generating a join index, there is
-**no generated registry to subsume `canonicals.yaml` into**. It is therefore
-**kept** as-is: a live input to the `update-architecture` skill and a home for the
-residual, non-model-expressible facts. When it drifts from the `.likec4` model
-(historically it has run ahead of it), the fix is to reconcile the two — not to
-delete the file. If a future rework can express every residual field as model
-`metadata`/`instanceOf`, the file becomes deletable then; until then it stays.
+An element's design doc and source repo live in its own metadata in the model
+(`designDoc`, `sourceRepo`), and so in `model.json`. A hand-kept registry,
+`architecture/canonicals.yaml`, used to duplicate them. Its residue (per-service
+`realizes` lists, per-topology `trust`, prose notes) is now modeled too:
+implementations `realizes` what they provide, deployment nodes are `instanceOf`
+an implementation, a deployment environment carries `trust` metadata, and the
+notes are element descriptions. So the file was deleted (2026-10-23, ADR-0008).
 
 ## 6. UX surfaces (prioritized)
 
@@ -254,7 +247,7 @@ first-class consumers — the estate is itself about agentic workloads.
   artifact and the published machine surface.
 - **Structured grounding / retrieval.** The model's typed nodes and edges give agents
   *structured* retrieval, not just embedding similarity: a question resolves to a
-  capability + its `canonicalDoc` + the specs and implementations that realize it +
+  capability + its `designDoc` + the specs and implementations that realize it +
   related content + the right LikeC4 view to cite.
 - **Per-page machine context.** Each content page exposes its resolved references so
   an agent reading one page gets the typed neighborhood, not only prose.
@@ -262,7 +255,7 @@ first-class consumers — the estate is itself about agentic workloads.
   dictionary: `"uc"` / `"Unity Catalog"` / `"the catalog"` → one canonical id.
 - **Maturity-honest answers.** Maturity tags let downstream agents avoid asserting
   unshipped behavior as fact.
-- **Grounded citations & view selection.** Because nodes link to `canonicalDoc`,
+- **Grounded citations & view selection.** Because nodes link to `designDoc`,
   external sites, and `sourceRepo`, agents can answer with pinned citations and pick
   the correct diagram/view.
 - **Queryable surface (documented future option).** Expose the model via a small API
@@ -281,7 +274,7 @@ first-class consumers — the estate is itself about agentic workloads.
 - **Phase 2 — diagrams inline.** Add focused views, mini-map, dynamic-view
   explainers, topology toggle.
 - **Phase 3 — expand upward.** Expand references into capabilities/roles as the
-  logical layer settles; reconcile `canonicals.yaml` against the model as it drifts.
+  logical layer settles.
 - **Ratcheting.** At every phase the tiered gate (§3) reports where linkage is thin;
   correctness improves monotonically rather than arriving complete.
 
@@ -294,6 +287,3 @@ first-class consumers — the estate is itself about agentic workloads.
 - **Alias map home:** element `metadata` in the DSL vs a sibling
   `architecture/aliases.yaml` — depends on how cleanly the LikeC4 DSL expresses
   multi-valued alias metadata.
-- **`canonicals.yaml` residual:** can per-service `realizes` role lists and
-  per-topology `trust` eventually be fully modeled (making the file deletable), or is
-  a minimal residual file permanent?

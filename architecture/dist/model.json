@@ -152,14 +152,15 @@
     },
     "metadataKeys": [
       "aliases",
-      "canonicalDoc",
+      "designDoc",
       "language",
       "license",
       "maturity",
       "package",
       "sourceRepo",
       "trestleEdge",
-      "trestleModule"
+      "trestleModule",
+      "trust"
     ],
     "customColors": {}
   },
@@ -185,7 +186,7 @@
     },
     "lakehouse.namespace": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -206,7 +207,7 @@
     },
     "lakehouse.table": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -227,7 +228,7 @@
     },
     "lakehouse.sqlView": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -248,7 +249,7 @@
     },
     "lakehouse.metricView": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -269,7 +270,7 @@
     },
     "lakehouse.volume": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md",
+        "designDoc": "design/asset-kinds.md",
         "aliases": "directory"
       },
       "style": {
@@ -291,7 +292,7 @@
     },
     "lakehouse.function": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -312,7 +313,7 @@
     },
     "lakehouse.mlModel": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -333,7 +334,7 @@
     },
     "lakehouse.agentSkill": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -356,7 +357,7 @@
     },
     "lakehouse.credential": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -377,7 +378,7 @@
     },
     "lakehouse.externalLocation": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -434,7 +435,7 @@
     },
     "lakehouse.catalog": {
       "metadata": {
-        "canonicalDoc": "design/catalog-plane.md"
+        "designDoc": "design/catalog-plane.md"
       },
       "style": {
         "color": "primary"
@@ -459,7 +460,7 @@
     },
     "lakehouse.metadataStore": {
       "metadata": {
-        "canonicalDoc": "design/catalog-plane.md"
+        "designDoc": "design/catalog-plane.md"
       },
       "style": {
         "color": "primary"
@@ -478,9 +479,6 @@
       "id": "lakehouse.metadataStore"
     },
     "lakehouse.queryEngine": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -498,9 +496,6 @@
       "id": "lakehouse.queryEngine"
     },
     "lakehouse.interactiveDevelopment": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -515,9 +510,6 @@
       "id": "lakehouse.interactiveDevelopment"
     },
     "lakehouse.orchestration": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -532,9 +524,6 @@
       "id": "lakehouse.orchestration"
     },
     "lakehouse.tableFormat": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -552,9 +541,6 @@
       "id": "lakehouse.tableFormat"
     },
     "lakehouse.fileFormat": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -572,9 +558,6 @@
       "id": "lakehouse.fileFormat"
     },
     "lakehouse.objectStorage": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -593,7 +576,7 @@
     },
     "lakehouse.credentialIssuer": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "color": "primary"
@@ -613,7 +596,7 @@
     },
     "lakehouse.lineage": {
       "metadata": {
-        "canonicalDoc": "design/lineage-plane.md"
+        "designDoc": "design/lineage-plane.md"
       },
       "style": {
         "shape": "component",
@@ -631,7 +614,7 @@
     },
     "lakehouse.governance": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "shape": "component",
@@ -651,9 +634,6 @@
       "id": "lakehouse.governance"
     },
     "lakehouse.modelTracking": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -668,9 +648,6 @@
       "id": "lakehouse.modelTracking"
     },
     "lakehouse.sharing": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -685,9 +662,6 @@
       "id": "lakehouse.sharing"
     },
     "lakehouse.observability": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "shape": "component",
         "color": "amber"
@@ -704,7 +678,7 @@
     },
     "lakehouse.governance.authentication": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "shape": "component",
@@ -722,7 +696,7 @@
     },
     "lakehouse.governance.authorization": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "shape": "component",
@@ -740,7 +714,7 @@
     },
     "lakehouse.governance.fineGrainedAccess": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "shape": "component",
@@ -8162,9 +8136,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -8232,9 +8203,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         }
       ],
@@ -8496,9 +8464,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -8576,7 +8541,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "capability"
         },
@@ -8605,9 +8570,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         }
       ],
@@ -9396,9 +9358,6 @@
             "txt": "Notebooks and editors where people author code and run it in a live session."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9422,9 +9381,6 @@
             "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9455,9 +9411,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9489,7 +9442,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "links": [
             {
@@ -9522,7 +9475,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "kind": "capability"
         },
@@ -9551,9 +9504,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9581,9 +9531,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9611,9 +9558,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9641,7 +9585,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "capability"
         },
@@ -9664,9 +9608,6 @@
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9688,9 +9629,6 @@
             "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         }
       ],
@@ -13034,7 +12972,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern"
         },
@@ -13061,9 +12999,6 @@
             "txt": "Notebooks and editors where people author code and run it in a live session."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -13091,9 +13026,6 @@
             "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -13117,9 +13049,6 @@
             "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -13145,7 +13074,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
+            "designDoc": "design/lineage-plane.md"
           },
           "kind": "concern"
         },
@@ -13170,9 +13099,6 @@
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -13202,9 +13128,6 @@
             "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "concern"
         },
         {
@@ -13245,9 +13168,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -13285,7 +13205,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "links": [
             {
@@ -13319,7 +13239,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "kind": "capability"
         },
@@ -13356,9 +13276,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -13387,9 +13304,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -13423,9 +13337,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -13453,7 +13364,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "capability"
         },
@@ -14202,7 +14113,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
+            "designDoc": "design/lineage-plane.md"
           },
           "kind": "concern"
         },
@@ -14250,7 +14161,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern",
           "depth": 1
@@ -14280,9 +14191,6 @@
             "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "concern"
         },
         {
@@ -14316,7 +14224,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern"
         },
@@ -14346,7 +14254,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern"
         },
@@ -14373,7 +14281,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern"
         },
@@ -14401,9 +14309,6 @@
             "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -14432,7 +14337,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14463,7 +14368,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14494,7 +14399,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14523,7 +14428,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "links": [
             {
@@ -14559,7 +14464,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14594,7 +14499,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14626,7 +14531,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md",
+            "designDoc": "design/asset-kinds.md",
             "aliases": "directory"
           },
           "kind": "asset"
@@ -14658,7 +14563,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14693,7 +14598,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14727,7 +14632,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14762,9 +14667,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -14804,7 +14706,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "links": [
             {
@@ -15166,7 +15068,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15195,7 +15097,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15224,7 +15126,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15252,7 +15154,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15280,7 +15182,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md",
+            "designDoc": "design/asset-kinds.md",
             "aliases": "directory"
           },
           "kind": "asset"
@@ -15309,7 +15211,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15337,7 +15239,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15363,7 +15265,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "links": [
             {
@@ -15396,7 +15298,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15424,7 +15326,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         }
@@ -15851,7 +15753,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15879,7 +15781,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "links": [
             {
@@ -15914,7 +15816,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15942,7 +15844,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15971,7 +15873,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -16001,7 +15903,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -16033,7 +15935,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -16064,7 +15966,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md",
+            "designDoc": "design/asset-kinds.md",
             "aliases": "directory"
           },
           "kind": "asset"
@@ -16090,9 +15992,6 @@
             "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -16122,7 +16021,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -16147,9 +16046,6 @@
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -16181,7 +16077,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -16210,9 +16106,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -16239,7 +16132,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "capability"
         },
@@ -16276,7 +16169,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "links": [
             {
@@ -16308,9 +16201,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -16339,9 +16229,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         }
       ],
@@ -16432,6 +16319,10 @@
         "notation": "Deployment topology",
         "style": {},
         "kind": "environment",
+        "metadata": {
+          "designDoc": "design/deployments.md",
+          "trust": "trusted"
+        },
         "title": "trustedCompute",
         "id": "trustedCompute"
       },

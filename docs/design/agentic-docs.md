@@ -335,18 +335,17 @@ JSON-LD) navigate doc ↔ element ↔ source-repo. Depends on Phase 1 twins/llms
 link into; the projection script itself is independently testable.
 
 **Add** `site/scripts/build-model-projection.mjs` — reads
-[`architecture/dist/model.json`](../../architecture/dist/model.json) +
-[`architecture/canonicals.yaml`](../../architecture/canonicals.yaml) (`js-yaml` is
-already a dep) + a build-time binding pass over content frontmatter
+[`architecture/dist/model.json`](../../architecture/dist/model.json), whose element
+metadata carries each element's design doc and source repo, + a build-time binding pass over content frontmatter
 `explains`/`references` (mirroring
 [`site/src/explain-bindings.ts`](../../site/src/explain-bindings.ts), which is a
 *runtime* registry populated by `content.ts` — the build must re-derive it). Emits
 `dist/concepts.json`: per element `{id, title, description, kind, links,
-explainedBy: <route + .md>, referencedBy: [routes], canonicalDoc, sourceRepo,
+explainedBy: <route + .md>, referencedBy: [routes], designDoc, sourceRepo,
 relations: [{kind, target}]}`. Single artifact consumed by the twins' "Related
 concepts" block, the MCP `get_c4_context` tool, and JSON-LD enrichment.
 As built, `/concepts.json` is narrower: `#public`
-elements only, allow-listed fields, no `canonicalDoc`, `sourceRepo`, or
+elements only, allow-listed fields, no `designDoc`, `sourceRepo`, or
 `referencedBy` (see [`trestle-integration.md`](./trestle-integration.md) §8).
 
 **Enrich** `build-md-twins.mjs` — fill each page's "Related concepts" section from
@@ -464,8 +463,7 @@ Input→string, no tokio/fs/TLS/getrandom; disk I/O is a separate `std-io` featu
 not in the render path; the repo already builds WASM (`crates/olai-http-wasm`).
 `Selection` carries `capabilities: Vec<String>` + `modules` + `knob_overrides` —
 literally the "platform capabilities" input the tool takes. (Capability ids align
-with the logical capabilities in [`architecture/canonicals.yaml`](../../architecture/canonicals.yaml)
-and the LikeC4 model, so `get_c4_context` and `generate_stack_topology` speak the
+with the logical capabilities in the LikeC4 model, so `get_c4_context` and `generate_stack_topology` speak the
 same vocabulary.)
 
 - **Build:** the bindings exist: Trestle's `crates/stack-topology-wasm` exposes
@@ -597,8 +595,8 @@ Function untouched.
   everywhere)
 - `site/src/explain-bindings.ts` — runtime element→href registry; the build-time
   projection re-derives it
-- `architecture/dist/model.json` + `architecture/canonicals.yaml` — the C4 graph +
-  doc/repo bindings
+- `architecture/dist/model.json` — the C4 graph, with doc/repo bindings in element
+  metadata
 - `tools/docsnip/src/docsnip/scriptmeta.py` + `cli.py` — authoritative PEP 723
   parser; add `scripts --json`
 - `server/src/app.ts` — the review Function (reference structure for the new MCP

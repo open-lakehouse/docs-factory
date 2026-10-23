@@ -4,8 +4,10 @@
 // Conventions for using this vocabulary are ADR-0008.
 //
 // METADATA CONVENTIONS (free-form key/values on elements):
-//   canonicalDoc  — path (relative to architecture/) of the design doc for this
-//                   element.
+//   designDoc     — path (relative to architecture/) of the design doc about this
+//                   element. The reader-facing page is the one that `explains:` it.
+//   trust         — on a deployment environment: whether it sits inside the
+//                   trusted boundary ("trusted") or not.
 //   sourceRepo    — org/repo of an implementation or deployment service.
 //   license       — an implementation's SPDX license identifier; omitted for
 //                   managed services and closed-source software.

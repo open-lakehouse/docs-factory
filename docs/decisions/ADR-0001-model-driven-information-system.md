@@ -109,7 +109,9 @@ Concretely, as shipped:
   element → design-doc → source-repo registry and a live input to the
   `update-architecture` skill. (An earlier iteration expected it to be subsumed by a
   generated index; with the live-read design there is no such index, so the file is
-  kept and simply reconciled against the model when it drifts.)
+  kept and simply reconciled against the model when it drifts.) *Amended
+  2026-10-23: deleted. The model now carries all of it as element metadata
+  (`designDoc`, `sourceRepo`, `trust`) and edges; see "Current practice".*
 
 Content anchors first on **specifications and how-tos** — the stable, high-value
 surface — and expands into capabilities/roles as the logical layer settles. Partial
@@ -120,8 +122,9 @@ agent surface) is specified in [`../design/information-system.md`](../design/inf
 
 ## Current practice (2026-10)
 
-The Decision stands (hybrid join, live model in the review app, `canonicals.yaml`
-kept). Practice has moved in three places; do not read the "as shipped" bullets
+The Decision stands (hybrid join, live model in the review app), except that
+`canonicals.yaml` is gone: the model's element metadata (`designDoc`,
+`sourceRepo`) and edges carry what it held. Practice has moved in three places; do not read the "as shipped" bullets
 as today's product:
 
 - **No `/explain/<id>` pages.** Canonical URLs are `content/**/explanation/`

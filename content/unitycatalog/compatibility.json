@@ -89,7 +89,8 @@
       "model": "polars",
       "via": null,
       "integrations": [
-        "deltaRs"
+        "deltaRs",
+        "pyIceberg"
       ],
       "viaVersion": null
     },
@@ -100,7 +101,10 @@
       "package": "daft",
       "model": "daft",
       "via": null,
-      "integrations": [],
+      "integrations": [
+        "deltaRs",
+        "pyIceberg"
+      ],
       "viaVersion": null
     },
     {
@@ -1737,6 +1741,9 @@
         "client": {
           "consumes": [
             "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
@@ -1878,6 +1885,9 @@
         "client": {
           "consumes": [
             "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
@@ -1950,6 +1960,9 @@
         "client": {
           "consumes": [
             "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
@@ -2038,12 +2051,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -2135,12 +2153,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -2298,12 +2321,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -2461,12 +2489,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -2543,12 +2576,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -2625,12 +2663,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -2707,12 +2750,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -2766,13 +2814,14 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
-            "unityCatalogSpec"
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -2872,12 +2921,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -3105,12 +3159,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -3316,12 +3375,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -3428,6 +3492,9 @@
         "client": {
           "consumes": [
             "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
@@ -3561,6 +3628,9 @@
         "client": {
           "consumes": [
             "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
@@ -3693,12 +3763,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -3758,12 +3833,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -3803,12 +3883,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -3848,12 +3933,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -3893,12 +3983,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "unityCatalogSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -4095,6 +4190,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -4184,6 +4282,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -4273,6 +4374,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -4362,6 +4466,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -4451,6 +4558,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -4540,6 +4650,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -4629,6 +4742,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -4719,6 +4835,10 @@
           "consumes": [
             "icebergRestSpec",
             "unityCatalogSpec"
+          ],
+          "implements": [
+            "icebergSpec",
+            "deltaSpec"
           ]
         },
         "catalog": {
@@ -4981,6 +5101,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5003,6 +5126,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5025,6 +5151,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5074,6 +5203,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5201,6 +5333,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5288,6 +5423,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5314,6 +5452,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5340,6 +5481,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5366,6 +5510,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5392,6 +5539,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5418,6 +5568,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5444,6 +5597,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5466,6 +5622,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5488,6 +5647,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5514,6 +5676,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5536,6 +5701,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5562,6 +5730,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5588,6 +5759,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5614,6 +5788,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5640,6 +5817,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5666,6 +5846,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5692,6 +5875,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5718,6 +5904,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5744,6 +5933,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5770,6 +5962,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5796,6 +5991,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5848,6 +6046,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5874,6 +6075,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -5922,6 +6126,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -6049,6 +6256,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -6176,6 +6386,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -6303,6 +6516,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -6430,6 +6646,9 @@
         "client": {
           "consumes": [
             "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
           ]
         },
         "catalog": {
@@ -10463,6 +10682,21 @@
     },
     {
       "source": "deltaRs",
+      "kind": "implements",
+      "target": "deltaSpec",
+      "interfaces": [
+        "daft",
+        "pandas",
+        "polars"
+      ],
+      "journeys": [
+        "external.append",
+        "external.read",
+        "external.read-vended"
+      ]
+    },
+    {
+      "source": "deltaRs",
       "kind": "operatesOn",
       "target": "lakehouse.table",
       "interfaces": [
@@ -10472,6 +10706,29 @@
         "external.append",
         "external.read",
         "external.read-vended"
+      ]
+    },
+    {
+      "source": "deltaSpark",
+      "kind": "implements",
+      "target": "deltaSpec",
+      "interfaces": [
+        "spark"
+      ],
+      "journeys": [
+        "iceberg.join-delta",
+        "managed.append",
+        "managed.create",
+        "managed.create-as-select",
+        "managed.delete",
+        "managed.drop",
+        "managed.overwrite",
+        "managed.overwrite-partitions",
+        "managed.read",
+        "managed.replace",
+        "managed.replace-where",
+        "managed.time-travel",
+        "managed.update"
       ]
     },
     {
@@ -10510,6 +10767,19 @@
       ]
     },
     {
+      "source": "duckdbDelta",
+      "kind": "implements",
+      "target": "deltaSpec",
+      "interfaces": [
+        "duckdb"
+      ],
+      "journeys": [
+        "external.read",
+        "managed.append",
+        "managed.read"
+      ]
+    },
+    {
       "source": "duckdbIceberg",
       "kind": "consumes",
       "target": "icebergRestSpec",
@@ -10527,6 +10797,35 @@
         "iceberg.rename",
         "iceberg.schema-create",
         "iceberg.update"
+      ]
+    },
+    {
+      "source": "duckdbIceberg",
+      "kind": "implements",
+      "target": "icebergSpec",
+      "interfaces": [
+        "duckdb"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.update"
+      ]
+    },
+    {
+      "source": "duckdbUnityCatalog",
+      "kind": "consumes",
+      "target": "unityCatalogDeltaApiSpec",
+      "interfaces": [
+        "duckdb"
+      ],
+      "journeys": [
+        "managed.append",
+        "managed.read"
       ]
     },
     {
@@ -10563,6 +10862,25 @@
         "iceberg.read",
         "iceberg.rename",
         "iceberg.schema-create",
+        "iceberg.update"
+      ]
+    },
+    {
+      "source": "icebergSparkRuntime",
+      "kind": "implements",
+      "target": "icebergSpec",
+      "interfaces": [
+        "spark"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.join-delta",
+        "iceberg.merge",
+        "iceberg.read",
+        "iceberg.rename",
         "iceberg.update"
       ]
     },
@@ -10613,6 +10931,23 @@
         "iceberg.read",
         "iceberg.rename",
         "iceberg.schema-create",
+        "iceberg.update"
+      ]
+    },
+    {
+      "source": "pyIceberg",
+      "kind": "implements",
+      "target": "icebergSpec",
+      "interfaces": [
+        "pyiceberg"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.read",
+        "iceberg.rename",
         "iceberg.update"
       ]
     },
@@ -10952,6 +11287,28 @@
         "volume.update",
         "volume.view",
         "volume.write-files"
+      ]
+    },
+    {
+      "source": "unityCatalogSpark",
+      "kind": "consumes",
+      "target": "unityCatalogDeltaApiSpec",
+      "interfaces": [
+        "spark"
+      ],
+      "journeys": [
+        "managed.append",
+        "managed.create",
+        "managed.create-as-select",
+        "managed.delete",
+        "managed.drop",
+        "managed.overwrite",
+        "managed.overwrite-partitions",
+        "managed.read",
+        "managed.replace",
+        "managed.replace-where",
+        "managed.time-travel",
+        "managed.update"
       ]
     },
     {

@@ -11,19 +11,31 @@ spec: unityCatalogSpec
 # A journey's family supplies the asset it acts on and what its participants
 # must support; a journey can override either. Requirements name the contract a
 # participant needs, not an implementation (ADR-0004), so a script's environment
-# can supply any catalog that implements it.
+# can supply any catalog that implements it. A client implements the table
+# format it reads or writes and consumes the API it calls (ADR-0008).
 families:
-  table: &uc-table
+  table:
     asset: lakehouse.table
     requires: &uc
       client: { consumes: [unityCatalogSpec] }
       catalog: { implements: [unityCatalogSpec] }
-  external: *uc-table
-  managed: *uc-table
+  external:
+    asset: lakehouse.table
+    requires:
+      client: { consumes: [unityCatalogSpec], implements: [deltaSpec] }
+      catalog: { implements: [unityCatalogSpec] }
+  # Commits to a catalog-managed table go through the Unity Catalog Delta API.
+  managed:
+    asset: lakehouse.table
+    requires: &uc-managed
+      client:
+        consumes: [unityCatalogSpec, unityCatalogDeltaApiSpec]
+        implements: [deltaSpec]
+      catalog: { implements: [unityCatalogSpec, unityCatalogDeltaApiSpec] }
   iceberg:
     asset: lakehouse.table
     requires:
-      client: { consumes: [icebergRestSpec] }
+      client: { consumes: [icebergRestSpec], implements: [icebergSpec] }
       catalog: { implements: [icebergRestSpec] }
   view: { asset: lakehouse.sqlView, requires: *uc }
   metricview: { asset: lakehouse.metricView, requires: *uc }
@@ -76,11 +88,12 @@ interfaces:
     label: Polars
     package: polars
     model: polars
-    integrations: [deltaRs]
+    integrations: [deltaRs, pyIceberg]
   daft:
     label: Daft
     package: daft
     model: daft
+    integrations: [deltaRs, pyIceberg]
   # pandas reaches Unity Catalog tables through delta-rs's Python binding.
   pandas:
     label: pandas
@@ -125,7 +138,7 @@ journeys:
   external.read-vended:
     family: external
     requires:
-      client: { consumes: [unityCatalogSpec] }
+      client: { consumes: [unityCatalogSpec], implements: [deltaSpec] }
       catalog: { implements: [unityCatalogSpec] }
       storage: { implements: [s3Spec] }
     title: Read with vended S3 credentials
@@ -164,6 +177,9 @@ journeys:
     summary: Query a catalog-managed table as it was at an earlier version.
   managed.path-write:
     family: managed
+    requires:
+      client: { implements: [deltaSpec] }
+      catalog: { implements: [unityCatalogSpec, unityCatalogDeltaApiSpec] }
     title: Write to a managed table by path
     summary: Write to a catalog-managed table's storage location directly, bypassing the catalog.
   managed.alter-schema:
@@ -208,10 +224,14 @@ journeys:
     summary: Overwrite only the partitions of a catalog-managed table that the new rows write to.
   external.read-format:
     family: external
+    requires: *uc
     title: Read a Parquet, CSV, or JSON table
     summary: Read a non-Delta external table, using the format and location the catalog records.
   iceberg.schema-create:
     family: iceberg
+    requires: &iceberg-api
+      client: { consumes: [icebergRestSpec] }
+      catalog: { implements: [icebergRestSpec] }
     asset: lakehouse.namespace
     title: Create a schema through Iceberg REST
     summary: Create a schema as an Iceberg namespace, under the catalog the client names as its warehouse.
@@ -246,24 +266,29 @@ journeys:
   iceberg.join-delta:
     family: iceberg
     requires:
-      client: { consumes: [icebergRestSpec, unityCatalogSpec] }
+      client:
+        consumes: [icebergRestSpec, unityCatalogSpec]
+        implements: [icebergSpec, deltaSpec]
       catalog: { implements: [icebergRestSpec, unityCatalogSpec] }
     title: Join Delta and Iceberg tables
     summary: Query a Delta table and an Iceberg table from the same catalog together in one session.
   iceberg.namespace-list:
     family: iceberg
+    requires: *iceberg-api
     asset: lakehouse.namespace
     title: List schemas through Iceberg REST
     summary: List the schemas of the catalog the client names as its warehouse, as Iceberg namespaces.
     feature: { spec: icebergRestSpec, name: listNamespaces }
   iceberg.namespace-properties:
     family: iceberg
+    requires: *iceberg-api
     asset: lakehouse.namespace
     title: Set schema properties through Iceberg REST
     summary: Set or remove properties on a schema through Iceberg REST.
     feature: { spec: icebergRestSpec, name: updateProperties }
   iceberg.namespace-drop:
     family: iceberg
+    requires: *iceberg-api
     asset: lakehouse.namespace
     title: Drop a schema through Iceberg REST
     summary: Drop an empty schema through Iceberg REST.
@@ -395,6 +420,7 @@ journeys:
     feature: { spec: icebergSpec, name: multi-arg-transforms, since: v3 }
   iceberg.vended-credentials:
     family: iceberg
+    requires: *iceberg-api
     asset: lakehouse.credential
     title: Refresh vended credentials
     summary: Get new storage credentials for a table from the catalog when the first ones expire.
@@ -411,6 +437,7 @@ journeys:
     feature: { spec: icebergRestSpec, name: reportMetrics }
   iceberg.auth-token:
     family: iceberg
+    requires: *iceberg-api
     title: Authenticate with a token
     summary: Connect to the Iceberg REST API with a bearer token.
   iceberg.register:

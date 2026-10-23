@@ -984,7 +984,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -1130,7 +1130,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -1228,7 +1228,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -1310,7 +1310,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -1507,7 +1507,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -1644,7 +1644,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -1758,7 +1758,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -1840,7 +1840,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -1918,7 +1918,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -2016,7 +2016,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -2098,7 +2098,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -2223,7 +2223,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -2348,7 +2348,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -2446,7 +2446,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -2544,7 +2544,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -2642,7 +2642,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -2911,7 +2911,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -3017,7 +3017,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -3221,7 +3221,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -3343,7 +3343,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -3447,7 +3447,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -3668,7 +3668,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -3772,7 +3772,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -3886,7 +3886,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -3984,7 +3984,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4082,7 +4082,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4196,7 +4196,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4326,7 +4326,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4440,7 +4440,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4554,7 +4554,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4636,7 +4636,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4718,7 +4718,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4800,7 +4800,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4882,7 +4882,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -4932,7 +4932,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5030,7 +5030,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5128,7 +5128,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5226,7 +5226,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5324,7 +5324,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5422,7 +5422,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5520,7 +5520,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5618,7 +5618,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5716,7 +5716,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5782,7 +5782,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5880,7 +5880,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -5978,7 +5978,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6076,7 +6076,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6174,7 +6174,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6272,7 +6272,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6411,7 +6411,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6493,7 +6493,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6591,7 +6591,7 @@
       "feature": null,
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6714,7 +6714,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6768,7 +6768,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6822,7 +6822,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6876,7 +6876,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6930,7 +6930,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -6984,7 +6984,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7054,7 +7054,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7136,7 +7136,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7218,7 +7218,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7256,7 +7256,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7310,7 +7310,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7348,7 +7348,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7392,7 +7392,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7430,7 +7430,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7451,7 +7451,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7489,7 +7489,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7527,7 +7527,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7565,7 +7565,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7651,7 +7651,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7737,7 +7737,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7775,7 +7775,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7813,7 +7813,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7851,7 +7851,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7889,7 +7889,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7927,7 +7927,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -7971,7 +7971,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -8009,7 +8009,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -8047,7 +8047,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -8085,7 +8085,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -8106,7 +8106,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -8127,7 +8127,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -8148,7 +8148,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }
@@ -8169,7 +8169,7 @@
       },
       "requires": {
         "client": {
-          "consumes": [
+          "implements": [
             "deltaSpec"
           ]
         }

@@ -4,13 +4,13 @@ summary: Create, inspect, update, rename, and delete Unity Catalog catalogs and 
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.catalog
 status: ready
 ---
 
 Catalogs and schemas organize every asset in
-[Unity Catalog](model:unityCatalogOSS). A catalog is the top level of the three-level namespace. It contains schemas, and a schema contains tables,
+[Unity Catalog](model:unityCatalogServer). A catalog is the top level of the three-level namespace. It contains schemas, and a schema contains tables,
 volumes, functions, and registered models. For how these objects relate, see
 [Core concepts](../../explanation/uc-basics/index.md).
 

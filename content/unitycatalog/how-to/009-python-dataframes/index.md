@@ -4,14 +4,14 @@ summary: Find, read, and append to external Delta tables in Unity Catalog from P
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpec
   - polars
   - deltaRs
 status: ready
 ---
 
-Polars, Daft, and pandas can find [Unity Catalog](model:unityCatalogOSS)
+Polars, Daft, and pandas can find [Unity Catalog](model:unityCatalogServer)
 tables by name and read and append to them. Each library looks up the table,
 asks the server for temporary storage credentials, and then reads or writes the
 [Delta](model:deltaSpec) files directly in storage.

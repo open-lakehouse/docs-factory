@@ -4,7 +4,7 @@ summary: What the Unity Catalog OSS server implements per resource and API, its 
 diataxis: reference
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
 status: private
 ---
 

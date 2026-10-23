@@ -4,12 +4,12 @@ summary: Store Unity Catalog's metadata in PostgreSQL instead of the default in-
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.catalog
 status: ready
 ---
 
-A [Unity Catalog](model:unityCatalogOSS) server stores catalogs,
+A [Unity Catalog](model:unityCatalogServer) server stores catalogs,
 schemas, tables, volumes, functions, models, and credentials in a relational
 database. By default this is an H2 file inside the server, so the metadata is
 lost with the container. To keep it in PostgreSQL, mount one

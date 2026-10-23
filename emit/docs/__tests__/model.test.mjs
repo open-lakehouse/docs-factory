@@ -107,6 +107,6 @@ test("trestle refs link a node's concepts like model: links, public-only", () =>
 test("the committed trestle context maps the catalog role", () => {
   const refs = trestleRefs(loadModel(), () => null);
   expect(refs.roles.data_catalog).toEqual({ concept: "lakehouse.catalog", scope: "full" });
-  expect(refs.concepts.unityCatalogOSS.kindLabel).toBe("Implementation");
-  expect(refs.concepts.unityCatalogOSS.assets).toContain("lakehouse.table");
+  expect(refs.concepts.unityCatalogServer.kindLabel).toBe("Implementation");
+  expect(refs.concepts.unityCatalogServer.assets).toContain("lakehouse.table");
 });

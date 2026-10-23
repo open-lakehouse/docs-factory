@@ -4,7 +4,7 @@ summary: Start a local Unity Catalog server, browse its sample data, then create
 diataxis: tutorial
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
 status: ready
 ---
 

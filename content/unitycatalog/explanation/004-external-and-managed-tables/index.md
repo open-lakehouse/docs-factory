@@ -5,7 +5,7 @@ diataxis: explanation
 project: unitycatalog
 explains: lakehouse.table
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - unityCatalogSpec
   - deltaSpec
   - deltaSpark

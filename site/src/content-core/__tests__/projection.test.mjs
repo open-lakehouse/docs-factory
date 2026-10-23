@@ -27,7 +27,7 @@ const MODEL = {
       description: { txt: "Open catalog spec. More." },
       links: [{ url: "https://unitycatalog.io" }],
     },
-    unityCatalogOSS: {
+    unityCatalogServer: {
       kind: "implementation",
       title: "Unity Catalog (OSS)",
       tags: ["service", "public"],
@@ -43,12 +43,12 @@ const MODEL = {
     },
     b: {
       kind: "implements",
-      source: { model: "unityCatalogOSS" },
+      source: { model: "unityCatalogServer" },
       target: { model: "unityCatalogSpec" },
     },
     d: {
       kind: "operatesOn",
-      source: { model: "unityCatalogOSS" },
+      source: { model: "unityCatalogServer" },
       target: { model: "lakehouse.table" },
     },
     c: {
@@ -67,12 +67,12 @@ const PAGES = [
     "how-to",
     "list",
     { status: "ready", references: ["unityCatalogSpec", "lakehouse.table", "headwaters"] },
-    "Use [UC](model:unityCatalogOSS) and [hw](model:headwaters).",
+    "Use [UC](model:unityCatalogServer) and [hw](model:headwaters).",
   ),
 ];
 
 const COMPAT = {
-  interfaces: [{ key: "spark", model: "unityCatalogOSS" }],
+  interfaces: [{ key: "spark", model: "unityCatalogServer" }],
   journeys: [
     {
       id: "table.list",
@@ -104,14 +104,14 @@ const COMPAT = {
   ],
   verifiedEdges: [
     {
-      source: "unityCatalogOSS",
+      source: "unityCatalogServer",
       kind: "implements",
       target: "unityCatalogSpec",
       interfaces: ["spark"],
       journeys: ["table.list"],
     },
     {
-      source: "unityCatalogOSS",
+      source: "unityCatalogServer",
       kind: "operatesOn",
       target: "lakehouse.table",
       interfaces: ["spark"],
@@ -123,7 +123,12 @@ const COMPAT = {
 const REGISTRY = {
   "uc/compose.yaml": {
     services: [
-      { node: "unity-catalog", element: "unityCatalogOSS", role: "data_catalog", url: "http://x" },
+      {
+        node: "unity-catalog",
+        element: "unityCatalogServer",
+        role: "data_catalog",
+        url: "http://x",
+      },
       { node: "hw", element: "headwaters", role: "lineage", url: null },
     ],
   },
@@ -162,8 +167,8 @@ test("a draft explainer doesn't give an element a page", () => {
 
 test("edges need both ends public", () => {
   expect(p.edges().map((e) => `${e.source} ${e.kind} ${e.target}`)).toEqual([
-    "unityCatalogOSS implements unityCatalogSpec",
-    "unityCatalogOSS operatesOn lakehouse.table",
+    "unityCatalogServer implements unityCatalogSpec",
+    "unityCatalogServer operatesOn lakehouse.table",
     "unityCatalogSpec specifies lakehouse.catalog",
   ]);
 });
@@ -175,7 +180,7 @@ test("journeys count only working proofs on this site's ready pages", () => {
       title: "List tables",
       asset: "lakehouse.table",
       interface: "spark",
-      element: "unityCatalogOSS",
+      element: "unityCatalogServer",
       pages: [`${ORIGIN}/how-to/list#go`],
     },
   ]);
@@ -193,7 +198,7 @@ test("journeys count only working proofs on this site's ready pages", () => {
 
 test("environment services drop non-public elements", () => {
   expect(p.services("uc/compose.yaml").map((s) => [s.id, s.role, s.endpoint])).toEqual([
-    ["unityCatalogOSS", "data_catalog", "http://x"],
+    ["unityCatalogServer", "data_catalog", "http://x"],
   ]);
   expect(p.services("missing/compose.yaml")).toEqual([]);
 });
@@ -201,7 +206,7 @@ test("environment services drop non-public elements", () => {
 test("a page is about its concepts and assets, and mentions software and specs", () => {
   expect(p.pageConcepts(PAGES[2])).toEqual({
     about: ["lakehouse.table"],
-    mentions: ["unityCatalogSpec", "unityCatalogOSS"],
+    mentions: ["unityCatalogSpec", "unityCatalogServer"],
   });
   expect(p.pageConcepts(PAGES[0])).toEqual({ about: ["lakehouse.catalog"], mentions: [] });
   expect(p.pageConcepts(PAGES[1])).toEqual({ about: [], mentions: [] });

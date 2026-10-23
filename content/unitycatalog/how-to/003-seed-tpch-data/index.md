@@ -4,7 +4,7 @@ summary: Generate the eight-table TPC-H benchmark dataset with DuckDB, write it 
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.catalog
 status: ready
 ---
@@ -12,7 +12,7 @@ status: ready
 [TPC-H](https://www.tpc.org/tpch/) is the standard benchmark schema: eight
 related tables (`region`, `nation`, `supplier`, `customer`, `part`,
 `partsupp`, `orders`, and `lineitem`) modeling a wholesale supplier. Seeded into
-[Unity Catalog](model:unityCatalogOSS), it gives joins, access grants, and
+[Unity Catalog](model:unityCatalogServer), it gives joins, access grants, and
 cross-engine queries data that looks like a real business.
 
 This guide generates TPC-H with DuckDB, writes each table as Delta, and

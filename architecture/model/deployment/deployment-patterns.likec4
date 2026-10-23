@@ -18,7 +18,7 @@ deployment {
     cloud = environment "Cloud" {
       unityCatalog = service "Unity Catalog" {
         description "The catalog server, with authentication and authorization on. It keeps no catalog state of its own; its replicas share the signing keys in etc/conf and refresh their authorization policy from the database."
-        instanceOf unityCatalogOSS
+        instanceOf unityCatalogServer
       }
 
       metastore = datastore "PostgreSQL" {

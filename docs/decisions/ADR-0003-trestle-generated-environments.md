@@ -49,7 +49,7 @@ The design as built is
 
 **Ownership is split by fact type.** A Trestle module carries an optional
 `model:` ref naming the implementation it packages (`unity-catalog` →
-`unityCatalogOSS`). A role's contribution to a capability or concern, with its
+`unityCatalogServer`). A role's contribution to a capability or concern, with its
 `full`/`partial` scope, lives in docs-factory
 (`architecture/integrations/trestle.yaml`). Roles and modules with no mapping are
 reported, never filled with an invented capability.

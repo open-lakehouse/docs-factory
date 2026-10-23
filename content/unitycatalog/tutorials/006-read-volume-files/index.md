@@ -4,7 +4,7 @@ summary: Register a folder of documents as a Unity Catalog volume, then find it 
 diataxis: tutorial
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.catalog
 status: ready
 ---

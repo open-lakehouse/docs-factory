@@ -4,7 +4,7 @@ summary: How Unity Catalog organizes data and AI assets into a three-level names
 diataxis: explanation
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.namespace
   - lakehouse.table
   - lakehouse.volume

@@ -4,7 +4,7 @@ summary: Use the official Python SDK to write, read, and organize data.
 diataxis: tutorial
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.catalog
 status: ready
 ---
@@ -12,7 +12,7 @@ status: ready
 In this tutorial you build the same small catalog as in
 [Create your first catalog](../getting-started/index.md), this time from
 Python with [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/),
-the official SDK for the [Unity Catalog](model:unityCatalogOSS) REST API. You
+the official SDK for the [Unity Catalog](model:unityCatalogServer) REST API. You
 connect, create a catalog, a schema, and a table, see how the client reports
 an object that doesn't exist, and clean up. Applications, notebooks, and
 scripts use the same calls to manage catalog objects.

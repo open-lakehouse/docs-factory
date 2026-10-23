@@ -4,12 +4,12 @@ summary: Attach a Unity Catalog catalog in DuckDB, query its Delta tables with S
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpec
 status: ready
 ---
 
-DuckDB queries [Unity Catalog](model:unityCatalogOSS) tables with SQL and
+DuckDB queries [Unity Catalog](model:unityCatalogServer) tables with SQL and
 appends rows to them, including catalog-managed Delta tables. DuckDB's
 `unity_catalog` extension attaches a catalog as a DuckDB database, and its
 `delta` extension reads and writes the [Delta](model:deltaSpec) files. Appends

@@ -4,14 +4,14 @@ summary: Unity Catalog stores a Python function's signature, docstring, and body
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.function
   - unityCatalogAi
 status: draft
 ---
 
 A [registered function](model:lakehouse.function) in
-[Unity Catalog](model:unityCatalogOSS) is metadata plus source text: a
+[Unity Catalog](model:unityCatalogServer) is metadata plus source text: a
 three-part name, typed parameters, a return type, comments from the docstring,
 and the function's body. The server doesn't run it. A caller fetches the
 function by name and runs the body on its own machine. This page uses

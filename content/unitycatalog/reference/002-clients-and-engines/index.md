@@ -4,7 +4,7 @@ summary: Internal record of which tools connect to Unity Catalog OSS, through wh
 diataxis: reference
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - duckdb
   - polars
   - deltaRs

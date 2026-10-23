@@ -16,7 +16,7 @@ const context = {
   concepts: {
     "lakehouse.catalog": {},
     "lakehouse.governance.authorization": {},
-    unityCatalogOSS: { assets: ["lakehouse.table", "lakehouse.sqlView"] },
+    unityCatalogServer: { assets: ["lakehouse.table", "lakehouse.sqlView"] },
     "lakehouse.table": {},
     "lakehouse.sqlView": {},
   },
@@ -24,14 +24,14 @@ const context = {
 
 const node = (over) => ({
   id: "unity-catalog",
-  model: "unityCatalogOSS",
+  model: "unityCatalogServer",
   role: "data_catalog",
   ...over,
 });
 
 test("a node maps to its implementation and its role's concept", () => {
   expect(nodeConcepts(node(), context.roles)).toEqual({
-    name: "unityCatalogOSS",
+    name: "unityCatalogServer",
     role: { id: "lakehouse.catalog", scope: "full" },
   });
   expect(nodeConcepts(node({ role: "policy" }), context.roles).role).toEqual({
@@ -63,7 +63,7 @@ test("refs keep only public concepts, and drop roles pointing at the rest", () =
     },
     "lakehouse.table": { title: "Table", kind: "asset", summary: null, public: true },
     "lakehouse.sqlView": { title: "View", kind: "asset", summary: null, public: false },
-    unityCatalogOSS: {
+    unityCatalogServer: {
       title: "Unity Catalog (OSS)",
       kind: "implementation",
       summary: null,
@@ -79,7 +79,7 @@ test("refs keep only public concepts, and drop roles pointing at the rest", () =
   expect(Object.keys(refs.concepts)).toEqual([
     "lakehouse.catalog",
     "lakehouse.table",
-    "unityCatalogOSS",
+    "unityCatalogServer",
   ]);
   expect(refs.concepts["lakehouse.catalog"]).toEqual({
     title: "Catalog",
@@ -88,9 +88,9 @@ test("refs keep only public concepts, and drop roles pointing at the rest", () =
     summary: "Names data.",
     href: "/docs/explanation/catalog",
   });
-  expect(refs.concepts.unityCatalogOSS.href).toBeNull();
+  expect(refs.concepts.unityCatalogServer.href).toBeNull();
   // a non-public asset drops out of the list, and an empty list is left out
-  expect(refs.concepts.unityCatalogOSS.assets).toEqual(["lakehouse.table"]);
+  expect(refs.concepts.unityCatalogServer.assets).toEqual(["lakehouse.table"]);
   expect(refs.concepts["lakehouse.catalog"]).not.toHaveProperty("assets");
   expect(refs.concepts["lakehouse.table"].kindLabel).toBe("Asset kind");
   expect(refs.roles).toEqual({ data_catalog: { concept: "lakehouse.catalog", scope: "full" } });

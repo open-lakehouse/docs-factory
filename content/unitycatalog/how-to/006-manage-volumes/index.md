@@ -4,12 +4,12 @@ summary: Create external and managed Unity Catalog volumes, inspect, rename, and
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.catalog
 status: ready
 ---
 
-A [Unity Catalog](model:unityCatalogOSS) volume governs a directory of files
+A [Unity Catalog](model:unityCatalogServer) volume governs a directory of files
 that aren't a table: CSV drops, documents, images, model inputs. Like a table, a
 volume lives in a schema and has a three-level name, such as
 `retail.files.landing`.

@@ -1,7 +1,8 @@
 # The Trestle revision that renders the docs environments and the committed
-# catalog snapshot (architecture/dist/trestle-catalog.json): the merge commit
-# of trestle#154 (deploy step commands); `just trestle-catalog` installs it.
+# catalog snapshot (architecture/dist/trestle-catalog.json): the olai-trestle
+# v0.0.13 release, whose unity-catalog module names unityCatalogServer
+# (trestle#158); `just trestle-catalog` installs it.
 [trestle]
 git = "https://github.com/open-lakehouse/trestle"
-rev = "9c535a5ddc2d8f29ad23acc124e7e8af09ebd0d8"
+rev = "fa3c780cae8736d0e6083138016f24b9949d5d4c"
 package = "olai-trestle"

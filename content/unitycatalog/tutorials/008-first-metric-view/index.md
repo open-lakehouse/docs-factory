@@ -4,7 +4,7 @@ summary: Use Spark to define order KPIs once as a metric view in Unity Catalog, 
 diataxis: tutorial
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpark
 status: ready
 ---

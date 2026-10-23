@@ -4,7 +4,7 @@ summary: How Unity Catalog issues short-lived storage credentials scoped to one 
 diataxis: explanation
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.governance
   - lakehouse.credentialIssuer
   - lakehouse.objectStorage
@@ -15,7 +15,7 @@ status: ready
 Engines read and write a lakehouse's data directly in
 [object storage](model:lakehouse.objectStorage), so something has to give them
 access to that storage. With *credential vending*, the
-[Unity Catalog](model:unityCatalogOSS) server gives it. The server holds the
+[Unity Catalog](model:unityCatalogServer) server gives it. The server holds the
 one identity that can reach the storage. A client proves who it is to the
 catalog and asks for access to a single table, volume, model version, or path.
 If the catalog's grants allow it, the server returns a credential that works

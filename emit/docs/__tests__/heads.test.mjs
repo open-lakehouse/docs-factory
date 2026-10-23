@@ -47,7 +47,7 @@ const MODEL = {
       tags: ["public"],
       links: [{ url: "https://unitycatalog.io" }],
     },
-    unityCatalogOSS: {
+    unityCatalogServer: {
       kind: "implementation",
       title: "Unity Catalog (OSS)",
       tags: ["public"],
@@ -73,7 +73,7 @@ const projection = publicProjection({
   registry: {
     "unitycatalog/compose.yaml": {
       services: [
-        { element: "unityCatalogOSS", role: "data_catalog", url: "http://localhost:8080" },
+        { element: "unityCatalogServer", role: "data_catalog", url: "http://localhost:8080" },
         { element: "headwaters", role: "lineage", url: null },
       ],
     },
@@ -110,7 +110,7 @@ test("a how-to that runs an environment is a HowTo with its public tools", () =>
   expect(ld.tool).toEqual([
     {
       "@type": ["HowToTool", "SoftwareApplication"],
-      "@id": `${SET}#unityCatalogOSS`,
+      "@id": `${SET}#unityCatalogServer`,
       name: "Unity Catalog (OSS)",
       url: "https://github.com/unitycatalog/unitycatalog",
     },

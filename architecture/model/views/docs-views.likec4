@@ -10,7 +10,7 @@ views {
       for that table's location only.
     "
 
-    lakehouse.queryEngine -> unityCatalogOSS "GET /tables/{full_name} (bearer token)" {
+    lakehouse.queryEngine -> unityCatalogServer "GET /tables/{full_name} (bearer token)" {
       notes "
         **Resolve the name.** The client sends its own token, issued by your
         identity provider or the server, and asks for the table by its
@@ -19,14 +19,14 @@ views {
       "
     }
 
-    lakehouse.queryEngine -> unityCatalogOSS "POST /temporary-table-credentials { table_id, operation: READ }" {
+    lakehouse.queryEngine -> unityCatalogServer "POST /temporary-table-credentials { table_id, operation: READ }" {
       notes "
         **Ask for access.** The client names the table and what it wants to do:
         `READ`, or `READ_WRITE` to add or remove files.
       "
     }
 
-    unityCatalogOSS -> unityCatalogOSS "authorize: USE CATALOG, USE SCHEMA, SELECT" {
+    unityCatalogServer -> unityCatalogServer "authorize: USE CATALOG, USE SCHEMA, SELECT" {
       notes "
         **Decide.** The server checks the caller's privileges before anything
         reaches the cloud. A read needs `USE CATALOG`, `USE SCHEMA`, and
@@ -35,7 +35,7 @@ views {
       "
     }
 
-    unityCatalogOSS -> lakehouse.credentialIssuer "mint a credential for the table's location" {
+    unityCatalogServer -> lakehouse.credentialIssuer "mint a credential for the table's location" {
       notes "
         **Narrow.** The server finds the external location that contains the
         table's path and uses that location's storage credential. Only the
@@ -53,14 +53,14 @@ views {
       "
     }
 
-    lakehouse.credentialIssuer -> unityCatalogOSS "short-lived, scoped credential" {
+    lakehouse.credentialIssuer -> unityCatalogServer "short-lived, scoped credential" {
       notes "
         **One hour.** The new credential works only under the table's location,
         only for the requested operation, and expires within an hour.
       "
     }
 
-    unityCatalogOSS -> lakehouse.queryEngine "temporary credentials, expiration_time, url" {
+    unityCatalogServer -> lakehouse.queryEngine "temporary credentials, expiration_time, url" {
       notes "
         **Hand over.** The response carries the cloud-specific credential
         (AWS session keys, an Azure SAS, or a GCS OAuth token), the location it
@@ -83,7 +83,7 @@ views {
       "
     }
 
-    lakehouse.queryEngine -> unityCatalogOSS "renew before expiration_time" {
+    lakehouse.queryEngine -> unityCatalogServer "renew before expiration_time" {
       notes "
         **Renew.** A long job asks again before the credential expires, and the
         server repeats the authorization check. A grant revoked in the meantime

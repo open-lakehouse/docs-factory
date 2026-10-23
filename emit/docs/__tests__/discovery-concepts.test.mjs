@@ -16,7 +16,7 @@ const projection = publicProjection({
     elements: {
       "lakehouse.table": { kind: "asset", title: "Table", tags: ["public"] },
       unityCatalogSpec: { kind: "openSpecification", title: "UC", tags: ["public"] },
-      unityCatalogOSS: {
+      unityCatalogServer: {
         kind: "implementation",
         title: "UC OSS",
         tags: ["public"],
@@ -27,12 +27,12 @@ const projection = publicProjection({
     relations: {
       a: {
         kind: "implements",
-        source: { model: "unityCatalogOSS" },
+        source: { model: "unityCatalogServer" },
         target: { model: "unityCatalogSpec" },
       },
       b: {
         kind: "operatesOn",
-        source: { model: "unityCatalogOSS" },
+        source: { model: "unityCatalogServer" },
         target: { model: "lakehouse.table" },
       },
     },
@@ -43,13 +43,13 @@ const projection = publicProjection({
   registry: {
     "uc/compose.yaml": {
       services: [
-        { element: "unityCatalogOSS", role: "data_catalog", url: "http://localhost:8080" },
+        { element: "unityCatalogServer", role: "data_catalog", url: "http://localhost:8080" },
         { element: "rustfs", role: "object_store", url: null },
       ],
     },
   },
   compat: {
-    interfaces: [{ key: "spark", model: "unityCatalogOSS" }],
+    interfaces: [{ key: "spark", model: "unityCatalogServer" }],
     journeys: [
       {
         id: "table.list",
@@ -66,14 +66,14 @@ const projection = publicProjection({
     ],
     verifiedEdges: [
       {
-        source: "unityCatalogOSS",
+        source: "unityCatalogServer",
         kind: "implements",
         target: "unityCatalogSpec",
         interfaces: ["spark"],
         journeys: ["table.list"],
       },
       {
-        source: "unityCatalogOSS",
+        source: "unityCatalogServer",
         kind: "operatesOn",
         target: "lakehouse.table",
         interfaces: ["spark"],
@@ -105,11 +105,11 @@ test("concepts, edges, environments, and journeys", () => {
   expect(out.concepts.map((c) => c.id)).toEqual([
     "lakehouse.table",
     "rustfs",
-    "unityCatalogOSS",
+    "unityCatalogServer",
     "unityCatalogSpec",
   ]);
   expect(out.concepts[2]).toEqual({
-    id: "unityCatalogOSS",
+    id: "unityCatalogServer",
     kind: "implementation",
     title: "UC OSS",
     summary: null,
@@ -118,7 +118,7 @@ test("concepts, edges, environments, and journeys", () => {
   });
   expect(out.edges).toEqual([
     {
-      source: "unityCatalogOSS",
+      source: "unityCatalogServer",
       kind: "implements",
       title: null,
       target: "unityCatalogSpec",
@@ -127,7 +127,7 @@ test("concepts, edges, environments, and journeys", () => {
       journeys: [{ id: "table.list", interface: "spark", page: `${ORIGIN}/how-to/list#a` }],
     },
     {
-      source: "unityCatalogOSS",
+      source: "unityCatalogServer",
       kind: "operatesOn",
       title: null,
       target: "lakehouse.table",
@@ -142,7 +142,7 @@ test("concepts, edges, environments, and journeys", () => {
     archive: `${ORIGIN}/env/uc.tar.gz`,
     guide: `${ORIGIN}/how-to/run-local-server#s3`,
     services: [
-      { element: "unityCatalogOSS", role: "data_catalog", url: "http://localhost:8080" },
+      { element: "unityCatalogServer", role: "data_catalog", url: "http://localhost:8080" },
       { element: "rustfs", role: "object_store", url: null },
     ],
   });

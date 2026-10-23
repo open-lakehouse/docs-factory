@@ -4,7 +4,7 @@ summary: Keep metric-view definitions in YAML files, create them with Spark over
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpark
 status: ready
 ---

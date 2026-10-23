@@ -4,7 +4,7 @@ summary: Connect Spark, DuckDB, and PyIceberg to Unity Catalog's Iceberg REST AP
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - icebergRestSpec
   - icebergSpec
   - apacheSpark
@@ -12,7 +12,7 @@ references:
 status: ready
 ---
 
-[Unity Catalog](model:unityCatalogOSS) serves the
+[Unity Catalog](model:unityCatalogServer) serves the
 [Iceberg REST catalog API](model:icebergRestSpec), so any client that speaks
 it can create, write, read, rename, and drop [Iceberg](model:icebergSpec)
 tables in a Unity Catalog catalog. The server allocates storage for each new

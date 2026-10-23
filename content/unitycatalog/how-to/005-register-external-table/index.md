@@ -4,14 +4,14 @@ summary: Register a Delta table that already exists in storage as an external ta
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpec
 status: ready
 ---
 
 Registering a [Delta](model:deltaSpec) table that already exists in storage as
 an *external table* gives it a governed name in
-[Unity Catalog](model:unityCatalogOSS), so that every engine can find it as
+[Unity Catalog](model:unityCatalogServer), so that every engine can find it as
 `catalog.schema.table`. An external table is a catalog entry
 that records a table's name, columns, format, and storage location. The data
 stays where it is, owned by whatever process writes it. Unity Catalog never

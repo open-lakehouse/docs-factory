@@ -35,7 +35,11 @@ _PLAN: dict[str, Any] = {
                 "role": "object_store",
                 "summary": "S3.",
             },
-            {"id": "unity-catalog", "model": "unityCatalogOSS", "role": "data_catalog"},
+            {
+                "id": "unity-catalog",
+                "model": "unityCatalogServer",
+                "role": "data_catalog",
+            },
         ],
         "edges": [
             {
@@ -153,7 +157,7 @@ def test_fix_projects_nodes_edges_and_facts(tmp_path):
     assert 'unityCatalog = service "unitycatalog" {' in text
     assert 'postgres = datastore "db" {' in text
     assert 'rustfs = datastore "rustfs" {' in text
-    assert "instanceOf unityCatalogOSS" in text
+    assert "instanceOf unityCatalogServer" in text
     # every edge but `access`, each traced to its plan key
     assert (
         'ucAws.envoy -[flows]-> ucAws.unityCatalog ":8080 /api/2.1/unity-catalog, /unity-catalog"'
@@ -183,7 +187,7 @@ def test_fix_projects_nodes_edges_and_facts(tmp_path):
             },
             {
                 "node": "unity-catalog",
-                "element": "unityCatalogOSS",
+                "element": "unityCatalogServer",
                 "role": "data_catalog",
                 "url": "http://localhost:8080/api/2.1/unity-catalog",
             },
@@ -444,7 +448,7 @@ def test_several_candidates_are_reported_not_failed(tmp_path):
     assert fit.errors == []
     assert len(fit.reports) == 1
     assert (
-        "catalog implements unityCatalogSpec is ambiguous (otherCatalog, unityCatalogOSS)"
+        "catalog implements unityCatalogSpec is ambiguous (otherCatalog, unityCatalogServer)"
         in fit.reports[0]
     )
 

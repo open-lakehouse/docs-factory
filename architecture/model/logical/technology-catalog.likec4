@@ -366,7 +366,7 @@ model {
     #partial
   }
 
-  unityCatalogOSS = implementation "Unity Catalog (OSS)" {
+  unityCatalogServer = implementation "Unity Catalog (OSS)" {
     #service #public
     description "The open-source reference server implementing the Unity Catalog specification."
 
@@ -377,11 +377,11 @@ model {
       icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
     }
   }
-  unityCatalogOSS -[implements]-> unityCatalogSpec
-  unityCatalogOSS -[implements]-> icebergRestSpec "serves Iceberg tables through"
-  unityCatalogOSS -[realizes]-> lakehouse.catalog
-  unityCatalogOSS -[realizes]-> lakehouse.governance.authorization "grants + privileges on securables"
-  unityCatalogOSS -[realizes]-> lakehouse.governance.authentication "validates access tokens" {
+  unityCatalogServer -[implements]-> unityCatalogSpec
+  unityCatalogServer -[implements]-> icebergRestSpec "serves Iceberg tables through"
+  unityCatalogServer -[realizes]-> lakehouse.catalog
+  unityCatalogServer -[realizes]-> lakehouse.governance.authorization "grants + privileges on securables"
+  unityCatalogServer -[realizes]-> lakehouse.governance.authentication "validates access tokens" {
     #partial
   }
 

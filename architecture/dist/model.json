@@ -1425,7 +1425,7 @@
       "kind": "implementation",
       "id": "lakekeeper"
     },
-    "unityCatalogOSS": {
+    "unityCatalogServer": {
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1449,7 +1449,7 @@
       },
       "title": "Unity Catalog (OSS)",
       "kind": "implementation",
-      "id": "unityCatalogOSS"
+      "id": "unityCatalogServer"
     },
     "mangrove": {
       "notation": "Implementation (software / service)",
@@ -3684,68 +3684,68 @@
       "kind": "realizes",
       "id": "10xshn0"
     },
-    "1dfpof6": {
+    "1vvyq3s": {
       "line": "dotted",
       "title": "",
       "source": {
-        "model": "unityCatalogOSS"
+        "model": "unityCatalogServer"
       },
       "target": {
         "model": "unityCatalogSpec"
       },
       "kind": "implements",
-      "id": "1dfpof6"
+      "id": "1vvyq3s"
     },
-    "15jx5ya": {
+    "1rgdljc": {
       "line": "dotted",
       "title": "serves Iceberg tables through",
       "source": {
-        "model": "unityCatalogOSS"
+        "model": "unityCatalogServer"
       },
       "target": {
         "model": "icebergRestSpec"
       },
       "kind": "implements",
-      "id": "15jx5ya"
+      "id": "1rgdljc"
     },
-    "tcmz4n": {
+    "otcal9": {
       "line": "dotted",
       "title": "",
       "source": {
-        "model": "unityCatalogOSS"
+        "model": "unityCatalogServer"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
       "kind": "realizes",
-      "id": "tcmz4n"
+      "id": "otcal9"
     },
-    "rri4da": {
+    "11ujg38": {
       "line": "dotted",
       "title": "grants + privileges on securables",
       "source": {
-        "model": "unityCatalogOSS"
+        "model": "unityCatalogServer"
       },
       "target": {
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "rri4da"
+      "id": "11ujg38"
     },
-    "1evb6x2": {
+    "y1azbg": {
       "line": "dotted",
       "title": "validates access tokens",
       "tags": [
         "partial"
       ],
       "source": {
-        "model": "unityCatalogOSS"
+        "model": "unityCatalogServer"
       },
       "target": {
         "model": "lakehouse.governance.authentication"
       },
       "kind": "realizes",
-      "id": "1evb6x2"
+      "id": "y1azbg"
     },
     "1cppnb4": {
       "line": "dotted",
@@ -4621,15 +4621,15 @@
           ]
         },
         {
-          "id": "16rnjn2",
+          "id": "ii5wx0",
           "parent": null,
-          "source": "unityCatalogOSS",
+          "source": "unityCatalogServer",
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "tcmz4n",
-            "rri4da",
-            "1evb6x2"
+            "otcal9",
+            "11ujg38",
+            "y1azbg"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5072,13 +5072,13 @@
           "kind": "consumes"
         },
         {
-          "id": "gawsio",
+          "id": "1sia3qi",
           "parent": null,
-          "source": "unityCatalogOSS",
+          "source": "unityCatalogServer",
           "target": "unityCatalogSpec",
           "label": null,
           "relations": [
-            "1dfpof6"
+            "1vvyq3s"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5170,13 +5170,13 @@
           "kind": "implements"
         },
         {
-          "id": "okzuqp",
+          "id": "u9bajv",
           "parent": null,
-          "source": "unityCatalogOSS",
+          "source": "unityCatalogServer",
           "target": "icebergRestSpec",
           "label": "serves Iceberg tables through",
           "relations": [
-            "15jx5ya"
+            "1rgdljc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5920,18 +5920,18 @@
           "kind": "implementation"
         },
         {
-          "id": "unityCatalogOSS",
+          "id": "unityCatalogServer",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "16rnjn2",
-            "gawsio",
-            "okzuqp"
+            "ii5wx0",
+            "1sia3qi",
+            "u9bajv"
           ],
           "title": "Unity Catalog (OSS)",
-          "modelRef": "unityCatalogOSS",
+          "modelRef": "unityCatalogServer",
           "shape": "cylinder",
           "color": "muted",
           "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
@@ -7002,7 +7002,7 @@
             "1m7m43k",
             "156ihx2",
             "wv3hil",
-            "okzuqp"
+            "u9bajv"
           ],
           "outEdges": [
             "lv7f45"
@@ -7080,7 +7080,7 @@
             "1nrbqw7",
             "ralwkn",
             "8evphi",
-            "gawsio",
+            "1sia3qi",
             "k5bifc",
             "1v1swmf"
           ],
@@ -7184,7 +7184,7 @@
             "3a9x8p",
             "gj9sso",
             "p5ap0i",
-            "16rnjn2",
+            "ii5wx0",
             "8koh3a",
             "1sk4qke",
             "fo5h1l",
@@ -7272,7 +7272,7 @@
           }
         ]
       },
-      "hash": "oPoucjg5QmxgeCT3j9cFaYa_1jMo97f9Wm_Tas2sYzI"
+      "hash": "28HB_G7MDqJM_Zs_iB01GC44xvXg1Voffgq6Ec29B28"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -7398,7 +7398,7 @@
           "kind": "service",
           "color": "muted",
           "shape": "cylinder",
-          "modelRef": "unityCatalogOSS",
+          "modelRef": "unityCatalogServer",
           "description": {
             "txt": "Open-source Unity Catalog server; Databricks-shaped REST API."
           },
@@ -7549,7 +7549,7 @@
           "kind": "service",
           "color": "muted",
           "shape": "cylinder",
-          "modelRef": "unityCatalogOSS",
+          "modelRef": "unityCatalogServer",
           "description": {
             "txt": "Open-source Unity Catalog server; Databricks-shaped REST API."
           },
@@ -7699,7 +7699,7 @@
           "kind": "service",
           "color": "muted",
           "shape": "cylinder",
-          "modelRef": "unityCatalogOSS",
+          "modelRef": "unityCatalogServer",
           "description": {
             "txt": "Open-source Unity Catalog server; Databricks-shaped REST API."
           },
@@ -8197,7 +8197,7 @@
           "kind": "capability"
         },
         {
-          "id": "unityCatalogOSS",
+          "id": "unityCatalogServer",
           "parent": null,
           "level": 0,
           "children": [],
@@ -8214,7 +8214,7 @@
             "step-06"
           ],
           "title": "Unity Catalog (OSS)",
-          "modelRef": "unityCatalogOSS",
+          "modelRef": "unityCatalogServer",
           "shape": "cylinder",
           "color": "muted",
           "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
@@ -8306,7 +8306,7 @@
           "id": "step-01",
           "parent": null,
           "source": "lakehouse.queryEngine",
-          "target": "unityCatalogOSS",
+          "target": "unityCatalogServer",
           "label": "GET /tables/{full_name} (bearer token)",
           "relations": [],
           "color": "gray",
@@ -8322,7 +8322,7 @@
           "id": "step-02",
           "parent": null,
           "source": "lakehouse.queryEngine",
-          "target": "unityCatalogOSS",
+          "target": "unityCatalogServer",
           "label": "POST /temporary-table-credentials { table_id, operation: READ }",
           "relations": [],
           "color": "gray",
@@ -8337,8 +8337,8 @@
         {
           "id": "step-03",
           "parent": null,
-          "source": "unityCatalogOSS",
-          "target": "unityCatalogOSS",
+          "source": "unityCatalogServer",
+          "target": "unityCatalogServer",
           "label": "authorize: USE CATALOG, USE SCHEMA, SELECT",
           "relations": [],
           "color": "gray",
@@ -8353,7 +8353,7 @@
         {
           "id": "step-04",
           "parent": null,
-          "source": "unityCatalogOSS",
+          "source": "unityCatalogServer",
           "target": "lakehouse.credentialIssuer",
           "label": "mint a credential for the table's location",
           "relations": [],
@@ -8370,7 +8370,7 @@
           "id": "step-05",
           "parent": null,
           "source": "lakehouse.credentialIssuer",
-          "target": "unityCatalogOSS",
+          "target": "unityCatalogServer",
           "label": "short-lived, scoped credential",
           "relations": [],
           "color": "gray",
@@ -8386,7 +8386,7 @@
         {
           "id": "step-06",
           "parent": null,
-          "source": "unityCatalogOSS",
+          "source": "unityCatalogServer",
           "target": "lakehouse.queryEngine",
           "label": "temporary credentials, expiration_time, url",
           "relations": [],
@@ -8437,7 +8437,7 @@
           "id": "step-09",
           "parent": null,
           "source": "lakehouse.queryEngine",
-          "target": "unityCatalogOSS",
+          "target": "unityCatalogServer",
           "label": "renew before expiration_time",
           "relations": [],
           "color": "gray",
@@ -8462,7 +8462,7 @@
           }
         ]
       },
-      "hash": "dDMJhIoIF7Tsl2NRaE3GyWptEsonE5Wf8WJtas2ldtM"
+      "hash": "DN2BIw8Gi5QuVIDSTmL1gPltujSH2mCRWZlBor6H_Ws"
     },
     "ucDeploymentPatterns_hosted": {
       "_type": "deployment",
@@ -8630,7 +8630,7 @@
           "kind": "service",
           "color": "muted",
           "shape": "rectangle",
-          "modelRef": "unityCatalogOSS",
+          "modelRef": "unityCatalogServer",
           "description": {
             "txt": "The catalog server, with authentication and authorization on. It keeps no catalog state of its own; its replicas share the signing keys in etc/conf and refresh their authorization policy from the database."
           },
@@ -10288,13 +10288,13 @@
           "kind": "implements"
         },
         {
-          "id": "r7p7df",
+          "id": "1nv6pnd",
           "parent": null,
-          "source": "unityCatalogOSS",
+          "source": "unityCatalogServer",
           "target": "lakehouse.catalog",
           "label": null,
           "relations": [
-            "tcmz4n"
+            "otcal9"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10302,14 +10302,14 @@
           "kind": "realizes"
         },
         {
-          "id": "trju3y",
+          "id": "p21qxw",
           "parent": null,
-          "source": "unityCatalogOSS",
+          "source": "unityCatalogServer",
           "target": "lakehouse.governance",
           "label": "[...]",
           "relations": [
-            "rri4da",
-            "1evb6x2"
+            "11ujg38",
+            "y1azbg"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10320,13 +10320,13 @@
           ]
         },
         {
-          "id": "gawsio",
+          "id": "1sia3qi",
           "parent": null,
-          "source": "unityCatalogOSS",
+          "source": "unityCatalogServer",
           "target": "unityCatalogSpec",
           "label": null,
           "relations": [
-            "1dfpof6"
+            "1vvyq3s"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10334,13 +10334,13 @@
           "kind": "implements"
         },
         {
-          "id": "okzuqp",
+          "id": "u9bajv",
           "parent": null,
-          "source": "unityCatalogOSS",
+          "source": "unityCatalogServer",
           "target": "icebergRestSpec",
           "label": "serves Iceberg tables through",
           "relations": [
-            "15jx5ya"
+            "1rgdljc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11233,19 +11233,19 @@
           "kind": "implementation"
         },
         {
-          "id": "unityCatalogOSS",
+          "id": "unityCatalogServer",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "r7p7df",
-            "trju3y",
-            "gawsio",
-            "okzuqp"
+            "1nv6pnd",
+            "p21qxw",
+            "1sia3qi",
+            "u9bajv"
           ],
           "title": "Unity Catalog (OSS)",
-          "modelRef": "unityCatalogOSS",
+          "modelRef": "unityCatalogServer",
           "shape": "cylinder",
           "color": "muted",
           "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
@@ -12317,7 +12317,7 @@
             "1m7m43k",
             "156ihx2",
             "wv3hil",
-            "okzuqp"
+            "u9bajv"
           ],
           "outEdges": [
             "dton7c"
@@ -12395,7 +12395,7 @@
             "1nrbqw7",
             "ralwkn",
             "8evphi",
-            "gawsio",
+            "1sia3qi",
             "k5bifc",
             "1v1swmf"
           ],
@@ -12508,8 +12508,8 @@
             "1snzgy2",
             "1ylu6cf",
             "14s78i",
-            "r7p7df",
-            "trju3y",
+            "1nv6pnd",
+            "p21qxw",
             "9wcsu3",
             "1t5h2fk",
             "1d2b803",
@@ -12555,7 +12555,7 @@
           "children": [],
           "inEdges": [
             "14s78i",
-            "trju3y",
+            "p21qxw",
             "1dgfsbt",
             "1gqkm6c",
             "slqjcw"
@@ -12807,7 +12807,7 @@
             "1h4glsp",
             "dton7c",
             "1ylu6cf",
-            "r7p7df",
+            "1nv6pnd",
             "9wcsu3"
           ],
           "outEdges": [
@@ -13053,7 +13053,7 @@
           }
         ]
       },
-      "hash": "IoaqKgD59cD19S1JkfJdSPUyL-fVEQaxsQweiLZSICU"
+      "hash": "0z64gbehtGCoE57CDJKhdowqMYUos-5Scw7QmO8SQOk"
     },
     "concernMatrix": {
       "_type": "element",
@@ -15953,9 +15953,9 @@
         "title": "Amazon S3",
         "id": "ucHosted.cloud.storage"
       },
-      "ucHosted.cloud.unityCatalog.unityCatalogOSS": {
-        "id": "ucHosted.cloud.unityCatalog.unityCatalogOSS",
-        "element": "unityCatalogOSS",
+      "ucHosted.cloud.unityCatalog.unityCatalogServer": {
+        "id": "ucHosted.cloud.unityCatalog.unityCatalogServer",
+        "element": "unityCatalogServer",
         "style": {}
       },
       "ucHosted.cloud.metastore.postgresql": {
@@ -16161,9 +16161,9 @@
         "element": "rustfs",
         "style": {}
       },
-      "ucAws.unityCatalog.unityCatalogOSS": {
-        "id": "ucAws.unityCatalog.unityCatalogOSS",
-        "element": "unityCatalogOSS",
+      "ucAws.unityCatalog.unityCatalogServer": {
+        "id": "ucAws.unityCatalog.unityCatalogServer",
+        "element": "unityCatalogServer",
         "style": {}
       },
       "ucHybrid": {
@@ -16237,9 +16237,9 @@
         "element": "postgresql",
         "style": {}
       },
-      "ucHybrid.unityCatalog.unityCatalogOSS": {
-        "id": "ucHybrid.unityCatalog.unityCatalogOSS",
-        "element": "unityCatalogOSS",
+      "ucHybrid.unityCatalog.unityCatalogServer": {
+        "id": "ucHybrid.unityCatalog.unityCatalogServer",
+        "element": "unityCatalogServer",
         "style": {}
       },
       "ucLocal": {
@@ -16313,9 +16313,9 @@
         "element": "rustfs",
         "style": {}
       },
-      "ucLocal.unityCatalog.unityCatalogOSS": {
-        "id": "ucLocal.unityCatalog.unityCatalogOSS",
-        "element": "unityCatalogOSS",
+      "ucLocal.unityCatalog.unityCatalogServer": {
+        "id": "ucLocal.unityCatalog.unityCatalogServer",
+        "element": "unityCatalogServer",
         "style": {}
       },
       "unitycatalog": {
@@ -16343,9 +16343,9 @@
         "title": "unitycatalog",
         "id": "unitycatalog.unityCatalog"
       },
-      "unitycatalog.unityCatalog.unityCatalogOSS": {
-        "id": "unitycatalog.unityCatalog.unityCatalogOSS",
-        "element": "unityCatalogOSS",
+      "unitycatalog.unityCatalog.unityCatalogServer": {
+        "id": "unitycatalog.unityCatalog.unityCatalogServer",
+        "element": "unityCatalogServer",
         "style": {}
       }
     },

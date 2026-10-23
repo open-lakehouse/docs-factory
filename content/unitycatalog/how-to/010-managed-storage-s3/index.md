@@ -4,14 +4,14 @@ summary: Give Unity Catalog catalogs and schemas S3 storage roots under an exter
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.catalog
   - lakehouse.objectStorage
 status: ready
 ---
 
 A storage root on a catalog or schema tells
-[Unity Catalog](model:unityCatalogOSS) where to put managed tables and volumes.
+[Unity Catalog](model:unityCatalogServer) where to put managed tables and volumes.
 When you create a managed object, you don't give it a location. The server
 allocates one under the schema's storage root or, if the schema has none, under
 the catalog's. On S3, that root must lie inside an

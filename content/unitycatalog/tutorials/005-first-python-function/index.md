@@ -4,7 +4,7 @@ summary: Register a typed Python function in Unity Catalog, inspect what the cat
 diataxis: tutorial
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
 status: ready
 ---
 

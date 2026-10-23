@@ -27,6 +27,7 @@ model {
   // --- The reference open lakehouse: capabilities --------------------------
 
   lakehouse = capability "Open Lakehouse" {
+    summary "The reference open lakehouse: warehouse-style governance and query over open table formats on object storage."
     description "
       The reference architecture: warehouse-style governance and query over open
       table formats on object storage. Assembled from OSS foundations plus the

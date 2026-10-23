@@ -7,6 +7,9 @@
 //   canonicalDoc  — path (relative to architecture/) of the design doc for this
 //                   element.
 //   sourceRepo    — org/repo of an implementation or deployment service.
+//   license       — an implementation's SPDX license identifier; omitted for
+//                   managed services and closed-source software.
+//   language      — the language an implementation is written in.
 //   package       — the coordinate an implementation installs by: a Maven
 //                   artifact, a PyPI name, or a DuckDB extension name.
 //   maturity      — the release channel, when it isn't a stable release

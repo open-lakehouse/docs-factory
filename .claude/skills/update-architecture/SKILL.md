@@ -11,7 +11,7 @@ show it for human approval, then regenerate the committed artifacts. You never
 invent facts — you read them from the estate.
 
 **Scope:** `architecture/` holds *only* fact about the lakehouse we document (the
-model, its design docs, its ADRs, `estate.yml`, `glossary.md`, `canonicals.yaml`).
+model, its design docs, its ADRs, `estate.yml`, `glossary.md`).
 Decisions about the **docs factory itself** (site, emitters, review server, authoring
 pipeline) live in `docs/` and are **out of scope for this skill** — do not touch them.
 See `architecture/adr/ADR-0002` for the dividing line.
@@ -37,9 +37,9 @@ With no args, do a full reconciliation pass across all modeled repos.
    the source of truth, not `estate.yml`.
 3. **Ref-free.** Names, roles, dependency edges only — never a commit SHA or
    release tag.
-4. **Minimal patches.** Change the fewest lines. Preserve `metadata.canonicalDoc`
-   on logical elements and `metadata.sourceRepo` + GitHub `link` on deployment
-   services. Tags come first in an element body. `#public` is a publication
+4. **Minimal patches.** Change the fewest lines. Preserve `metadata.designDoc`
+   and an implementation's `sourceRepo` / `license` / `language` metadata and
+   GitHub `link`. Tags come first in an element body. `#public` is a publication
    decision, not a structural fact: never add or drop it while reconciling a
    repo; leave it to the PR that adds or removes the page citing the element.
 5. **Respect the layering.** The model is layered:
@@ -49,9 +49,9 @@ With no args, do a full reconciliation pass across all modeled repos.
      logical too but names specs and software, including our own first-party
      software (`headwaters`).
    - **Deployment (concrete):** configured occurrences. Our repos/services are
-     nodes that `instanceOf` their implementation where one is cataloged, else
-     the capability they play, in the authored `trustedCompute` reference
-     scenario. Generated docs environments (`deployment/generated/`,
+     nodes that `instanceOf` their implementation, never a capability (ADR-0008),
+     in the authored `trustedCompute` reference scenario; a node whose
+     implementation isn't recorded is an instance of nothing. Generated docs environments (`deployment/generated/`,
      `#generated`) come from a pinned Trestle plan: never hand-edit them; change
      `envs/<name>/env.toml` and run `just env-render <name>`.
    Implementation and specification edges are architectural relationships,
@@ -68,7 +68,6 @@ With no args, do a full reconciliation pass across all modeled repos.
 
 ## Phase 1 — Load current truth
 
-- Read `architecture/canonicals.yaml` (element → design-doc → source-repo registry).
 - Read the `architecture/model/**/*.likec4` files — the current model (grouped
   under `logical/`, `deployment/`, `views/`, with shared `specification.likec4` +
   `globals.likec4` at the root).
@@ -79,8 +78,8 @@ With no args, do a full reconciliation pass across all modeled repos.
 
 For the affected repo(s) (from `--repo`, `--summary`, or all in a full pass):
 
-- Read that sibling repo's `README`, `docs/`, and `docs/adr/` (paths are in
-  `canonicals.yaml` `source_repo` + the element's `sourceRepo` metadata).
+- Read that sibling repo's `README`, `docs/`, and `docs/adr/` (its repo is the
+  element's `sourceRepo` metadata).
 - Cross-check against `architecture/estate.yml` for coarse facts — but prefer
   the repo's own docs where they're more specific.
 - Determine the delta **and which layer it touches**: a new/changed *service or
@@ -101,19 +100,23 @@ discovers `**/*.likec4` recursively, so location is organization only.)
 | New/changed abstract **capability** or **concern** | `model/logical/capabilities.likec4` |
 | What a concern spans (`appliesTo` edge) | `model/logical/concerns.likec4` |
 | New/changed **specification** or **implementation** (OSS tech) | `model/logical/technology-catalog.likec4` |
-| New/changed **asset kind** (securable) or dependsOn/governs edge | `model/logical/assets.likec4` |
-| Capability-chain / realizes / vends / reads edge | `model/logical/relationships.likec4` |
+| New/changed **asset kind** (securable), its registeredIn / locatedAt / derivedFrom edges, or a governs edge | `model/logical/assets.likec4` |
+| Capability-chain edge, or a person's `uses` | `model/logical/relationships.likec4` |
 | New/changed **service, datastore, environment**, or `instanceOf` | `model/deployment/deployments.likec4` |
 | New element / deploymentNode / relationship kind, or tag | `model/specification.likec4` |
-| New logical / deployment / dynamic **view** | `model/views/logical-views.likec4` / `deployment-views.likec4` / `flows.likec4` |
+| New logical / deployment / dynamic **view** | `model/views/logical-views.likec4` / `deployment-views.likec4` / `docs-views.likec4` |
 
-- A new **service** goes in `deployments.likec4` as a `service` (or `browser` /
+- A new **service** goes in `deployments.likec4` as a `service` (or
   `datastore`) node inside the right environment, with `metadata` + `link`
-  **then** `instanceOf <logical element(s)>`. It realizes existing logical
-  capabilities — do **not** invent a new logical element for it unless it
-  introduces a genuinely new capability.
-- A new **capability** goes in the logical layer (tech-agnostic name, a
-  `metadata.canonicalDoc`), and is then realized by one or more services.
+  **then** `instanceOf <implementation>`. Its implementation realizes existing
+  logical capabilities — do **not** invent a new logical element for it unless
+  it introduces a genuinely new capability.
+- A new **capability** goes in the logical layer (tech-agnostic name, and a
+  `metadata.designDoc` when a design doc is about it), and is then realized by
+  one or more implementations.
+- Edges follow ADR-0008: one meaning per kind, no title that restates the
+  kind, and a plugin or library that adds a spec's support to an engine is
+  `host -[integrates]-> X` with the spec edge on X.
 
 A component that meets a capability or concern only together with another
 gets `#partial` on its `realizes` edge (`{ #partial }` in the edge body); never
@@ -131,7 +134,7 @@ trestle` reports: a dangling ref fails `docsnip check`, and a role whose
 implementation has no `realizes` / `implements` path to its target is a gap.
 
 If a design doc's scope changed, also propose the `design/*.md` edit and the
-`canonicals.yaml` update.
+`designDoc` metadata that points at it.
 
 **Present the proposed diff and stop for human approval before writing.**
 
@@ -139,11 +142,11 @@ If a design doc's scope changed, also propose the `design/*.md` edit and the
 
 After approval:
 
-1. Apply the `.likec4` (and any `design/*.md` / `canonicals.yaml`) edits.
+1. Apply the `.likec4` (and any `design/*.md`) edits.
 2. Run `just arch-refresh` (validate → export `dist/model.json` → build). Fix any
    validation errors. Common gotchas:
    - Tags come **first** in an element body; metadata keys are plain identifiers
-     (no dots/quotes) — use `canonicalDoc`, `sourceRepo`.
+     (no dots/quotes) — use `designDoc`, `sourceRepo`.
    - Inside a **deployment node**, `metadata`/`link` come **before** `instanceOf`.
    - `view of <el>` and `instanceOf <el>` need the **fully-qualified** logical path
      (e.g. `lakehouse.governance`).

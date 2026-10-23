@@ -27,6 +27,7 @@ model {
   // --- The reference open lakehouse: capabilities --------------------------
 
   lakehouse = capability "Open Lakehouse" {
+    summary "The reference open lakehouse: warehouse-style governance and query over open table formats on object storage."
     description "
       The reference architecture: warehouse-style governance and query over open
       table formats on object storage. Assembled from OSS foundations plus the
@@ -51,7 +52,7 @@ model {
       link https://www.openlakehouse.io/technologies/catalogs
 
       metadata {
-        canonicalDoc "design/catalog-plane.md"
+        designDoc "design/catalog-plane.md"
       }
     }
 
@@ -68,7 +69,7 @@ model {
         Files stay in object storage; the metadata store only records where
         they are.
       "
-      metadata { canonicalDoc "design/catalog-plane.md" }
+      metadata { designDoc "design/catalog-plane.md" }
     }
 
     queryEngine = capability "Query engine" {
@@ -83,7 +84,6 @@ model {
         credentials, policy enforcement, and lineage capture all attach to the
         plan at resolution / planning time rather than being bolted on after.
       "
-      metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     interactiveDevelopment = capability "Interactive development" {
@@ -96,7 +96,6 @@ model {
         Its notebooks are files, so the lakehouse governs them like any other
         file, in a volume, rather than as an asset kind of their own.
       "
-      metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     orchestration = capability "Orchestration" {
@@ -111,7 +110,6 @@ model {
         query engine, so governance and lineage attach to orchestrated runs the
         same way they do to ad-hoc queries.
       "
-      metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     tableFormat = capability "Open table format" {
@@ -128,7 +126,6 @@ model {
         peer specifications of this capability, implemented by concrete engines
         and libraries.
       "
-      metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     fileFormat = capability "File format" {
@@ -142,7 +139,6 @@ model {
         It sits beneath the table format: the table format tracks which files make
         up a table; the file format decides how each of those files is encoded.
       "
-      metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     objectStorage = capability "Object storage" {
@@ -157,7 +153,6 @@ model {
         It sits beneath the table format: object storage holds the bytes; the
         table format is what makes those bytes a governed, transactional table.
       "
-      metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     // How the issuer narrows a credential differs per cloud: AWS STS assumes
@@ -177,7 +172,7 @@ model {
         trusted identity, asks the issuer for a narrowed credential after an
         authorization check, and hands only that credential to the client.
       "
-      metadata { canonicalDoc "design/governance.md" }
+      metadata { designDoc "design/governance.md" }
     }
 
     lineage = concern "Lineage" {
@@ -189,7 +184,7 @@ model {
         Here it is captured at query planning time, so provenance is derived from
         the plan the engine is about to run rather than reconstructed after.
       "
-      metadata { canonicalDoc "design/lineage-plane.md" }
+      metadata { designDoc "design/lineage-plane.md" }
     }
 
     // The zero-trust points (PAP / PDP / PEP / PIP / PA) are prose in
@@ -204,7 +199,7 @@ model {
         It spans the lakehouse: a policy engine decides, and a trusted engine or
         gateway enforces the decision where the data flows.
       "
-      metadata { canonicalDoc "design/governance.md" }
+      metadata { designDoc "design/governance.md" }
 
       // Facets (ADR-0007): no single component meets governance, so each
       // facet is realized, often #partial, by the components that contribute.
@@ -215,7 +210,7 @@ model {
           service, or an agent, and passes it on as a token every later
           decision can trust.
         "
-        metadata { canonicalDoc "design/governance.md" }
+        metadata { designDoc "design/governance.md" }
       }
 
       authorization = concern "Authorization" {
@@ -224,7 +219,7 @@ model {
           Authorization answers 'may this principal do this to that asset?'
           from grants, privileges, and policies, and returns allow or deny.
         "
-        metadata { canonicalDoc "design/governance.md" }
+        metadata { designDoc "design/governance.md" }
       }
 
       fineGrainedAccess = concern "Fine-grained access" {
@@ -237,7 +232,7 @@ model {
           query can apply it, so it needs a trusted engine. A client that reads
           storage directly with a vended credential bypasses it.
         "
-        metadata { canonicalDoc "design/governance.md" }
+        metadata { designDoc "design/governance.md" }
       }
     }
 
@@ -252,7 +247,6 @@ model {
         assets too, catalogued and governed like tables rather than living in a
         separate, ungoverned silo.
       "
-      metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     sharing = capability "Sharing" {
@@ -268,7 +262,6 @@ model {
         surface a catalog can reuse to vend new resource kinds (e.g. agent
         skills) beyond the tabular set.
       "
-      metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     observability = concern "Observability" {
@@ -281,7 +274,6 @@ model {
         Like governance and lineage it attaches across the stack rather than
         sitting in the query path.
       "
-      metadata { canonicalDoc "design/reference-architecture.md" }
     }
   }
 }

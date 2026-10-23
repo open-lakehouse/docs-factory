@@ -81,9 +81,8 @@ architecture/
       logical-views.likec4      # logical views
       deployment-views.likec4   # one view per deployment environment
       blog-views.likec4         # blog-specific preview views (not the reference model)
-  design/                       # architecture-focused prose (canonicalDoc targets)
+  design/                       # architecture-focused prose (designDoc targets)
   adr/                          # architecture decision records
-  canonicals.yaml               # capability/concern/service -> design-doc -> source-repo registry
   estate.yml                   # ref-free repo facts
   glossary.md                  # canonical terminology
   conflicts.md                 # open-questions register

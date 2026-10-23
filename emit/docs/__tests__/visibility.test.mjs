@@ -24,7 +24,7 @@ const SITE = {
   title: "Example",
   hrefFor: (id) => (id?.area === "docs" ? `/${id.bucket}/${id.slug}` : null),
 };
-const LEAK = /content\/|architecture\/|envs\/|\.likec4|canonicalDoc|\.py\b/;
+const LEAK = /content\/|architecture\/|envs\/|\.likec4|designDoc|\.py\b/;
 
 // A and C public, B internal; B carries metadata and a description naming a repo path.
 const MODEL = {
@@ -40,14 +40,14 @@ const MODEL = {
       title: "Bravo",
       tags: ["service"],
       summary: { txt: "Internal service, see architecture/x.md." },
-      metadata: { canonicalDoc: "design/bravo.md" },
+      metadata: { designDoc: "design/bravo.md" },
       links: [{ url: "https://bravo.internal" }],
     },
     charlie: {
       kind: "openSpecification",
       title: "Charlie",
       tags: ["public"],
-      metadata: { canonicalDoc: "design/charlie.md" },
+      metadata: { designDoc: "design/charlie.md" },
     },
   },
   relations: {

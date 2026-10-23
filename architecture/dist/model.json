@@ -152,12 +152,15 @@
     },
     "metadataKeys": [
       "aliases",
-      "canonicalDoc",
+      "designDoc",
+      "language",
+      "license",
       "maturity",
       "package",
       "sourceRepo",
       "trestleEdge",
-      "trestleModule"
+      "trestleModule",
+      "trust"
     ],
     "customColors": {}
   },
@@ -171,6 +174,9 @@
           "url": "https://openlakehouse.io"
         }
       ],
+      "summary": {
+        "txt": "The reference open lakehouse: warehouse-style governance and query over open table formats on object storage."
+      },
       "description": {
         "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
       },
@@ -180,7 +186,7 @@
     },
     "lakehouse.namespace": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -201,7 +207,7 @@
     },
     "lakehouse.table": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -222,7 +228,7 @@
     },
     "lakehouse.sqlView": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -243,7 +249,7 @@
     },
     "lakehouse.metricView": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -264,7 +270,7 @@
     },
     "lakehouse.volume": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md",
+        "designDoc": "design/asset-kinds.md",
         "aliases": "directory"
       },
       "style": {
@@ -286,7 +292,7 @@
     },
     "lakehouse.function": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -307,7 +313,7 @@
     },
     "lakehouse.mlModel": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -328,7 +334,7 @@
     },
     "lakehouse.agentSkill": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -351,7 +357,7 @@
     },
     "lakehouse.credential": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -372,7 +378,7 @@
     },
     "lakehouse.externalLocation": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "designDoc": "design/asset-kinds.md"
       },
       "style": {
         "shape": "rectangle",
@@ -429,7 +435,7 @@
     },
     "lakehouse.catalog": {
       "metadata": {
-        "canonicalDoc": "design/catalog-plane.md"
+        "designDoc": "design/catalog-plane.md"
       },
       "style": {
         "color": "primary"
@@ -454,7 +460,7 @@
     },
     "lakehouse.metadataStore": {
       "metadata": {
-        "canonicalDoc": "design/catalog-plane.md"
+        "designDoc": "design/catalog-plane.md"
       },
       "style": {
         "color": "primary"
@@ -473,9 +479,6 @@
       "id": "lakehouse.metadataStore"
     },
     "lakehouse.queryEngine": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -493,9 +496,6 @@
       "id": "lakehouse.queryEngine"
     },
     "lakehouse.interactiveDevelopment": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -510,9 +510,6 @@
       "id": "lakehouse.interactiveDevelopment"
     },
     "lakehouse.orchestration": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -527,9 +524,6 @@
       "id": "lakehouse.orchestration"
     },
     "lakehouse.tableFormat": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -547,9 +541,6 @@
       "id": "lakehouse.tableFormat"
     },
     "lakehouse.fileFormat": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -567,9 +558,6 @@
       "id": "lakehouse.fileFormat"
     },
     "lakehouse.objectStorage": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -588,7 +576,7 @@
     },
     "lakehouse.credentialIssuer": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "color": "primary"
@@ -608,7 +596,7 @@
     },
     "lakehouse.lineage": {
       "metadata": {
-        "canonicalDoc": "design/lineage-plane.md"
+        "designDoc": "design/lineage-plane.md"
       },
       "style": {
         "shape": "component",
@@ -626,7 +614,7 @@
     },
     "lakehouse.governance": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "shape": "component",
@@ -646,9 +634,6 @@
       "id": "lakehouse.governance"
     },
     "lakehouse.modelTracking": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -663,9 +648,6 @@
       "id": "lakehouse.modelTracking"
     },
     "lakehouse.sharing": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "color": "primary"
       },
@@ -680,9 +662,6 @@
       "id": "lakehouse.sharing"
     },
     "lakehouse.observability": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
       "style": {
         "shape": "component",
         "color": "amber"
@@ -699,7 +678,7 @@
     },
     "lakehouse.governance.authentication": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "shape": "component",
@@ -717,7 +696,7 @@
     },
     "lakehouse.governance.authorization": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "shape": "component",
@@ -735,7 +714,7 @@
     },
     "lakehouse.governance.fineGrainedAccess": {
       "metadata": {
-        "canonicalDoc": "design/governance.md"
+        "designDoc": "design/governance.md"
       },
       "style": {
         "shape": "component",
@@ -832,7 +811,7 @@
         "public"
       ],
       "description": {
-        "txt": "Specification for a REST based Iceberg catalog"
+        "txt": "Open specification for an Iceberg catalog served over REST: engines use it\nto create, load, and commit Iceberg tables through any conforming catalog."
       },
       "title": "Iceberg REST Catalog",
       "kind": "openSpecification",
@@ -1007,6 +986,11 @@
       "id": "otlpSpec"
     },
     "datafusion": {
+      "metadata": {
+        "sourceRepo": "apache/datafusion",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1029,6 +1013,11 @@
       "id": "datafusion"
     },
     "apacheSpark": {
+      "metadata": {
+        "sourceRepo": "apache/spark",
+        "license": "Apache-2.0",
+        "language": "Scala"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1054,7 +1043,9 @@
     "unityCatalogSpark": {
       "metadata": {
         "sourceRepo": "unitycatalog/unitycatalog",
-        "package": "io.unitycatalog:unitycatalog-spark"
+        "package": "io.unitycatalog:unitycatalog-spark",
+        "license": "Apache-2.0",
+        "language": "Scala"
       },
       "notation": "Implementation (software / service)",
       "style": {
@@ -1080,7 +1071,9 @@
     "icebergSparkRuntime": {
       "metadata": {
         "sourceRepo": "apache/iceberg",
-        "package": "org.apache.iceberg:iceberg-spark-runtime"
+        "package": "org.apache.iceberg:iceberg-spark-runtime",
+        "license": "Apache-2.0",
+        "language": "Java"
       },
       "notation": "Implementation (software / service)",
       "style": {
@@ -1104,6 +1097,11 @@
       "id": "icebergSparkRuntime"
     },
     "deltaRs": {
+      "metadata": {
+        "sourceRepo": "delta-io/delta-rs",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1126,6 +1124,11 @@
       "id": "deltaRs"
     },
     "deltaSpark": {
+      "metadata": {
+        "sourceRepo": "delta-io/delta",
+        "license": "Apache-2.0",
+        "language": "Scala"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1148,6 +1151,11 @@
       "id": "deltaSpark"
     },
     "duckdb": {
+      "metadata": {
+        "sourceRepo": "duckdb/duckdb",
+        "license": "MIT",
+        "language": "C++"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1173,7 +1181,9 @@
       "metadata": {
         "sourceRepo": "duckdb/unity_catalog",
         "package": "unity_catalog",
-        "maturity": "nightly"
+        "maturity": "nightly",
+        "license": "MIT",
+        "language": "C++"
       },
       "notation": "Implementation (software / service)",
       "style": {
@@ -1199,7 +1209,9 @@
     "duckdbDelta": {
       "metadata": {
         "sourceRepo": "duckdb/duckdb-delta",
-        "package": "delta"
+        "package": "delta",
+        "license": "MIT",
+        "language": "C++"
       },
       "notation": "Implementation (software / service)",
       "style": {
@@ -1225,7 +1237,9 @@
     "duckdbIceberg": {
       "metadata": {
         "sourceRepo": "duckdb/duckdb-iceberg",
-        "package": "iceberg"
+        "package": "iceberg",
+        "license": "MIT",
+        "language": "C++"
       },
       "notation": "Implementation (software / service)",
       "style": {
@@ -1249,6 +1263,11 @@
       "id": "duckdbIceberg"
     },
     "polars": {
+      "metadata": {
+        "sourceRepo": "pola-rs/polars",
+        "license": "MIT",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1265,13 +1284,18 @@
         "public"
       ],
       "description": {
-        "txt": "Fast DataFrame library written in Rust with a Python API;"
+        "txt": "Fast DataFrame library written in Rust, with a Python API."
       },
       "title": "Polars",
       "kind": "implementation",
       "id": "polars"
     },
     "daft": {
+      "metadata": {
+        "sourceRepo": "Eventual-Inc/Daft",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1294,6 +1318,11 @@
       "id": "daft"
     },
     "pyIceberg": {
+      "metadata": {
+        "sourceRepo": "apache/iceberg-python",
+        "license": "Apache-2.0",
+        "language": "Python"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1316,6 +1345,11 @@
       "id": "pyIceberg"
     },
     "unityCatalogCli": {
+      "metadata": {
+        "sourceRepo": "unitycatalog/unitycatalog",
+        "license": "Apache-2.0",
+        "language": "Java"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1338,6 +1372,11 @@
       "id": "unityCatalogCli"
     },
     "unityCatalogPythonSdk": {
+      "metadata": {
+        "sourceRepo": "unitycatalog/unitycatalog",
+        "license": "Apache-2.0",
+        "language": "Python"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1360,6 +1399,11 @@
       "id": "unityCatalogPythonSdk"
     },
     "unityCatalogAi": {
+      "metadata": {
+        "sourceRepo": "unitycatalog/unitycatalog",
+        "license": "Apache-2.0",
+        "language": "Python"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1382,6 +1426,11 @@
       "id": "unityCatalogAi"
     },
     "unityCatalogLangChain": {
+      "metadata": {
+        "sourceRepo": "unitycatalog/unitycatalog",
+        "license": "Apache-2.0",
+        "language": "Python"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1404,6 +1453,11 @@
       "id": "unityCatalogLangChain"
     },
     "lakekeeper": {
+      "metadata": {
+        "sourceRepo": "lakekeeper/lakekeeper",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1426,6 +1480,11 @@
       "id": "lakekeeper"
     },
     "unityCatalogServer": {
+      "metadata": {
+        "sourceRepo": "unitycatalog/unitycatalog",
+        "license": "Apache-2.0",
+        "language": "Java"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1452,6 +1511,11 @@
       "id": "unityCatalogServer"
     },
     "mangrove": {
+      "metadata": {
+        "sourceRepo": "open-lakehouse/mangrove",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1473,6 +1537,11 @@
       "id": "mangrove"
     },
     "mlflow": {
+      "metadata": {
+        "sourceRepo": "mlflow/mlflow",
+        "license": "Apache-2.0",
+        "language": "Python"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1495,6 +1564,11 @@
       "id": "mlflow"
     },
     "hydrofoil": {
+      "metadata": {
+        "sourceRepo": "open-lakehouse/hydrofoil",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1516,6 +1590,11 @@
       "id": "hydrofoil"
     },
     "headwaters": {
+      "metadata": {
+        "sourceRepo": "open-lakehouse/headwaters",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1537,6 +1616,11 @@
       "id": "headwaters"
     },
     "authelia": {
+      "metadata": {
+        "sourceRepo": "authelia/authelia",
+        "license": "Apache-2.0",
+        "language": "Go"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1558,6 +1642,11 @@
       "id": "authelia"
     },
     "openPolicyAgent": {
+      "metadata": {
+        "sourceRepo": "open-policy-agent/opa",
+        "license": "Apache-2.0",
+        "language": "Go"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1579,6 +1668,11 @@
       "id": "openPolicyAgent"
     },
     "jaeger": {
+      "metadata": {
+        "sourceRepo": "jaegertracing/jaeger",
+        "license": "Apache-2.0",
+        "language": "Go"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1621,6 +1715,11 @@
       "id": "puppygraph"
     },
     "marimo": {
+      "metadata": {
+        "sourceRepo": "marimo-team/marimo",
+        "license": "Apache-2.0",
+        "language": "Python"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1642,6 +1741,11 @@
       "id": "marimo"
     },
     "rivers": {
+      "metadata": {
+        "sourceRepo": "ion-elgreco/rivers",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1663,6 +1767,11 @@
       "id": "rivers"
     },
     "envoy": {
+      "metadata": {
+        "sourceRepo": "envoyproxy/envoy",
+        "license": "Apache-2.0",
+        "language": "C++"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1685,6 +1794,11 @@
       "id": "envoy"
     },
     "postgresql": {
+      "metadata": {
+        "sourceRepo": "postgres/postgres",
+        "license": "PostgreSQL",
+        "language": "C"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1707,6 +1821,11 @@
       "id": "postgresql"
     },
     "rustfs": {
+      "metadata": {
+        "sourceRepo": "rustfs/rustfs",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1750,6 +1869,11 @@
       "id": "amazonS3"
     },
     "azurite": {
+      "metadata": {
+        "sourceRepo": "Azure/Azurite",
+        "license": "MIT",
+        "language": "TypeScript"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1792,6 +1916,11 @@
       "id": "azureBlobStorage"
     },
     "omnigent": {
+      "metadata": {
+        "sourceRepo": "omnigent-ai/omnigent",
+        "license": "Apache-2.0",
+        "language": "Python"
+      },
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -5609,6 +5738,11 @@
             "service",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "apache/spark",
+            "license": "Apache-2.0",
+            "language": "Scala"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5644,6 +5778,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "duckdb/duckdb",
+            "license": "MIT",
+            "language": "C++"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5673,12 +5812,17 @@
             "size": "md"
           },
           "description": {
-            "txt": "Fast DataFrame library written in Rust with a Python API;"
+            "txt": "Fast DataFrame library written in Rust, with a Python API."
           },
           "tags": [
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "pola-rs/polars",
+            "license": "MIT",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5712,6 +5856,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "Eventual-Inc/Daft",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5746,6 +5895,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "apache/iceberg-python",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5779,6 +5933,11 @@
             "client",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Java"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5812,6 +5971,11 @@
             "client",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5845,6 +6009,11 @@
             "client",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5878,6 +6047,11 @@
             "client",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5911,6 +6085,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "lakekeeper/lakekeeper",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5946,6 +6125,11 @@
             "service",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Java"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -5981,6 +6165,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "open-lakehouse/mangrove",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6013,6 +6202,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "mlflow/mlflow",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6047,6 +6241,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "open-lakehouse/hydrofoil",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6079,6 +6278,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "open-lakehouse/headwaters",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6110,6 +6314,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "authelia/authelia",
+            "license": "Apache-2.0",
+            "language": "Go"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6141,6 +6350,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "open-policy-agent/opa",
+            "license": "Apache-2.0",
+            "language": "Go"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6173,6 +6387,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "jaegertracing/jaeger",
+            "license": "Apache-2.0",
+            "language": "Go"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6236,6 +6455,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "marimo-team/marimo",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6267,6 +6491,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "ion-elgreco/rivers",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6297,6 +6526,11 @@
             "infra",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "envoyproxy/envoy",
+            "license": "Apache-2.0",
+            "language": "C++"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6329,6 +6563,11 @@
             "infra",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "postgres/postgres",
+            "license": "PostgreSQL",
+            "language": "C"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6362,6 +6601,11 @@
             "infra",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "rustfs/rustfs",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6426,6 +6670,11 @@
           "tags": [
             "infra"
           ],
+          "metadata": {
+            "sourceRepo": "Azure/Azurite",
+            "license": "MIT",
+            "language": "TypeScript"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6525,7 +6774,9 @@
           ],
           "metadata": {
             "sourceRepo": "unitycatalog/unitycatalog",
-            "package": "io.unitycatalog:unitycatalog-spark"
+            "package": "io.unitycatalog:unitycatalog-spark",
+            "license": "Apache-2.0",
+            "language": "Scala"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -6565,7 +6816,9 @@
           ],
           "metadata": {
             "sourceRepo": "apache/iceberg",
-            "package": "org.apache.iceberg:iceberg-spark-runtime"
+            "package": "org.apache.iceberg:iceberg-spark-runtime",
+            "license": "Apache-2.0",
+            "language": "Java"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -6602,6 +6855,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "delta-io/delta",
+            "license": "Apache-2.0",
+            "language": "Scala"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6639,7 +6897,9 @@
           "metadata": {
             "sourceRepo": "duckdb/unity_catalog",
             "package": "unity_catalog",
-            "maturity": "nightly"
+            "maturity": "nightly",
+            "license": "MIT",
+            "language": "C++"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -6678,7 +6938,9 @@
           ],
           "metadata": {
             "sourceRepo": "duckdb/duckdb-delta",
-            "package": "delta"
+            "package": "delta",
+            "license": "MIT",
+            "language": "C++"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -6718,7 +6980,9 @@
           ],
           "metadata": {
             "sourceRepo": "duckdb/duckdb-iceberg",
-            "package": "iceberg"
+            "package": "iceberg",
+            "license": "MIT",
+            "language": "C++"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -6757,6 +7021,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "delta-io/delta-rs",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -6823,6 +7092,11 @@
           "tags": [
             "library"
           ],
+          "metadata": {
+            "sourceRepo": "apache/datafusion",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -7016,7 +7290,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Specification for a REST based Iceberg catalog"
+            "txt": "Open specification for an Iceberg catalog served over REST: engines use it\nto create, load, and commit Iceberg tables through any conforming catalog."
           },
           "tags": [
             "public"
@@ -7211,7 +7485,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+            "txt": "The reference open lakehouse: warehouse-style governance and query over open table formats on object storage."
           },
           "tags": [],
           "links": [
@@ -7243,6 +7517,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "omnigent-ai/omnigent",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -7272,7 +7551,7 @@
           }
         ]
       },
-      "hash": "28HB_G7MDqJM_Zs_iB01GC44xvXg1Voffgq6Ec29B28"
+      "hash": "PWJ338NBKJ7F4BAZG0L6FLaSsKCfrosr7obh81ahRPo"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -7857,9 +8136,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -7927,9 +8203,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         }
       ],
@@ -8191,9 +8464,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -8229,6 +8499,11 @@
             "service",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Java"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -8266,7 +8541,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "capability"
         },
@@ -8295,9 +8570,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         }
       ],
@@ -9052,7 +9324,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+            "txt": "The reference open lakehouse: warehouse-style governance and query over open table formats on object storage."
           },
           "tags": [],
           "links": [
@@ -9086,9 +9358,6 @@
             "txt": "Notebooks and editors where people author code and run it in a live session."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9112,9 +9381,6 @@
             "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9145,9 +9411,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9179,7 +9442,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "links": [
             {
@@ -9212,7 +9475,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "kind": "capability"
         },
@@ -9241,9 +9504,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9271,9 +9531,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9301,9 +9558,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9331,7 +9585,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "capability"
         },
@@ -9354,9 +9608,6 @@
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -9378,13 +9629,10 @@
             "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         }
       ],
-      "hash": "6OKqM7XsmfeuCy8E5YPV42Xp7gy0ztoVbzcYbSV_C20"
+      "hash": "3WIFU1Ij9EAQ5ri5BGpsd7p3TGmgcvPSf0YinkyGPg8"
     },
     "technologyCatalog": {
       "_type": "element",
@@ -10925,6 +11173,11 @@
             "service",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "apache/spark",
+            "license": "Apache-2.0",
+            "language": "Scala"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -10960,6 +11213,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "duckdb/duckdb",
+            "license": "MIT",
+            "language": "C++"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -10989,12 +11247,17 @@
             "size": "md"
           },
           "description": {
-            "txt": "Fast DataFrame library written in Rust with a Python API;"
+            "txt": "Fast DataFrame library written in Rust, with a Python API."
           },
           "tags": [
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "pola-rs/polars",
+            "license": "MIT",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11028,6 +11291,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "Eventual-Inc/Daft",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11062,6 +11330,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "apache/iceberg-python",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11094,6 +11367,11 @@
             "client",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Java"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11126,6 +11404,11 @@
             "client",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11158,6 +11441,11 @@
             "client",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11190,6 +11478,11 @@
             "client",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11224,6 +11517,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "lakekeeper/lakekeeper",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11260,6 +11558,11 @@
             "service",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Java"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11295,6 +11598,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "open-lakehouse/mangrove",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11327,6 +11635,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "mlflow/mlflow",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11362,6 +11675,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "open-lakehouse/hydrofoil",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11394,6 +11712,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "open-lakehouse/headwaters",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11425,6 +11748,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "authelia/authelia",
+            "license": "Apache-2.0",
+            "language": "Go"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11456,6 +11784,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "open-policy-agent/opa",
+            "license": "Apache-2.0",
+            "language": "Go"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11488,6 +11821,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "jaegertracing/jaeger",
+            "license": "Apache-2.0",
+            "language": "Go"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11551,6 +11889,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "marimo-team/marimo",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11582,6 +11925,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "ion-elgreco/rivers",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11612,6 +11960,11 @@
             "infra",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "envoyproxy/envoy",
+            "license": "Apache-2.0",
+            "language": "C++"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11644,6 +11997,11 @@
             "infra",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "postgres/postgres",
+            "license": "PostgreSQL",
+            "language": "C"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11677,6 +12035,11 @@
             "infra",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "rustfs/rustfs",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11741,6 +12104,11 @@
           "tags": [
             "infra"
           ],
+          "metadata": {
+            "sourceRepo": "Azure/Azurite",
+            "license": "MIT",
+            "language": "TypeScript"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11840,7 +12208,9 @@
           ],
           "metadata": {
             "sourceRepo": "unitycatalog/unitycatalog",
-            "package": "io.unitycatalog:unitycatalog-spark"
+            "package": "io.unitycatalog:unitycatalog-spark",
+            "license": "Apache-2.0",
+            "language": "Scala"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -11880,7 +12250,9 @@
           ],
           "metadata": {
             "sourceRepo": "apache/iceberg",
-            "package": "org.apache.iceberg:iceberg-spark-runtime"
+            "package": "org.apache.iceberg:iceberg-spark-runtime",
+            "license": "Apache-2.0",
+            "language": "Java"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -11917,6 +12289,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "delta-io/delta",
+            "license": "Apache-2.0",
+            "language": "Scala"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -11954,7 +12331,9 @@
           "metadata": {
             "sourceRepo": "duckdb/unity_catalog",
             "package": "unity_catalog",
-            "maturity": "nightly"
+            "maturity": "nightly",
+            "license": "MIT",
+            "language": "C++"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -11993,7 +12372,9 @@
           ],
           "metadata": {
             "sourceRepo": "duckdb/duckdb-delta",
-            "package": "delta"
+            "package": "delta",
+            "license": "MIT",
+            "language": "C++"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -12033,7 +12414,9 @@
           ],
           "metadata": {
             "sourceRepo": "duckdb/duckdb-iceberg",
-            "package": "iceberg"
+            "package": "iceberg",
+            "license": "MIT",
+            "language": "C++"
           },
           "notation": "Implementation (software / service)",
           "links": [
@@ -12072,6 +12455,11 @@
             "library",
             "public"
           ],
+          "metadata": {
+            "sourceRepo": "delta-io/delta-rs",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -12138,6 +12526,11 @@
           "tags": [
             "library"
           ],
+          "metadata": {
+            "sourceRepo": "apache/datafusion",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -12331,7 +12724,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Specification for a REST based Iceberg catalog"
+            "txt": "Open specification for an Iceberg catalog served over REST: engines use it\nto create, load, and commit Iceberg tables through any conforming catalog."
           },
           "tags": [
             "public"
@@ -12537,7 +12930,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+            "txt": "The reference open lakehouse: warehouse-style governance and query over open table formats on object storage."
           },
           "tags": [],
           "links": [
@@ -12579,7 +12972,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern"
         },
@@ -12606,9 +12999,6 @@
             "txt": "Notebooks and editors where people author code and run it in a live session."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -12636,9 +13026,6 @@
             "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -12662,9 +13049,6 @@
             "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -12690,7 +13074,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
+            "designDoc": "design/lineage-plane.md"
           },
           "kind": "concern"
         },
@@ -12715,9 +13099,6 @@
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -12747,9 +13128,6 @@
             "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "concern"
         },
         {
@@ -12790,9 +13168,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -12830,7 +13205,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "links": [
             {
@@ -12864,7 +13239,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "kind": "capability"
         },
@@ -12901,9 +13276,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -12932,9 +13304,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -12968,9 +13337,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -12998,7 +13364,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "capability"
         },
@@ -13024,6 +13390,11 @@
           "tags": [
             "service"
           ],
+          "metadata": {
+            "sourceRepo": "omnigent-ai/omnigent",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
           "notation": "Implementation (software / service)",
           "links": [
             {
@@ -13053,7 +13424,7 @@
           }
         ]
       },
-      "hash": "0z64gbehtGCoE57CDJKhdowqMYUos-5Scw7QmO8SQOk"
+      "hash": "83HZRA3FejRAgdbt2KmGExPSoIF5_Br6yX4SCY1Db7g"
     },
     "concernMatrix": {
       "_type": "element",
@@ -13742,7 +14113,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
+            "designDoc": "design/lineage-plane.md"
           },
           "kind": "concern"
         },
@@ -13790,7 +14161,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern",
           "depth": 1
@@ -13820,9 +14191,6 @@
             "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "concern"
         },
         {
@@ -13856,7 +14224,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern"
         },
@@ -13886,7 +14254,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern"
         },
@@ -13913,7 +14281,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "concern"
         },
@@ -13941,9 +14309,6 @@
             "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -13972,7 +14337,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14003,7 +14368,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14034,7 +14399,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14063,7 +14428,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "links": [
             {
@@ -14099,7 +14464,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14134,7 +14499,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14166,7 +14531,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md",
+            "designDoc": "design/asset-kinds.md",
             "aliases": "directory"
           },
           "kind": "asset"
@@ -14198,7 +14563,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14233,7 +14598,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14267,7 +14632,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14302,9 +14667,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -14344,7 +14706,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "links": [
             {
@@ -14616,7 +14978,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Specification for a REST based Iceberg catalog"
+            "txt": "Open specification for an Iceberg catalog served over REST: engines use it\nto create, load, and commit Iceberg tables through any conforming catalog."
           },
           "tags": [
             "public"
@@ -14670,7 +15032,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+            "txt": "The reference open lakehouse: warehouse-style governance and query over open table formats on object storage."
           },
           "tags": [],
           "links": [
@@ -14706,7 +15068,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14735,7 +15097,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14764,7 +15126,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14792,7 +15154,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14820,7 +15182,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md",
+            "designDoc": "design/asset-kinds.md",
             "aliases": "directory"
           },
           "kind": "asset"
@@ -14849,7 +15211,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14877,7 +15239,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14903,7 +15265,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "links": [
             {
@@ -14936,7 +15298,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -14964,7 +15326,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         }
@@ -14981,7 +15343,7 @@
           }
         ]
       },
-      "hash": "vJCQNE1B076ssLLbFL8qeOXHcpz4uGBhfjr19Xz6rtM"
+      "hash": "jnm5J3wxL9GMG-stKaQe01epixAhmgipVGsyXByuz1w"
     },
     "assetCapabilities": {
       "_type": "element",
@@ -15391,7 +15753,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15419,7 +15781,7 @@
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "links": [
             {
@@ -15454,7 +15816,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15482,7 +15844,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15511,7 +15873,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15541,7 +15903,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15573,7 +15935,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15604,7 +15966,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md",
+            "designDoc": "design/asset-kinds.md",
             "aliases": "directory"
           },
           "kind": "asset"
@@ -15630,9 +15992,6 @@
             "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -15662,7 +16021,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15687,9 +16046,6 @@
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
           "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -15721,7 +16077,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "designDoc": "design/asset-kinds.md"
           },
           "kind": "asset"
         },
@@ -15750,9 +16106,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -15779,7 +16132,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/governance.md"
+            "designDoc": "design/governance.md"
           },
           "kind": "capability"
         },
@@ -15816,7 +16169,7 @@
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
+            "designDoc": "design/catalog-plane.md"
           },
           "links": [
             {
@@ -15848,9 +16201,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         },
         {
@@ -15879,9 +16229,6 @@
           "tags": [
             "public"
           ],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
           "kind": "capability"
         }
       ],
@@ -15972,6 +16319,10 @@
         "notation": "Deployment topology",
         "style": {},
         "kind": "environment",
+        "metadata": {
+          "designDoc": "design/deployments.md",
+          "trust": "trusted"
+        },
         "title": "trustedCompute",
         "id": "trustedCompute"
       },

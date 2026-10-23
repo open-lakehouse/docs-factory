@@ -1,6 +1,10 @@
 deployment {
 
   environment trustedCompute {
+    metadata {
+      designDoc "design/deployments.md"
+      trust "trusted"
+    }
 
     // hydrofoil — the integration hub: the query engine that enforces FGAC
     // in-plan. Plays queryEngine + embedded PDP + engine PEP.

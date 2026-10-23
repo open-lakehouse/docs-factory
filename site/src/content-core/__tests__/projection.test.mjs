@@ -17,7 +17,7 @@ const MODEL = {
       title: "Catalog",
       tags: ["public"],
       summary: { txt: "The metadata authority." },
-      metadata: { canonicalDoc: "design/catalog.md" },
+      metadata: { designDoc: "design/catalog.md" },
     },
     "lakehouse.table": { kind: "asset", title: "Table", tags: ["public"] },
     unityCatalogSpec: {

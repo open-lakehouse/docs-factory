@@ -50,7 +50,8 @@ model {
   icebergRestSpec = openSpecification "Iceberg REST Catalog" {
     #public
     description "
-      Specification for a REST based Iceberg catalog
+      Open specification for an Iceberg catalog served over REST: engines use it
+      to create, load, and commit Iceberg tables through any conforming catalog.
     "
 
     link https://iceberg.apache.org/concepts/catalog/
@@ -128,6 +129,12 @@ model {
     style {
       icon https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg
     }
+
+    metadata {
+      sourceRepo "apache/datafusion"
+      license "Apache-2.0"
+      language "Rust"
+    }
   }
   datafusion -[realizes]-> lakehouse.queryEngine
   datafusion -[consumes]-> s3Spec "reads data files via"
@@ -141,6 +148,12 @@ model {
 
     style {
       icon https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png
+    }
+
+    metadata {
+      sourceRepo "apache/spark"
+      license "Apache-2.0"
+      language "Scala"
     }
   }
   apacheSpark -[realizes]-> lakehouse.queryEngine
@@ -160,6 +173,8 @@ model {
     metadata {
       sourceRepo "unitycatalog/unitycatalog"
       package "io.unitycatalog:unitycatalog-spark"
+      license "Apache-2.0"
+      language "Scala"
     }
   }
   apacheSpark -[integrates]-> unityCatalogSpark
@@ -174,6 +189,8 @@ model {
     metadata {
       sourceRepo "apache/iceberg"
       package "org.apache.iceberg:iceberg-spark-runtime"
+      license "Apache-2.0"
+      language "Java"
     }
   }
   apacheSpark -[integrates]-> icebergSparkRuntime
@@ -187,6 +204,12 @@ model {
     description "Native Rust implementation of the Delta protocol with Python bindings."
 
     link https://delta-io.github.io/delta-rs/
+
+    metadata {
+      sourceRepo "delta-io/delta-rs"
+      license "Apache-2.0"
+      language "Rust"
+    }
   }
   deltaRs -[implements]-> deltaSpec
   deltaRs -[realizes]-> lakehouse.tableFormat
@@ -200,6 +223,12 @@ model {
     description "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
 
     link https://docs.delta.io
+
+    metadata {
+      sourceRepo "delta-io/delta"
+      license "Apache-2.0"
+      language "Scala"
+    }
   }
   deltaSpark -[implements]-> deltaSpec
   apacheSpark -[integrates]-> deltaSpark
@@ -212,6 +241,12 @@ model {
     description "In-process analytical SQL engine."
 
     link https://duckdb.org
+
+    metadata {
+      sourceRepo "duckdb/duckdb"
+      license "MIT"
+      language "C++"
+    }
   }
   duckdb -[realizes]-> lakehouse.queryEngine
   duckdb -[operatesOn]-> lakehouse.namespace "creates and lists"
@@ -228,6 +263,8 @@ model {
       sourceRepo "duckdb/unity_catalog"
       package "unity_catalog"
       maturity "nightly"
+      license "MIT"
+      language "C++"
     }
   }
   duckdb -[integrates]-> duckdbUnityCatalog
@@ -242,6 +279,8 @@ model {
     metadata {
       sourceRepo "duckdb/duckdb-delta"
       package "delta"
+      license "MIT"
+      language "C++"
     }
   }
   duckdb -[integrates]-> duckdbDelta
@@ -257,6 +296,8 @@ model {
     metadata {
       sourceRepo "duckdb/duckdb-iceberg"
       package "iceberg"
+      license "MIT"
+      language "C++"
     }
   }
   duckdb -[integrates]-> duckdbIceberg
@@ -267,12 +308,18 @@ model {
   polars = implementation "Polars" {
     #library #public
 
-    description "Fast DataFrame library written in Rust with a Python API;"
+    description "Fast DataFrame library written in Rust, with a Python API."
 
     link https://pola.rs
 
     style {
       icon https://avatars.githubusercontent.com/u/83768144?s=200&v=4
+    }
+
+    metadata {
+      sourceRepo "pola-rs/polars"
+      license "MIT"
+      language "Rust"
     }
   }
   polars -[realizes]-> lakehouse.queryEngine
@@ -285,6 +332,12 @@ model {
 
     description "Distributed Python DataFrame library with a Unity Catalog integration."
     link https://docs.daft.ai/en/stable/connectors/unity_catalog/
+
+    metadata {
+      sourceRepo "Eventual-Inc/Daft"
+      license "Apache-2.0"
+      language "Rust"
+    }
   }
   daft -[realizes]-> lakehouse.queryEngine
   daft -[consumes]-> unityCatalogSpec "resolves tables via"
@@ -295,6 +348,12 @@ model {
 
     description "Python implementation of Apache Iceberg with REST catalog and table APIs."
     link https://py.iceberg.apache.org
+
+    metadata {
+      sourceRepo "apache/iceberg-python"
+      license "Apache-2.0"
+      language "Python"
+    }
   }
   pyIceberg -[implements]-> icebergSpec
   pyIceberg -[realizes]-> lakehouse.tableFormat
@@ -309,6 +368,12 @@ model {
 
     description "Command-line client for managing Unity Catalog objects and storage access."
     link https://docs.unitycatalog.io/usage/cli/
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Java"
+    }
   }
   unityCatalogCli -[consumes]-> unityCatalogSpec "calls"
   unityCatalogCli -[operatesOn]-> lakehouse.namespace "manages"
@@ -322,6 +387,12 @@ model {
 
     description "Generated asynchronous Python client for Unity Catalog REST APIs."
     link https://pypi.org/project/unitycatalog-client/
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Python"
+    }
   }
   unityCatalogPythonSdk -[consumes]-> unityCatalogSpec "calls"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.namespace "manages"
@@ -336,6 +407,12 @@ model {
 
     description "Python client library for registering and executing functions through Unity Catalog."
     link https://github.com/unitycatalog/unitycatalog/tree/main/ai
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Python"
+    }
   }
   unityCatalogAi -[consumes]-> unityCatalogSpec "calls"
   unityCatalogAi -[operatesOn]-> lakehouse.function "registers and executes"
@@ -344,6 +421,12 @@ model {
     #client #public
     description "LangChain integration that turns Unity Catalog functions into tools an agent can call."
     link https://pypi.org/project/unitycatalog-langchain/
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Python"
+    }
   }
   unityCatalogLangChain -[consumes]-> unityCatalogSpec "calls"
   unityCatalogLangChain -[operatesOn]-> lakehouse.function "exposes as agent tools"
@@ -357,6 +440,12 @@ model {
     link https://lakekeeper.io
     style {
       icon https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg
+    }
+
+    metadata {
+      sourceRepo "lakekeeper/lakekeeper"
+      license "Apache-2.0"
+      language "Rust"
     }
   }
   lakekeeper -[implements]-> icebergRestSpec
@@ -376,6 +465,12 @@ model {
     style {
       icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
     }
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Java"
+    }
   }
   unityCatalogServer -[implements]-> unityCatalogSpec
   unityCatalogServer -[implements]-> icebergRestSpec "serves Iceberg tables through"
@@ -394,6 +489,12 @@ model {
 
     description "Pluggable framework for Unity Catalog APIs: governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
     link https://github.com/open-lakehouse/mangrove
+
+    metadata {
+      sourceRepo "open-lakehouse/mangrove"
+      license "Apache-2.0"
+      language "Rust"
+    }
   }
   mangrove -[implements]-> unityCatalogSpec
   mangrove -[realizes]-> lakehouse.catalog
@@ -409,6 +510,12 @@ model {
     style {
       icon https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg
     }
+
+    metadata {
+      sourceRepo "mlflow/mlflow"
+      license "Apache-2.0"
+      language "Python"
+    }
   }
   mlflow -[realizes]-> lakehouse.modelTracking
 
@@ -421,6 +528,12 @@ model {
 
     description "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
     link https://github.com/open-lakehouse/hydrofoil
+
+    metadata {
+      sourceRepo "open-lakehouse/hydrofoil"
+      license "Apache-2.0"
+      language "Rust"
+    }
   }
   hydrofoil -[realizes]-> lakehouse.queryEngine
   hydrofoil -[implements]-> flightSqlSpec "serves"
@@ -441,6 +554,12 @@ model {
 
     description "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store."
     link https://github.com/open-lakehouse/headwaters
+
+    metadata {
+      sourceRepo "open-lakehouse/headwaters"
+      license "Apache-2.0"
+      language "Rust"
+    }
   }
   headwaters -[realizes]-> lakehouse.lineage
   headwaters -[implements]-> openLineageSpec "emits + ingests"
@@ -450,6 +569,12 @@ model {
 
     description "Open source authentication and authorization server that fronts web services with single sign-on and access rules."
     link https://www.authelia.com
+
+    metadata {
+      sourceRepo "authelia/authelia"
+      license "Apache-2.0"
+      language "Go"
+    }
   }
   authelia -[realizes]-> lakehouse.governance.authentication "single sign-on at the gateway"
   authelia -[realizes]-> lakehouse.governance.authorization "access rules at the gateway" {
@@ -461,6 +586,12 @@ model {
 
     description "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision."
     link https://www.openpolicyagent.org
+
+    metadata {
+      sourceRepo "open-policy-agent/opa"
+      license "Apache-2.0"
+      language "Go"
+    }
   }
   openPolicyAgent -[realizes]-> lakehouse.governance.authorization "decides access policy" {
     #partial
@@ -471,6 +602,12 @@ model {
 
     description "Open source distributed tracing backend: collects, stores, and visualizes traces."
     link https://www.jaegertracing.io
+
+    metadata {
+      sourceRepo "jaegertracing/jaeger"
+      license "Apache-2.0"
+      language "Go"
+    }
   }
   jaeger -[realizes]-> lakehouse.observability "realizes tracing"
   jaeger -[consumes]-> otlpSpec "receives traces via"
@@ -490,6 +627,12 @@ model {
 
     description "Reactive Python notebook, stored as plain Python files."
     link https://marimo.io
+
+    metadata {
+      sourceRepo "marimo-team/marimo"
+      license "Apache-2.0"
+      language "Python"
+    }
   }
   marimo -[realizes]-> lakehouse.interactiveDevelopment "as a notebook"
 
@@ -499,6 +642,12 @@ model {
 
     description "Asset-based orchestrator for Python pipelines, with a run UI."
     link https://orchestrator.rs
+
+    metadata {
+      sourceRepo "ion-elgreco/rivers"
+      license "Apache-2.0"
+      language "Rust"
+    }
   }
   rivers -[realizes]-> lakehouse.orchestration
 
@@ -508,6 +657,12 @@ model {
 
     description "Open source edge and service proxy; the gateway that routes requests to each service."
     link https://www.envoyproxy.io
+
+    metadata {
+      sourceRepo "envoyproxy/envoy"
+      license "Apache-2.0"
+      language "C++"
+    }
   }
 
   postgresql = implementation "PostgreSQL" {
@@ -515,6 +670,12 @@ model {
 
     description "Open source relational database; the metadata store behind catalog and tracking services."
     link https://www.postgresql.org
+
+    metadata {
+      sourceRepo "postgres/postgres"
+      license "PostgreSQL"
+      language "C"
+    }
   }
 
   postgresql -[realizes]-> lakehouse.metadataStore
@@ -524,6 +685,12 @@ model {
 
     description "S3-compatible object storage server written in Rust."
     link https://rustfs.com
+
+    metadata {
+      sourceRepo "rustfs/rustfs"
+      license "Apache-2.0"
+      language "Rust"
+    }
   }
   rustfs -[implements]-> s3Spec
   rustfs -[realizes]-> lakehouse.objectStorage
@@ -542,6 +709,12 @@ model {
 
     description "Local emulator for Azure Storage, including the Blob service."
     link https://github.com/Azure/Azurite
+
+    metadata {
+      sourceRepo "Azure/Azurite"
+      license "MIT"
+      language "TypeScript"
+    }
   }
   azurite -[implements]-> azureBlobSpec "emulates"
   azurite -[realizes]-> lakehouse.objectStorage
@@ -565,6 +738,12 @@ model {
     link https://omnigent.ai
     style {
       icon https://raw.githubusercontent.com/omnigent-ai/omnigent/99e25f6de1ae8c9f31f2a70efbfc09d95fd8884c/editors/vscode/media/omnigent-icon.svg
+    }
+
+    metadata {
+      sourceRepo "omnigent-ai/omnigent"
+      license "Apache-2.0"
+      language "Python"
     }
   }
 }

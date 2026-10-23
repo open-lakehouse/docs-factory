@@ -232,7 +232,7 @@
     "icebergRestSpec": {
       "kind": "openSpecification",
       "title": "Iceberg REST Catalog",
-      "description": "Specification for a REST based Iceberg catalog",
+      "description": "Open specification for an Iceberg catalog served over REST: engines use it\nto create, load, and commit Iceberg tables through any conforming catalog.",
       "links": [
         "https://iceberg.apache.org/concepts/catalog/"
       ]

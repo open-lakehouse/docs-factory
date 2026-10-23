@@ -5,9 +5,9 @@ diataxis: how-to
 project: unitycatalog
 references:
   - unityCatalogOSS
-  - unityCatalogAI
+  - unityCatalogAi
   - unityCatalogLangChain
-  - lakehouse.registeredFunction
+  - lakehouse.function
 status: ready
 ---
 
@@ -15,7 +15,7 @@ Register Python functions in [Unity Catalog](model:unityCatalogOSS), build
 LangChain tools from them with `UCFunctionToolkit` from the
 `unitycatalog-langchain` package, hand the tools to an agent, and trace its
 calls with MLflow. The catalog stores each
-[function's](model:lakehouse.registeredFunction) signature, descriptions, and
+[function's](model:lakehouse.function) signature, descriptions, and
 source code. The agent's machine runs the code, not the server. For where
 functions sit among the other catalog objects, see
 [Core concepts](../../explanation/uc-basics/index.md).

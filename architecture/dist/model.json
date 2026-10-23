@@ -284,7 +284,7 @@
       "kind": "asset",
       "id": "lakehouse.volume"
     },
-    "lakehouse.registeredFunction": {
+    "lakehouse.function": {
       "metadata": {
         "canonicalDoc": "design/asset-kinds.md"
       },
@@ -303,7 +303,7 @@
       },
       "title": "Function",
       "kind": "asset",
-      "id": "lakehouse.registeredFunction"
+      "id": "lakehouse.function"
     },
     "lakehouse.mlModel": {
       "metadata": {
@@ -795,7 +795,7 @@
       "kind": "openSpecification",
       "id": "icebergSpec"
     },
-    "ucSpec": {
+    "unityCatalogSpec": {
       "notation": "Specification / open standard",
       "style": {
         "color": "sky",
@@ -815,7 +815,7 @@
       },
       "title": "Unity Catalog",
       "kind": "openSpecification",
-      "id": "ucSpec"
+      "id": "unityCatalogSpec"
     },
     "icebergRestSpec": {
       "notation": "Specification / open standard",
@@ -877,7 +877,7 @@
       "kind": "openSpecification",
       "id": "parquetSpec"
     },
-    "s3Api": {
+    "s3Spec": {
       "notation": "Specification / open standard",
       "style": {
         "color": "sky",
@@ -896,7 +896,7 @@
       },
       "title": "S3 API",
       "kind": "openSpecification",
-      "id": "s3Api"
+      "id": "s3Spec"
     },
     "sparkConnectSpec": {
       "notation": "Specification / open standard",
@@ -952,7 +952,7 @@
       "kind": "openSpecification",
       "id": "openCypherSpec"
     },
-    "azureBlobApi": {
+    "azureBlobSpec": {
       "notation": "Specification / open standard",
       "style": {
         "color": "sky",
@@ -968,7 +968,7 @@
       },
       "title": "Azure Blob Storage API",
       "kind": "openSpecification",
-      "id": "azureBlobApi"
+      "id": "azureBlobSpec"
     },
     "openLineageSpec": {
       "notation": "Specification / open standard",
@@ -1315,7 +1315,7 @@
       "kind": "implementation",
       "id": "pyIceberg"
     },
-    "ucCli": {
+    "unityCatalogCli": {
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1335,7 +1335,7 @@
       },
       "title": "Unity Catalog CLI",
       "kind": "implementation",
-      "id": "ucCli"
+      "id": "unityCatalogCli"
     },
     "unityCatalogPythonSdk": {
       "notation": "Implementation (software / service)",
@@ -1359,7 +1359,7 @@
       "kind": "implementation",
       "id": "unityCatalogPythonSdk"
     },
-    "unityCatalogAI": {
+    "unityCatalogAi": {
       "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
@@ -1379,7 +1379,7 @@
       },
       "title": "unitycatalog-ai",
       "kind": "implementation",
-      "id": "unityCatalogAI"
+      "id": "unityCatalogAi"
     },
     "unityCatalogLangChain": {
       "notation": "Implementation (software / service)",
@@ -1815,115 +1815,115 @@
     }
   },
   "relations": {
-    "130fm7d": {
+    "2tt48j": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.namespace"
       },
       "kind": "governs",
-      "id": "130fm7d"
+      "id": "2tt48j"
     },
-    "r074if": {
+    "uv3lot": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.table"
       },
       "kind": "governs",
-      "id": "r074if"
+      "id": "uv3lot"
     },
-    "18li8n4": {
+    "7lvz8a": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.volume"
       },
       "kind": "governs",
-      "id": "18li8n4"
+      "id": "7lvz8a"
     },
-    "1vs51d1": {
+    "1etb2l3": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
-        "model": "lakehouse.registeredFunction"
+        "model": "lakehouse.function"
       },
       "kind": "governs",
-      "id": "1vs51d1"
+      "id": "1etb2l3"
     },
-    "1ymhbz4": {
+    "dsr5ve": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.mlModel"
       },
       "kind": "governs",
-      "id": "1ymhbz4"
+      "id": "dsr5ve"
     },
-    "v70pd1": {
+    "1h0c4an": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.agentSkill"
       },
       "kind": "governs",
-      "id": "v70pd1"
+      "id": "1h0c4an"
     },
-    "ohrcxb": {
+    "1j7rtx1": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.sqlView"
       },
       "kind": "governs",
-      "id": "ohrcxb"
+      "id": "1j7rtx1"
     },
-    "wv3m22": {
+    "saotdc": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.metricView"
       },
       "kind": "governs",
-      "id": "wv3m22"
+      "id": "saotdc"
     },
-    "1dh4b3d": {
+    "28ghrn": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.credential"
       },
       "kind": "governs",
-      "id": "1dh4b3d"
+      "id": "28ghrn"
     },
-    "qhekl6": {
+    "12razog": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.externalLocation"
       },
       "kind": "governs",
-      "id": "qhekl6"
+      "id": "12razog"
     },
     "30cndv": {
       "title": "",
@@ -2106,28 +2106,28 @@
       "kind": "locatedAt",
       "id": "jkl5ce"
     },
-    "1vej2d9": {
+    "kry251": {
       "title": "",
       "source": {
-        "model": "lakehouse.registeredFunction"
+        "model": "lakehouse.function"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
       "kind": "registeredIn",
-      "id": "1vej2d9"
+      "id": "kry251"
     },
-    "r2u3mo": {
+    "131n1c8": {
       "line": "dashed",
       "title": "resolved and run by",
       "source": {
-        "model": "lakehouse.registeredFunction"
+        "model": "lakehouse.function"
       },
       "target": {
         "model": "lakehouse.queryEngine"
       },
       "kind": "dependsOn",
-      "id": "r2u3mo"
+      "id": "131n1c8"
     },
     "1da6qi9": {
       "title": "",
@@ -2401,17 +2401,17 @@
       "kind": "appliesTo",
       "id": "xs9lj"
     },
-    "1lcxz92": {
+    "e212e6": {
       "line": "dotted",
       "title": "grants access to",
       "source": {
         "model": "lakehouse.governance.authorization"
       },
       "target": {
-        "model": "lakehouse.registeredFunction"
+        "model": "lakehouse.function"
       },
       "kind": "appliesTo",
-      "id": "1lcxz92"
+      "id": "e212e6"
     },
     "whd103": {
       "line": "dotted",
@@ -2763,16 +2763,16 @@
       "kind": "specifies",
       "id": "egqi6d"
     },
-    "1kyr5om": {
+    "ygl5p8": {
       "title": "",
       "source": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
       "kind": "specifies",
-      "id": "1kyr5om"
+      "id": "ygl5p8"
     },
     "od9xen": {
       "title": "",
@@ -2807,16 +2807,16 @@
       "kind": "specifies",
       "id": "6n5iit"
     },
-    "1y21ww5": {
+    "3qe188": {
       "title": "",
       "source": {
-        "model": "s3Api"
+        "model": "s3Spec"
       },
       "target": {
         "model": "lakehouse.objectStorage"
       },
       "kind": "specifies",
-      "id": "1y21ww5"
+      "id": "3qe188"
     },
     "1ybknjn": {
       "title": "specifies remote query submission",
@@ -2851,16 +2851,16 @@
       "kind": "specifies",
       "id": "tqmuor"
     },
-    "7710m6": {
+    "1f7pxj7": {
       "title": "",
       "source": {
-        "model": "azureBlobApi"
+        "model": "azureBlobSpec"
       },
       "target": {
         "model": "lakehouse.objectStorage"
       },
       "kind": "specifies",
-      "id": "7710m6"
+      "id": "1f7pxj7"
     },
     "3k1a9v": {
       "title": "specifies the lineage event model",
@@ -2896,17 +2896,17 @@
       "kind": "realizes",
       "id": "1cizaq2"
     },
-    "ujnrzk": {
+    "dli0y5": {
       "line": "dashed",
       "title": "reads data files via",
       "source": {
         "model": "datafusion"
       },
       "target": {
-        "model": "s3Api"
+        "model": "s3Spec"
       },
       "kind": "consumes",
-      "id": "ujnrzk"
+      "id": "dli0y5"
     },
     "1kwn0k1": {
       "line": "dotted",
@@ -2979,17 +2979,17 @@
       "kind": "integrates",
       "id": "1yfifgt"
     },
-    "1slq0xm": {
+    "1ppqk9s": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
         "model": "unityCatalogSpark"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "1slq0xm"
+      "id": "1ppqk9s"
     },
     "xjcrin": {
       "title": "",
@@ -3062,29 +3062,29 @@
       "kind": "realizes",
       "id": "1nnqc6u"
     },
-    "13anatu": {
+    "1v24bpk": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
         "model": "deltaRs"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "13anatu"
+      "id": "1v24bpk"
     },
-    "1798swo": {
+    "6v9i79": {
       "line": "dashed",
       "title": "reads/writes data files via",
       "source": {
         "model": "deltaRs"
       },
       "target": {
-        "model": "s3Api"
+        "model": "s3Spec"
       },
       "kind": "consumes",
-      "id": "1798swo"
+      "id": "6v9i79"
     },
     "1dz046w": {
       "line": "dashed",
@@ -3192,17 +3192,17 @@
       "kind": "integrates",
       "id": "13ymcgq"
     },
-    "ntxwyk": {
+    "1rhf0p2": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
         "model": "duckdbUnityCatalog"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "ntxwyk"
+      "id": "1rhf0p2"
     },
     "17kudmu": {
       "title": "",
@@ -3309,17 +3309,17 @@
       "kind": "integrates",
       "id": "1wexy45"
     },
-    "o9u5r2": {
+    "12jtbno": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
         "model": "polars"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "o9u5r2"
+      "id": "12jtbno"
     },
     "1mbsknx": {
       "line": "dashed",
@@ -3345,17 +3345,17 @@
       "kind": "realizes",
       "id": "18g24o1"
     },
-    "3ern6m": {
+    "547ow4": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
         "model": "daft"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "3ern6m"
+      "id": "547ow4"
     },
     "1vyuuxh": {
       "line": "dashed",
@@ -3429,89 +3429,89 @@
       "kind": "operatesOn",
       "id": "137ru51"
     },
-    "1454aif": {
+    "jlhtpz": {
       "line": "dashed",
       "title": "calls",
       "source": {
-        "model": "ucCli"
+        "model": "unityCatalogCli"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "1454aif"
+      "id": "jlhtpz"
     },
-    "1iz2qgf": {
+    "v7h3p1": {
       "line": "dashed",
       "title": "manages",
       "source": {
-        "model": "ucCli"
+        "model": "unityCatalogCli"
       },
       "target": {
         "model": "lakehouse.namespace"
       },
       "kind": "operatesOn",
-      "id": "1iz2qgf"
+      "id": "v7h3p1"
     },
-    "1bqeksd": {
+    "1termhz": {
       "line": "dashed",
       "title": "manages",
       "source": {
-        "model": "ucCli"
+        "model": "unityCatalogCli"
       },
       "target": {
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "1bqeksd"
+      "id": "1termhz"
     },
-    "1hzbqx6": {
+    "8x4lw0": {
       "line": "dashed",
       "title": "manages",
       "source": {
-        "model": "ucCli"
+        "model": "unityCatalogCli"
       },
       "target": {
         "model": "lakehouse.volume"
       },
       "kind": "operatesOn",
-      "id": "1hzbqx6"
+      "id": "8x4lw0"
     },
-    "3rzu0x": {
+    "cva21n": {
       "line": "dashed",
       "title": "manages",
       "source": {
-        "model": "ucCli"
+        "model": "unityCatalogCli"
       },
       "target": {
         "model": "lakehouse.credential"
       },
       "kind": "operatesOn",
-      "id": "3rzu0x"
+      "id": "cva21n"
     },
-    "6t3nez": {
+    "1w1jzkh": {
       "line": "dashed",
       "title": "manages",
       "source": {
-        "model": "ucCli"
+        "model": "unityCatalogCli"
       },
       "target": {
         "model": "lakehouse.externalLocation"
       },
       "kind": "operatesOn",
-      "id": "6t3nez"
+      "id": "1w1jzkh"
     },
-    "1p3wqbr": {
+    "1rjjgf1": {
       "line": "dashed",
       "title": "calls",
       "source": {
         "model": "unityCatalogPythonSdk"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "1p3wqbr"
+      "id": "1rjjgf1"
     },
     "1sn9xll": {
       "line": "dashed",
@@ -3585,53 +3585,53 @@
       "kind": "operatesOn",
       "id": "52fljr"
     },
-    "vsh48t": {
+    "1xe2r7r": {
       "line": "dashed",
       "title": "calls",
       "source": {
-        "model": "unityCatalogAI"
+        "model": "unityCatalogAi"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "vsh48t"
+      "id": "1xe2r7r"
     },
-    "167s6ha": {
+    "r38gue": {
       "line": "dashed",
       "title": "registers and executes",
       "source": {
-        "model": "unityCatalogAI"
+        "model": "unityCatalogAi"
       },
       "target": {
-        "model": "lakehouse.registeredFunction"
+        "model": "lakehouse.function"
       },
       "kind": "operatesOn",
-      "id": "167s6ha"
+      "id": "r38gue"
     },
-    "q3jom1": {
+    "1soev7": {
       "line": "dashed",
       "title": "calls",
       "source": {
         "model": "unityCatalogLangChain"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "q3jom1"
+      "id": "1soev7"
     },
-    "1riht8o": {
+    "1bicu1s": {
       "line": "dashed",
       "title": "exposes as agent tools",
       "source": {
         "model": "unityCatalogLangChain"
       },
       "target": {
-        "model": "lakehouse.registeredFunction"
+        "model": "lakehouse.function"
       },
       "kind": "operatesOn",
-      "id": "1riht8o"
+      "id": "1bicu1s"
     },
     "1c2eeff": {
       "line": "dotted",
@@ -3684,17 +3684,17 @@
       "kind": "realizes",
       "id": "10xshn0"
     },
-    "1od4a60": {
+    "1dfpof6": {
       "line": "dotted",
       "title": "",
       "source": {
         "model": "unityCatalogOSS"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "implements",
-      "id": "1od4a60"
+      "id": "1dfpof6"
     },
     "15jx5ya": {
       "line": "dotted",
@@ -3747,17 +3747,17 @@
       "kind": "realizes",
       "id": "1evb6x2"
     },
-    "1r8w49m": {
+    "1cppnb4": {
       "line": "dotted",
       "title": "",
       "source": {
         "model": "mangrove"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "implements",
-      "id": "1r8w49m"
+      "id": "1cppnb4"
     },
     "fra8wi": {
       "line": "dotted",
@@ -3807,17 +3807,17 @@
       "kind": "implements",
       "id": "19p4xq2"
     },
-    "1awc3dn": {
+    "1ptilxd": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
         "model": "hydrofoil"
       },
       "target": {
-        "model": "ucSpec"
+        "model": "unityCatalogSpec"
       },
       "kind": "consumes",
-      "id": "1awc3dn"
+      "id": "1ptilxd"
     },
     "j6qroz": {
       "title": "",
@@ -4010,17 +4010,17 @@
       "kind": "realizes",
       "id": "1cz6zuj"
     },
-    "18118f6": {
+    "wblhy7": {
       "line": "dotted",
       "title": "",
       "source": {
         "model": "rustfs"
       },
       "target": {
-        "model": "s3Api"
+        "model": "s3Spec"
       },
       "kind": "implements",
-      "id": "18118f6"
+      "id": "wblhy7"
     },
     "6oz0xo": {
       "line": "dotted",
@@ -4034,17 +4034,17 @@
       "kind": "realizes",
       "id": "6oz0xo"
     },
-    "vuzolg": {
+    "1kyxqex": {
       "line": "dotted",
       "title": "",
       "source": {
         "model": "amazonS3"
       },
       "target": {
-        "model": "s3Api"
+        "model": "s3Spec"
       },
       "kind": "implements",
-      "id": "vuzolg"
+      "id": "1kyxqex"
     },
     "76gjko": {
       "line": "dotted",
@@ -4058,17 +4058,17 @@
       "kind": "realizes",
       "id": "76gjko"
     },
-    "19549nz": {
+    "1x27ng2": {
       "line": "dotted",
       "title": "emulates",
       "source": {
         "model": "azurite"
       },
       "target": {
-        "model": "azureBlobApi"
+        "model": "azureBlobSpec"
       },
       "kind": "implements",
-      "id": "19549nz"
+      "id": "1x27ng2"
     },
     "fibisn": {
       "line": "dotted",
@@ -4082,17 +4082,17 @@
       "kind": "realizes",
       "id": "fibisn"
     },
-    "1ohak4s": {
+    "6z5vwx": {
       "line": "dotted",
       "title": "",
       "source": {
         "model": "azureBlobStorage"
       },
       "target": {
-        "model": "azureBlobApi"
+        "model": "azureBlobSpec"
       },
       "kind": "implements",
-      "id": "1ohak4s"
+      "id": "6z5vwx"
     },
     "1nv5jfu": {
       "line": "dotted",
@@ -4214,23 +4214,23 @@
           "kind": "specifies"
         },
         {
-          "id": "1qvv3jy",
+          "id": "aqakf8",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "130fm7d",
-            "r074if",
-            "18li8n4",
-            "1vs51d1",
-            "1ymhbz4",
-            "v70pd1",
-            "ohrcxb",
-            "wv3m22",
-            "1dh4b3d",
-            "qhekl6",
-            "1kyr5om"
+            "2tt48j",
+            "uv3lot",
+            "7lvz8a",
+            "1etb2l3",
+            "dsr5ve",
+            "1h0c4an",
+            "1j7rtx1",
+            "saotdc",
+            "28ghrn",
+            "12razog",
+            "ygl5p8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4281,13 +4281,13 @@
           "kind": "specifies"
         },
         {
-          "id": "zreoid",
+          "id": "baig88",
           "parent": null,
-          "source": "s3Api",
+          "source": "s3Spec",
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "1y21ww5"
+            "3qe188"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4337,13 +4337,13 @@
           "kind": "specifies"
         },
         {
-          "id": "1exg6xb",
+          "id": "f41o8i",
           "parent": null,
-          "source": "azureBlobApi",
+          "source": "azureBlobSpec",
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "7710m6"
+            "1f7pxj7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4537,17 +4537,17 @@
           "head": "normal"
         },
         {
-          "id": "q72mhp",
+          "id": "vej1af",
           "parent": null,
-          "source": "ucCli",
+          "source": "unityCatalogCli",
           "target": "lakehouse",
           "label": "manages",
           "relations": [
-            "1iz2qgf",
-            "1bqeksd",
-            "1hzbqx6",
-            "3rzu0x",
-            "6t3nez"
+            "v7h3p1",
+            "1termhz",
+            "8x4lw0",
+            "cva21n",
+            "1w1jzkh"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4574,13 +4574,13 @@
           "kind": "operatesOn"
         },
         {
-          "id": "1kreai1",
+          "id": "3a9x8p",
           "parent": null,
-          "source": "unityCatalogAI",
+          "source": "unityCatalogAi",
           "target": "lakehouse",
           "label": "registers and executes",
           "relations": [
-            "167s6ha"
+            "r38gue"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4594,7 +4594,7 @@
           "target": "lakehouse",
           "label": "exposes as agent tools",
           "relations": [
-            "1riht8o"
+            "1bicu1s"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4946,13 +4946,13 @@
           "kind": "implements"
         },
         {
-          "id": "164b2dq",
+          "id": "8o013o",
           "parent": null,
           "source": "unityCatalogSpark",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "1slq0xm"
+            "1ppqk9s"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4960,13 +4960,13 @@
           "kind": "consumes"
         },
         {
-          "id": "1y4cfeo",
+          "id": "im6amy",
           "parent": null,
           "source": "deltaRs",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "13anatu"
+            "1v24bpk"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4974,13 +4974,13 @@
           "kind": "consumes"
         },
         {
-          "id": "i4ec5m",
+          "id": "1est51s",
           "parent": null,
           "source": "duckdbUnityCatalog",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "ntxwyk"
+            "1rhf0p2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4988,13 +4988,13 @@
           "kind": "consumes"
         },
         {
-          "id": "10ldfu2",
+          "id": "myn69c",
           "parent": null,
           "source": "polars",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "o9u5r2"
+            "12jtbno"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5002,13 +5002,13 @@
           "kind": "consumes"
         },
         {
-          "id": "f38oha",
+          "id": "6z5zw4",
           "parent": null,
           "source": "daft",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "3ern6m"
+            "547ow4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5016,13 +5016,13 @@
           "kind": "consumes"
         },
         {
-          "id": "70ieuh",
+          "id": "1xhri21",
           "parent": null,
-          "source": "ucCli",
-          "target": "ucSpec",
+          "source": "unityCatalogCli",
+          "target": "unityCatalogSpec",
           "label": "calls",
           "relations": [
-            "1454aif"
+            "jlhtpz"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5030,13 +5030,13 @@
           "kind": "consumes"
         },
         {
-          "id": "1c4wmgt",
+          "id": "1nrbqw7",
           "parent": null,
           "source": "unityCatalogPythonSdk",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "calls",
           "relations": [
-            "1p3wqbr"
+            "1rjjgf1"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5044,13 +5044,13 @@
           "kind": "consumes"
         },
         {
-          "id": "1giiwm5",
+          "id": "ralwkn",
           "parent": null,
-          "source": "unityCatalogAI",
-          "target": "ucSpec",
+          "source": "unityCatalogAi",
+          "target": "unityCatalogSpec",
           "label": "calls",
           "relations": [
-            "vsh48t"
+            "1xe2r7r"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5058,13 +5058,13 @@
           "kind": "consumes"
         },
         {
-          "id": "1hdgbrw",
+          "id": "8evphi",
           "parent": null,
           "source": "unityCatalogLangChain",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "calls",
           "relations": [
-            "q3jom1"
+            "1soev7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5072,13 +5072,13 @@
           "kind": "consumes"
         },
         {
-          "id": "1pglyt6",
+          "id": "gawsio",
           "parent": null,
           "source": "unityCatalogOSS",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": null,
           "relations": [
-            "1od4a60"
+            "1dfpof6"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5086,13 +5086,13 @@
           "kind": "implements"
         },
         {
-          "id": "4akriq",
+          "id": "k5bifc",
           "parent": null,
           "source": "mangrove",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": null,
           "relations": [
-            "1r8w49m"
+            "1cppnb4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5100,13 +5100,13 @@
           "kind": "implements"
         },
         {
-          "id": "1hllji5",
+          "id": "1v1swmf",
           "parent": null,
           "source": "hydrofoil",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "1awc3dn"
+            "1ptilxd"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5184,13 +5184,13 @@
           "kind": "implements"
         },
         {
-          "id": "epvgru",
+          "id": "1nipxsn",
           "parent": null,
           "source": "datafusion",
-          "target": "s3Api",
+          "target": "s3Spec",
           "label": "reads data files via",
           "relations": [
-            "ujnrzk"
+            "dli0y5"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5198,13 +5198,13 @@
           "kind": "consumes"
         },
         {
-          "id": "ycgcej",
+          "id": "1vxufpy",
           "parent": null,
           "source": "deltaRs",
-          "target": "s3Api",
+          "target": "s3Spec",
           "label": "reads/writes data files via",
           "relations": [
-            "1798swo"
+            "6v9i79"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5212,13 +5212,13 @@
           "kind": "consumes"
         },
         {
-          "id": "dou7t3",
+          "id": "pkqp96",
           "parent": null,
           "source": "rustfs",
-          "target": "s3Api",
+          "target": "s3Spec",
           "label": null,
           "relations": [
-            "18118f6"
+            "wblhy7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5226,13 +5226,13 @@
           "kind": "implements"
         },
         {
-          "id": "1pupksk",
+          "id": "1g9xi2h",
           "parent": null,
           "source": "amazonS3",
-          "target": "s3Api",
+          "target": "s3Spec",
           "label": null,
           "relations": [
-            "vuzolg"
+            "1kyxqex"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5282,13 +5282,13 @@
           "kind": "implements"
         },
         {
-          "id": "1knq7v0",
+          "id": "mxwq29",
           "parent": null,
           "source": "azurite",
-          "target": "azureBlobApi",
+          "target": "azureBlobSpec",
           "label": "emulates",
           "relations": [
-            "19549nz"
+            "1x27ng2"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5296,13 +5296,13 @@
           "kind": "implements"
         },
         {
-          "id": "qjh4az",
+          "id": "nh25li",
           "parent": null,
           "source": "azureBlobStorage",
-          "target": "azureBlobApi",
+          "target": "azureBlobSpec",
           "label": null,
           "relations": [
-            "1ohak4s"
+            "6z5vwx"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5660,7 +5660,7 @@
           "inEdges": [],
           "outEdges": [
             "sr2fr2",
-            "10ldfu2",
+            "myn69c",
             "viecbk"
           ],
           "title": "Polars",
@@ -5695,7 +5695,7 @@
           "inEdges": [],
           "outEdges": [
             "1ihflm",
-            "f38oha"
+            "6z5zw4"
           ],
           "title": "Daft",
           "modelRef": "daft",
@@ -5755,17 +5755,17 @@
           "kind": "implementation"
         },
         {
-          "id": "ucCli",
+          "id": "unityCatalogCli",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "q72mhp",
-            "70ieuh"
+            "vej1af",
+            "1xhri21"
           ],
           "title": "Unity Catalog CLI",
-          "modelRef": "ucCli",
+          "modelRef": "unityCatalogCli",
           "shape": "cylinder",
           "color": "muted",
           "style": {
@@ -5795,7 +5795,7 @@
           "inEdges": [],
           "outEdges": [
             "kxkjwp",
-            "1c4wmgt"
+            "1nrbqw7"
           ],
           "title": "Unity Catalog Python SDK",
           "modelRef": "unityCatalogPythonSdk",
@@ -5821,17 +5821,17 @@
           "kind": "implementation"
         },
         {
-          "id": "unityCatalogAI",
+          "id": "unityCatalogAi",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1kreai1",
-            "1giiwm5"
+            "3a9x8p",
+            "ralwkn"
           ],
           "title": "unitycatalog-ai",
-          "modelRef": "unityCatalogAI",
+          "modelRef": "unityCatalogAi",
           "shape": "cylinder",
           "color": "muted",
           "style": {
@@ -5861,7 +5861,7 @@
           "inEdges": [],
           "outEdges": [
             "gj9sso",
-            "1hdgbrw"
+            "8evphi"
           ],
           "title": "unitycatalog-langchain",
           "modelRef": "unityCatalogLangChain",
@@ -5927,7 +5927,7 @@
           "inEdges": [],
           "outEdges": [
             "16rnjn2",
-            "1pglyt6",
+            "gawsio",
             "okzuqp"
           ],
           "title": "Unity Catalog (OSS)",
@@ -5965,7 +5965,7 @@
           "inEdges": [],
           "outEdges": [
             "8koh3a",
-            "4akriq"
+            "k5bifc"
           ],
           "title": "mangrove",
           "modelRef": "mangrove",
@@ -6029,7 +6029,7 @@
           "inEdges": [],
           "outEdges": [
             "fo5h1l",
-            "1hllji5",
+            "1v1swmf",
             "gkxlb1",
             "1611igm"
           ],
@@ -6345,7 +6345,7 @@
           "inEdges": [],
           "outEdges": [
             "sn5k2g",
-            "dou7t3"
+            "pkqp96"
           ],
           "title": "RustFS",
           "modelRef": "rustfs",
@@ -6378,7 +6378,7 @@
           "inEdges": [],
           "outEdges": [
             "zpgt5n",
-            "1pupksk"
+            "1g9xi2h"
           ],
           "title": "Amazon S3",
           "modelRef": "amazonS3",
@@ -6410,7 +6410,7 @@
           "inEdges": [],
           "outEdges": [
             "98b8qx",
-            "1knq7v0"
+            "mxwq29"
           ],
           "title": "Azurite",
           "modelRef": "azurite",
@@ -6442,7 +6442,7 @@
           "inEdges": [],
           "outEdges": [
             "1aexgha",
-            "qjh4az"
+            "nh25li"
           ],
           "title": "Azure Blob Storage",
           "modelRef": "azureBlobStorage",
@@ -6506,7 +6506,7 @@
             "1bpfu9k"
           ],
           "outEdges": [
-            "164b2dq"
+            "8o013o"
           ],
           "title": "Unity Catalog Spark connector",
           "modelRef": "unityCatalogSpark",
@@ -6619,7 +6619,7 @@
             "nnjch2"
           ],
           "outEdges": [
-            "i4ec5m"
+            "1est51s"
           ],
           "title": "DuckDB unity_catalog extension",
           "modelRef": "duckdbUnityCatalog",
@@ -6739,8 +6739,8 @@
           "outEdges": [
             "1h9jz10",
             "1ym8qa6",
-            "1y4cfeo",
-            "ycgcej"
+            "im6amy",
+            "1vxufpy"
           ],
           "title": "delta-rs",
           "modelRef": "deltaRs",
@@ -6806,7 +6806,7 @@
           ],
           "outEdges": [
             "byeu7p",
-            "epvgru"
+            "1nipxsn"
           ],
           "title": "Apache DataFusion",
           "modelRef": "datafusion",
@@ -6925,19 +6925,19 @@
           "kind": "openSpecification"
         },
         {
-          "id": "azureBlobApi",
+          "id": "azureBlobSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "1knq7v0",
-            "qjh4az"
+            "mxwq29",
+            "nh25li"
           ],
           "outEdges": [
-            "1exg6xb"
+            "f41o8i"
           ],
           "title": "Azure Blob Storage API",
-          "modelRef": "azureBlobApi",
+          "modelRef": "azureBlobSpec",
           "shape": "rectangle",
           "color": "sky",
           "style": {
@@ -7066,29 +7066,29 @@
           "kind": "openSpecification"
         },
         {
-          "id": "ucSpec",
+          "id": "unityCatalogSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "164b2dq",
-            "1y4cfeo",
-            "i4ec5m",
-            "10ldfu2",
-            "f38oha",
-            "70ieuh",
-            "1c4wmgt",
-            "1giiwm5",
-            "1hdgbrw",
-            "1pglyt6",
-            "4akriq",
-            "1hllji5"
+            "8o013o",
+            "im6amy",
+            "1est51s",
+            "myn69c",
+            "6z5zw4",
+            "1xhri21",
+            "1nrbqw7",
+            "ralwkn",
+            "8evphi",
+            "gawsio",
+            "k5bifc",
+            "1v1swmf"
           ],
           "outEdges": [
-            "1qvv3jy"
+            "aqakf8"
           ],
           "title": "Unity Catalog",
-          "modelRef": "ucSpec",
+          "modelRef": "unityCatalogSpec",
           "shape": "rectangle",
           "color": "sky",
           "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
@@ -7111,21 +7111,21 @@
           "kind": "openSpecification"
         },
         {
-          "id": "s3Api",
+          "id": "s3Spec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "epvgru",
-            "ycgcej",
-            "dou7t3",
-            "1pupksk"
+            "1nipxsn",
+            "1vxufpy",
+            "pkqp96",
+            "1g9xi2h"
           ],
           "outEdges": [
-            "zreoid"
+            "baig88"
           ],
           "title": "S3 API",
-          "modelRef": "s3Api",
+          "modelRef": "s3Spec",
           "shape": "rectangle",
           "color": "sky",
           "style": {
@@ -7157,15 +7157,15 @@
             "11of8s4",
             "1pfr91s",
             "1n3wkt1",
-            "1qvv3jy",
+            "aqakf8",
             "lv7f45",
             "du97h0",
             "s3zh3y",
-            "zreoid",
+            "baig88",
             "17fnd8t",
             "1ffgkda",
             "fu4xbd",
-            "1exg6xb",
+            "f41o8i",
             "stivld",
             "1pqigbz",
             "byeu7p",
@@ -7179,9 +7179,9 @@
             "sr2fr2",
             "1ihflm",
             "103slfd",
-            "q72mhp",
+            "vej1af",
             "kxkjwp",
-            "1kreai1",
+            "3a9x8p",
             "gj9sso",
             "p5ap0i",
             "16rnjn2",
@@ -7272,7 +7272,7 @@
           }
         ]
       },
-      "hash": "UcHsgGsa-ARJue69yK9n8o8eThQZ3E6FOm6AJ4tWNGI"
+      "hash": "oPoucjg5QmxgeCT3j9cFaYa_1jMo97f9Wm_Tas2sYzI"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -7863,7 +7863,7 @@
           "kind": "capability"
         },
         {
-          "id": "ucSpec",
+          "id": "unityCatalogSpec",
           "parent": null,
           "level": 0,
           "children": [],
@@ -7880,7 +7880,7 @@
             "step-10"
           ],
           "title": "Unity Catalog",
-          "modelRef": "ucSpec",
+          "modelRef": "unityCatalogSpec",
           "shape": "rectangle",
           "color": "sky",
           "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
@@ -7938,7 +7938,7 @@
           "id": "step-01",
           "parent": null,
           "source": "lakehouse.queryEngine",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "GET /delta/v1/config (negotiate endpoints + protocol-version)",
           "relations": [],
           "color": "gray",
@@ -7954,7 +7954,7 @@
           "id": "step-02",
           "parent": null,
           "source": "lakehouse.queryEngine",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "POST .../staging-tables { name }",
           "relations": [],
           "color": "gray",
@@ -7969,7 +7969,7 @@
         {
           "id": "step-03",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.queryEngine",
           "label": "table-id, location, READ_WRITE credential, required-protocol",
           "relations": [],
@@ -8003,7 +8003,7 @@
           "id": "step-05",
           "parent": null,
           "source": "lakehouse.queryEngine",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "POST .../tables (promote: columns, protocol, properties)",
           "relations": [],
           "color": "gray",
@@ -8018,7 +8018,7 @@
         {
           "id": "step-06",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.queryEngine",
           "label": "loadTable response (table-uuid, etag, version 0)",
           "relations": [],
@@ -8036,7 +8036,7 @@
           "id": "step-07",
           "parent": null,
           "source": "lakehouse.queryEngine",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "GET .../tables/{table} (loadTable: current etag + uuid)",
           "relations": [],
           "color": "gray",
@@ -8068,7 +8068,7 @@
           "id": "step-09",
           "parent": null,
           "source": "lakehouse.queryEngine",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }",
           "relations": [],
           "color": "gray",
@@ -8083,7 +8083,7 @@
         {
           "id": "step-10",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.queryEngine",
           "label": "ratified — loadTable with the new commit",
           "relations": [],
@@ -8126,7 +8126,7 @@
           }
         ]
       },
-      "hash": "vv6mWmVS6DnIix68-QgF5bi8cjhVahSe0QacFWkFuXw"
+      "hash": "dgfvOImGzza8gBFF3WvglED2SCgRSe_CmN5rC50duEE"
     },
     "trustedComputeDeploy": {
       "_type": "deployment",
@@ -9640,13 +9640,13 @@
           "kind": "specifies"
         },
         {
-          "id": "cp7myr",
+          "id": "1h4glsp",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.catalog",
           "label": null,
           "relations": [
-            "1kyr5om"
+            "ygl5p8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9696,13 +9696,13 @@
           "kind": "specifies"
         },
         {
-          "id": "1ol3q9j",
+          "id": "12hek22",
           "parent": null,
-          "source": "s3Api",
+          "source": "s3Spec",
           "target": "lakehouse.objectStorage",
           "label": null,
           "relations": [
-            "1y21ww5"
+            "3qe188"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9710,13 +9710,13 @@
           "kind": "specifies"
         },
         {
-          "id": "13jsrzh",
+          "id": "zbgc40",
           "parent": null,
-          "source": "azureBlobApi",
+          "source": "azureBlobSpec",
           "target": "lakehouse.objectStorage",
           "label": null,
           "relations": [
-            "7710m6"
+            "1f7pxj7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9808,13 +9808,13 @@
           "kind": "realizes"
         },
         {
-          "id": "epvgru",
+          "id": "1nipxsn",
           "parent": null,
           "source": "datafusion",
-          "target": "s3Api",
+          "target": "s3Spec",
           "label": "reads data files via",
           "relations": [
-            "ujnrzk"
+            "dli0y5"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9850,13 +9850,13 @@
           "kind": "implements"
         },
         {
-          "id": "164b2dq",
+          "id": "8o013o",
           "parent": null,
           "source": "unityCatalogSpark",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "1slq0xm"
+            "1ppqk9s"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9934,13 +9934,13 @@
           "kind": "implements"
         },
         {
-          "id": "1y4cfeo",
+          "id": "im6amy",
           "parent": null,
           "source": "deltaRs",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "13anatu"
+            "1v24bpk"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9948,13 +9948,13 @@
           "kind": "consumes"
         },
         {
-          "id": "ycgcej",
+          "id": "1vxufpy",
           "parent": null,
           "source": "deltaRs",
-          "target": "s3Api",
+          "target": "s3Spec",
           "label": "reads/writes data files via",
           "relations": [
-            "1798swo"
+            "6v9i79"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10004,13 +10004,13 @@
           "kind": "realizes"
         },
         {
-          "id": "i4ec5m",
+          "id": "1est51s",
           "parent": null,
           "source": "duckdbUnityCatalog",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "ntxwyk"
+            "1rhf0p2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10102,13 +10102,13 @@
           "kind": "realizes"
         },
         {
-          "id": "10ldfu2",
+          "id": "myn69c",
           "parent": null,
           "source": "polars",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "o9u5r2"
+            "12jtbno"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10130,13 +10130,13 @@
           "kind": "realizes"
         },
         {
-          "id": "f38oha",
+          "id": "6z5zw4",
           "parent": null,
           "source": "daft",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "3ern6m"
+            "547ow4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10186,13 +10186,13 @@
           "kind": "consumes"
         },
         {
-          "id": "70ieuh",
+          "id": "1xhri21",
           "parent": null,
-          "source": "ucCli",
-          "target": "ucSpec",
+          "source": "unityCatalogCli",
+          "target": "unityCatalogSpec",
           "label": "calls",
           "relations": [
-            "1454aif"
+            "jlhtpz"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10200,13 +10200,13 @@
           "kind": "consumes"
         },
         {
-          "id": "1c4wmgt",
+          "id": "1nrbqw7",
           "parent": null,
           "source": "unityCatalogPythonSdk",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "calls",
           "relations": [
-            "1p3wqbr"
+            "1rjjgf1"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10214,13 +10214,13 @@
           "kind": "consumes"
         },
         {
-          "id": "1giiwm5",
+          "id": "ralwkn",
           "parent": null,
-          "source": "unityCatalogAI",
-          "target": "ucSpec",
+          "source": "unityCatalogAi",
+          "target": "unityCatalogSpec",
           "label": "calls",
           "relations": [
-            "vsh48t"
+            "1xe2r7r"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10228,13 +10228,13 @@
           "kind": "consumes"
         },
         {
-          "id": "1hdgbrw",
+          "id": "8evphi",
           "parent": null,
           "source": "unityCatalogLangChain",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "calls",
           "relations": [
-            "q3jom1"
+            "1soev7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10320,13 +10320,13 @@
           ]
         },
         {
-          "id": "1pglyt6",
+          "id": "gawsio",
           "parent": null,
           "source": "unityCatalogOSS",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": null,
           "relations": [
-            "1od4a60"
+            "1dfpof6"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10362,13 +10362,13 @@
           "kind": "realizes"
         },
         {
-          "id": "4akriq",
+          "id": "k5bifc",
           "parent": null,
           "source": "mangrove",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": null,
           "relations": [
-            "1r8w49m"
+            "1cppnb4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10422,13 +10422,13 @@
           ]
         },
         {
-          "id": "1hllji5",
+          "id": "1v1swmf",
           "parent": null,
           "source": "hydrofoil",
-          "target": "ucSpec",
+          "target": "unityCatalogSpec",
           "label": "resolves tables via",
           "relations": [
-            "1awc3dn"
+            "1ptilxd"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10625,13 +10625,13 @@
           "kind": "realizes"
         },
         {
-          "id": "dou7t3",
+          "id": "pkqp96",
           "parent": null,
           "source": "rustfs",
-          "target": "s3Api",
+          "target": "s3Spec",
           "label": null,
           "relations": [
-            "18118f6"
+            "wblhy7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10653,13 +10653,13 @@
           "kind": "realizes"
         },
         {
-          "id": "1pupksk",
+          "id": "1g9xi2h",
           "parent": null,
           "source": "amazonS3",
-          "target": "s3Api",
+          "target": "s3Spec",
           "label": null,
           "relations": [
-            "vuzolg"
+            "1kyxqex"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10681,13 +10681,13 @@
           "kind": "realizes"
         },
         {
-          "id": "1knq7v0",
+          "id": "mxwq29",
           "parent": null,
           "source": "azurite",
-          "target": "azureBlobApi",
+          "target": "azureBlobSpec",
           "label": "emulates",
           "relations": [
-            "19549nz"
+            "1x27ng2"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10709,13 +10709,13 @@
           "kind": "realizes"
         },
         {
-          "id": "qjh4az",
+          "id": "nh25li",
           "parent": null,
           "source": "azureBlobStorage",
-          "target": "azureBlobApi",
+          "target": "azureBlobSpec",
           "label": null,
           "relations": [
-            "1ohak4s"
+            "6z5vwx"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10976,7 +10976,7 @@
           "inEdges": [],
           "outEdges": [
             "1dpuyes",
-            "10ldfu2",
+            "myn69c",
             "viecbk"
           ],
           "title": "Polars",
@@ -11011,7 +11011,7 @@
           "inEdges": [],
           "outEdges": [
             "1fg1fao",
-            "f38oha"
+            "6z5zw4"
           ],
           "title": "Daft",
           "modelRef": "daft",
@@ -11071,16 +11071,16 @@
           "kind": "implementation"
         },
         {
-          "id": "ucCli",
+          "id": "unityCatalogCli",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "70ieuh"
+            "1xhri21"
           ],
           "title": "Unity Catalog CLI",
-          "modelRef": "ucCli",
+          "modelRef": "unityCatalogCli",
           "shape": "cylinder",
           "color": "muted",
           "style": {
@@ -11109,7 +11109,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1c4wmgt"
+            "1nrbqw7"
           ],
           "title": "Unity Catalog Python SDK",
           "modelRef": "unityCatalogPythonSdk",
@@ -11135,16 +11135,16 @@
           "kind": "implementation"
         },
         {
-          "id": "unityCatalogAI",
+          "id": "unityCatalogAi",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1giiwm5"
+            "ralwkn"
           ],
           "title": "unitycatalog-ai",
-          "modelRef": "unityCatalogAI",
+          "modelRef": "unityCatalogAi",
           "shape": "cylinder",
           "color": "muted",
           "style": {
@@ -11173,7 +11173,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1hdgbrw"
+            "8evphi"
           ],
           "title": "unitycatalog-langchain",
           "modelRef": "unityCatalogLangChain",
@@ -11241,7 +11241,7 @@
           "outEdges": [
             "r7p7df",
             "trju3y",
-            "1pglyt6",
+            "gawsio",
             "okzuqp"
           ],
           "title": "Unity Catalog (OSS)",
@@ -11279,7 +11279,7 @@
           "inEdges": [],
           "outEdges": [
             "9wcsu3",
-            "4akriq"
+            "k5bifc"
           ],
           "title": "mangrove",
           "modelRef": "mangrove",
@@ -11344,7 +11344,7 @@
           "outEdges": [
             "1d2b803",
             "1dgfsbt",
-            "1hllji5",
+            "1v1swmf",
             "gkxlb1",
             "1611igm"
           ],
@@ -11660,7 +11660,7 @@
           "inEdges": [],
           "outEdges": [
             "170rwje",
-            "dou7t3"
+            "pkqp96"
           ],
           "title": "RustFS",
           "modelRef": "rustfs",
@@ -11693,7 +11693,7 @@
           "inEdges": [],
           "outEdges": [
             "kwgd2x",
-            "1pupksk"
+            "1g9xi2h"
           ],
           "title": "Amazon S3",
           "modelRef": "amazonS3",
@@ -11725,7 +11725,7 @@
           "inEdges": [],
           "outEdges": [
             "1qxey3v",
-            "1knq7v0"
+            "mxwq29"
           ],
           "title": "Azurite",
           "modelRef": "azurite",
@@ -11757,7 +11757,7 @@
           "inEdges": [],
           "outEdges": [
             "1oezqmk",
-            "qjh4az"
+            "nh25li"
           ],
           "title": "Azure Blob Storage",
           "modelRef": "azureBlobStorage",
@@ -11821,7 +11821,7 @@
             "1bpfu9k"
           ],
           "outEdges": [
-            "164b2dq"
+            "8o013o"
           ],
           "title": "Unity Catalog Spark connector",
           "modelRef": "unityCatalogSpark",
@@ -11934,7 +11934,7 @@
             "nnjch2"
           ],
           "outEdges": [
-            "i4ec5m"
+            "1est51s"
           ],
           "title": "DuckDB unity_catalog extension",
           "modelRef": "duckdbUnityCatalog",
@@ -12054,8 +12054,8 @@
           "outEdges": [
             "1cchpk7",
             "1ym8qa6",
-            "1y4cfeo",
-            "ycgcej"
+            "im6amy",
+            "1vxufpy"
           ],
           "title": "delta-rs",
           "modelRef": "deltaRs",
@@ -12121,7 +12121,7 @@
           ],
           "outEdges": [
             "ipwqn",
-            "epvgru"
+            "1nipxsn"
           ],
           "title": "Apache DataFusion",
           "modelRef": "datafusion",
@@ -12240,19 +12240,19 @@
           "kind": "openSpecification"
         },
         {
-          "id": "azureBlobApi",
+          "id": "azureBlobSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "1knq7v0",
-            "qjh4az"
+            "mxwq29",
+            "nh25li"
           ],
           "outEdges": [
-            "13jsrzh"
+            "zbgc40"
           ],
           "title": "Azure Blob Storage API",
-          "modelRef": "azureBlobApi",
+          "modelRef": "azureBlobSpec",
           "shape": "rectangle",
           "color": "sky",
           "style": {
@@ -12381,29 +12381,29 @@
           "kind": "openSpecification"
         },
         {
-          "id": "ucSpec",
+          "id": "unityCatalogSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "164b2dq",
-            "1y4cfeo",
-            "i4ec5m",
-            "10ldfu2",
-            "f38oha",
-            "70ieuh",
-            "1c4wmgt",
-            "1giiwm5",
-            "1hdgbrw",
-            "1pglyt6",
-            "4akriq",
-            "1hllji5"
+            "8o013o",
+            "im6amy",
+            "1est51s",
+            "myn69c",
+            "6z5zw4",
+            "1xhri21",
+            "1nrbqw7",
+            "ralwkn",
+            "8evphi",
+            "gawsio",
+            "k5bifc",
+            "1v1swmf"
           ],
           "outEdges": [
-            "cp7myr"
+            "1h4glsp"
           ],
           "title": "Unity Catalog",
-          "modelRef": "ucSpec",
+          "modelRef": "unityCatalogSpec",
           "shape": "rectangle",
           "color": "sky",
           "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
@@ -12426,21 +12426,21 @@
           "kind": "openSpecification"
         },
         {
-          "id": "s3Api",
+          "id": "s3Spec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "epvgru",
-            "ycgcej",
-            "dou7t3",
-            "1pupksk"
+            "1nipxsn",
+            "1vxufpy",
+            "pkqp96",
+            "1g9xi2h"
           ],
           "outEdges": [
-            "1ol3q9j"
+            "12hek22"
           ],
           "title": "S3 API",
-          "modelRef": "s3Api",
+          "modelRef": "s3Spec",
           "shape": "rectangle",
           "color": "sky",
           "style": {
@@ -12484,12 +12484,12 @@
           "inEdges": [
             "1qkmdr7",
             "67455y",
-            "cp7myr",
+            "1h4glsp",
             "dton7c",
             "g3s102",
             "1p0amr9",
-            "1ol3q9j",
-            "13jsrzh",
+            "12hek22",
+            "zbgc40",
             "15tgtjm",
             "1g7d124",
             "fkkefb",
@@ -12804,7 +12804,7 @@
             "1tnkhx9",
             "zvpyvr",
             "1078ltw",
-            "cp7myr",
+            "1h4glsp",
             "dton7c",
             "1ylu6cf",
             "r7p7df",
@@ -12944,8 +12944,8 @@
           "children": [],
           "inEdges": [
             "1u0v1f",
-            "1ol3q9j",
-            "13jsrzh",
+            "12hek22",
+            "zbgc40",
             "170rwje",
             "kwgd2x",
             "1qxey3v",
@@ -13053,7 +13053,7 @@
           }
         ]
       },
-      "hash": "MZAhbqVa19wBMwJ9HgVe_sjDPubmnUX3FPlymFy4kK4"
+      "hash": "IoaqKgD59cD19S1JkfJdSPUyL-fVEQaxsQweiLZSICU"
     },
     "concernMatrix": {
       "_type": "element",
@@ -13211,13 +13211,13 @@
           "kind": "appliesTo"
         },
         {
-          "id": "xh4waj",
+          "id": "1r9dhlf",
           "parent": null,
           "source": "lakehouse.governance.authorization",
-          "target": "lakehouse.registeredFunction",
+          "target": "lakehouse.function",
           "label": "grants access to",
           "relations": [
-            "1lcxz92"
+            "e212e6"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13463,13 +13463,13 @@
           "kind": "dependsOn"
         },
         {
-          "id": "evzpms",
+          "id": "9rv7n0",
           "parent": null,
-          "source": "lakehouse.registeredFunction",
+          "source": "lakehouse.function",
           "target": "lakehouse.queryEngine",
           "label": "resolved and run by",
           "relations": [
-            "r2u3mo"
+            "131n1c8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -13589,13 +13589,13 @@
           "kind": "registeredIn"
         },
         {
-          "id": "10gn1rn",
+          "id": "qumt7f",
           "parent": null,
-          "source": "lakehouse.registeredFunction",
+          "source": "lakehouse.function",
           "target": "lakehouse.catalog",
           "label": null,
           "relations": [
-            "1vej2d9"
+            "kry251"
           ],
           "color": "gray",
           "line": "dashed",
@@ -13762,7 +13762,7 @@
             "28gemq",
             "16ssraw",
             "1dsrbmh",
-            "xh4waj",
+            "1r9dhlf",
             "1i3j23j",
             "8kybeh",
             "11igw56",
@@ -13837,7 +13837,7 @@
             "28gemq",
             "16ssraw",
             "1dsrbmh",
-            "xh4waj",
+            "1r9dhlf",
             "1i3j23j",
             "8kybeh",
             "11igw56",
@@ -13977,19 +13977,19 @@
           "kind": "asset"
         },
         {
-          "id": "lakehouse.registeredFunction",
+          "id": "lakehouse.function",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "xh4waj"
+            "1r9dhlf"
           ],
           "outEdges": [
-            "evzpms",
-            "10gn1rn"
+            "9rv7n0",
+            "qumt7f"
           ],
           "title": "Function",
-          "modelRef": "lakehouse.registeredFunction",
+          "modelRef": "lakehouse.function",
           "shape": "rectangle",
           "color": "green",
           "style": {
@@ -14282,7 +14282,7 @@
             "m2gefw",
             "se6qb1",
             "fpqd3b",
-            "evzpms",
+            "9rv7n0",
             "gx91at"
           ],
           "outEdges": [
@@ -14321,7 +14321,7 @@
             "1uzm9cq",
             "w6w3ao",
             "1mjqvbl",
-            "10gn1rn",
+            "qumt7f",
             "1cz1lcn",
             "1v6wcxd",
             "3gvuuq",
@@ -14354,7 +14354,7 @@
           "kind": "capability"
         }
       ],
-      "hash": "pjrpPRKQRx9vT1-laZLY95IHu_PLJ_rcfxv48y9p45Y"
+      "hash": "TSATp3ThryZ4zmrtUCTf_tOnlY3CBb0TFK53qhOqvRI"
     },
     "assetGovernanceBreadth": {
       "_type": "element",
@@ -14372,13 +14372,13 @@
       },
       "edges": [
         {
-          "id": "y30z83",
+          "id": "42oc5l",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.namespace",
           "label": null,
           "relations": [
-            "130fm7d"
+            "2tt48j"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14386,13 +14386,13 @@
           "kind": "governs"
         },
         {
-          "id": "1xgx7ym",
+          "id": "fthaac",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.table",
           "label": null,
           "relations": [
-            "r074if"
+            "uv3lot"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14400,13 +14400,13 @@
           "kind": "governs"
         },
         {
-          "id": "10wtx3n",
+          "id": "sv9dl5",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.sqlView",
           "label": null,
           "relations": [
-            "ohrcxb"
+            "1j7rtx1"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14414,13 +14414,13 @@
           "kind": "governs"
         },
         {
-          "id": "11b4zkp",
+          "id": "yv2v0j",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.metricView",
           "label": null,
           "relations": [
-            "wv3m22"
+            "saotdc"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14428,13 +14428,13 @@
           "kind": "governs"
         },
         {
-          "id": "if3ptk",
+          "id": "kqkmhu",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.volume",
           "label": null,
           "relations": [
-            "18li8n4"
+            "7lvz8a"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14442,13 +14442,13 @@
           "kind": "governs"
         },
         {
-          "id": "1wiz13u",
+          "id": "1pxc088",
           "parent": null,
-          "source": "ucSpec",
-          "target": "lakehouse.registeredFunction",
+          "source": "unityCatalogSpec",
+          "target": "lakehouse.function",
           "label": null,
           "relations": [
-            "1vs51d1"
+            "1etb2l3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14456,13 +14456,13 @@
           "kind": "governs"
         },
         {
-          "id": "1ruoj8e",
+          "id": "4h7gqs",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.mlModel",
           "label": null,
           "relations": [
-            "1ymhbz4"
+            "dsr5ve"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14470,13 +14470,13 @@
           "kind": "governs"
         },
         {
-          "id": "xp5wpk",
+          "id": "17x1ruq",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.agentSkill",
           "label": null,
           "relations": [
-            "v70pd1"
+            "1h0c4an"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14484,13 +14484,13 @@
           "kind": "governs"
         },
         {
-          "id": "1anlaor",
+          "id": "5bfep",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.credential",
           "label": null,
           "relations": [
-            "1dh4b3d"
+            "28ghrn"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14498,13 +14498,13 @@
           "kind": "governs"
         },
         {
-          "id": "18n8zzk",
+          "id": "k0cofe",
           "parent": null,
-          "source": "ucSpec",
+          "source": "unityCatalogSpec",
           "target": "lakehouse.externalLocation",
           "label": null,
           "relations": [
-            "qhekl6"
+            "12razog"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14556,25 +14556,25 @@
       ],
       "nodes": [
         {
-          "id": "ucSpec",
+          "id": "unityCatalogSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "y30z83",
-            "1xgx7ym",
-            "10wtx3n",
-            "11b4zkp",
-            "if3ptk",
-            "1wiz13u",
-            "1ruoj8e",
-            "xp5wpk",
-            "1anlaor",
-            "18n8zzk"
+            "42oc5l",
+            "fthaac",
+            "sv9dl5",
+            "yv2v0j",
+            "kqkmhu",
+            "1pxc088",
+            "4h7gqs",
+            "17x1ruq",
+            "5bfep",
+            "k0cofe"
           ],
           "title": "Unity Catalog",
-          "modelRef": "ucSpec",
+          "modelRef": "unityCatalogSpec",
           "shape": "rectangle",
           "color": "sky",
           "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
@@ -14639,23 +14639,23 @@
             "lakehouse.sqlView",
             "lakehouse.metricView",
             "lakehouse.volume",
-            "lakehouse.registeredFunction",
+            "lakehouse.function",
             "lakehouse.mlModel",
             "lakehouse.agentSkill",
             "lakehouse.credential",
             "lakehouse.externalLocation"
           ],
           "inEdges": [
-            "y30z83",
-            "1xgx7ym",
-            "10wtx3n",
-            "11b4zkp",
-            "if3ptk",
-            "1wiz13u",
-            "1ruoj8e",
-            "xp5wpk",
-            "1anlaor",
-            "18n8zzk",
+            "42oc5l",
+            "fthaac",
+            "sv9dl5",
+            "yv2v0j",
+            "kqkmhu",
+            "1pxc088",
+            "4h7gqs",
+            "17x1ruq",
+            "5bfep",
+            "k0cofe",
             "1mspuzs",
             "91p14l",
             "1olk2js"
@@ -14687,7 +14687,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "y30z83",
+            "42oc5l",
             "1mspuzs"
           ],
           "outEdges": [],
@@ -14716,7 +14716,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "1xgx7ym",
+            "fthaac",
             "91p14l"
           ],
           "outEdges": [],
@@ -14745,7 +14745,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "10wtx3n",
+            "sv9dl5",
             "1olk2js"
           ],
           "outEdges": [],
@@ -14774,7 +14774,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "11b4zkp"
+            "yv2v0j"
           ],
           "outEdges": [],
           "title": "Metric view",
@@ -14802,7 +14802,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "if3ptk"
+            "kqkmhu"
           ],
           "outEdges": [],
           "title": "Volume",
@@ -14826,16 +14826,16 @@
           "kind": "asset"
         },
         {
-          "id": "lakehouse.registeredFunction",
+          "id": "lakehouse.function",
           "parent": "lakehouse",
           "level": 1,
           "children": [],
           "inEdges": [
-            "1wiz13u"
+            "1pxc088"
           ],
           "outEdges": [],
           "title": "Function",
-          "modelRef": "lakehouse.registeredFunction",
+          "modelRef": "lakehouse.function",
           "shape": "rectangle",
           "color": "green",
           "style": {
@@ -14859,7 +14859,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "1ruoj8e"
+            "4h7gqs"
           ],
           "outEdges": [],
           "title": "Model",
@@ -14887,7 +14887,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "xp5wpk"
+            "17x1ruq"
           ],
           "outEdges": [],
           "title": "Agent skill",
@@ -14918,7 +14918,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "1anlaor"
+            "5bfep"
           ],
           "outEdges": [],
           "title": "Credential",
@@ -14946,7 +14946,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "18n8zzk"
+            "k0cofe"
           ],
           "outEdges": [],
           "title": "External location",
@@ -14981,7 +14981,7 @@
           }
         ]
       },
-      "hash": "L3atyqgHE0CAz5sXH8X21dZc6AAHx6eG4QKFMshDm6g"
+      "hash": "vJCQNE1B076ssLLbFL8qeOXHcpz4uGBhfjr19Xz6rtM"
     },
     "assetCapabilities": {
       "_type": "element",
@@ -15139,13 +15139,13 @@
           "kind": "registeredIn"
         },
         {
-          "id": "10gn1rn",
+          "id": "qumt7f",
           "parent": null,
-          "source": "lakehouse.registeredFunction",
+          "source": "lakehouse.function",
           "target": "lakehouse.catalog",
           "label": null,
           "relations": [
-            "1vej2d9"
+            "kry251"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15237,13 +15237,13 @@
           "kind": "dependsOn"
         },
         {
-          "id": "evzpms",
+          "id": "9rv7n0",
           "parent": null,
-          "source": "lakehouse.registeredFunction",
+          "source": "lakehouse.function",
           "target": "lakehouse.queryEngine",
           "label": "resolved and run by",
           "relations": [
-            "r2u3mo"
+            "131n1c8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15487,17 +15487,17 @@
           "kind": "asset"
         },
         {
-          "id": "lakehouse.registeredFunction",
+          "id": "lakehouse.function",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "10gn1rn",
-            "evzpms"
+            "qumt7f",
+            "9rv7n0"
           ],
           "title": "Function",
-          "modelRef": "lakehouse.registeredFunction",
+          "modelRef": "lakehouse.function",
           "shape": "rectangle",
           "color": "green",
           "style": {
@@ -15733,7 +15733,7 @@
           "inEdges": [
             "se6qb1",
             "fpqd3b",
-            "evzpms"
+            "9rv7n0"
           ],
           "outEdges": [],
           "title": "Query engine",
@@ -15794,7 +15794,7 @@
             "1uzm9cq",
             "w6w3ao",
             "1mjqvbl",
-            "10gn1rn",
+            "qumt7f",
             "1cz1lcn",
             "1v6wcxd",
             "3gvuuq",
@@ -15885,7 +15885,7 @@
           "kind": "capability"
         }
       ],
-      "hash": "j7csN4l_C0EeBjWkgaEwyhvYydUdAzTvsdluqGfH7ZQ"
+      "hash": "UXhyRE4vZDnuxG_bb3xMGpK1SZG2dBw7eYl4lj3Ul3M"
     }
   },
   "deployments": {

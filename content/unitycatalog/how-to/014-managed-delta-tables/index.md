@@ -8,7 +8,7 @@ references:
   - deltaSpec
   - deltaSpark
   - duckdb
-  - ucSpec
+  - unityCatalogSpec
 status: draft
 ---
 

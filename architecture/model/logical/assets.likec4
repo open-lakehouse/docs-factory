@@ -74,7 +74,7 @@ model {
     volume -[registeredIn]-> catalog
     volume -[locatedAt]-> objectStorage
 
-    registeredFunction = asset "Function" {
+    function = asset "Function" {
       #public
       summary "A governed, reusable unit of computation."
       description "
@@ -83,8 +83,8 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
-    registeredFunction -[registeredIn]-> catalog
-    registeredFunction -[dependsOn]-> queryEngine "resolved and run by"
+    function -[registeredIn]-> catalog
+    function -[dependsOn]-> queryEngine "resolved and run by"
 
     mlModel = asset "Model" {
       #public
@@ -143,16 +143,16 @@ model {
     externalLocation -[dependsOn]-> credential "reached with"
   }
 
-  ucSpec -[governs]-> lakehouse.namespace
-  ucSpec -[governs]-> lakehouse.table
-  ucSpec -[governs]-> lakehouse.volume
-  ucSpec -[governs]-> lakehouse.registeredFunction
-  ucSpec -[governs]-> lakehouse.mlModel
-  ucSpec -[governs]-> lakehouse.agentSkill
-  ucSpec -[governs]-> lakehouse.sqlView
-  ucSpec -[governs]-> lakehouse.metricView
-  ucSpec -[governs]-> lakehouse.credential
-  ucSpec -[governs]-> lakehouse.externalLocation
+  unityCatalogSpec -[governs]-> lakehouse.namespace
+  unityCatalogSpec -[governs]-> lakehouse.table
+  unityCatalogSpec -[governs]-> lakehouse.volume
+  unityCatalogSpec -[governs]-> lakehouse.function
+  unityCatalogSpec -[governs]-> lakehouse.mlModel
+  unityCatalogSpec -[governs]-> lakehouse.agentSkill
+  unityCatalogSpec -[governs]-> lakehouse.sqlView
+  unityCatalogSpec -[governs]-> lakehouse.metricView
+  unityCatalogSpec -[governs]-> lakehouse.credential
+  unityCatalogSpec -[governs]-> lakehouse.externalLocation
 
   icebergRestSpec -[governs]-> lakehouse.namespace
   icebergRestSpec -[governs]-> lakehouse.table

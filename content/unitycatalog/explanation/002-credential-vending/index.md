@@ -8,7 +8,7 @@ references:
   - lakehouse.governance
   - lakehouse.credentialIssuer
   - lakehouse.objectStorage
-  - s3Api
+  - s3Spec
 status: ready
 ---
 

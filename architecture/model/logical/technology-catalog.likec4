@@ -32,7 +32,7 @@ model {
   }
   icebergSpec -[specifies]-> lakehouse.tableFormat
 
-  ucSpec = openSpecification "Unity Catalog" {
+  unityCatalogSpec = openSpecification "Unity Catalog" {
     #public
     description "
       Open catalog specification for data & AI:
@@ -45,7 +45,7 @@ model {
       icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
     }
   }
-  ucSpec -[specifies]-> lakehouse.catalog
+  unityCatalogSpec -[specifies]-> lakehouse.catalog
 
   icebergRestSpec = openSpecification "Iceberg REST Catalog" {
     #public
@@ -74,12 +74,12 @@ model {
   }
   parquetSpec -[specifies]-> lakehouse.fileFormat
 
-  s3Api = openSpecification "S3 API" {
+  s3Spec = openSpecification "S3 API" {
     #public
     description "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement."
     link https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html
   }
-  s3Api -[specifies]-> lakehouse.objectStorage
+  s3Spec -[specifies]-> lakehouse.objectStorage
 
   // Query APIs: how a client reaches a served engine (a "warehouse" is a
   // query engine behind one of these). Only protocols something here implements.
@@ -101,11 +101,11 @@ model {
   }
   openCypherSpec -[specifies]-> lakehouse.queryEngine "specifies graph queries"
 
-  azureBlobApi = openSpecification "Azure Blob Storage API" {
+  azureBlobSpec = openSpecification "Azure Blob Storage API" {
     description "The REST interface to Azure Blob Storage, also served by local emulators."
     link https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api
   }
-  azureBlobApi -[specifies]-> lakehouse.objectStorage
+  azureBlobSpec -[specifies]-> lakehouse.objectStorage
 
   openLineageSpec = openSpecification "OpenLineage" {
     description "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
@@ -130,7 +130,7 @@ model {
     }
   }
   datafusion -[realizes]-> lakehouse.queryEngine
-  datafusion -[consumes]-> s3Api "reads data files via"
+  datafusion -[consumes]-> s3Spec "reads data files via"
 
   apacheSpark = implementation "Apache Spark" {
     #service #public
@@ -163,7 +163,7 @@ model {
     }
   }
   apacheSpark -[integrates]-> unityCatalogSpark
-  unityCatalogSpark -[consumes]-> ucSpec "resolves tables via"
+  unityCatalogSpark -[consumes]-> unityCatalogSpec "resolves tables via"
 
   icebergSparkRuntime = implementation "Iceberg Spark runtime" {
     #library #public
@@ -190,8 +190,8 @@ model {
   }
   deltaRs -[implements]-> deltaSpec
   deltaRs -[realizes]-> lakehouse.tableFormat
-  deltaRs -[consumes]-> ucSpec "resolves tables via"
-  deltaRs -[consumes]-> s3Api "reads/writes data files via"
+  deltaRs -[consumes]-> unityCatalogSpec "resolves tables via"
+  deltaRs -[consumes]-> s3Spec "reads/writes data files via"
   deltaRs -[operatesOn]-> lakehouse.table "reads and changes"
 
   deltaSpark = implementation "Delta Spark" {
@@ -231,7 +231,7 @@ model {
     }
   }
   duckdb -[integrates]-> duckdbUnityCatalog
-  duckdbUnityCatalog -[consumes]-> ucSpec "resolves tables via"
+  duckdbUnityCatalog -[consumes]-> unityCatalogSpec "resolves tables via"
 
   duckdbDelta = implementation "DuckDB delta extension" {
     #library #public
@@ -277,7 +277,7 @@ model {
   }
   polars -[realizes]-> lakehouse.queryEngine
   polars -[integrates]-> deltaRs "reads and writes Delta tables through"
-  polars -[consumes]-> ucSpec "resolves tables via"
+  polars -[consumes]-> unityCatalogSpec "resolves tables via"
   polars -[operatesOn]-> lakehouse.table "reads and appends"
 
   daft = implementation "Daft" {
@@ -287,7 +287,7 @@ model {
     link https://docs.daft.ai/en/stable/connectors/unity_catalog/
   }
   daft -[realizes]-> lakehouse.queryEngine
-  daft -[consumes]-> ucSpec "resolves tables via"
+  daft -[consumes]-> unityCatalogSpec "resolves tables via"
   daft -[operatesOn]-> lakehouse.table "lists and reads"
 
   pyIceberg = implementation "PyIceberg" {
@@ -304,18 +304,18 @@ model {
 
   // Unity Catalog's local clients are separate interfaces even though they
   // ship from the same upstream repository and release.
-  ucCli = implementation "Unity Catalog CLI" {
+  unityCatalogCli = implementation "Unity Catalog CLI" {
     #client #public
 
     description "Command-line client for managing Unity Catalog objects and storage access."
     link https://docs.unitycatalog.io/usage/cli/
   }
-  ucCli -[consumes]-> ucSpec "calls"
-  ucCli -[operatesOn]-> lakehouse.namespace "manages"
-  ucCli -[operatesOn]-> lakehouse.table "manages"
-  ucCli -[operatesOn]-> lakehouse.volume "manages"
-  ucCli -[operatesOn]-> lakehouse.credential "manages"
-  ucCli -[operatesOn]-> lakehouse.externalLocation "manages"
+  unityCatalogCli -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogCli -[operatesOn]-> lakehouse.namespace "manages"
+  unityCatalogCli -[operatesOn]-> lakehouse.table "manages"
+  unityCatalogCli -[operatesOn]-> lakehouse.volume "manages"
+  unityCatalogCli -[operatesOn]-> lakehouse.credential "manages"
+  unityCatalogCli -[operatesOn]-> lakehouse.externalLocation "manages"
 
   unityCatalogPythonSdk = implementation "Unity Catalog Python SDK" {
     #client #public
@@ -323,7 +323,7 @@ model {
     description "Generated asynchronous Python client for Unity Catalog REST APIs."
     link https://pypi.org/project/unitycatalog-client/
   }
-  unityCatalogPythonSdk -[consumes]-> ucSpec "calls"
+  unityCatalogPythonSdk -[consumes]-> unityCatalogSpec "calls"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.namespace "manages"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.table "manages"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.volume "manages"
@@ -331,22 +331,22 @@ model {
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.credential "manages"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.externalLocation "manages"
 
-  unityCatalogAI = implementation "unitycatalog-ai" {
+  unityCatalogAi = implementation "unitycatalog-ai" {
     #client #public
 
     description "Python client library for registering and executing functions through Unity Catalog."
     link https://github.com/unitycatalog/unitycatalog/tree/main/ai
   }
-  unityCatalogAI -[consumes]-> ucSpec "calls"
-  unityCatalogAI -[operatesOn]-> lakehouse.registeredFunction "registers and executes"
+  unityCatalogAi -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogAi -[operatesOn]-> lakehouse.function "registers and executes"
 
   unityCatalogLangChain = implementation "unitycatalog-langchain" {
     #client #public
     description "LangChain integration that turns Unity Catalog functions into tools an agent can call."
     link https://pypi.org/project/unitycatalog-langchain/
   }
-  unityCatalogLangChain -[consumes]-> ucSpec "calls"
-  unityCatalogLangChain -[operatesOn]-> lakehouse.registeredFunction "exposes as agent tools"
+  unityCatalogLangChain -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogLangChain -[operatesOn]-> lakehouse.function "exposes as agent tools"
 
   // Catalog implementations --------------------------------------------------
   lakekeeper = implementation "Lakekeeper" {
@@ -377,7 +377,7 @@ model {
       icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
     }
   }
-  unityCatalogOSS -[implements]-> ucSpec
+  unityCatalogOSS -[implements]-> unityCatalogSpec
   unityCatalogOSS -[implements]-> icebergRestSpec "serves Iceberg tables through"
   unityCatalogOSS -[realizes]-> lakehouse.catalog
   unityCatalogOSS -[realizes]-> lakehouse.governance.authorization "grants + privileges on securables"
@@ -395,7 +395,7 @@ model {
     description "Pluggable framework for Unity Catalog APIs: governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
     link https://github.com/open-lakehouse/mangrove
   }
-  mangrove -[implements]-> ucSpec
+  mangrove -[implements]-> unityCatalogSpec
   mangrove -[realizes]-> lakehouse.catalog
 
   // Model-tracking implementation --------------------------------------------
@@ -424,7 +424,7 @@ model {
   }
   hydrofoil -[realizes]-> lakehouse.queryEngine
   hydrofoil -[implements]-> flightSqlSpec "serves"
-  hydrofoil -[consumes]-> ucSpec "resolves tables via"
+  hydrofoil -[consumes]-> unityCatalogSpec "resolves tables via"
   hydrofoil -[builtOn]-> datafusion
   hydrofoil -[realizes]-> lakehouse.governance.authorization "coarse allow/deny gate before planning" {
     #partial
@@ -525,7 +525,7 @@ model {
     description "S3-compatible object storage server written in Rust."
     link https://rustfs.com
   }
-  rustfs -[implements]-> s3Api
+  rustfs -[implements]-> s3Spec
   rustfs -[realizes]-> lakehouse.objectStorage
 
   amazonS3 = implementation "Amazon S3" {
@@ -534,7 +534,7 @@ model {
     description "AWS's managed object storage service; the origin of the S3 API."
     link https://aws.amazon.com/s3/
   }
-  amazonS3 -[implements]-> s3Api
+  amazonS3 -[implements]-> s3Spec
   amazonS3 -[realizes]-> lakehouse.objectStorage
 
   azurite = implementation "Azurite" {
@@ -543,7 +543,7 @@ model {
     description "Local emulator for Azure Storage, including the Blob service."
     link https://github.com/Azure/Azurite
   }
-  azurite -[implements]-> azureBlobApi "emulates"
+  azurite -[implements]-> azureBlobSpec "emulates"
   azurite -[realizes]-> lakehouse.objectStorage
 
   azureBlobStorage = implementation "Azure Blob Storage" {
@@ -552,7 +552,7 @@ model {
     description "Azure's managed object storage service."
     link https://azure.microsoft.com/products/storage/blobs
   }
-  azureBlobStorage -[implements]-> azureBlobApi
+  azureBlobStorage -[implements]-> azureBlobSpec
   azureBlobStorage -[realizes]-> lakehouse.objectStorage
 
   // Omnigent — Databricks' Apache-2.0 AI-agent meta-harness. Deliberately has NO

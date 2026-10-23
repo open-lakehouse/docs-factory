@@ -30,8 +30,8 @@ vocabulary held up; how it was applied did not.
 - **`instanceOf` pointed at both altitudes.** Generated deployment nodes are
   instances of implementations; hand-drawn ones were instances of capabilities.
 - **Titles repeated the kind** ("realizes the query-engine capability",
-  "implements", "governs"), and ids followed no rule (`ucSpec` vs `s3Api`,
-  `ucCli` vs `unityCatalogPythonSdk`).
+  "implements", "governs"), and ids followed no rule (`unityCatalogSpec` vs `s3Spec`,
+  `unityCatalogCli` vs `unityCatalogPythonSdk`).
 - Declared vocabulary went unused: the `store` element kind, the `browser`
   deployment node, `partOf`, and `reads`.
 

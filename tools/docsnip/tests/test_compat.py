@@ -9,7 +9,7 @@ import pytest
 from docsnip import compat
 
 _MATRIX = """\
-spec: ucSpec
+spec: unityCatalogSpec
 interfaces:
   spark: {label: Spark, pin: pyspark, package: pyspark, model: apacheSpark}
   duckdb: {label: DuckDB, package: duckdb}
@@ -375,7 +375,7 @@ def test_evidence_can_cite_another_projects_page(tmp_path) -> None:
 
 _MODEL = {
     "elements": {
-        "ucSpec": {"kind": "openSpecification", "title": "Unity Catalog"},
+        "unityCatalogSpec": {"kind": "openSpecification", "title": "Unity Catalog"},
         "icebergRestSpec": {"kind": "openSpecification", "title": "Iceberg REST"},
         "apacheSpark": {"kind": "implementation", "title": "Apache Spark"},
         "lakehouse.catalog": {"kind": "capability", "title": "Catalog"},
@@ -386,16 +386,16 @@ _MODEL = {
         "r1": {
             "kind": "consumes",
             "source": {"model": "apacheSpark"},
-            "target": {"model": "ucSpec"},
+            "target": {"model": "unityCatalogSpec"},
         },
         "r2": {
             "kind": "governs",
-            "source": {"model": "ucSpec"},
+            "source": {"model": "unityCatalogSpec"},
             "target": {"model": "lakehouse.table"},
         },
         "r3": {
             "kind": "governs",
-            "source": {"model": "ucSpec"},
+            "source": {"model": "unityCatalogSpec"},
             "target": {"model": "lakehouse.volume"},
         },
         "r4": {
@@ -416,8 +416,8 @@ families:
   table:
     asset: lakehouse.table
     requires:
-      client: { consumes: [ucSpec] }
-      catalog: { implements: [ucSpec] }
+      client: { consumes: [unityCatalogSpec] }
+      catalog: { implements: [unityCatalogSpec] }
 """
 
 
@@ -469,7 +469,10 @@ def test_a_journey_inherits_its_family_and_can_override_it(tmp_path) -> None:
             "{title: R, summary: S, requires: {client: {consumes: [lakehouse.catalog]}}}",
             "expected openSpecification",
         ),
-        ("{title: R, summary: S, requires: {client: {uses: [ucSpec]}}}", "unknown"),
+        (
+            "{title: R, summary: S, requires: {client: {uses: [unityCatalogSpec]}}}",
+            "unknown",
+        ),
         ("{title: R, summary: S, asset: lakehouse.nope}", "not in the estate model"),
     ],
 )
@@ -502,7 +505,7 @@ def test_a_journey_names_the_spec_feature_it_exercises(tmp_path) -> None:
     [
         ("{spec: icebergRestSpec, name: nope}", "is not a icebergRestSpec feature"),
         ("{spec: apacheSpark, name: loadTable}", "expected openSpecification"),
-        ("{spec: ucSpec, name: loadTable}", "has no specFeatures"),
+        ("{spec: unityCatalogSpec, name: loadTable}", "has no specFeatures"),
         (
             "{spec: icebergRestSpec, name: loadTable, version: 3}",
             "unknown key 'version'",
@@ -524,7 +527,7 @@ def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:
         {
             "source": "apacheSpark",
             "kind": "consumes",
-            "target": "ucSpec",
+            "target": "unityCatalogSpec",
             "interfaces": ["spark"],
             "journeys": ["table.read"],
         },
@@ -538,14 +541,14 @@ def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:
     ]
     kinds = [d["kind"] for d in data["diagnostics"]]
     assert "missing-edge" not in kinds
-    # ucSpec governs volumes too, and no verified journey acts on one.
+    # unityCatalogSpec governs volumes too, and no verified journey acts on one.
     assert {"kind": "unverified-asset", "asset": "lakehouse.volume"} in data[
         "diagnostics"
     ]
 
 
 def _with_integration(root: Path, *, integrated: bool = True) -> Path:
-    """Move Spark's ucSpec edge onto an integration the interface names."""
+    """Move Spark's unityCatalogSpec edge onto an integration the interface names."""
     model = json.loads(json.dumps(_MODEL))
     model["elements"]["ucSpark"] = {"kind": "implementation", "title": "UC Spark"}
     model["relations"]["r1"]["source"] = {"model": "ucSpark"}
@@ -569,7 +572,7 @@ def test_an_integration_provides_its_engines_spec_edge(tmp_path) -> None:
     data = _artifact(_with_integration(_modeled(_repo(tmp_path, _SPARK_READS))))
     assert data["interfaces"][0]["integrations"] == ["ucSpark"]
     edges = {(e["source"], e["kind"], e["target"]) for e in data["verifiedEdges"]}
-    assert ("ucSpark", "consumes", "ucSpec") in edges
+    assert ("ucSpark", "consumes", "unityCatalogSpec") in edges
     assert "missing-edge" not in [d["kind"] for d in data["diagnostics"]]
 
 
@@ -580,7 +583,7 @@ def test_the_engines_own_spec_edge_wins_over_an_integrations(tmp_path) -> None:
     model["relations"]["r7"] = {
         "kind": "consumes",
         "source": {"model": "apacheSpark"},
-        "target": {"model": "ucSpec"},
+        "target": {"model": "unityCatalogSpec"},
     }
     path.write_text(json.dumps(model))
     edges = {(e["source"], e["kind"]) for e in _artifact(root)["verifiedEdges"]}
@@ -659,7 +662,7 @@ def test_an_operates_on_edge_for_an_unproven_matrix_asset_is_reported(
             "families:\n"
             "  volume:\n"
             "    asset: lakehouse.volume\n"
-            "    requires: {client: {consumes: [ucSpec]}}\n",
+            "    requires: {client: {consumes: [unityCatalogSpec]}}\n",
             1,
         )
         .replace(
@@ -685,7 +688,7 @@ def test_interface_summary_separates_modeled_breadth_from_verified_journeys(
     lines = compat.render_interfaces(result, matrix, embed, root / "content")
     spark = next(line for line in lines if line.startswith("| Spark 4.1.0 |"))
     assert "[Apache Spark](model:apacheSpark)" in spark
-    assert "[Unity Catalog](model:ucSpec)" in spark
+    assert "[Unity Catalog](model:unityCatalogSpec)" in spark
     assert "[Table](model:lakehouse.table), [Volume](model:lakehouse.volume)" in spark
     assert "[Table: 1 journey](../../how-to/engine/index.md#read-it)" in spark
     assert "Volume:" not in spark
@@ -694,12 +697,14 @@ def test_interface_summary_separates_modeled_breadth_from_verified_journeys(
 def test_an_unannotated_journey_falls_back_to_the_matrix_spec(tmp_path) -> None:
     root = _modeled(_repo(tmp_path, _SPARK_READS), families="")
     model = root / "architecture/dist/model.json"
-    bare = dict(_MODEL, relations={})  # Spark no longer consumes ucSpec
+    bare = dict(_MODEL, relations={})  # Spark no longer consumes unityCatalogSpec
     model.write_text(json.dumps(bare))
     root_matrix = root / "content/proj/compatibility.yml"
     root_matrix.write_text(root_matrix.read_text().replace(", family: table", ""))
     gaps = compat.model_gaps(root)
-    assert any("spark: proves table.read against ucSpec" in g for g in gaps), gaps
+    assert any(
+        "spark: proves table.read against unityCatalogSpec" in g for g in gaps
+    ), gaps
     assert any("2 journey(s) with no asset" in g for g in gaps), gaps
 
 
@@ -711,7 +716,7 @@ def test_unmodeled_clients_and_local_participants_are_valid(tmp_path) -> None:
             _claims('claims.duckdb = [{ journey = "table.read", region = "read" }]'),
         ),
         families="defaults:\n  asset: lakehouse.table\n"
-        "  requires: { client: { consumes: [ucSpec] } }\n",
+        "  requires: { client: { consumes: [unityCatalogSpec] } }\n",
     )
     root_matrix = root / "content/proj/compatibility.yml"
     root_matrix.write_text(root_matrix.read_text().replace(", family: table", ""))

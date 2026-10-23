@@ -37,7 +37,7 @@ datafusion:
     - { role: upstream, url: "https://datafusion.apache.org" }
 unity-catalog:
   description: "Unity Catalog / data governance"
-  element: ucSpec
+  element: unityCatalogSpec
   externalRefs:
     - { role: upstream, url: "https://www.unitycatalog.io" }
 lakehouse:

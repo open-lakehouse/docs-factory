@@ -15,7 +15,7 @@ _MODEL = {
         "gov": {"kind": "concern"},
         "gov.authn": {"kind": "concern"},
         "gov.authz": {"kind": "concern"},
-        "ucSpec": {"kind": "openSpecification"},
+        "unityCatalogSpec": {"kind": "openSpecification"},
         "uc": {"kind": "implementation", "tags": ["public"]},
         "idp": {"kind": "implementation"},
         "orphan": {"kind": "implementation"},
@@ -23,13 +23,13 @@ _MODEL = {
     "relations": {
         "r1": {
             "kind": "specifies",
-            "source": {"model": "ucSpec"},
+            "source": {"model": "unityCatalogSpec"},
             "target": {"model": "lakehouse.catalog"},
         },
         "r2": {
             "kind": "implements",
             "source": {"model": "uc"},
-            "target": {"model": "ucSpec"},
+            "target": {"model": "unityCatalogSpec"},
         },
         "r3": {
             "kind": "realizes",
@@ -104,7 +104,7 @@ def _artifact(ready: bool) -> dict:
             {
                 "id": "credential.create",
                 "asset": "lakehouse.credential",
-                "requires": {"catalog": {"implements": ["ucSpec"]}},
+                "requires": {"catalog": {"implements": ["unityCatalogSpec"]}},
                 "cells": {"sdk": {"status": "tested", "proofs": [proof]}},
             }
         ],

@@ -61,7 +61,7 @@ cargo, so nothing in emission can call Trestle.
 
 | Axis | Kind | Members | Realized by |
 |---|---|---|---|
-| Subject: what the platform manages | `asset` (type-level) | namespace, table, sqlView, metricView, volume, registeredFunction, mlModel, agentSkill, credential, externalLocation | — |
+| Subject: what the platform manages | `asset` (type-level) | namespace, table, sqlView, metricView, volume, function, mlModel, agentSkill, credential, externalLocation | — |
 | Function: layers that materialize assets | `capability`, with `openSpecification` contracts | catalog, queryEngine, orchestration, tableFormat, fileFormat, objectStorage, credentialIssuer, modelTracking, sharing, interactiveDevelopment | `implementation` (`implements` a spec or `realizes` the capability) |
 | Property: spans assets and capabilities | `concern` ([ADR-0007](../../architecture/adr/ADR-0007-cross-cutting-concerns.md)) | governance (facets authentication, authorization, fineGrainedAccess), lineage, observability | `implementation` (`realizes`) |
 | Instance | deployment `environment` / `service` / `datastore` | one generated environment per docs environment, plus the narrative `trustedCompute` | `instanceOf` an implementation |
@@ -90,8 +90,8 @@ CI claim makes that attempt a verified fact for that scope.
 Trestle's own word "capability" (`Selection.capabilities`, `provider_of`) means a
 role string. Neither side renames.
 
-**Evidence is not architecture.** `unityCatalogOSS implements ucSpec` and
-`ucSpec governs agentSkill` don't prove that a given OSS release manages skills.
+**Evidence is not architecture.** `unityCatalogOSS implements unityCatalogSpec` and
+`unityCatalogSpec governs agentSkill` don't prove that a given OSS release manages skills.
 A model edge or graph path never becomes a green compatibility cell;
 release-specific support comes from scoped claims, and unknown coverage stays
 unknown.
@@ -126,7 +126,7 @@ kind, so moving an element between kinds changes no ID.
 
 Every module in the pinned catalog carries a `model:` ref that resolves to an
 implementation in `logical/technology-catalog.likec4`, where its edges live
-(`unityCatalogOSS implements icebergRestSpec`, `rustfs implements s3Api`,
+(`unityCatalogOSS implements icebergRestSpec`, `rustfs implements s3Spec`,
 `openPolicyAgent realizes governance.authorization #partial`, …):
 
 | Module | `model:` | Role |
@@ -179,7 +179,7 @@ journeys-only rule (no sub-steps, no atomic-operation inventory). Identity is
 `(project, journey ID)`.
 
 ```yaml
-spec: ucSpec                  # topic context; fallback for a journey with no requires
+spec: unityCatalogSpec                  # topic context; fallback for a journey with no requires
 families:
   iceberg:
     asset: lakehouse.table

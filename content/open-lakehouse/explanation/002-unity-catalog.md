@@ -4,7 +4,7 @@ summary: An open catalog specification for data and AI — a REST contract that 
 diataxis: explanation
 project: open-lakehouse
 status: draft
-explains: ucSpec
+explains: unityCatalogSpec
 ---
 
 Unity Catalog is an open catalog specification for data and AI: a REST API that

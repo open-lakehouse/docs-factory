@@ -79,7 +79,7 @@ asset_kinds:
   schema:     { element: lakehouse.namespace,             doc: design/asset-kinds.md }
   table:      { element: lakehouse.table,              doc: design/asset-kinds.md }
   volume:     { element: lakehouse.volume,             doc: design/asset-kinds.md }
-  function:   { element: lakehouse.registeredFunction, doc: design/asset-kinds.md }
+  function:   { element: lakehouse.function, doc: design/asset-kinds.md }
   model:      { element: lakehouse.mlModel,            doc: design/asset-kinds.md }
   agentSkill: { element: lakehouse.agentSkill,         doc: design/asset-kinds.md, note: "governed by catalog; dependsOn the sharing capability (Open Sharing) for distribution — built today." }
   view:       { element: lakehouse.sqlView,            doc: design/asset-kinds.md, note: "`view` is a LikeC4 keyword." }

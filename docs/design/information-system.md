@@ -37,7 +37,7 @@ Narrative stays in `blogs/`; structural fact stays in the model
 ## 1. The join contract (hybrid)
 
 Two vocabularies exist and must not be conflated: blog **tags** (discovery labels,
-[`../../blogs/tags.yml`](../../blogs/tags.yml)) and model **element ids** (`ucSpec`,
+[`../../blogs/tags.yml`](../../blogs/tags.yml)) and model **element ids** (`unityCatalogSpec`,
 `lakehouse.catalog`, …). The hybrid contract lets each do what it is good at.
 
 ```mermaid
@@ -69,7 +69,7 @@ references. Description-only entries stay valid — this is purely additive.
 # blogs/tags.yml (extension)
 unity-catalog:
   description: "Unity Catalog / data governance"
-  element: ucSpec                # optional: a model.json element id (the UC spec)
+  element: unityCatalogSpec                # optional: a model.json element id (the UC spec)
   externalRefs:                  # optional: typed, curated expert links
     - { role: upstream, url: "https://www.unitycatalog.io" }
     - { role: spec,     url: "https://docs.unitycatalog.io" }
@@ -92,7 +92,7 @@ optional `references:` list of model element ids to frontmatter:
 title: Read and write managed tables via the UC Delta API
 diataxis: how-to
 project: unitycatalog
-references: [ucSpec, lakehouse.catalog]   # optional, precise, validated
+references: [unityCatalogSpec, lakehouse.catalog]   # optional, precise, validated
 ```
 
 Anchor targets may be *any* element id, but authors are guided to prefer
@@ -107,19 +107,19 @@ A how-to about the UC Delta API tags itself `unity-catalog`. The join resolves:
 
 ```
 tag unity-catalog
-  └─ element: ucSpec                           (specification, stable id)
+  └─ element: unityCatalogSpec                           (specification, stable id)
        ├─ externalRefs → unitycatalog.io, docs.unitycatalog.io   (expert sites)
        ├─ -[specifies]-> lakehouse.catalog      (capability, may churn)
        │      └─ metadata.canonicalDoc → design/catalog-plane.md
        │      └─ instanceOf (inverse) → mangrove (service, sourceRepo)
-       └─ implemented by unityCatalogOSS -[implements]-> ucSpec  (implementation)
+       └─ implemented by unityCatalogOSS -[implements]-> unityCatalogSpec  (implementation)
 ```
 
 From one tag the page surfaces: authoritative external docs, the capability it
 specifies, the canonical design doc
 ([`catalog-plane.md`](../../architecture/design/catalog-plane.md)), the service that
 realizes it, and the reference implementation — all derived, none hand-written. The
-anchor is the *specification* (`ucSpec`), the most stable identity in the estate, so
+anchor is the *specification* (`unityCatalogSpec`), the most stable identity in the estate, so
 the page's linkage survives even if `lakehouse.catalog` is renamed in a model rework.
 
 ## 2. Reading the model in `site/`

@@ -16,7 +16,7 @@
       "role": "object_store",
       "model": "amazonS3",
       "implements": [
-        "s3Api"
+        "s3Spec"
       ]
     },
     "azure-storage": {
@@ -24,7 +24,7 @@
       "role": "object_store",
       "model": "azureBlobStorage",
       "implements": [
-        "azureBlobApi"
+        "azureBlobSpec"
       ]
     },
     "azurite": {
@@ -32,7 +32,7 @@
       "role": "object_store",
       "model": "azurite",
       "implements": [
-        "azureBlobApi"
+        "azureBlobSpec"
       ]
     },
     "envoy": {
@@ -101,7 +101,7 @@
       "role": "object_store",
       "model": "rustfs",
       "implements": [
-        "s3Api"
+        "s3Spec"
       ]
     },
     "unity-catalog": {
@@ -110,7 +110,7 @@
       "model": "unityCatalogOSS",
       "implements": [
         "icebergRestSpec",
-        "ucSpec"
+        "unityCatalogSpec"
       ]
     }
   },
@@ -189,7 +189,7 @@
         "https://www.authelia.com"
       ]
     },
-    "azureBlobApi": {
+    "azureBlobSpec": {
       "kind": "openSpecification",
       "title": "Azure Blob Storage API",
       "description": "The REST interface to Azure Blob Storage, also served by local emulators.",
@@ -271,6 +271,11 @@
       "title": "External location",
       "description": "An external location binds a storage path prefix to a credential, so\nthe catalog can authorize access to anything under that path and vend\ncredentials for it."
     },
+    "lakehouse.function": {
+      "kind": "asset",
+      "title": "Function",
+      "description": "A function is the executable asset kind: a registered, reusable unit of\ncomputation (a UDF or routine) that the query engine can resolve and run."
+    },
     "lakehouse.governance.authentication": {
       "kind": "concern",
       "title": "Authentication",
@@ -330,11 +335,6 @@
       "kind": "capability",
       "title": "Query engine",
       "description": "A query engine turns a declarative query into a plan of operations and\nexecutes it: it parses the query, resolves the tables it references,\noptimizes an execution plan, and runs it to produce results.\n\nHere it is catalog-native — it resolves tables through the catalog, and\ncredentials, policy enforcement, and lineage capture all attach to the\nplan at resolution / planning time rather than being bolted on after."
-    },
-    "lakehouse.registeredFunction": {
-      "kind": "asset",
-      "title": "Function",
-      "description": "A function is the executable asset kind: a registered, reusable unit of\ncomputation (a UDF or routine) that the query engine can resolve and run."
     },
     "lakehouse.sqlView": {
       "kind": "asset",
@@ -431,20 +431,12 @@
         "https://rustfs.com"
       ]
     },
-    "s3Api": {
+    "s3Spec": {
       "kind": "openSpecification",
       "title": "S3 API",
       "description": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement.",
       "links": [
         "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
-      ]
-    },
-    "ucSpec": {
-      "kind": "openSpecification",
-      "title": "Unity Catalog",
-      "description": "Open catalog specification for data & AI:\na catalog governing tables, files, functions, and models across engines.",
-      "links": [
-        "https://www.unitycatalog.io"
       ]
     },
     "unityCatalogOSS": {
@@ -461,11 +453,19 @@
         "lakehouse.sqlView",
         "lakehouse.metricView",
         "lakehouse.volume",
-        "lakehouse.registeredFunction",
+        "lakehouse.function",
         "lakehouse.mlModel",
         "lakehouse.agentSkill",
         "lakehouse.credential",
         "lakehouse.externalLocation"
+      ]
+    },
+    "unityCatalogSpec": {
+      "kind": "openSpecification",
+      "title": "Unity Catalog",
+      "description": "Open catalog specification for data & AI:\na catalog governing tables, files, functions, and models across engines.",
+      "links": [
+        "https://www.unitycatalog.io"
       ]
     }
   }

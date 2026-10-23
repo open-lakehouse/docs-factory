@@ -41,7 +41,7 @@ const MODEL = {
       tags: ["public"],
       summary: { txt: "Rows and columns." },
     },
-    ucSpec: {
+    unityCatalogSpec: {
       kind: "openSpecification",
       title: "Unity Catalog",
       tags: ["public"],
@@ -62,7 +62,7 @@ const ready = {
     ...page.meta,
     status: "ready",
     project: "unitycatalog",
-    references: ["lakehouse.table", "ucSpec", "headwaters"],
+    references: ["lakehouse.table", "unityCatalogSpec", "headwaters"],
   },
 };
 const projection = publicProjection({
@@ -101,7 +101,7 @@ test("a how-to that runs an environment is a HowTo with its public tools", () =>
   expect(ld.mentions).toEqual([
     {
       "@type": "DefinedTerm",
-      "@id": `${SET}#ucSpec`,
+      "@id": `${SET}#unityCatalogSpec`,
       name: "Unity Catalog",
       url: "https://unitycatalog.io",
       inDefinedTermSet: { "@type": "DefinedTermSet", url: SET },

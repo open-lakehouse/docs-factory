@@ -20,7 +20,7 @@ const MODEL = {
       metadata: { canonicalDoc: "design/catalog.md" },
     },
     "lakehouse.table": { kind: "asset", title: "Table", tags: ["public"] },
-    ucSpec: {
+    unityCatalogSpec: {
       kind: "openSpecification",
       title: "Unity Catalog",
       tags: ["public"],
@@ -36,8 +36,16 @@ const MODEL = {
     headwaters: { kind: "implementation", title: "Headwaters", tags: ["service"] },
   },
   relations: {
-    a: { kind: "specifies", source: { model: "ucSpec" }, target: { model: "lakehouse.catalog" } },
-    b: { kind: "implements", source: { model: "unityCatalogOSS" }, target: { model: "ucSpec" } },
+    a: {
+      kind: "specifies",
+      source: { model: "unityCatalogSpec" },
+      target: { model: "lakehouse.catalog" },
+    },
+    b: {
+      kind: "implements",
+      source: { model: "unityCatalogOSS" },
+      target: { model: "unityCatalogSpec" },
+    },
     d: {
       kind: "operatesOn",
       source: { model: "unityCatalogOSS" },
@@ -54,11 +62,11 @@ const MODEL = {
 
 const PAGES = [
   page("explanation", "catalog", { status: "ready", explains: "lakehouse.catalog" }),
-  page("explanation", "draft-spec", { status: "draft", explains: "ucSpec" }),
+  page("explanation", "draft-spec", { status: "draft", explains: "unityCatalogSpec" }),
   page(
     "how-to",
     "list",
-    { status: "ready", references: ["ucSpec", "lakehouse.table", "headwaters"] },
+    { status: "ready", references: ["unityCatalogSpec", "lakehouse.table", "headwaters"] },
     "Use [UC](model:unityCatalogOSS) and [hw](model:headwaters).",
   ),
 ];
@@ -98,7 +106,7 @@ const COMPAT = {
     {
       source: "unityCatalogOSS",
       kind: "implements",
-      target: "ucSpec",
+      target: "unityCatalogSpec",
       interfaces: ["spark"],
       journeys: ["table.list"],
     },
@@ -144,7 +152,7 @@ test("only #public elements, with allow-listed fields", () => {
 });
 
 test("a draft explainer doesn't give an element a page", () => {
-  expect(p.element("ucSpec")).toMatchObject({
+  expect(p.element("unityCatalogSpec")).toMatchObject({
     page: null,
     url: "https://unitycatalog.io",
     summary: "Open catalog spec.",
@@ -154,9 +162,9 @@ test("a draft explainer doesn't give an element a page", () => {
 
 test("edges need both ends public", () => {
   expect(p.edges().map((e) => `${e.source} ${e.kind} ${e.target}`)).toEqual([
-    "ucSpec specifies lakehouse.catalog",
-    "unityCatalogOSS implements ucSpec",
+    "unityCatalogOSS implements unityCatalogSpec",
     "unityCatalogOSS operatesOn lakehouse.table",
+    "unityCatalogSpec specifies lakehouse.catalog",
   ]);
 });
 
@@ -193,7 +201,7 @@ test("environment services drop non-public elements", () => {
 test("a page is about its concepts and assets, and mentions software and specs", () => {
   expect(p.pageConcepts(PAGES[2])).toEqual({
     about: ["lakehouse.table"],
-    mentions: ["ucSpec", "unityCatalogOSS"],
+    mentions: ["unityCatalogSpec", "unityCatalogOSS"],
   });
   expect(p.pageConcepts(PAGES[0])).toEqual({ about: ["lakehouse.catalog"], mentions: [] });
   expect(p.pageConcepts(PAGES[1])).toEqual({ about: [], mentions: [] });

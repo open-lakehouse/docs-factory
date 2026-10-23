@@ -6,7 +6,7 @@
 # table into the page that embeds it, and `docsnip check` fails when one is
 # stale.
 # See content/README.md, "Compatibility claims".
-spec: ucSpec
+spec: unityCatalogSpec
 
 # A journey's family supplies the asset it acts on and what its participants
 # must support; a journey can override either. Requirements name the contract a
@@ -16,8 +16,8 @@ families:
   table: &uc-table
     asset: lakehouse.table
     requires: &uc
-      client: { consumes: [ucSpec] }
-      catalog: { implements: [ucSpec] }
+      client: { consumes: [unityCatalogSpec] }
+      catalog: { implements: [unityCatalogSpec] }
   external: *uc-table
   managed: *uc-table
   iceberg:
@@ -32,7 +32,7 @@ families:
   volume: { asset: lakehouse.volume, requires: *uc }
   credential: { asset: lakehouse.credential, requires: *uc }
   location: { asset: lakehouse.externalLocation, requires: *uc }
-  function: { asset: lakehouse.registeredFunction, requires: *uc }
+  function: { asset: lakehouse.function, requires: *uc }
 
 interfaces:
   # `integrations` are what an engine reaches a spec through (a Spark connector,
@@ -96,7 +96,7 @@ interfaces:
   cli:
     label: uc CLI
     pin: release
-    model: ucCli
+    model: unityCatalogCli
   python-sdk:
     label: Python SDK
     pin: unitycatalog-client
@@ -106,7 +106,7 @@ interfaces:
     label: unitycatalog-ai
     pin: unitycatalog-ai
     package: unitycatalog-ai
-    model: unityCatalogAI
+    model: unityCatalogAi
   unitycatalog-langchain:
     label: unitycatalog-langchain
     pin: unitycatalog-langchain
@@ -125,9 +125,9 @@ journeys:
   external.read-vended:
     family: external
     requires:
-      client: { consumes: [ucSpec] }
-      catalog: { implements: [ucSpec] }
-      storage: { implements: [s3Api] }
+      client: { consumes: [unityCatalogSpec] }
+      catalog: { implements: [unityCatalogSpec] }
+      storage: { implements: [s3Spec] }
     title: Read with vended S3 credentials
     summary: Read an external table on S3 with the short-lived credentials the server vends for it.
   external.append:
@@ -246,8 +246,8 @@ journeys:
   iceberg.join-delta:
     family: iceberg
     requires:
-      client: { consumes: [icebergRestSpec, ucSpec] }
-      catalog: { implements: [icebergRestSpec, ucSpec] }
+      client: { consumes: [icebergRestSpec, unityCatalogSpec] }
+      catalog: { implements: [icebergRestSpec, unityCatalogSpec] }
     title: Join Delta and Iceberg tables
     summary: Query a Delta table and an Iceberg table from the same catalog together in one session.
   iceberg.namespace-list:

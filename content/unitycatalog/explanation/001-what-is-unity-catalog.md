@@ -6,7 +6,7 @@ project: unitycatalog
 explains: unityCatalogOSS
 references:
   - lakehouse.catalog
-  - ucSpec
+  - unityCatalogSpec
 status: ready
 ---
 

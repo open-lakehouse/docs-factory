@@ -1,0 +1,73 @@
+# Journeys on SQL views and metric views, through the Unity Catalog API.
+# See architecture/journeys/README.md.
+
+view.create:
+  title: Create a view
+  summary: "Define a view as a query over tables, and store the definition in the catalog."
+  asset: lakehouse.sqlView
+  path: uc-api
+view.list:
+  title: List views
+  summary: "Find a schema's views by name."
+  asset: lakehouse.sqlView
+  path: uc-api
+view.describe:
+  title: Inspect a view
+  summary: "Read a view's columns and stored definition."
+  asset: lakehouse.sqlView
+  path: uc-api
+view.query:
+  title: Query a view
+  summary: Select from a view like a table; the engine expands its definition at query time.
+  asset: lakehouse.sqlView
+  path: uc-api
+view.replace:
+  title: "Change a view's definition"
+  summary: "Replace a view's definition in place, keeping its name."
+  asset: lakehouse.sqlView
+  path: uc-api
+view.rename:
+  title: Rename a view
+  summary: Give a view a new name in its schema.
+  asset: lakehouse.sqlView
+  path: uc-api
+view.drop:
+  title: Drop a view
+  summary: Remove a view; its source tables stay.
+  asset: lakehouse.sqlView
+  path: uc-api
+metricview.create:
+  title: Create a metric view
+  summary: "Define dimensions and measures in YAML over a table or a query, and store the definition in the catalog."
+  asset: lakehouse.metricView
+  path: uc-api
+metricview.list:
+  title: List metric views
+  summary: "Find a schema's metric views by name."
+  asset: lakehouse.metricView
+  path: uc-api
+metricview.describe:
+  title: Inspect a metric view
+  summary: "Read a metric view's dimensions, measures, and stored definition."
+  asset: lakehouse.metricView
+  path: uc-api
+metricview.query:
+  title: Query a metric view
+  summary: "Compute measures with `measure()`, grouped and filtered by dimensions."
+  asset: lakehouse.metricView
+  path: uc-api
+metricview.replace:
+  title: "Change a metric view's definition"
+  summary: "Replace a metric view's definition in place, keeping its name."
+  asset: lakehouse.metricView
+  path: uc-api
+metricview.rename:
+  title: Rename a metric view
+  summary: Give a metric view a new name in its schema.
+  asset: lakehouse.metricView
+  path: uc-api
+metricview.drop:
+  title: Drop a metric view
+  summary: Remove a metric view; its source tables stay.
+  asset: lakehouse.metricView
+  path: uc-api

@@ -12,7 +12,7 @@
 #   { journey = "managed.replace-where", region = "replace-where", api = "INSERT INTO … REPLACE WHERE" },
 #   { journey = "managed.overwrite-partitions", region = "dynamic-partitions", api = "partitionOverwriteMode=dynamic" },
 # ]
-# claims."delta:spark-sql" = [
+# claims.spark-sql = [
 #   { journey = "create.ctas", region = "ctas", api = "CREATE TABLE … AS SELECT", note = "through Unity Catalog" },
 #   { journey = "schema.overwrite", region = "replace-table", api = "CREATE OR REPLACE TABLE … AS SELECT", note = "through Unity Catalog" },
 #   { journey = "write.overwrite", region = "overwrite", api = "INSERT OVERWRITE", note = "through Unity Catalog" },

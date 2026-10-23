@@ -174,38 +174,40 @@ verify it without deriving cells from it.
 
 ## 5. Journeys join the model
 
-Journeys stay in `compatibility.yml`, not in LikeC4, and keep the
-journeys-only rule (no sub-steps, no atomic-operation inventory). Identity is
-`(project, journey ID)`.
+Journeys stay out of LikeC4 and keep the journeys-only rule (no sub-steps, no
+atomic-operation inventory). Since ADR-0009 they live once for the estate, in
+`architecture/journeys/`, and a journey ID is unique across projects; each
+project's `compatibility.yml` only arranges them into tables
+([`journey-graph.md`](./journey-graph.md)).
 
 ```yaml
-spec: unityCatalogSpec                  # topic context; fallback for a journey with no requires
-families:
-  iceberg:
-    asset: lakehouse.table
-    requires:
-      client:  { consumes:   [icebergRestSpec] }
-      catalog: { implements: [icebergRestSpec] }
-journeys:
-  iceberg.read:
-    family: iceberg
-    title: Read an Iceberg table
+# architecture/journeys/paths.yml
+iceberg-rest:
+  roles:
+    client:  { consumes: [icebergRestSpec], implements: [icebergSpec] }
+    catalog: { implements: [icebergRestSpec] }
+# architecture/journeys/journeys/iceberg.yml
+iceberg.read:
+  title: Read an Iceberg table
+  summary: Read an Iceberg table by its catalog name, with credentials the catalog vends.
+  asset: lakehouse.table
+  path: iceberg-rest
 ```
 
-- A journey names its `family:` explicitly (never derived from the ID prefix)
-  and inherits its `asset` and `requires`, overriding either. A matrix's
-  `defaults:` cover journeys without a family (Delta uses one project default,
-  `lakehouse.table`).
+- A journey names its `asset` and its `path` explicitly (never derived from
+  the ID prefix). Its resolved `requires` is the path's roles plus the
+  journey's own `roles`, which add to them and never replace them.
 - `requires` is keyed by **participant** (`client`, `catalog`, `storage`, …),
-  journey roles distinct from Trestle roles. A client lists `consumes`; a
-  provider lists `implements` (or `realizes` for a capability or concern).
+  journey roles distinct from Trestle roles. A client lists the formats it
+  `implements` and the APIs it `consumes`; a provider lists `implements` (or
+  `realizes` for a capability or concern).
   Lists are conjunctions. Keying by participant makes the client-side and
   server-side checks explicit.
 - Name the spec when one exists, else the capability; name an implementation
   only for an implementation-specific task. Interface constraints (Spark 4.2 for
   metric views) stay on the interface `pin`.
 
-`compatibility.json` (v2) carries the resolved projection. Python's resolver in
+`compatibility.json` (v3) carries the resolved projection. Python's resolver in
 `compat.py` is authoritative; JS never re-resolves requirements.
 
 ### Checks
@@ -215,8 +217,8 @@ Malformed references fail; gaps are reported.
 | Check | Where | Treatment |
 |---|---|---|
 | `asset`/`requires` doesn't resolve, wrong kind, malformed | `compat.py` | fail |
-| Journey with no asset or requires after family resolution | `compat.py` | report |
-| Edge verification: an interface with a ✓ claim on a journey whose `client` consumes S lacks a `consumes S` edge | `compat.py` | report (a model gap; the evidence stands) |
+| Journey with no asset or path | `compat.py` | fail |
+| Edge verification: an interface with a ✓ claim on a journey whose `client` consumes or implements S lacks that edge to S | `compat.py` | report (a model gap; the evidence stands) |
 | Asset verification: an interface with a ✓ claim on asset A lacks `operatesOn A` | `compat.py` | report (a model gap; the evidence stands) |
 | A modeled `operatesOn` edge has no ready working journey in the project | `compat.py` | report (modeled, unverified breadth) |
 | Environment fit: no instance in the claiming script's environment provides a provider participant's requirement | `envgen.fit` | fail |

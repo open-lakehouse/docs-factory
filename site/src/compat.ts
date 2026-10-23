@@ -60,8 +60,9 @@ export interface CompatJourney {
   title: string;
   summary: string;
   request: string | null;
-  family: string | null;
-  /** The model asset kind it acts on, resolved by docsnip from family and defaults. */
+  /** The architecture/journeys/paths.yml path: the contract each participant role needs. */
+  path: string | null;
+  /** The model asset kind it acts on. */
   asset: string | null;
   requires: CompatRequirements;
   /** The spec feature it exercises; absent in artifacts written before the field. */
@@ -99,7 +100,6 @@ export interface CompatDiagnostic {
   kind:
     | "unmodeled"
     | "missing-edge"
-    | "unmigrated"
     | "unverified-asset"
     | "missing-asset-edge"
     | "unverified-asset-edge";

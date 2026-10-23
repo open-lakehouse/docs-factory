@@ -1,0 +1,274 @@
+# Journeys through an Iceberg REST catalog: on Iceberg tables (`iceberg-rest`)
+# and on the catalog's namespaces, credentials, and tokens (`iceberg-rest-api`).
+# See architecture/journeys/README.md.
+
+iceberg.schema-create:
+  title: Create a schema through Iceberg REST
+  summary: "Create a schema as an Iceberg namespace, under the catalog the client names as its warehouse."
+  asset: lakehouse.namespace
+  path: iceberg-rest-api
+iceberg.create:
+  title: Create a managed Iceberg table
+  summary: "Create an Iceberg table through Iceberg REST, with storage the catalog allocates."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.append:
+  title: Append to an Iceberg table
+  summary: "Append rows to an Iceberg table, with credentials the catalog vends for its storage."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.read:
+  title: Read an Iceberg table
+  summary: "Read an Iceberg table by its catalog name, with credentials the catalog vends."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.update:
+  title: Update rows in an Iceberg table
+  summary: "Change rows that match a condition in an Iceberg table, committed through the catalog."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.delete:
+  title: Delete rows from an Iceberg table
+  summary: "Remove rows that match a condition from an Iceberg table, committed through the catalog."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.rename:
+  title: Rename an Iceberg table
+  summary: Give an Iceberg table a new name in its schema.
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.drop:
+  title: Drop an Iceberg table
+  summary: "Drop an Iceberg table, and for a managed one its data."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.join-delta:
+  title: Join Delta and Iceberg tables
+  summary: Query a Delta table and an Iceberg table from the same catalog together in one session.
+  asset: lakehouse.table
+  path: iceberg-rest
+  roles:
+    client: { consumes: [unityCatalogSpec], implements: [deltaSpec] }
+    catalog: { implements: [unityCatalogSpec] }
+iceberg.namespace-list:
+  title: List schemas through Iceberg REST
+  summary: "List the schemas of the catalog the client names as its warehouse, as Iceberg namespaces."
+  asset: lakehouse.namespace
+  path: iceberg-rest-api
+  feature: { spec: icebergRestSpec, name: listNamespaces }
+iceberg.namespace-properties:
+  title: Set schema properties through Iceberg REST
+  summary: Set or remove properties on a schema through Iceberg REST.
+  asset: lakehouse.namespace
+  path: iceberg-rest-api
+  feature: { spec: icebergRestSpec, name: updateProperties }
+iceberg.namespace-drop:
+  title: Drop a schema through Iceberg REST
+  summary: Drop an empty schema through Iceberg REST.
+  asset: lakehouse.namespace
+  path: iceberg-rest-api
+  feature: { spec: icebergRestSpec, name: dropNamespace }
+iceberg.list:
+  title: List Iceberg tables
+  summary: List the tables in a schema through Iceberg REST.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: listTables }
+iceberg.overwrite:
+  title: Overwrite an Iceberg table
+  summary: "Replace all of an Iceberg table's rows in one commit."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.merge:
+  title: Merge into an Iceberg table
+  summary: "Upsert rows into an Iceberg table with MERGE, committed through the catalog."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.rename-namespace:
+  title: Move an Iceberg table to another schema
+  summary: Rename an Iceberg table into a different schema of the same catalog.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: renameTable }
+iceberg.read-uniform:
+  title: Read a Delta table as Iceberg
+  summary: Read a Delta table with Iceberg metadata (UniForm) through Iceberg REST.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: loadTable }
+iceberg.schema-evolve:
+  title: "Evolve an Iceberg table's schema"
+  summary: "Add, rename, reorder, or drop columns without rewriting data files."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: schema-evolution, since: v1 }
+iceberg.type-promotion:
+  title: Widen an Iceberg column type
+  summary: "Promote a column's type, such as int to long, without rewriting data files."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: type-promotion, since: v1 }
+iceberg.hidden-partitioning:
+  title: Partition an Iceberg table by a transform
+  summary: "Create a table partitioned by a transform such as day or bucket, which queries prune without naming it."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: hidden-partitioning, since: v1 }
+iceberg.partition-evolve:
+  title: "Change an Iceberg table's partitioning"
+  summary: "Change the partition spec of a table that has data, without rewriting it."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: partition-evolution, since: v1 }
+iceberg.sort-order:
+  title: "Set an Iceberg table's sort order"
+  summary: Set the sort order writers apply to new data files.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: sort-order, since: v1 }
+iceberg.time-travel:
+  title: Read an earlier Iceberg snapshot
+  summary: Query an Iceberg table as of a snapshot id or a timestamp.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: snapshots, since: v1 }
+iceberg.branch-tag:
+  title: Branch and tag an Iceberg table
+  summary: "Create a branch or a tag on an Iceberg table, write to the branch, and read either."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: branching-tagging, since: v2 }
+iceberg.metadata-tables:
+  title: "Query an Iceberg table's metadata"
+  summary: "Read a table's snapshots, history, files, or manifests as tables."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.maintain:
+  title: Maintain an Iceberg table
+  summary: "Expire snapshots, compact data files, and remove orphan files."
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.merge-on-read:
+  title: Change rows with delete files
+  summary: "Update or delete rows by writing position delete files, merged at read time."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: position-deletes, since: v2 }
+iceberg.copy-on-write:
+  title: Change rows by rewriting files
+  summary: Update or delete rows by rewriting the data files that hold them.
+  asset: lakehouse.table
+  path: iceberg-rest
+iceberg.equality-deletes:
+  title: Write equality deletes
+  summary: "Delete rows by the values of key columns, recorded in equality delete files."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: equality-deletes, since: v2 }
+iceberg.statistics:
+  title: Use Iceberg column statistics
+  summary: Write and read column statistics or Puffin statistics files that prune scans.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: statistics, since: v1 }
+iceberg.v3-create:
+  title: Create a v3 Iceberg table
+  summary: Create an Iceberg table with format version 3 through the catalog.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: format-version-3, since: v3 }
+iceberg.v3-deletion-vectors:
+  title: Use deletion vectors on Iceberg
+  summary: "Delete rows in a v3 table with deletion vectors, and read them back."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: deletion-vectors, since: v3 }
+iceberg.v3-row-lineage:
+  title: Read Iceberg row lineage
+  summary: "Read each row's id and last-updated sequence number from a v3 table."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: row-lineage, since: v3 }
+iceberg.v3-default-values:
+  title: Use Iceberg column default values
+  summary: "Add a column with a default, and read it for rows written before the column existed."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: default-values, since: v3 }
+iceberg.v3-variant:
+  title: Use Iceberg VARIANT columns
+  summary: Write and read semi-structured values in a VARIANT column.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: variant, since: v3 }
+iceberg.v3-geo:
+  title: Use Iceberg geometry columns
+  summary: Write and read geometry or geography values.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: geometry, since: v3 }
+iceberg.v3-timestamp-ns:
+  title: Use nanosecond timestamps
+  summary: Write and read timestamps with nanosecond precision.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: timestamp-ns, since: v3 }
+iceberg.v3-multi-arg-transforms:
+  title: Partition by a multi-argument transform
+  summary: Partition a v3 table by a transform over more than one column.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergSpec, name: multi-arg-transforms, since: v3 }
+iceberg.vended-credentials:
+  title: Refresh vended credentials
+  summary: Get new storage credentials for a table from the catalog when the first ones expire.
+  asset: lakehouse.credential
+  path: iceberg-rest-api
+  feature: { spec: icebergRestSpec, name: loadCredentials }
+iceberg.etag-load:
+  title: Reload a table only when it changed
+  summary: "Reload table metadata conditionally, getting `304 Not Modified` when nothing changed."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: loadTable }
+iceberg.metrics:
+  title: Report scan metrics
+  summary: Report scan and commit metrics to the catalog.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: reportMetrics }
+iceberg.auth-token:
+  title: Authenticate with a token
+  summary: Connect to the Iceberg REST API with a bearer token.
+  asset: lakehouse.table
+  path: iceberg-rest-api
+iceberg.register:
+  title: Register an existing Iceberg table
+  summary: "Register a table from its metadata file, without copying data."
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: registerTable }
+iceberg.transactions:
+  title: Commit to several tables at once
+  summary: Commit changes to more than one table atomically.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: commitTransaction }
+iceberg.views:
+  title: Create and query Iceberg views
+  summary: Create a view through Iceberg REST and query it.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: createView }
+iceberg.scan-planning:
+  title: Plan scans on the server
+  summary: Let the catalog plan a scan and hand back the files to read.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: planTableScan }
+iceberg.remote-signing:
+  title: Sign storage requests through the catalog
+  summary: Have the catalog sign each storage request instead of vending credentials.
+  asset: lakehouse.table
+  path: iceberg-rest
+  feature: { spec: icebergRestSpec, name: signRequest }

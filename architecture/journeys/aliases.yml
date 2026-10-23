@@ -1,0 +1,4 @@
+# Renamed journeys: old id → current id. A claim that names an old id still
+# resolves, with a warning; the review app's requests can store old ids too.
+catalog-managed.read: managed.read
+catalog-managed.write: managed.append

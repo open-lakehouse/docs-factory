@@ -1,0 +1,53 @@
+# Journeys on functions, through the Unity Catalog API.
+# See architecture/journeys/README.md.
+
+function.create:
+  title: Register a Python function
+  summary: "Register a Python function in a schema, with its signature and source code."
+  asset: lakehouse.function
+  path: uc-api
+function.create-wrapped:
+  title: Register a function with its helpers
+  summary: Register a Python function together with the helper functions its body calls.
+  asset: lakehouse.function
+  path: uc-api
+function.describe:
+  title: View a function
+  summary: "Get a function's parameters, return type, and source code by its full name."
+  asset: lakehouse.function
+  path: uc-api
+function.execute:
+  title: Run a function by name
+  summary: "Run a registered function by name with typed parameters, on the caller's side."
+  asset: lakehouse.function
+  path: uc-api
+function.list:
+  title: List functions
+  summary: List the functions in a schema.
+  asset: lakehouse.function
+  path: uc-api
+function.get-source:
+  title: "Get a function's source back"
+  summary: Rebuild a registered function as Python source or as a callable from its stored record.
+  asset: lakehouse.function
+  path: uc-api
+function.replace:
+  title: Replace a function
+  summary: "Replace a function's body or comments under the same name."
+  asset: lakehouse.function
+  path: uc-api
+function.delete:
+  title: Delete a function
+  summary: Remove a function from the catalog.
+  asset: lakehouse.function
+  path: uc-api
+function.tool:
+  title: Turn a function into an agent tool
+  summary: "Build an agent framework's tool from a registered function, with its description and typed arguments."
+  asset: lakehouse.function
+  path: uc-api
+function.tool-call:
+  title: Let an agent call a function
+  summary: "Give the tools to an agent, which calls the functions by name and gets their results back."
+  asset: lakehouse.function
+  path: uc-api

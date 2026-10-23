@@ -22,9 +22,10 @@ Project: [unitycatalog | delta | open-lakehouse]
    already does (one canonical page per element; extend that one instead).
    Its `out`/`in` edges and `citedBy` pages are the cross-reference candidates.
    Use `examples-for <element>` for the tested scripts to reuse or link.
-3. Read content/<project>/compatibility.yml. List the journeys this page
-   demonstrates (existing ids, or a new `family.task` to propose) and the
-   interfaces it will tab.
+3. Read architecture/journeys/journeys/ and content/<project>/compatibility.yml.
+   List the journeys this page demonstrates (existing ids, from any project, or
+   a new `<area>.<task>` with its `path` to propose) and the interfaces it will
+   tab.
 4. Name the environment: the registry key in envs/environments.yml the scripts
    will point `compose` at (envs/unitycatalog/compose.yaml by default for Unity
    Catalog, envs/uc-aws/compose.yaml for S3 or PostgreSQL). Say if none fits.

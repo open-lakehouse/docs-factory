@@ -8,24 +8,40 @@ from pathlib import Path
 import pytest
 from docsnip import compat
 
+_CATALOG = "architecture/journeys"
+
+_PATHS = """\
+uc:
+  roles:
+    client: { consumes: [unityCatalogSpec] }
+    catalog: { implements: [unityCatalogSpec] }
+"""
+
+_INTERFACES = """\
+spark: {label: Spark, pin: pyspark, package: pyspark, model: apacheSpark}
+duckdb: {label: DuckDB, package: duckdb}
+"""
+
+_JOURNEYS = """\
+table.read: {title: Read, summary: Read rows, asset: lakehouse.table, path: uc}
+table.write: {title: Write, summary: Append rows, asset: lakehouse.table, path: uc}
+"""
+
+_EVIDENCE = """\
+- interfaces: [duckdb]
+  journeys: [table.write]
+  outcome: fails
+  why: "Not implemented"
+  source: proj:how-to/engine#read-it
+"""
+
 _MATRIX = """\
 spec: unityCatalogSpec
-interfaces:
-  spark: {label: Spark, pin: pyspark, package: pyspark, model: apacheSpark}
-  duckdb: {label: DuckDB, package: duckdb}
-journeys:
-  table.read: {title: Read, summary: Read rows}
-  table.write: {title: Write, summary: Append rows}
+interfaces: [spark, duckdb]
 tables:
   ops:
     columns: [spark, duckdb]
     rows: [table.read, table.write]
-evidence:
-  - interfaces: [duckdb]
-    journeys: [table.write]
-    outcome: fails
-    why: "Not implemented"
-    source: how-to/engine#read-it
 """
 
 _SCRIPT = """\
@@ -71,6 +87,12 @@ After.
 
 
 def _repo(tmp_path: Path, claims: str, *, status: str = "ready") -> Path:
+    catalog = tmp_path / _CATALOG
+    (catalog / "journeys").mkdir(parents=True)
+    (catalog / "paths.yml").write_text(_PATHS)
+    (catalog / "interfaces.yml").write_text(_INTERFACES)
+    (catalog / "journeys" / "table.yml").write_text(_JOURNEYS)
+    (catalog / "evidence.yml").write_text(_EVIDENCE)
     project = tmp_path / "content" / "proj"
     page = project / "how-to" / "001-engine"
     (page / "snippets").mkdir(parents=True)
@@ -82,6 +104,21 @@ def _repo(tmp_path: Path, claims: str, *, status: str = "ready") -> Path:
     ref.mkdir(parents=True)
     (ref / "index.md").write_text(_EMBED)
     return tmp_path
+
+
+def _edit(root: Path, rel: str, old: str, new: str) -> Path:
+    """Replace ``old`` (which must be there) in the file at ``rel``."""
+    path = root / rel
+    text = path.read_text()
+    assert old in text, (rel, old)
+    path.write_text(text.replace(old, new, 1))
+    return path
+
+
+def _append(root: Path, rel: str, text: str) -> Path:
+    path = root / rel
+    path.write_text(path.read_text() + text)
+    return path
 
 
 def _claims(*lines: str) -> str:
@@ -227,61 +264,180 @@ def test_a_region_the_page_doesnt_show_is_an_error(tmp_path) -> None:
 
 def test_a_journey_on_no_table_is_an_error(tmp_path) -> None:
     root = _repo(tmp_path, "")
-    matrix = root / "content/proj/compatibility.yml"
-    matrix.write_text(
-        matrix.read_text().replace(
-            "  table.write:", "  x: {title: X, summary: Do X}\n  table.write:"
-        )
+    _append(
+        root,
+        f"{_CATALOG}/journeys/table.yml",
+        "x: {title: X, summary: Do X, asset: lakehouse.table, path: uc}\n",
     )
     errors, _ = compat.check(root)
-    assert any("journeys.x is on no table" in e for e in errors), errors
+    assert any("x is on no project's table" in e for e in errors), errors
 
 
-def test_a_journey_needs_a_title_and_a_summary(tmp_path) -> None:
+@pytest.mark.parametrize(
+    ("journey", "message"),
+    [
+        ("table.read: Read", "table.read needs a title and a summary"),
+        (
+            "table.read: {title: Read, summary: Read rows, asset: lakehouse.table}",
+            "table.read needs a path",
+        ),
+        (
+            "table.read: {title: Read, summary: Read rows, path: uc}",
+            "table.read needs an asset",
+        ),
+        (
+            "table.read: {title: R, summary: S, asset: lakehouse.table, path: nope}",
+            "table.read.path 'nope' is not in paths.yml",
+        ),
+        (
+            "table.read: {title: R, summary: S, asset: lakehouse.table, path: uc,"
+            " family: table}",
+            "unknown key 'family'",
+        ),
+    ],
+)
+def test_a_journey_needs_a_title_summary_asset_and_path(
+    tmp_path, journey: str, message: str
+) -> None:
     root = _repo(tmp_path, "")
-    matrix = root / "content/proj/compatibility.yml"
-    matrix.write_text(
-        matrix.read_text().replace(
-            "  table.read: {title: Read, summary: Read rows}\n", "  table.read: Read\n"
-        )
+    _edit(
+        root,
+        f"{_CATALOG}/journeys/table.yml",
+        "table.read: {title: Read, summary: Read rows, asset: lakehouse.table, path: uc}",
+        journey,
     )
     errors, _ = compat.check(root)
-    assert any(
-        "journeys.table.read needs a title and a summary" in e for e in errors
-    ), errors
+    assert any(message in e for e in errors), errors
+
+
+def test_a_journey_is_defined_once_across_files(tmp_path) -> None:
+    root = _repo(tmp_path, "")
+    (root / _CATALOG / "journeys" / "more.yml").write_text(
+        "table.read: {title: Again, summary: Again, asset: lakehouse.table, path: uc}\n"
+    )
+    errors, _ = compat.check(root)
+    assert any("table.read is already a journey in" in e for e in errors), errors
+
+
+def test_a_projection_lists_catalog_interfaces_its_release_pins(tmp_path) -> None:
+    root = _repo(tmp_path, "")
+    _edit(
+        root, "content/proj/compatibility.yml", "[spark, duckdb]\n", "[spark, trino]\n"
+    )
+    errors, _ = compat.check(root)
+    assert any("interface 'trino' is not in" in e for e in errors), errors
+    root = _repo(tmp_path / "pins", "")
+    (root / "content/proj/release.yml").write_text("release: 0.6.0\n")
+    errors, _ = compat.check(root)
+    assert any("spark.pin 'pyspark' is not in release.yml" in e for e in errors), errors
+
+
+def test_a_claim_counts_in_every_project_that_shows_it(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
+    )
+    other = root / "content/other"
+    (other / "reference" / "002-matrix").mkdir(parents=True)
+    (other / "compatibility.yml").write_text(_MATRIX)
+    (other / "release.yml").write_text("pins:\n  pyspark: 4.2.0\n")
+    (other / "reference" / "002-matrix" / "index.md").write_text(
+        _EMBED.replace("project: proj", "project: other")
+    )
+    compat.fix(root)
+    assert compat.check(root)[0] == []
+    text = (other / "reference" / "002-matrix" / "index.md").read_text()
+    # The other project's header shows its own pin.
+    assert "| Read | [✓](../../../proj/how-to/engine/index.md#read-it) | — |" in text, (
+        text
+    )
+    assert "[Spark 4.2](model:apacheSpark)" in text
+
+
+def test_a_project_prefixed_interface_is_an_error(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims('claims."proj:spark" = [{ journey = "table.read", region = "read" }]'),
+    )
+    errors, _ = compat.check(root)
+    assert any("interfaces are estate-wide; claim 'spark'" in e for e in errors), errors
+
+
+def test_an_alias_resolves_a_renamed_journey(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.get", region = "read" }]'),
+    )
+    (root / _CATALOG / "aliases.yml").write_text("table.get: table.read\n")
+    compat.fix(root)
+    errors, warnings = compat.check(root)
+    assert errors == []
+    assert any("renamed to 'table.read'" in w for w in warnings), warnings
+    assert _table(root)[2] == "| Read | [✓](../../how-to/engine/index.md#read-it) | — |"
+    _edit(
+        root,
+        "content/proj/compatibility.yml",
+        "rows: [table.read,",
+        "rows: [table.get,",
+    )
+    errors, _ = compat.check(root)
+    assert any("row 'table.get' is now 'table.read'" in e for e in errors), errors
+
+
+@pytest.mark.parametrize(
+    ("aliases", "message"),
+    [
+        ("table.read: table.write\n", "table.read is still a journey"),
+        ("table.get: table.nope\n", "which is not a journey"),
+    ],
+)
+def test_bad_aliases_are_errors(tmp_path, aliases: str, message: str) -> None:
+    root = _repo(tmp_path, "")
+    (root / _CATALOG / "aliases.yml").write_text(aliases)
+    errors, _ = compat.check(root)
+    assert any(message in e for e in errors), errors
 
 
 def test_documented_evidence_shows_only_where_the_table_asks(tmp_path) -> None:
     root = _repo(tmp_path, "")
-    matrix = root / "content/proj/compatibility.yml"
-    text = matrix.read_text() + (
-        "  - interfaces: [spark]\n"
-        "    journeys: [table.read]\n"
-        "    outcome: works\n"
-        "    why: The docs say so\n"
-        "    source: https://example.com/read\n"
-        "    api: {spark: spark.read}\n"
+    _append(
+        root,
+        f"{_CATALOG}/evidence.yml",
+        "- interfaces: [spark]\n"
+        "  journeys: [table.read]\n"
+        "  outcome: works\n"
+        "  why: The docs say so\n"
+        "  source: https://example.com/read\n"
+        "  api: {spark: spark.read}\n",
     )
-    matrix.write_text(text)
     compat.fix(root)
     assert _table(root)[2] == "| Read | — | — |"
-    matrix.write_text(text.replace("rows: [", "documented: true\n    rows: ["))
+    _edit(
+        root,
+        "content/proj/compatibility.yml",
+        "rows: [",
+        "documented: true\n    rows: [",
+    )
     compat.fix(root)
     assert _table(root)[2] == "| Read | [docs](https://example.com/read) | — |"
 
 
 def test_only_a_private_page_links_private_evidence(tmp_path) -> None:
     root = _repo(tmp_path, "", status="private")
-    matrix = root / "content/proj/compatibility.yml"
-    matrix.write_text(
-        matrix.read_text().replace("rows: [", "documented: true\n    rows: [")
-        + (
-            "  - interfaces: [spark]\n"
-            "    journeys: [table.read]\n"
-            "    outcome: works\n"
-            "    why: The docs say so\n"
-            "    source: how-to/engine#read-it\n"
-        )
+    _edit(
+        root,
+        "content/proj/compatibility.yml",
+        "rows: [",
+        "documented: true\n    rows: [",
+    )
+    _append(
+        root,
+        f"{_CATALOG}/evidence.yml",
+        "- interfaces: [spark]\n"
+        "  journeys: [table.read]\n"
+        "  outcome: works\n"
+        "  why: The docs say so\n"
+        "  source: proj:how-to/engine#read-it\n",
     )
     compat.fix(root)
     assert _table(root)[2] == "| Read | docs | — |"
@@ -322,7 +478,7 @@ def test_another_projects_scripts_pin_their_own_versions(tmp_path) -> None:
     (other / "snippets" / "x.py").write_text(
         _SCRIPT.format(
             claims=_claims(
-                'claims."proj:spark" = [{ journey = "table.read", region = "read" }]'
+                'claims.spark = [{ journey = "table.read", region = "read" }]'
             )
         ).replace("4.1.0", "4.2.0")
     )
@@ -356,19 +512,16 @@ def test_evidence_can_cite_another_projects_page(tmp_path) -> None:
     other = root / "content/other/how-to/001-limits"
     other.mkdir(parents=True)
     (other / "index.md").write_text(_PAGE.format(status="ready", script="x.py"))
-    matrix = root / "content/proj/compatibility.yml"
-    matrix.write_text(
-        matrix.read_text().replace(
-            "source: how-to/engine#read-it", "source: other:how-to/limits#read-it"
-        )
-    )
+    evidence = f"{_CATALOG}/evidence.yml"
+    _edit(root, evidence, "proj:how-to/engine#read-it", "other:how-to/limits#read-it")
     compat.fix(root)
     assert compat.check(root)[0] == []
-    matrix.write_text(
-        matrix.read_text().replace("other:how-to/limits", "other:how-to/nope")
-    )
+    _edit(root, evidence, "other:how-to/limits", "other:how-to/nope")
     errors, _ = compat.check(root)
     assert any("no such page" in e for e in errors), errors
+    _edit(root, evidence, "other:how-to/nope", "how-to/engine")
+    errors, _ = compat.check(root)
+    assert any("names no project" in e for e in errors), errors
 
 
 # --- journeys joined to the estate model ---------------------------------------
@@ -411,27 +564,21 @@ _MODEL = {
     },
 }
 
-_FAMILIES = """\
-families:
-  table:
-    asset: lakehouse.table
-    requires:
-      client: { consumes: [unityCatalogSpec] }
-      catalog: { implements: [unityCatalogSpec] }
-"""
+_READ = "table.read: {title: Read, summary: Read rows, asset: lakehouse.table, path: uc"
 
 
-def _modeled(root: Path, journeys: str = "", families: str = _FAMILIES) -> Path:
-    """Give the repo an exported model and journeys with families."""
+def _read(*fields: str) -> str:
+    """The table.read journey with more ``key: value`` fields."""
+    return _READ + "".join(f", {f}" for f in fields) + "}"
+
+
+def _modeled(root: Path, journey: str = "") -> Path:
+    """Give the repo an exported model, and table.read the definition ``journey``."""
     dist = root / "architecture" / "dist"
     dist.mkdir(parents=True, exist_ok=True)
     (dist / "model.json").write_text(json.dumps(_MODEL))
-    matrix = root / "content/proj/compatibility.yml"
-    text = matrix.read_text().replace(
-        "  table.read: {title: Read, summary: Read rows}",
-        journeys or "  table.read: {title: Read, summary: Read rows, family: table}",
-    )
-    matrix.write_text(text.replace("interfaces:\n", families + "interfaces:\n", 1))
+    if journey:
+        _edit(root, f"{_CATALOG}/journeys/table.yml", _read(), journey)
     return root
 
 
@@ -443,43 +590,56 @@ def _artifact(root: Path) -> dict:
     return json.loads((root / "content/proj/compatibility.json").read_text())
 
 
-def test_a_journey_inherits_its_family_and_can_override_it(tmp_path) -> None:
+def test_a_journeys_roles_add_to_its_paths(tmp_path) -> None:
     root = _modeled(
         _repo(tmp_path, _SPARK_READS),
-        "  table.read:\n"
-        "    {title: Read, summary: Read rows, family: table,\n"
-        "     requires: {client: {consumes: [icebergRestSpec]}}}",
+        _read(
+            "roles: {client: {consumes: [icebergRestSpec]},"
+            " storage: {realizes: [lakehouse.catalog]}}"
+        ),
     )
     data = _artifact(root)
     assert data["version"] == compat.ARTIFACT_VERSION
     read, write = data["journeys"]
-    assert read["family"] == "table"
-    assert read["asset"] == "lakehouse.table"  # inherited
-    assert read["requires"] == {"client": {"consumes": ["icebergRestSpec"]}}
-    assert write["asset"] is None
-    assert {"kind": "unmigrated", "journeys": ["table.write"]} in data["diagnostics"]
+    assert (read["path"], read["asset"]) == ("uc", "lakehouse.table")
+    assert read["requires"] == {
+        "client": {"consumes": ["unityCatalogSpec", "icebergRestSpec"]},
+        "catalog": {"implements": ["unityCatalogSpec"]},
+        "storage": {"realizes": ["lakehouse.catalog"]},
+    }
+    assert write["requires"] == {
+        "client": {"consumes": ["unityCatalogSpec"]},
+        "catalog": {"implements": ["unityCatalogSpec"]},
+    }
 
 
 @pytest.mark.parametrize(
     ("journey", "message"),
     [
-        ("{title: R, summary: S, asset: apacheSpark}", "is of kind implementation"),
-        ("{title: R, summary: S, family: nope}", "is not a family"),
         (
-            "{title: R, summary: S, requires: {client: {consumes: [lakehouse.catalog]}}}",
+            "{title: R, summary: S, asset: apacheSpark, path: uc}",
+            "is of kind implementation",
+        ),
+        (
+            "{title: R, summary: S, asset: lakehouse.table, path: uc,"
+            " roles: {client: {consumes: [lakehouse.catalog]}}}",
             "expected openSpecification",
         ),
         (
-            "{title: R, summary: S, requires: {client: {uses: [unityCatalogSpec]}}}",
+            "{title: R, summary: S, asset: lakehouse.table, path: uc,"
+            " roles: {client: {uses: [unityCatalogSpec]}}}",
             "unknown",
         ),
-        ("{title: R, summary: S, asset: lakehouse.nope}", "not in the estate model"),
+        (
+            "{title: R, summary: S, asset: lakehouse.nope, path: uc}",
+            "not in the estate model",
+        ),
     ],
 )
 def test_bad_journey_references_are_errors(
     tmp_path, journey: str, message: str
 ) -> None:
-    root = _modeled(_repo(tmp_path, ""), f"  table.read: {journey}")
+    root = _modeled(_repo(tmp_path, ""), f"table.read: {journey}")
     errors, _ = compat.check(root)
     assert any(message in e for e in errors), errors
 
@@ -487,9 +647,7 @@ def test_bad_journey_references_are_errors(
 def test_a_journey_names_the_spec_feature_it_exercises(tmp_path) -> None:
     root = _modeled(
         _repo(tmp_path, _SPARK_READS),
-        "  table.read:\n"
-        "    {title: Read, summary: Read rows, family: table,\n"
-        "     feature: {spec: icebergRestSpec, name: loadTable, since: v1}}",
+        _read("feature: {spec: icebergRestSpec, name: loadTable, since: v1}"),
     )
     read, write = _artifact(root)["journeys"]
     assert read["feature"] == {
@@ -515,7 +673,7 @@ def test_a_journey_names_the_spec_feature_it_exercises(tmp_path) -> None:
 def test_bad_journey_features_are_errors(tmp_path, feature: str, message: str) -> None:
     root = _modeled(
         _repo(tmp_path, ""),
-        f"  table.read: {{title: R, summary: S, family: table, feature: {feature}}}",
+        _read(f"feature: {feature}"),
     )
     errors, _ = compat.check(root)
     assert any(message in e for e in errors), errors
@@ -559,11 +717,11 @@ def _with_integration(root: Path, *, integrated: bool = True) -> Path:
             "target": {"model": "ucSpark"},
         }
     (root / "architecture/dist/model.json").write_text(json.dumps(model))
-    matrix = root / "content/proj/compatibility.yml"
-    matrix.write_text(
-        matrix.read_text().replace(
-            "model: apacheSpark}", "model: apacheSpark, integrations: [ucSpark]}"
-        )
+    _edit(
+        root,
+        f"{_CATALOG}/interfaces.yml",
+        "model: apacheSpark}",
+        "model: apacheSpark, integrations: [ucSpark]}",
     )
     return root
 
@@ -600,8 +758,7 @@ def test_an_integration_must_be_integrated_by_the_interface_model(tmp_path) -> N
 def test_a_missing_client_edge_is_reported_not_failed(tmp_path) -> None:
     root = _modeled(
         _repo(tmp_path, _SPARK_READS),
-        "  table.read: {title: Read, summary: Read rows, family: table,"
-        " requires: {client: {consumes: [icebergRestSpec]}}}",
+        _read("roles: {client: {consumes: [icebergRestSpec]}}"),
     )
     assert compat.fix(root)
     assert compat.check(root)[0] == []
@@ -617,8 +774,7 @@ def test_a_negative_claim_needs_no_edge(tmp_path) -> None:
             tmp_path,
             _claims('claims.spark = [{ journey = "table.read", fails = true }]'),
         ),
-        "  table.read: {title: Read, summary: Read rows, family: table,"
-        " requires: {client: {consumes: [icebergRestSpec]}}}",
+        _read("roles: {client: {consumes: [icebergRestSpec]}}"),
     )
     data = _artifact(root)
     assert not [d for d in data["diagnostics"] if d["kind"] == "missing-edge"]
@@ -654,21 +810,11 @@ def test_an_operates_on_edge_for_an_unproven_matrix_asset_is_reported(
     tmp_path,
 ) -> None:
     root = _modeled(_repo(tmp_path, _SPARK_READS))
-    matrix = root / "content/proj/compatibility.yml"
-    matrix.write_text(
-        matrix.read_text()
-        .replace(
-            "families:\n",
-            "families:\n"
-            "  volume:\n"
-            "    asset: lakehouse.volume\n"
-            "    requires: {client: {consumes: [unityCatalogSpec]}}\n",
-            1,
-        )
-        .replace(
-            "  table.write: {title: Write, summary: Append rows}",
-            "  table.write: {title: Write, summary: Append rows, family: volume}",
-        )
+    _edit(
+        root,
+        f"{_CATALOG}/journeys/table.yml",
+        "summary: Append rows, asset: lakehouse.table",
+        "summary: Append rows, asset: lakehouse.volume",
     )
     data = _artifact(root)
     assert {
@@ -694,18 +840,12 @@ def test_interface_summary_separates_modeled_breadth_from_verified_journeys(
     assert "Volume:" not in spark
 
 
-def test_an_unannotated_journey_falls_back_to_the_matrix_spec(tmp_path) -> None:
-    root = _modeled(_repo(tmp_path, _SPARK_READS), families="")
-    model = root / "architecture/dist/model.json"
-    bare = dict(_MODEL, relations={})  # Spark no longer consumes unityCatalogSpec
-    model.write_text(json.dumps(bare))
-    root_matrix = root / "content/proj/compatibility.yml"
-    root_matrix.write_text(root_matrix.read_text().replace(", family: table", ""))
-    gaps = compat.model_gaps(root)
-    assert any(
-        "spark: proves table.read against unityCatalogSpec" in g for g in gaps
-    ), gaps
-    assert any("2 journey(s) with no asset" in g for g in gaps), gaps
+def test_a_path_with_no_roles_is_an_error(tmp_path) -> None:
+    root = _repo(tmp_path, "")
+    _append(root, f"{_CATALOG}/paths.yml", "bare: {roles: {}}\nnone: {}\n")
+    errors, _ = compat.check(root)
+    assert any("bare.roles maps participant roles" in e for e in errors), errors
+    assert any("none needs roles" in e for e in errors), errors
 
 
 def test_unmodeled_clients_and_local_participants_are_valid(tmp_path) -> None:
@@ -715,11 +855,13 @@ def test_unmodeled_clients_and_local_participants_are_valid(tmp_path) -> None:
             tmp_path,
             _claims('claims.duckdb = [{ journey = "table.read", region = "read" }]'),
         ),
-        families="defaults:\n  asset: lakehouse.table\n"
-        "  requires: { client: { consumes: [unityCatalogSpec] } }\n",
+        _read().replace("path: uc", "path: local"),
     )
-    root_matrix = root / "content/proj/compatibility.yml"
-    root_matrix.write_text(root_matrix.read_text().replace(", family: table", ""))
+    _append(
+        root,
+        f"{_CATALOG}/paths.yml",
+        "local:\n  roles:\n    client: { consumes: [unityCatalogSpec] }\n",
+    )
     data = _artifact(root)
     assert compat.check(root)[0] == []
     assert all(j["asset"] == "lakehouse.table" for j in data["journeys"])
@@ -728,12 +870,6 @@ def test_unmodeled_clients_and_local_participants_are_valid(tmp_path) -> None:
 
 def test_an_asset_rollup_renders_its_journeys(tmp_path) -> None:
     root = _modeled(_repo(tmp_path, _SPARK_READS))
-    matrix = root / "content/proj/compatibility.yml"
-    matrix.write_text(
-        matrix.read_text().replace(
-            "summary: Append rows}", "summary: Append rows, family: table}"
-        )
-    )
     embed = root / "content/proj/reference/002-matrix/index.md"
     embed.write_text(
         embed.read_text().replace(
@@ -762,19 +898,17 @@ def test_an_asset_rollup_renders_its_journeys(tmp_path) -> None:
 
 def test_an_asset_rollup_drops_journeys_nothing_answers(tmp_path) -> None:
     root = _modeled(_repo(tmp_path, _SPARK_READS))
-    matrix = root / "content/proj/compatibility.yml"
-    matrix.write_text(
-        matrix.read_text()
-        .replace("summary: Append rows}", "summary: Append rows, family: table}")
-        .replace(
-            "  table.write:",
-            "  table.tried: {title: Untried, summary: Nobody yet, family: table}\n"
-            "  table.write:",
-        )
-        .replace(
-            "rows: [table.read, table.write]",
-            "rows: [table.read, table.tried, table.write]",
-        )
+    _append(
+        root,
+        f"{_CATALOG}/journeys/table.yml",
+        "table.tried: {title: Untried, summary: Nobody yet, asset: lakehouse.table,"
+        " path: uc}\n",
+    )
+    _edit(
+        root,
+        "content/proj/compatibility.yml",
+        "rows: [table.read, table.write]",
+        "rows: [table.read, table.tried, table.write]",
     )
     embed = root / "content/proj/reference/002-matrix/index.md"
     embed.write_text(
@@ -888,12 +1022,11 @@ def test_an_interface_names_the_package_it_goes_through(tmp_path) -> None:
         tmp_path,
         _claims('claims.duckdb = [{ journey = "table.read", region = "read" }]'),
     )
-    matrix = root / "content/proj/compatibility.yml"
-    matrix.write_text(
-        matrix.read_text().replace(
-            "duckdb: {label: DuckDB, package: duckdb}",
-            "duckdb: {label: DuckDB, package: duckdb, via: deltalake}",
-        )
+    _edit(
+        root,
+        f"{_CATALOG}/interfaces.yml",
+        "duckdb: {label: DuckDB, package: duckdb}",
+        "duckdb: {label: DuckDB, package: duckdb, via: deltalake}",
     )
     script = root / "content/proj/how-to/001-engine/snippets/x.py"
     script.write_text(
@@ -956,9 +1089,12 @@ def test_a_hub_links_reports_on_its_own_page_by_heading(tmp_path) -> None:
 def test_a_client_edge_must_have_the_verb_the_journey_names(tmp_path) -> None:
     # Spark consumes unityCatalogSpec; implementing it is a different claim.
     root = _modeled(
-        _repo(tmp_path, _SPARK_READS),
-        "  table.read: {title: Read, summary: Read rows, family: table,"
-        " requires: {client: {implements: [unityCatalogSpec]}}}",
+        _repo(tmp_path, _SPARK_READS), _read().replace("path: uc", "path: format")
+    )
+    _append(
+        root,
+        f"{_CATALOG}/paths.yml",
+        "format:\n  roles:\n    client: { implements: [unityCatalogSpec] }\n",
     )
     data = _artifact(root)
     assert {
@@ -979,9 +1115,7 @@ def test_a_client_edge_must_have_the_verb_the_journey_names(tmp_path) -> None:
 def test_a_client_can_implement_a_format_and_consume_an_api(tmp_path) -> None:
     root = _modeled(
         _repo(tmp_path, _SPARK_READS),
-        "  table.read: {title: Read, summary: Read rows, family: table,"
-        " requires: {client: {consumes: [unityCatalogSpec],"
-        " implements: [icebergRestSpec]}}}",
+        _read("roles: {client: {implements: [icebergRestSpec]}}"),
     )
     path = root / "architecture/dist/model.json"
     model = json.loads(path.read_text())

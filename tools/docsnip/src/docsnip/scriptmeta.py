@@ -118,9 +118,9 @@ _CLAIM_KEYS = frozenset({"journey", "region", "anchor", "fails", "note", "api"})
 class Claim:
     """One ``claims.<interface>`` entry: what the script proves about an interface.
 
-    ``interface`` is a column of a compatibility matrix (``content/<project>/
-    compatibility.yml``), as written: bare for the script's own project, or
-    ``<project>:<interface>`` for another's. A claim says ``journey`` works and
+    ``interface`` is an estate-wide interface key (``architecture/journeys/
+    interfaces.yml``); the claim counts in every project that lists it and
+    shows the journey. A claim says ``journey`` works and
     names the ``region`` a page shows doing it, or, with ``fails`` (``True`` or
     the error text the script asserts), that it doesn't. ``anchor`` overrides the
     heading the matrix links to; ``note`` qualifies the cell, as in "on local

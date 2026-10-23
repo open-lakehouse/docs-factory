@@ -1,0 +1,415 @@
+# Journeys on tables. `by-path` journeys reach a Delta table by its storage
+# path; the `uc-*` paths reach a table by name through Unity Catalog.
+# See architecture/journeys/README.md.
+
+table.list:
+  title: List tables
+  summary: "List the tables in a schema from the engine, by their catalog names."
+  asset: lakehouse.table
+  path: uc-api
+external.read:
+  title: Read an external table
+  summary: "Read an external table by its catalog name, from files the reader can already reach."
+  asset: lakehouse.table
+  path: uc-external
+external.read-vended:
+  title: Read with vended S3 credentials
+  summary: Read an external table on S3 with the short-lived credentials the server vends for it.
+  asset: lakehouse.table
+  path: uc-external
+  roles:
+    storage: { implements: [s3Spec] }
+external.append:
+  title: Append to an external table
+  summary: "Append rows to an external table, named through the catalog."
+  asset: lakehouse.table
+  path: uc-external
+managed.create:
+  title: Create a managed table
+  summary: "Create a catalog-managed Delta table, with storage the catalog allocates."
+  asset: lakehouse.table
+  path: uc-managed
+managed.read:
+  title: Read a managed table
+  summary: Read a catalog-managed table through the catalog.
+  asset: lakehouse.table
+  path: uc-managed
+  feature: { spec: deltaSpec, name: catalogManaged, since: reader 3 · writer 7 }
+managed.append:
+  title: Append to a managed table
+  summary: "Append rows to a catalog-managed table, with the catalog accepting the commit."
+  asset: lakehouse.table
+  path: uc-managed
+  feature: { spec: deltaSpec, name: catalogManaged, since: reader 3 · writer 7 }
+managed.update:
+  title: Update rows in a managed table
+  summary: Change rows that match a condition in a catalog-managed table.
+  asset: lakehouse.table
+  path: uc-managed
+managed.delete:
+  title: Delete rows from a managed table
+  summary: Remove rows that match a condition from a catalog-managed table.
+  asset: lakehouse.table
+  path: uc-managed
+managed.drop:
+  title: Drop a managed table
+  summary: Drop a catalog-managed table and its data.
+  asset: lakehouse.table
+  path: uc-managed
+managed.time-travel:
+  title: Read an earlier version of a managed table
+  summary: Query a catalog-managed table as it was at an earlier version.
+  asset: lakehouse.table
+  path: uc-managed
+managed.path-write:
+  title: Write to a managed table by path
+  summary: "Write to a catalog-managed table's storage location directly, bypassing the catalog."
+  asset: lakehouse.table
+  path: by-path
+  roles:
+    catalog: { implements: [unityCatalogSpec, unityCatalogDeltaApiSpec] }
+managed.alter-schema:
+  title: "Change a managed table's columns"
+  summary: "Add, comment, drop, or widen columns of a catalog-managed table, with the catalog accepting the commit."
+  asset: lakehouse.table
+  path: uc-managed
+managed.set-properties:
+  title: "Set a managed table's properties"
+  summary: "Set and remove table properties on a catalog-managed table, with the catalog accepting the commit."
+  asset: lakehouse.table
+  path: uc-managed
+managed.rename:
+  title: Rename a managed table or column
+  summary: Rename a catalog-managed table or one of its columns.
+  asset: lakehouse.table
+  path: uc-managed
+external.alter-schema:
+  title: "Change an external table's columns"
+  summary: "Change an external table's columns in its Delta log, then bring the catalog's record in step."
+  asset: lakehouse.table
+  path: uc-external
+external.set-properties:
+  title: "Set an external table's properties"
+  summary: "Change an external table's properties and comments in its Delta log, then bring the catalog's record in step."
+  asset: lakehouse.table
+  path: uc-external
+managed.create-as-select:
+  title: Create a managed table from a query
+  summary: "Create a catalog-managed Delta table from the result of a query, in one commit."
+  asset: lakehouse.table
+  path: uc-managed
+managed.replace:
+  title: Replace a managed table
+  summary: "Replace a catalog-managed table's definition and rows in one commit, keeping its identity and history."
+  asset: lakehouse.table
+  path: uc-managed
+managed.overwrite:
+  title: Overwrite a managed table
+  summary: Replace all rows of a catalog-managed table and keep its schema.
+  asset: lakehouse.table
+  path: uc-managed
+managed.replace-where:
+  title: Replace rows that match a condition
+  summary: Replace only the rows of a catalog-managed table that match a predicate.
+  asset: lakehouse.table
+  path: uc-managed
+managed.overwrite-partitions:
+  title: Overwrite partitions of a managed table
+  summary: Overwrite only the partitions of a catalog-managed table that the new rows write to.
+  asset: lakehouse.table
+  path: uc-managed
+external.read-format:
+  title: "Read a Parquet, CSV, or JSON table"
+  summary: "Read a non-Delta external table, using the format and location the catalog records."
+  asset: lakehouse.table
+  path: uc-api
+table.register-external:
+  title: Register an external Delta table
+  summary: "Register Delta files that already exist in storage as a table, without copying them."
+  asset: lakehouse.table
+  path: uc-api
+table.register-format:
+  title: "Register a Parquet, CSV, or JSON table"
+  summary: "Register files in another format as an external table, with its columns declared."
+  asset: lakehouse.table
+  path: uc-api
+table.describe:
+  title: View a table
+  summary: "Get a table's columns, format, type, and storage location by its full name."
+  asset: lakehouse.table
+  path: uc-api
+table.read:
+  title: "Read a table's rows from a client"
+  summary: Read rows of a registered Delta table without starting an engine.
+  asset: lakehouse.table
+  path: uc-api
+table.write-sample:
+  title: Write sample rows
+  summary: Write generated rows into a table to try things out.
+  asset: lakehouse.table
+  path: uc-api
+table.drop:
+  title: Drop a table
+  summary: Remove a table from the catalog. Data files of an external table stay in place.
+  asset: lakehouse.table
+  path: uc-api
+create.table:
+  title: Create a table
+  summary: "Create a new, empty Delta table with a schema."
+  asset: lakehouse.table
+  path: by-path
+create.ctas:
+  title: Create from select
+  summary: "Create a Delta table from the result of a query, in one step."
+  asset: lakehouse.table
+  path: by-path
+create.partitioned:
+  title: Create partitioned table
+  summary: Create a table whose files are split by the values of one or more columns.
+  asset: lakehouse.table
+  path: by-path
+write.append:
+  title: Append rows
+  summary: Add new rows to an existing table without touching the rows already there.
+  asset: lakehouse.table
+  path: by-path
+write.overwrite:
+  title: Overwrite rows
+  summary: "Replace all of a table's rows with new data in one commit."
+  asset: lakehouse.table
+  path: by-path
+write.replace-where:
+  title: Replace where
+  summary: "Replace only the rows that match a predicate, leaving the rest in place."
+  asset: lakehouse.table
+  path: by-path
+write.dynamic-partitions:
+  title: Dynamic partitions
+  summary: Overwrite only the partitions the new data touches.
+  asset: lakehouse.table
+  path: by-path
+write.enforce-schema:
+  title: Enforce schema
+  summary: "Have a write that doesn't match the table's schema rejected instead of applied."
+  asset: lakehouse.table
+  path: by-path
+write.idempotent:
+  title: Idempotent writes
+  summary: "Retry a write safely, so a batch that already committed isn't applied twice."
+  asset: lakehouse.table
+  path: by-path
+write.commit-metadata:
+  title: Commit metadata
+  summary: "Attach your own metadata to a commit and find it in the table's history."
+  asset: lakehouse.table
+  path: by-path
+dml.update:
+  title: Update rows
+  summary: Change the values of rows that match a condition.
+  asset: lakehouse.table
+  path: by-path
+dml.delete:
+  title: Delete rows
+  summary: Remove the rows that match a condition.
+  asset: lakehouse.table
+  path: by-path
+merge.upsert:
+  title: Merge upsert
+  summary: "Update matching rows and insert new ones from a source, in one operation."
+  asset: lakehouse.table
+  path: by-path
+merge.not-matched-by-source:
+  title: Merge not matched by source
+  summary: "In a merge, update or delete target rows that have no match in the source."
+  asset: lakehouse.table
+  path: by-path
+merge.schema-evolution:
+  title: Merge schema evolution
+  summary: "Let a merge add the source's new columns to the target table."
+  asset: lakehouse.table
+  path: by-path
+read.scan:
+  title: Scan table
+  summary: "Read a table's current rows into a query or DataFrame."
+  asset: lakehouse.table
+  path: by-path
+read.pushdown:
+  title: Filter pushdown
+  summary: "Filter on read so the engine skips files that can't match."
+  asset: lakehouse.table
+  path: by-path
+read.version:
+  title: Read version
+  summary: Read the table as it was at an earlier version number.
+  asset: lakehouse.table
+  path: by-path
+read.timestamp:
+  title: Read timestamp
+  summary: Read the table as it was at a point in time.
+  asset: lakehouse.table
+  path: by-path
+read.past-retention:
+  title: Read past retention
+  summary: Learn what happens when you read a version whose files were already vacuumed.
+  asset: lakehouse.table
+  path: by-path
+history.list:
+  title: List history
+  summary: "List the commits that changed a table, with their operations and versions."
+  asset: lakehouse.table
+  path: by-path
+history.detail:
+  title: History detail
+  summary: "Show a table's current location, size, file count, and properties."
+  asset: lakehouse.table
+  path: by-path
+history.restore:
+  title: Restore version
+  summary: Roll a table back to an earlier version.
+  asset: lakehouse.table
+  path: by-path
+history.shallow-clone:
+  title: Shallow clone
+  summary: "Make a new table that references another table's files without copying them."
+  asset: lakehouse.table
+  path: by-path
+schema.merge-on-write:
+  title: Merge on write
+  summary: "Add a write's new columns to the table's schema as part of the write."
+  asset: lakehouse.table
+  path: by-path
+schema.overwrite:
+  title: Overwrite schema
+  summary: "Replace a table's schema along with its data."
+  asset: lakehouse.table
+  path: by-path
+schema.add-column:
+  title: Add column
+  summary: "Add a column to an existing table's schema."
+  asset: lakehouse.table
+  path: by-path
+schema.rename-drop:
+  title: Rename/drop column
+  summary: Rename or drop a column without rewriting the data files.
+  asset: lakehouse.table
+  path: by-path
+schema.type-widening:
+  title: Type widening
+  summary: "Change a column to a wider type, such as int to long, without rewriting the data."
+  asset: lakehouse.table
+  path: by-path
+quality.check:
+  title: Check constraint
+  summary: Add a CHECK constraint that rejects rows that violate it.
+  asset: lakehouse.table
+  path: by-path
+quality.not-null:
+  title: Not null constraint
+  summary: Declare a column NOT NULL so writes with nulls fail.
+  asset: lakehouse.table
+  path: by-path
+columns.generated:
+  title: Generated columns
+  summary: Define a column whose value is computed from other columns on write.
+  asset: lakehouse.table
+  path: by-path
+columns.identity:
+  title: Identity columns
+  summary: Give a column unique values the table assigns on insert.
+  asset: lakehouse.table
+  path: by-path
+columns.default:
+  title: Default columns
+  summary: Give a column a default value for writes that leave it out.
+  asset: lakehouse.table
+  path: by-path
+cdf.read:
+  title: Read change data
+  summary: "Read the row-level changes (inserts, updates, deletes) between versions."
+  asset: lakehouse.table
+  path: by-path
+stream.source-sink:
+  title: Stream source/sink
+  summary: Use a table as a streaming source or sink.
+  asset: lakehouse.table
+  path: by-path
+stream.foreach-batch-merge:
+  title: Stream foreach batch merge
+  summary: Merge each micro-batch of a stream into a table.
+  asset: lakehouse.table
+  path: by-path
+layout.compact:
+  title: Compact/optimize
+  summary: "Rewrite many small files into fewer, larger ones."
+  asset: lakehouse.table
+  path: by-path
+layout.zorder:
+  title: Z-order
+  summary: Co-locate related values across files so filters skip more data.
+  asset: lakehouse.table
+  path: by-path
+layout.clustering:
+  title: Clustering
+  summary: Cluster a table by chosen columns and let maintenance keep it clustered.
+  asset: lakehouse.table
+  path: by-path
+maint.vacuum:
+  title: Vacuum
+  summary: Delete data files that no version within the retention period still needs.
+  asset: lakehouse.table
+  path: by-path
+maint.checkpoint:
+  title: Checkpoint
+  summary: "Write a checkpoint so readers don't replay the whole commit log."
+  asset: lakehouse.table
+  path: by-path
+maint.purge-dvs:
+  title: Purge deletion vectors
+  summary: Rewrite files to physically remove rows marked deleted by deletion vectors.
+  asset: lakehouse.table
+  path: by-path
+maint.manifest:
+  title: Generate manifest
+  summary: Generate manifest files so engines without Delta support can read the table.
+  asset: lakehouse.table
+  path: by-path
+maint.repair:
+  title: Repair table
+  summary: Repair a table whose log references data files that no longer exist.
+  asset: lakehouse.table
+  path: by-path
+migrate.convert-parquet:
+  title: Convert to Delta
+  summary: Turn an existing Parquet directory into a Delta table in place.
+  asset: lakehouse.table
+  path: by-path
+feature.enable:
+  title: Enable feature
+  summary: "Turn on a table feature, which may raise the table's protocol version."
+  asset: lakehouse.table
+  path: by-path
+feature.drop:
+  title: Drop feature
+  summary: Remove a table feature so older readers and writers can use the table again.
+  asset: lakehouse.table
+  path: by-path
+feature.properties:
+  title: Feature properties
+  summary: "Read and set a table's properties."
+  asset: lakehouse.table
+  path: by-path
+storage.s3-multi-writer:
+  title: S3 multi-writer
+  summary: Let several writers commit to the same table on S3 safely.
+  asset: lakehouse.table
+  path: by-path
+storage.azure-gcs:
+  title: Azure/GCS
+  summary: Read and write tables on Azure Data Lake Storage or Google Cloud Storage.
+  asset: lakehouse.table
+  path: by-path
+catalog.unity:
+  title: Unity Catalog
+  summary: "Create, read, and write tables through Unity Catalog instead of by path."
+  asset: lakehouse.table
+  path: by-path

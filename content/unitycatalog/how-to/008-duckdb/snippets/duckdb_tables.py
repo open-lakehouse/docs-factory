@@ -14,12 +14,12 @@
 #   { journey = "managed.delete", fails = true, anchor = "create-change-and-drop-tables" },
 #   { journey = "managed.drop", fails = true, anchor = "create-change-and-drop-tables" },
 # ]
-# claims."delta:duckdb-sql" = [
+# claims.duckdb-sql = [
 #   { journey = "write.append", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
 #   { journey = "read.scan", region = "query", note = "through Unity Catalog" },
 #   { journey = "catalog.unity", region = "attach", api = "ATTACH … (TYPE unity_catalog)", note = "nightly `unity_catalog`" },
-#   { journey = "catalog-managed.read", region = "query", note = "through Unity Catalog" },
-#   { journey = "catalog-managed.write", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
+#   { journey = "managed.read", region = "query", note = "through Unity Catalog" },
+#   { journey = "managed.append", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
 #   { journey = "column-mapping.write", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
 #   { journey = "column-mapping.read", region = "query", note = "through Unity Catalog" },
 # ]

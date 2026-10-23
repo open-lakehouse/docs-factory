@@ -1,0 +1,44 @@
+# Journeys on storage credentials and external locations, through the Unity
+# Catalog API.
+# See architecture/journeys/README.md.
+
+credential.create:
+  title: Create a storage credential
+  summary: Store the cloud identity the server assumes to reach a bucket.
+  asset: lakehouse.credential
+  path: uc-api
+location.create:
+  title: Create an external location
+  summary: Pair a storage path with the credential that can access it.
+  asset: lakehouse.externalLocation
+  path: uc-api
+storage.view:
+  title: View credentials and external locations
+  summary: List or get the storage credentials and external locations the server holds.
+  asset: lakehouse.externalLocation
+  path: uc-api
+credential.update:
+  title: Update a storage credential
+  summary: "Change a storage credential's role, comment, or name."
+  asset: lakehouse.credential
+  path: uc-api
+location.update:
+  title: Update an external location
+  summary: "Change an external location's URL, credential, or name."
+  asset: lakehouse.externalLocation
+  path: uc-api
+storage.delete:
+  title: Delete an external location and its credential
+  summary: "Remove an external location, then the credential nothing else uses."
+  asset: lakehouse.externalLocation
+  path: uc-api
+credentials.vend-path:
+  title: Get credentials for a storage path
+  summary: Ask the server for short-lived credentials scoped to a path under an external location.
+  asset: lakehouse.credential
+  path: uc-api
+credentials.vend-volume:
+  title: Get credentials for a volume
+  summary: "Ask the server for short-lived credentials to read or write one volume's files."
+  asset: lakehouse.credential
+  path: uc-api

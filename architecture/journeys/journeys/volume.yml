@@ -1,0 +1,43 @@
+# Journeys on volumes, through the Unity Catalog API.
+# See architecture/journeys/README.md.
+
+volume.create-external:
+  title: Create an external volume
+  summary: Register an existing storage folder as a volume.
+  asset: lakehouse.volume
+  path: uc-api
+volume.create-managed:
+  title: Create a managed volume
+  summary: Create a volume whose storage the catalog allocates under a managed storage root.
+  asset: lakehouse.volume
+  path: uc-api
+volume.view:
+  title: View volumes
+  summary: "List a schema's volumes or get one by its full name, with its storage location."
+  asset: lakehouse.volume
+  path: uc-api
+volume.list-files:
+  title: "List a volume's files"
+  summary: See which files a volume holds.
+  asset: lakehouse.volume
+  path: uc-api
+volume.update:
+  title: Rename or update a volume
+  summary: "Change a volume's comment or name."
+  asset: lakehouse.volume
+  path: uc-api
+volume.delete:
+  title: Delete a volume
+  summary: Remove a volume from the catalog.
+  asset: lakehouse.volume
+  path: uc-api
+volume.read-files:
+  title: "Read a volume's files"
+  summary: Read files in a volume on object storage with credentials the server vends.
+  asset: lakehouse.volume
+  path: uc-api
+volume.write-files:
+  title: Write files to a volume
+  summary: Write files into a managed volume on object storage with vended credentials.
+  asset: lakehouse.volume
+  path: uc-api

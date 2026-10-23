@@ -101,12 +101,16 @@ Follow `AGENTS.md`:
   instruction for writing that page, not an edit to make now. Leave it open
   and unanswered for `docs-write`, which reads it when the slot is filled.
 - A `journey` request asks to track one more thing readers do, across the
-  project's engines and clients. Add it to `journeys:` in
-  `content/<project>/compatibility.yml` with a `family.task` id, the request's
-  title, a one-sentence `summary`, and `request: <request id>`, append the id to the `rows` of the table
-  its placement names, and run `uv run docsnip compat --fix`. Its cells start
-  unknown. Add `evidence` only from a source you can cite, and leave claims to
-  the scripts that prove them.
+  project's engines and clients. Journeys are estate-wide: first check
+  `architecture/journeys/journeys/` for one that already covers the task on
+  the same path, and reuse it. Otherwise add it to the area's file there with
+  an `<area>.<task>` id, the request's title, a one-sentence `summary`, its
+  `asset` and `path` (`architecture/journeys/paths.yml`), and `request:
+  <request id>`. Append the id to the `rows` of the table its placement names
+  in `content/<project>/compatibility.yml`, and run `uv run docsnip compat
+  --fix`. Its cells start unknown. Add `evidence` (to
+  `architecture/journeys/evidence.yml`) only from a source you can cite, and
+  leave claims to the scripts that prove them.
 - Blog posts follow `blogs/CONVENTIONS.md`.
 
 Then run `uv run docsnip check`, `cd site && node scripts/check-nav.mjs` if you

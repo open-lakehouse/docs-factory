@@ -482,8 +482,8 @@ def fit(root: Path) -> Fit:
     result = resolve_claims(root)
     model = result.model
     seen: set[tuple[str, ...]] = set()
-    for (project, iface, jid), proofs in sorted(result.proofs.items()):
-        journey = result.matrices[project].journeys[jid]
+    for (_, iface, jid), proofs in sorted(result.proofs.items()):
+        journey = result.catalog.journeys[jid]
         providers = {r: reqs for r, reqs in journey.requires.items() if r != "client"}
         for proof in proofs:
             key = env_of.get(proof.script)
@@ -497,9 +497,9 @@ def fit(root: Path) -> Fit:
                             found = sorted(
                                 i for i in runs if _provides(model, i, edge, element)
                             )
+                            # A journey two projects show is one gap.
                             mark = (
                                 name,
-                                project,
                                 jid,
                                 role,
                                 edge,

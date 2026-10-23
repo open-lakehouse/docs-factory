@@ -132,7 +132,7 @@ export function formatRequests(requests: FeedbackRequest[]): string {
     .map((r) => {
       const where =
         r.kind === "journey"
-          ? `content/${r.project}/compatibility.yml: a journey on table “${r.placement}”`
+          ? `a journey in architecture/journeys/, on ${r.project}'s table “${r.placement}”`
           : r.area === "docs"
             ? `${r.project} nav section “${r.placement}”`
             : r.placement;

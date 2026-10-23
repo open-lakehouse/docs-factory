@@ -20,7 +20,7 @@
 #   { journey = "managed.append", region = "duckdb-append" },
 #   { journey = "managed.create", fails = true, anchor = "create-a-managed-table" },
 # ]
-# claims."delta:spark-sql" = [
+# claims.spark-sql = [
 #   { journey = "catalog.unity", region = "create-table", note = "through Unity Catalog" },
 #   { journey = "create.table", region = "create-table", api = "CREATE TABLE", note = "through Unity Catalog" },
 #   { journey = "write.append", region = "spark-append", api = "INSERT INTO", note = "through Unity Catalog" },

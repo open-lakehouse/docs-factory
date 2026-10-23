@@ -73,7 +73,7 @@ Change the source:
 
 | Generated | Source |
 |---|---|
-| `content/<project>/compatibility.json`, `<!-- compat:… -->` blocks | script claims and `compatibility.yml` → `uv run docsnip compat --fix` |
+| `content/<project>/compatibility.json`, `<!-- compat:… -->` blocks | script claims, `architecture/journeys/`, and `compatibility.yml` → `uv run docsnip compat --fix` |
 | `envs/<name>/` renders, `plan.json`, `diagram.png`, `diagram.trestle-graph.json` | `envs/<name>/env.toml` → `just env-render <name>` (snapshot via `docsnip envs --fix`) |
 | `envs/environments.generated.json` | `uv run docsnip envs --fix` |
 | `architecture/dist/**` | `architecture/model/**` → `just arch-model` |

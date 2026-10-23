@@ -1,0 +1,121 @@
+# Interfaces: one engine or client through one language binding, the columns
+# of compatibility tables. A two-axis label (`<Engine> · <Language>`) is also
+# the label of the page tab that shows it. `model` names the implementation in
+# the estate model, and `integrations` what it reaches a spec through (ADR-0008).
+# `pin` is a key in each project's release.yml, so a column header shows the
+# version that project pins; `package` is what every claiming script pins.
+# A project lists its interfaces, in tab order, in content/<project>/compatibility.yml.
+
+# Spark reaches catalogs and table formats through what it integrates (a
+# connector, a runtime); those integrations carry the spec edges.
+spark:
+  label: Spark
+  pin: pyspark
+  package: pyspark
+  model: apacheSpark
+  integrations: [unityCatalogSpark, deltaSpark, icebergSparkRuntime]
+# SQL views and metric views need Spark 4.2; `spark` is the default 4.1 line.
+spark-4.2:
+  label: Spark
+  pin: pyspark-4.2
+  package: pyspark
+  model: apacheSpark
+  integrations: [unityCatalogSpark, deltaSpark]
+spark-sql:
+  label: Spark · SQL
+  pin: pyspark
+  package: pyspark
+  model: apacheSpark
+  integrations: [unityCatalogSpark, deltaSpark]
+spark-python:
+  label: Spark · Python
+  pin: pyspark
+  package: pyspark
+  model: apacheSpark
+  integrations: [unityCatalogSpark, deltaSpark]
+# Scala and Java reach the same Delta Spark API PySpark wraps, so tables give
+# them no column of their own; they label tabs and hold their scripts' claims.
+spark-scala:
+  label: Spark · Scala
+  pin: pyspark
+  package: delta-spark
+  model: apacheSpark
+  integrations: [deltaSpark]
+spark-java:
+  label: Spark · Java
+  pin: pyspark
+  package: delta-spark
+  model: apacheSpark
+  integrations: [deltaSpark]
+delta-rs-python:
+  label: delta-rs · Python
+  pin: deltalake
+  package: deltalake
+  model: deltaRs
+# The crate the Python package wraps. Its column is its own: the two expose
+# the shared engine through different APIs, and support differs.
+delta-rs-rust:
+  label: delta-rs · Rust
+  pin: deltalake-rs
+  package: deltalake
+  model: deltaRs
+duckdb:
+  label: DuckDB
+  package: duckdb
+  model: duckdb
+  integrations: [duckdbUnityCatalog, duckdbDelta, duckdbIceberg]
+# `duckdb` and `duckdb-sql` are the same engine and SQL, labelled for each
+# project's tabs.
+duckdb-sql:
+  label: DuckDB · SQL
+  package: duckdb
+  model: duckdb
+  integrations: [duckdbDelta, duckdbUnityCatalog]
+# The same engine and SQL as duckdb-sql, driven from Python; it labels the tab
+# and holds the claims of scripts that do.
+duckdb-python:
+  label: DuckDB · Python
+  package: duckdb
+  model: duckdb
+  integrations: [duckdbDelta]
+polars:
+  label: Polars
+  package: polars
+  model: polars
+  integrations: [deltaRs, pyIceberg]
+daft:
+  label: Daft
+  package: daft
+  model: daft
+  integrations: [deltaRs, pyIceberg]
+# pandas reaches Unity Catalog tables through delta-rs's Python binding.
+pandas:
+  label: pandas
+  package: pandas
+  via: deltalake
+  model: deltaRs
+pyiceberg:
+  label: PyIceberg
+  package: pyiceberg
+  model: pyIceberg
+# The catalog clients. They manage catalog objects; scripts that read or write
+# data through them pair them with a storage library, named in the claim's note.
+cli:
+  label: uc CLI
+  pin: release
+  model: unityCatalogCli
+python-sdk:
+  label: Python SDK
+  pin: unitycatalog-client
+  package: unitycatalog-client
+  model: unityCatalogPythonSdk
+unitycatalog-ai:
+  label: unitycatalog-ai
+  pin: unitycatalog-ai
+  package: unitycatalog-ai
+  model: unityCatalogAi
+unitycatalog-langchain:
+  label: unitycatalog-langchain
+  pin: unitycatalog-langchain
+  package: unitycatalog-langchain
+  model: unityCatalogLangChain

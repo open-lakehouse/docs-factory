@@ -91,7 +91,7 @@ edge belongs to the implementation, not to a versioned compatibility
 interface: Spark 4.1 and Spark 4.2 both map to `apacheSpark`.
 
 This edge records breadth, not an operation result. It does not imply that
-create, read, update, or delete all work. `compatibility.yml` names those
+create, read, update, or delete all work. `architecture/journeys/` names those
 reader journeys, and runnable claims or recorded evidence determine each
 cell. A ready working claim can verify an `operatesOn` edge; a modeled edge
 without a claim remains modeled but unverified.

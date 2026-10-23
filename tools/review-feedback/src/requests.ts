@@ -1,8 +1,9 @@
 // Content requests as agent work: an ACCEPTED request is a slot to add to the
 // backlog. The agent writes a `planned:` entry (with `request: <id>`) into the
 // project's nav.yml section, or blogs/IDEAS.md, then marks the request done. A
-// journey request becomes a `journeys:` entry (with `request: <id>`) and a row
-// of the named table in content/<project>/compatibility.yml instead.
+// journey request becomes a journey in architecture/journeys/ (with `request:
+// <id>`) and a row of the named table in content/<project>/compatibility.yml
+// instead.
 import type { ReviewClient } from "./client.js";
 import {
   ContentArea,
@@ -20,7 +21,7 @@ export interface FeedbackRequest {
   area: "docs" | "blogs";
   project?: string;
   /** Docs: the nav.yml section trail (`A › B`). Blogs: the series (or `Blog`).
-   * Journeys: the compatibility.yml table id. */
+   * Journeys: the id of a table in the project's compatibility.yml. */
   placement: string;
   diataxis?: string;
   title: string;

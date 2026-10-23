@@ -544,39 +544,54 @@ def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:
     ]
 
 
-def _with_connector(root: Path, *, built_on: bool = True) -> Path:
-    """Move Spark's ucSpec edge onto a connector the interface names."""
+def _with_integration(root: Path, *, integrated: bool = True) -> Path:
+    """Move Spark's ucSpec edge onto an integration the interface names."""
     model = json.loads(json.dumps(_MODEL))
     model["elements"]["ucSpark"] = {"kind": "implementation", "title": "UC Spark"}
     model["relations"]["r1"]["source"] = {"model": "ucSpark"}
-    if built_on:
+    if integrated:
         model["relations"]["r6"] = {
-            "kind": "builtOn",
-            "source": {"model": "ucSpark"},
-            "target": {"model": "apacheSpark"},
+            "kind": "integrates",
+            "source": {"model": "apacheSpark"},
+            "target": {"model": "ucSpark"},
         }
     (root / "architecture/dist/model.json").write_text(json.dumps(model))
     matrix = root / "content/proj/compatibility.yml"
     matrix.write_text(
         matrix.read_text().replace(
-            "model: apacheSpark}", "model: apacheSpark, connectors: [ucSpark]}"
+            "model: apacheSpark}", "model: apacheSpark, integrations: [ucSpark]}"
         )
     )
     return root
 
 
-def test_a_connector_provides_its_engines_spec_edge(tmp_path) -> None:
-    data = _artifact(_with_connector(_modeled(_repo(tmp_path, _SPARK_READS))))
-    assert data["interfaces"][0]["connectors"] == ["ucSpark"]
+def test_an_integration_provides_its_engines_spec_edge(tmp_path) -> None:
+    data = _artifact(_with_integration(_modeled(_repo(tmp_path, _SPARK_READS))))
+    assert data["interfaces"][0]["integrations"] == ["ucSpark"]
     edges = {(e["source"], e["kind"], e["target"]) for e in data["verifiedEdges"]}
     assert ("ucSpark", "consumes", "ucSpec") in edges
     assert "missing-edge" not in [d["kind"] for d in data["diagnostics"]]
 
 
-def test_a_connector_must_be_built_on_the_interface_model(tmp_path) -> None:
-    root = _with_connector(_modeled(_repo(tmp_path, "")), built_on=False)
+def test_the_engines_own_spec_edge_wins_over_an_integrations(tmp_path) -> None:
+    root = _with_integration(_modeled(_repo(tmp_path, _SPARK_READS)))
+    path = root / "architecture/dist/model.json"
+    model = json.loads(path.read_text())
+    model["relations"]["r7"] = {
+        "kind": "consumes",
+        "source": {"model": "apacheSpark"},
+        "target": {"model": "ucSpec"},
+    }
+    path.write_text(json.dumps(model))
+    edges = {(e["source"], e["kind"]) for e in _artifact(root)["verifiedEdges"]}
+    assert ("apacheSpark", "consumes") in edges
+    assert ("ucSpark", "consumes") not in edges
+
+
+def test_an_integration_must_be_integrated_by_the_interface_model(tmp_path) -> None:
+    root = _with_integration(_modeled(_repo(tmp_path, "")), integrated=False)
     errors, _ = compat.check(root)
-    assert any("'ucSpark' is not builtOn 'apacheSpark'" in e for e in errors), errors
+    assert any("'apacheSpark' doesn't integrate 'ucSpark'" in e for e in errors), errors
 
 
 def test_a_missing_client_edge_is_reported_not_failed(tmp_path) -> None:

@@ -11,7 +11,7 @@
       "package": "pyspark",
       "model": "apacheSpark",
       "via": null,
-      "connectors": [
+      "integrations": [
         "unityCatalogSpark",
         "deltaSpark",
         "icebergSparkRuntime"
@@ -25,7 +25,7 @@
       "package": "pyspark",
       "model": "apacheSpark",
       "via": null,
-      "connectors": [
+      "integrations": [
         "unityCatalogSpark",
         "deltaSpark"
       ],
@@ -38,7 +38,7 @@
       "package": "pyspark",
       "model": "apacheSpark",
       "via": null,
-      "connectors": [
+      "integrations": [
         "unityCatalogSpark",
         "deltaSpark"
       ],
@@ -51,7 +51,7 @@
       "package": "pyspark",
       "model": "apacheSpark",
       "via": null,
-      "connectors": [
+      "integrations": [
         "unityCatalogSpark",
         "deltaSpark"
       ],
@@ -64,7 +64,7 @@
       "package": "deltalake",
       "model": "deltaRs",
       "via": null,
-      "connectors": [],
+      "integrations": [],
       "viaVersion": null
     },
     {
@@ -74,7 +74,7 @@
       "package": "duckdb",
       "model": "duckdb",
       "via": null,
-      "connectors": [
+      "integrations": [
         "duckdbUnityCatalog",
         "duckdbDelta",
         "duckdbIceberg"
@@ -88,7 +88,9 @@
       "package": "polars",
       "model": "polars",
       "via": null,
-      "connectors": [],
+      "integrations": [
+        "deltaRs"
+      ],
       "viaVersion": null
     },
     {
@@ -98,7 +100,7 @@
       "package": "daft",
       "model": "daft",
       "via": null,
-      "connectors": [],
+      "integrations": [],
       "viaVersion": null
     },
     {
@@ -108,7 +110,7 @@
       "package": "pandas",
       "model": "deltaRs",
       "via": "deltalake",
-      "connectors": [],
+      "integrations": [],
       "viaVersion": "1.6.6"
     },
     {
@@ -118,7 +120,7 @@
       "package": "pyiceberg",
       "model": "pyIceberg",
       "via": null,
-      "connectors": [],
+      "integrations": [],
       "viaVersion": null
     },
     {
@@ -128,7 +130,7 @@
       "package": null,
       "model": "ucCli",
       "via": null,
-      "connectors": [],
+      "integrations": [],
       "viaVersion": null
     },
     {
@@ -138,7 +140,7 @@
       "package": "unitycatalog-client",
       "model": "unityCatalogPythonSdk",
       "via": null,
-      "connectors": [],
+      "integrations": [],
       "viaVersion": null
     },
     {
@@ -148,7 +150,7 @@
       "package": "unitycatalog-ai",
       "model": "unityCatalogAI",
       "via": null,
-      "connectors": [],
+      "integrations": [],
       "viaVersion": null
     },
     {
@@ -158,7 +160,7 @@
       "package": "unitycatalog-langchain",
       "model": "unityCatalogLangChain",
       "via": null,
-      "connectors": [],
+      "integrations": [],
       "viaVersion": null
     }
   ],

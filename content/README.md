@@ -437,10 +437,10 @@ compatibility table can cite it. `content/<project>/compatibility.yml` declares
 the project's interfaces (the columns), its journeys, the
 tables pages embed (rows of journeys), and evidence for cells no script here
 proves. An interface's `model` names its engine or client in the estate model.
-When it reaches a catalog or table format through a separately shipped
-connector, such as Spark's Unity Catalog connector or a DuckDB extension, list
-those elements under `connectors`. Each must be `builtOn` the interface's
-`model`, and the spec edges a journey requires are looked up on them first. A journey is what a reader sets out to do, such as "append to a managed
+When it reaches a catalog or table format through an integration, such as
+Spark's Unity Catalog connector or a DuckDB extension, list those elements under
+`integrations`. The interface's `model` must `integrates` each one, and a spec
+edge a journey requires counts on an integration when the model lacks it. A journey is what a reader sets out to do, such as "append to a managed
 table", however many calls the client makes along the way: if a script can do
 the journey, the client does what it needs to. Each journey has a `family.task`
 key, a `title` (the row label), and a one-sentence `summary` from the reader's

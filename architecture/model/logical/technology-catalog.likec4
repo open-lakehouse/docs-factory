@@ -149,7 +149,7 @@ model {
   apacheSpark -[operatesOn]-> lakehouse.table "queries and changes"
   apacheSpark -[operatesOn]-> lakehouse.metricView "defines and queries"
 
-  // Spark reaches catalogs and table formats through connectors that ship
+  // Spark reaches catalogs and table formats through integrations that ship
   // separately from Spark itself.
   unityCatalogSpark = implementation "Unity Catalog Spark connector" {
     #library #public
@@ -162,7 +162,7 @@ model {
       package "io.unitycatalog:unitycatalog-spark"
     }
   }
-  unityCatalogSpark -[builtOn]-> apacheSpark
+  apacheSpark -[integrates]-> unityCatalogSpark
   unityCatalogSpark -[consumes]-> ucSpec "resolves tables via"
 
   icebergSparkRuntime = implementation "Iceberg Spark runtime" {
@@ -176,7 +176,7 @@ model {
       package "org.apache.iceberg:iceberg-spark-runtime"
     }
   }
-  icebergSparkRuntime -[builtOn]-> apacheSpark
+  apacheSpark -[integrates]-> icebergSparkRuntime
   icebergSparkRuntime -[implements]-> icebergSpec
   icebergSparkRuntime -[realizes]-> lakehouse.tableFormat
   icebergSparkRuntime -[consumes]-> icebergRestSpec "resolves tables via"
@@ -202,7 +202,7 @@ model {
     link https://docs.delta.io
   }
   deltaSpark -[implements]-> deltaSpec
-  deltaSpark -[builtOn]-> apacheSpark
+  apacheSpark -[integrates]-> deltaSpark
   deltaSpark -[realizes]-> lakehouse.tableFormat
   deltaSpark -[operatesOn]-> lakehouse.table "queries and changes"
 
@@ -230,7 +230,7 @@ model {
       maturity "nightly"
     }
   }
-  duckdbUnityCatalog -[builtOn]-> duckdb
+  duckdb -[integrates]-> duckdbUnityCatalog
   duckdbUnityCatalog -[consumes]-> ucSpec "resolves tables via"
 
   duckdbDelta = implementation "DuckDB delta extension" {
@@ -244,8 +244,9 @@ model {
       package "delta"
     }
   }
-  duckdbDelta -[builtOn]-> duckdb
-  duckdbDelta -[consumes]-> deltaSpec "reads and appends to Delta tables via"
+  duckdb -[integrates]-> duckdbDelta
+  duckdbDelta -[implements]-> deltaSpec "reads Delta tables and appends to them"
+  duckdbDelta -[realizes]-> lakehouse.tableFormat
 
   duckdbIceberg = implementation "DuckDB iceberg extension" {
     #library #public
@@ -258,8 +259,9 @@ model {
       package "iceberg"
     }
   }
-  duckdbIceberg -[builtOn]-> duckdb
-  duckdbIceberg -[consumes]-> icebergSpec "reads and writes Iceberg tables via"
+  duckdb -[integrates]-> duckdbIceberg
+  duckdbIceberg -[implements]-> icebergSpec
+  duckdbIceberg -[realizes]-> lakehouse.tableFormat
   duckdbIceberg -[consumes]-> icebergRestSpec "resolves tables via"
 
   polars = implementation "Polars" {
@@ -274,10 +276,7 @@ model {
     }
   }
   polars -[realizes]-> lakehouse.queryEngine
-  // impl -> impl is a DEPENDENCY, not spec-consumption (`consumes` is impl -> spec). See ADR-0006.
-  polars -[dependsOn]-> deltaRs "reads/writes Delta via" {
-    #optional
-  }
+  polars -[integrates]-> deltaRs "reads and writes Delta tables through"
   polars -[consumes]-> ucSpec "resolves tables via"
   polars -[operatesOn]-> lakehouse.table "reads and appends"
 

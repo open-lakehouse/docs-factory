@@ -35,33 +35,33 @@ families:
   function: { asset: lakehouse.registeredFunction, requires: *uc }
 
 interfaces:
-  # `connectors` are what an engine reaches a spec through when it ships
-  # separately (a Spark connector, a DuckDB extension); they carry the spec edges.
+  # `integrations` are what an engine reaches a spec through (a Spark connector,
+  # a DuckDB extension); they carry the spec edges.
   spark:
     label: Spark
     pin: pyspark
     package: pyspark
     model: apacheSpark
-    connectors: [unityCatalogSpark, deltaSpark, icebergSparkRuntime]
+    integrations: [unityCatalogSpark, deltaSpark, icebergSparkRuntime]
   # SQL views and metric views need Spark 4.2; the `spark` column is the default 4.1 line.
   spark-4.2:
     label: Spark
     pin: pyspark-4.2
     package: pyspark
     model: apacheSpark
-    connectors: [unityCatalogSpark, deltaSpark]
+    integrations: [unityCatalogSpark, deltaSpark]
   spark-sql:
     label: Spark · SQL
     pin: pyspark
     package: pyspark
     model: apacheSpark
-    connectors: [unityCatalogSpark, deltaSpark]
+    integrations: [unityCatalogSpark, deltaSpark]
   spark-python:
     label: Spark · Python
     pin: pyspark
     package: pyspark
     model: apacheSpark
-    connectors: [unityCatalogSpark, deltaSpark]
+    integrations: [unityCatalogSpark, deltaSpark]
   delta-rs-python:
     label: delta-rs · Python
     pin: deltalake
@@ -71,11 +71,12 @@ interfaces:
     label: DuckDB
     package: duckdb
     model: duckdb
-    connectors: [duckdbUnityCatalog, duckdbDelta, duckdbIceberg]
+    integrations: [duckdbUnityCatalog, duckdbDelta, duckdbIceberg]
   polars:
     label: Polars
     package: polars
     model: polars
+    integrations: [deltaRs]
   daft:
     label: Daft
     package: daft

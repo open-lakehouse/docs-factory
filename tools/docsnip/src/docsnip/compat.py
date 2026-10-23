@@ -62,7 +62,7 @@ _MATRIX_KEYS = {
     "tables",
     "evidence",
 }
-_INTERFACE_KEYS = {"label", "pin", "package", "model", "via", "connectors"}
+_INTERFACE_KEYS = {"label", "pin", "package", "model", "via", "integrations"}
 _JOURNEY_KEYS = {
     "title",
     "summary",
@@ -117,14 +117,15 @@ class Interface:
     package: str | None = None  # every claiming script pins one version of it
     model: str | None = None  # an estate-model element id
     via: str | None = None  # the package the interface reaches tables through
-    # Model elements builtOn `model` that provide its spec support (a Spark
-    # connector, a DuckDB extension); spec edges are looked up on them first.
-    connectors: tuple[str, ...] = ()
+    # What `model` integrates for its spec support (a Spark connector, a DuckDB
+    # extension, a format library). A spec edge the model has itself wins, so an
+    # integration is credited only with what the engine lacks.
+    integrations: tuple[str, ...] = ()
 
     @property
     def speakers(self) -> tuple[str, ...]:
-        """The elements whose spec edges count for this interface."""
-        return self.connectors + ((self.model,) if self.model else ())
+        """The elements whose spec edges count for this interface, model first."""
+        return ((self.model,) if self.model else ()) + self.integrations
 
 
 # participant role → requirement edge → element ids, all of which must hold
@@ -444,17 +445,17 @@ def _load_matrix(path: Path, model: Model, errors: list[str]) -> Matrix | None:
             errors.append(f"{where}: {at}.pin '{entry['pin']}' is not in release.yml")
         if "model" in entry:
             known_model(entry["model"], f"{at}.model")
-        connectors = entry.get("connectors") or []
-        if not isinstance(connectors, list):
-            errors.append(f"{where}: {at}.connectors must be a list of model ids")
-            connectors = []
-        for i, connector in enumerate(connectors):
-            known_model(connector, f"{at}.connectors[{i}]")
-            built_on = ("builtOn", connector, entry.get("model"))
-            if model.kinds and built_on not in model.edges:
+        integrations = entry.get("integrations") or []
+        if not isinstance(integrations, list):
+            errors.append(f"{where}: {at}.integrations must be a list of model ids")
+            integrations = []
+        for i, integration in enumerate(integrations):
+            known_model(integration, f"{at}.integrations[{i}]")
+            edge = ("integrates", entry.get("model"), integration)
+            if model.kinds and edge not in model.edges:
                 errors.append(
-                    f"{where}: {at}.connectors[{i}] '{connector}' is not builtOn "
-                    f"{entry.get('model')!r} in the estate model"
+                    f"{where}: {at}.integrations[{i}]: {entry.get('model')!r} "
+                    f"doesn't integrate '{integration}' in the estate model"
                 )
         interfaces[key] = Interface(
             key=key,
@@ -463,7 +464,7 @@ def _load_matrix(path: Path, model: Model, errors: list[str]) -> Matrix | None:
             package=entry.get("package"),
             model=entry.get("model"),
             via=entry.get("via"),
-            connectors=tuple(str(c) for c in connectors),
+            integrations=tuple(str(c) for c in integrations),
         )
 
     defaults = _load_family(raw.get("defaults") or {}, "defaults", where, model, errors)
@@ -1029,8 +1030,8 @@ def render_interfaces(
             return f"[{result.model.titles.get(e, e)}](model:{e})"
 
         implementation = link(model_id) if model_id else "—"
-        if iface.connectors:
-            implementation += " with " + ", ".join(map(link, iface.connectors))
+        if iface.integrations:
+            implementation += " with " + ", ".join(map(link, iface.integrations))
         contracts = _contracts(result, iface)
         modeled_assets = sorted(
             target
@@ -1728,7 +1729,7 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
                 "package": i.package,
                 "model": i.model,
                 "via": i.via,
-                "connectors": list(i.connectors),
+                "integrations": list(i.integrations),
                 "viaVersion": _tested_version(result, matrix, i.key, via=True)
                 if i.via
                 else None,

@@ -500,6 +500,15 @@ is a journey, and the script that runs it claims the cell. A script claims cells
   `missing` renders an unlinked ✗, and
   `outcome: works` (the engine's own docs or source say so, with `why` and a
   `source`) renders as `docs` on tables that set `documented: true`.
+- What a server doesn't serve is a fact about the server, recorded once: an
+  `evidence.yml` entry with `implementation` and `obligations` (`fails` or
+  `missing`) instead of interfaces and journeys. A project's
+  `compatibility.yml` binds the implementation that plays each provider role
+  in its cells (`providers: { catalog: unityCatalogServer }`), and every
+  journey there that covers one of those obligations, through a role that
+  must implement its spec, renders that outcome for each interface reaching
+  the spec. The review app labels the cell "blocked by" the server, and a
+  release that adds the endpoint flips them all by deleting one entry.
 - A table embedded on a `private` page also shows draft pages' claims, marked
   "(draft)", with each cell's `api` and links to its evidence. Private pages are
   never emitted, so nothing unreviewed reaches readers.

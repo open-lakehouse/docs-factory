@@ -1,9 +1,9 @@
 # One journey graph for the estate
 
-**Status:** P0 (#311), P1 (#312), and P2 are built: the catalog in
+**Status:** P0 (#311), P1 (#312), P2 (#313), and P3 are built: the catalog in
 `architecture/journeys/`, the per-project projections, the spec obligations,
-and the coverage report (§2.1–§2.4 and §3 describe them as built). P3–P5 are
-proposals. Implements [ADR-0009](../../architecture/adr/ADR-0009-journeys-as-path-patterns.md).
+the coverage report, and server facts (§2.1–§2.4 and §3 describe them as
+built). P4 and P5 are proposals. Implements [ADR-0009](../../architecture/adr/ADR-0009-journeys-as-path-patterns.md).
 **Scope:** `content/*/compatibility.yml`, `content/vocab.json` `specFeatures`,
 `tools/docsnip` (`compat.py`, `scriptmeta.py`, `query.py`, `tabs.py`), the
 `compatibility.json` consumers in `site/` and `emit/`, and the review app's
@@ -181,17 +181,34 @@ a table, and its package pin is checked against the claiming project's scripts.
 `evidence.yml`, and a `source` names its project
 (`unitycatalog:reference/features-and-limitations#…`) or is a URL.
 
-P3 adds a form that records a fact about one implementation:
+P3 added facts about one implementation, in the same file:
 
 ```yaml
 - implementation: unityCatalogServer
   obligations: [icebergRestSpec:registerTable]
   outcome: missing
+  why: The server has no `registerTable` endpoint.
   source: unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss
 ```
 
-Client cells on a path whose `catalog` role the script's environment binds to
-that implementation render as blocked, with the server fact as the reason.
+A projection's `providers` binds the implementation each provider role plays
+in its cells. Unity Catalog binds `catalog: unityCatalogServer`, the server
+its environments run, and Delta binds none. The loader turns each bound fact
+into evidence. Every journey in the matrix that covers one of the fact's
+obligations, through a role the provider plays that must implement the
+obligation's spec, gets the fact's outcome for every interface whose model
+reaches that spec. Explicit evidence and claims still come first, and a ready
+claim that the journey works contradicts the fact (an error). A fact that
+blocks nothing anywhere is an error too. Tables render a blocked cell as the
+same ✗, the artifact's evidence carries `implementation`, the review app
+labels it "blocked by" the server, and coverage counts it as `blocked`.
+
+The six per-client UC Iceberg REST server entries became five facts:
+`registerTable`, `commitTransaction`, the view operations, scan planning, and
+`signRequest`. Renaming a table into another namespace stays a per-client
+entry, because the server serves `renameTable` and only rejects that one use.
+Binding providers from the environment registry instead of the projection, so
+a project with several servers gets a cell per server, is left open.
 
 ### 2.5 Projections
 
@@ -250,7 +267,10 @@ per project, interface, spec, and role. At P2:
 the other way, from the model's edges to the obligations they imply. Still
 to come: `/plan/compat` showing it as the denominator of its spec-version
 chips, `docsnip query` answering "what does DuckDB owe Delta readers", and
-"blocked by the server" in place of the Iceberg REST `missing` cells (P3).
+a server-side report of what a bound server serves of its specs.
+Server facts (P3) count as `blocked`: at P3, Spark, DuckDB, and PyIceberg have
+6 of their 25 Iceberg REST client obligations blocked by the UC server and no
+✗ of their own.
 
 ## 4. One page, several sites
 
@@ -287,8 +307,8 @@ Each phase is its own PR, and each leaves `docsnip check` green.
 | --- | --- | --- |
 | **P0** (#311) | Exact verbs, in place. Delta `defaults` client `implements: [deltaSpec]`. UC `managed` adds `unityCatalogDeltaApiSpec` and `deltaSpec`, `iceberg` adds `icebergSpec`. `compat.py` checks each role's own verb, not the `_SPEC_EDGES` union. Fix the model gaps this surfaces (`polars` and `daft` `integrates` `pyIceberg`, a Delta edge for `daft`) through `update-architecture`. | Rendered tables are unchanged. `compatibility.json` differs only in `diagnostics` and `verifiedEdges`. |
 | **P1** (built) | `architecture/journeys/` with paths, journeys, interfaces, evidence, and aliases. The loader reads the global files plus the projections. Duplicates merge. Old ids resolve through aliases with a warning, then a one-shot script rewrites the claims. | The set of (interface, row key, outcome) triples equals the pre-migration set mapped through aliases. `bun test src/content-core` passes, and `just uc-docs` / `just delta-docs` render the same engine reports. |
-| **P2** (built) | `obligations/*.yml` replaces `specFeatures`. `feature:` becomes `covers:` (a list). The coverage report. | `coverage` is in `compatibility.json`, and its numbers are in the PR description. |
-| **P3** | Implementation facts and blocked cells. The six UC Iceberg REST server entries become implementation facts. | The `iceberg-catalog` table renders the same outcomes from one fact per endpoint. |
+| **P2** (#313) | `obligations/*.yml` replaces `specFeatures`. `feature:` becomes `covers:` (a list). The coverage report. | `coverage` is in `compatibility.json`, and its numbers are in the PR description. |
+| **P3** (built) | Implementation facts and blocked cells. The six UC Iceberg REST server entries become implementation facts. | The `iceberg-catalog` table renders the same outcomes from one fact per endpoint. |
 | **P4** | `select:` rows. Delta's "with Unity Catalog" table. The open-lakehouse format crosswalk from shared `covers:`. | `catalog.unity` is gone, and the crosswalk page renders from data. |
 | **P5** | Upstream conformance suites (the Iceberg REST Compatibility Kit, Delta Acceptance Testing) as evidence for obligations. | Optional. |
 

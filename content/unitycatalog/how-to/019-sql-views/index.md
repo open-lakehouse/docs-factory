@@ -1,6 +1,6 @@
 ---
 title: Manage SQL views
-summary: Create SQL views in Unity Catalog with Spark 4.2 or the REST API, query them from Spark 4.1 and 4.2, and drop and recreate them to change one.
+summary: Create, query, and inspect SQL views in Unity Catalog, and drop and recreate a view to change it.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -10,13 +10,11 @@ references:
 status: draft
 ---
 
-A SQL view stores its query text and output columns in Unity Catalog, with no
-data and no storage location. The engine that reads the view expands the query
-and runs it. For how views fit next to tables and metric views, see
+A SQL view stores its query text and output columns in Unity Catalog. The
+engine that reads the view expands the query and runs it. For how views fit next to tables and metric views, see
 [SQL views and metric views](../../explanation/views-and-metric-views/index.md).
 Creating a view with SQL needs Spark 4.2 and the Unity Catalog connector. You
-can also register one through the REST API. This guide builds views over the TPC-H sample
-tables in `samples.tpch`.
+can also register one through the REST API.
 
 :::prerequisites
 - The TPC-H sample in `samples.tpch`:
@@ -86,7 +84,7 @@ registers both catalogs. This view lives in `unity.default` and reads
 +--------+
 ```
 
-Going by the server's source, reading through a view also needs access to its
+Reading through a view also needs access to its
 source tables. See
 [permissions on views](../../explanation/views-and-metric-views/index.md#permissions).
 
@@ -121,10 +119,12 @@ SELECT o.o_orderkey, o.o_orderdate, o.o_totalprice, c.c_name, c.c_mktsegment
 
 ## Change or rename a view
 
+:::note
 A view can't be changed in place. `CREATE OR REPLACE VIEW`,
 `ALTER VIEW … AS`, and `ALTER VIEW … SET TBLPROPERTIES` fail with
 `Replacing a view is not supported yet`. `ALTER VIEW … RENAME TO` fails with
 `Renaming a view is not supported yet`.
+:::
 
 To change a view, drop it and create it again. This version adds the
 customer's nation:

@@ -107,6 +107,10 @@ just arch-refresh   # check + model + build — run after any model edit
 just trestle-catalog  # snapshot the pinned Trestle's modules, refresh the context, check the join
 ```
 
+`arch-model` rewrites relation ids in `dist/model.json` to hashes of each
+relation's kind, endpoints, and title (`scripts/stable-relation-ids.mjs`), so a
+re-export from any checkout is byte-identical unless the model changed.
+
 ## Update process
 
 1. Decide which **layer** the change touches, then edit the owning file (logical

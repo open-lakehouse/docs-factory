@@ -8,7 +8,7 @@
     "dev": "likec4 start model",
     "check": "likec4 validate model",
     "build": "likec4 build -o dist/static model",
-    "model": "likec4 export json --pretty --skip-layout -o dist/model.json model && likec4 gen webcomponent -o dist/likec4-views.js model"
+    "model": "likec4 export json --pretty --skip-layout -o dist/model.json model && bun scripts/stable-relation-ids.mjs dist/model.json && likec4 gen webcomponent -o dist/likec4-views.js model"
   },
   "devDependencies": {
     "likec4": "1.60.0"

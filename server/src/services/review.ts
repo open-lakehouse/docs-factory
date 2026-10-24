@@ -535,7 +535,7 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string, viewerUser
         where rq.area = ${area} and rq.slug = ${slug}) as latest_satisfied_at,
       (select coalesce(jsonb_agg(
           jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
-            'approver_login', ui.github_login, 'approver_user_id', ca.approver_user_id,
+            'approver_login', coalesce(ui.github_login, ui.name), 'approver_user_id', ca.approver_user_id,
             'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
         from content_approval ca
         left join user_identity ui on ui.user_id = ca.approver_user_id
@@ -652,7 +652,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               where rq.area = k.area and rq.slug = k.slug) as latest_satisfied_at,
             (select coalesce(jsonb_agg(
                 jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
-                  'approver_login', ui.github_login, 'approver_user_id', ca.approver_user_id,
+                  'approver_login', coalesce(ui.github_login, ui.name), 'approver_user_id', ca.approver_user_id,
                   'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
               from content_approval ca
               left join user_identity ui on ui.user_id = ca.approver_user_id

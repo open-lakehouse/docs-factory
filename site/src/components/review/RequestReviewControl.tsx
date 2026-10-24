@@ -301,7 +301,7 @@ export default function RequestReviewControl({
             <p className="px-2 py-1.5 text-xs text-muted-foreground">None yet.</p>
           ) : null}
           {approvals.map((a) => {
-            const who = a.approverLogin || a.approverUserId || "someone";
+            const who = a.approverLogin || "someone";
             const isMine = !!viewer?.userId && a.approverUserId === viewer.userId;
             return (
               <div key={a.id} className="flex items-center gap-2 px-2 py-1.5">

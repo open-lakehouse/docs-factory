@@ -8,7 +8,7 @@
 #                (`export default { fetch }`). DATABASE_URL is injected by Neon at
 #                runtime; the other env is set on the Function at deploy. It exports
 #                the (stable) Function host so the SPA build can bake the /api rewrite.
-# `deploy-site`: builds the full agentic-docs corpus (needs uv + Chromium, which the
+# `deploy-site`: builds the full agentic-docs corpus (needs uv, which the
 #                Vercel build image lacks) and deploys it `vercel deploy --prebuilt
 #                --prod`. Vercel does NOT build production itself — see runbook §0/§3a.
 
@@ -121,9 +121,9 @@ jobs:
           echo "::notice::prod Function host ${HOST} — consumed by the deploy-site job below."
 
   # Build the production SPA in CI and deploy it prebuilt. We build here (not on
-  # Vercel) because the agentic-docs artifact pass in `build:vercel` needs uv +
-  # headless Chromium, which Vercel's build image lacks — so Vercel's own build
-  # would silently ship an INCOMPLETE corpus (no scripts.json, missing PNG twins).
+  # Vercel) because the agentic-docs artifact pass in `build:vercel` needs uv,
+  # which Vercel's build image lacks — so Vercel's own build would silently ship
+  # an INCOMPLETE corpus (no scripts.json).
   # This mirrors preview-deploy.yml; the differences are `--prod` targeting and a
   # stable Function host (from the deploy job, not per-branch). Vercel's git build
   # for main is turned off via the Ignored Build Step (runbook §3a).
@@ -158,9 +158,9 @@ jobs:
         with:
           bun-version: latest
 
-      # uv + a headless Chromium for the agentic-docs artifact pass that
-      # `build:vercel` runs (build:artifacts): `docsnip scripts --json` needs uv,
-      # and the LikeC4 PNG export needs Chromium. Identical to preview-deploy.yml.
+      # uv for the agentic-docs artifact pass that `build:vercel` runs
+      # (build:artifacts): `docsnip scripts --json` needs it. Identical to
+      # preview-deploy.yml.
       - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
       # The committed uv.lock pins package URLs at the internal Databricks
       # pypi-proxy (unreachable from GitHub runners); rewrite them to public PyPI
@@ -172,8 +172,8 @@ jobs:
       # deltalake/arro3 tree (via docs-factory-seed) that the build doesn't need.
       - name: Sync Python env (docsnip)
         run: uv sync --package docsnip
-      - name: Install Chromium for LikeC4 export
-        run: cd site && bun install --frozen-lockfile && bunx playwright install --with-deps chromium
+      - name: Install site dependencies
+        run: cd site && bun install --frozen-lockfile
 
       # Link the Vercel project at the repo root for the PRODUCTION environment
       # (no --git-branch — unlike previews) and pull its env. We `vercel link`

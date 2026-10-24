@@ -113,6 +113,47 @@ def test_a_second_spark_line_follows_its_own_pins(tmp_path: Path) -> None:
     assert versions.check(repo) == []
 
 
+def test_mlflow_pins_follow_their_keys(tmp_path: Path) -> None:
+    manifest = MANIFEST + (
+        "  mlflow: 3.17.0\n  mlflow-gateway: 3.10.0\n  scikit-learn: 1.9.1\n"
+    )
+    pages = {
+        # Extras and `pip_requirements` follow `mlflow`; so does the image tag.
+        "tutorials/t/snippets/s.py": (
+            '# dependencies = ["mlflow[databricks]==3.10.0", "scikit-learn==1.8.0"]\n'
+            'REQS = ["mlflow==3.17.0"]\n'
+            'IMAGE = "ghcr.io/mlflow/mlflow:v3.16.0-full"\n'
+        ),
+        # The LangChain tools page keeps the gateway CLI's release.
+        "how-to/017-langchain-tools/snippets/g.sh": (
+            'uv run --with "mlflow[gateway]==3.10.0" mlflow gateway start\n'
+            "uv run --with mlflow==3.17.0 python\n"
+        ),
+    }
+    repo = _repo(tmp_path, pages, manifest=manifest)
+    errors = versions.check(repo)
+    assert len(errors) == 4, errors
+    assert any("s.py:1" in e and "should be 3.17.0 (" in e for e in errors)
+    assert any("s.py:1" in e and "should be 1.9.1" in e for e in errors)
+    assert any("s.py:3" in e and "mlflow:v3.16.0" in e for e in errors)
+    assert any("g.sh:2" in e and "mlflow-gateway" in e for e in errors)
+    versions.fix(repo)
+    assert versions.check(repo) == []
+    image = (repo / "content/unitycatalog/tutorials/t/snippets/s.py").read_text()
+    assert "ghcr.io/mlflow/mlflow:v3.17.0-full" in image
+    gateway = (
+        repo / "content/unitycatalog/how-to/017-langchain-tools/snippets/g.sh"
+    ).read_text()
+    assert gateway.count("==3.10.0") == 2
+
+
+def test_ranged_mlflow_install_in_a_page_is_an_error(tmp_path: Path) -> None:
+    page = "```bash\nuv run --with 'mlflow[databricks]>=3.17' python\n```\n"
+    repo = _repo(tmp_path, {"tutorials/t/index.md": page})
+    [error] = versions.check(repo)
+    assert "exactly (==)" in error
+
+
 def test_script_lower_bound_is_allowed(tmp_path: Path) -> None:
     repo = _repo(tmp_path, {"how-to/h/seed.py": '#   "unitycatalog-client>=0.5",\n'})
     assert versions.check(repo) == []

@@ -41,6 +41,7 @@ import remarkDirectiveProseGuard from "../site/src/plugins/remark-directive-pros
 // it uses via its `constructs` map + flags), so the core imports none of them
 // directly — see emit/targets/*.mjs. This keeps one linear core pipeline while
 // letting a target flatten (md-twin) OR upgrade to components (unitycatalog).
+import remarkTrestleMd from "./plugins/remark-trestle-md.mjs";
 import remarkUnwrapProse from "./plugins/remark-unwrap-prose.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -310,11 +311,14 @@ export function defaultModelDir() {
  *                                  export (a multi-page caller exports once).
  * @param {object} [o.frontmatterContext] passed to the target's `frontmatter`
  *                                  hook (`{ canonical }` for a cross-post).
+ * @param {string} [o.envsDir]    where `trestle` markers' environments are
+ *                                  (default: the repo's envs/).
  * @param {Array} [o.plugins]      extra `[plugin, options]` remark transforms, run
  *                                  right after snippet inlining and before the
  *                                  target's constructs (e.g. the docs-site emitter's
  *                                  link rewriting).
- * @returns {Promise<{output:string, frontmatter:object, manifest:Array, likec4Dir:(string|null), webComponentPath:(string|null)}>}
+ * @returns {Promise<{output:string, frontmatter:object, manifest:Array, trestle:Array, likec4Dir:(string|null), webComponentPath:(string|null)}>}
+ *   `trestle` lists the page's diagram markers (see plugins/remark-trestle-md.mjs).
  */
 export async function emitOne({
   inputPath,
@@ -325,6 +329,7 @@ export async function emitOne({
   webComponentPath: webComponentOut,
   likec4Exported = false,
   frontmatterContext = {},
+  envsDir = join(REPO_ROOT, "envs"),
   prePlugins = [],
   plugins = [],
 }) {
@@ -339,6 +344,7 @@ export async function emitOne({
 
   const capture = {};
   const manifest = [];
+  const trestle = [];
 
   // The construct renderers are TARGET-PROVIDED. A flattening target (md-twin)
   // supplies the `-md` flatteners; unitycatalog supplies MDX-emitting variants (+ a
@@ -386,6 +392,14 @@ export async function emitOne({
       renderImage: target.renderImage,
       componentImportBase,
     });
+  // Every target resolves Trestle diagram markers: the twin and the blog targets
+  // to Trestle's Mermaid, the docs-site target to a marker its canvas reads.
+  processor = processor.use(remarkTrestleMd, {
+    entries: trestle,
+    envsDir,
+    pageDir: dirname(inputPath),
+    renderTrestle: target.renderTrestle,
+  });
 
   // Prose-unwrap is only for flattening targets that reflow authoring hard-wraps
   // (md-twin); MDX must keep authored line breaks, so unitycatalog opts out.
@@ -414,6 +428,7 @@ export async function emitOne({
     output,
     frontmatter: capture.frontmatter ?? {},
     manifest,
+    trestle,
     likec4Dir,
     webComponentPath,
   };

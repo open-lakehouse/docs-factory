@@ -5,8 +5,9 @@
  * Phase-0 <noscript> shell) fetches instead of our authoring-shaped source. The
  * emitter flattens every rich construct to portable markdown: `file=` snippets
  * inlined, `:::callout`/`:::tldr`/`:::prerequisites` → bold-led blockquotes,
- * `::::journey` → numbered `### Step N — …`, and `likec4=<viewId>` images → a plain `![](…)` pointing at the
- * site-served PNG. The raw `content/**` / `blogs/*` source is NEVER served — only
+ * `::::journey` → numbered `### Step N — …`, `likec4=<viewId>` images → a plain `![](…)` pointing at the
+ * site-served PNG, and ```` ```trestle ```` diagram markers → Trestle's Mermaid
+ * (the emitter core's default, remark-trestle-md.mjs). The raw `content/**` / `blogs/*` source is NEVER served — only
  * this twin. See docs/design/agentic-docs.md (Phase 1a).
  *
  * The docs-site emitter adds to this per page: absolute URLs, a `companions:`
@@ -38,13 +39,13 @@ import remarkTldrMd from "../plugins/remark-tldr-md.mjs";
  * driver's PNG copy destination and this renderImage URL agree on one path. */
 export const LIKEC4_ASSET_BASE = "/assets/likec4";
 /** Where environment diagrams are served, one folder per environment holding the
- * PNG, its snapshot, and the render's viewable files at their envs/<name>/ paths. */
+ * snapshot and the render's viewable files at their envs/<name>/ paths. */
 export const TRESTLE_ASSET_BASE = "/assets/trestle";
 
-/** An environment diagram's site URL: the same layout as envs/<name>/, so the
+/** An environment diagram's snapshot URL: the same layout as envs/<name>/, so the
  * snapshot's file paths resolve beside it in the preview and on the site alike. */
-export function trestleEnvImage(env) {
-  return `${TRESTLE_ASSET_BASE}/${env}/diagram.png`;
+export function trestleEnvSnapshot(env) {
+  return `${TRESTLE_ASSET_BASE}/${env}/diagram.trestle-graph.json`;
 }
 
 /**
@@ -54,11 +55,7 @@ export function trestleEnvImage(env) {
  * `image` would glue the following block onto it.
  */
 export function renderImage(entry) {
-  const url = entry.likec4
-    ? `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`
-    : entry.trestle?.env
-      ? trestleEnvImage(entry.trestle.env)
-      : entry.filename;
+  const url = entry.likec4 ? `${LIKEC4_ASSET_BASE}/${entry.likec4}.png` : entry.filename;
   return {
     type: "paragraph",
     children: [{ type: "image", url, alt: entry.altText, title: null }],

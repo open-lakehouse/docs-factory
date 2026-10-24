@@ -31,19 +31,12 @@
  * image is always the just-regenerated one, matching the .likec4 source, with no
  * dependency on the committed PNG being current or the names agreeing.
  *
- * A `trestle=<ref>` image keeps its committed PNG (docsnip checks it is current)
- * and records `trestle: { env }`: the generated environment it names, or null
- * for a snapshot beside the page, so a target can serve environment diagrams
- * once, site-wide.
- *
  * Runs near the end, after the structural flattens, before remark-stringify.
  */
 import { existsSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 
 const LIKEC4_TITLE_RE = /^likec4=(\S+)$/;
-const TRESTLE_TITLE_RE = /^trestle=(\S+)$/;
-const SNAPSHOT_SUFFIX = ".trestle-graph.json";
 
 /** Default: reduce the image to a bare-filename, title-less plain image. */
 function plainImage(entry) {
@@ -60,7 +53,6 @@ export default function remarkLikeC4Md(options = {}) {
     const filename = basename(image.url);
     const titleM = typeof image.title === "string" ? image.title.match(LIKEC4_TITLE_RE) : null;
     const viewId = titleM ? titleM[1] : null;
-    const trestleM = typeof image.title === "string" ? image.title.match(TRESTLE_TITLE_RE) : null;
     // A likec4= image resolves to the freshly exported <viewId>.png; anything
     // else resolves to its committed file next to the draft.
     const candidate =
@@ -71,9 +63,6 @@ export default function remarkLikeC4Md(options = {}) {
       altText: image.alt ?? "",
       originalTitle: image.title ?? null,
       likec4: viewId,
-      trestle: trestleM
-        ? { env: trestleM[1].endsWith(SNAPSHOT_SUFFIX) ? null : trestleM[1] }
-        : null,
     };
     manifest.push(entry);
     return entry;

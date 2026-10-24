@@ -77,12 +77,8 @@ import remarkModelLinks from "../plugins/remark-model-links.mjs";
 import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
-import { docsSiteTarget } from "../targets/docs-site.mjs";
-import mdTwin, {
-  LIKEC4_ASSET_BASE,
-  TRESTLE_ASSET_BASE,
-  trestleEnvImage,
-} from "../targets/md-twin.mjs";
+import { docsSiteTarget, trestleSnapshotUrl } from "../targets/docs-site.mjs";
+import mdTwin, { LIKEC4_ASSET_BASE, TRESTLE_ASSET_BASE } from "../targets/md-twin.mjs";
 import { apiEntries, apiIndexRoute } from "./api.mjs";
 import {
   conceptEnvironments,
@@ -185,13 +181,10 @@ function linkErrors() {
   };
 }
 
-const SNAPSHOT_SUFFIX = ".trestle-graph.json";
-
-/** Where the site serves a manifest image: LikeC4 views and environment diagrams
- * site-wide, anything else under its page's `assetBase`. */
+/** Where the site serves a manifest image: LikeC4 views site-wide, anything else
+ * under its page's `assetBase`. */
 function imageUrl(entry, assetBase) {
   if (entry.likec4) return `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`;
-  if (entry.trestle?.env) return trestleEnvImage(entry.trestle.env);
   return `${assetBase}/${entry.filename}`;
 }
 
@@ -470,23 +463,25 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
         if (!image.localPath) continue;
         const url = imageUrl(image, assetBase);
         files.set(`public${url}`, readFileSync(image.localPath));
-        // remark-trestle-views fetches the snapshot from beside the PNG.
-        if (image.trestle) {
-          const snapshot = readFileSync(image.localPath.replace(/\.png$/, SNAPSHOT_SUFFIX));
-          files.set(`public${url.replace(/\.png$/, SNAPSHOT_SUFFIX)}`, snapshot);
-          // A node's files open from beside the snapshot. Only the manifest ships,
-          // and docsnip leaves sensitive files out of it.
-          if (image.trestle.env) {
-            for (const path of JSON.parse(snapshot.toString("utf8")).files ?? []) {
-              files.set(
-                `public${dirname(url)}/${path}`,
-                readFileSync(join(dirname(image.localPath), path)),
-              );
-            }
+        hasLikeC4 ||= Boolean(image.likec4);
+      }
+      // remark-trestle-views fetches each diagram's snapshot from where the
+      // docs-site target pointed its marker.
+      for (const diagram of rendered.trestle) {
+        const url = trestleSnapshotUrl(diagram, assetBase);
+        const snapshot = readFileSync(diagram.snapshot);
+        files.set(`public${url}`, snapshot);
+        // A node's files open from beside the snapshot. Only the manifest ships,
+        // and docsnip leaves sensitive files out of it.
+        if (diagram.env) {
+          for (const path of JSON.parse(snapshot.toString("utf8")).files ?? []) {
+            files.set(
+              `public${dirname(url)}/${path}`,
+              readFileSync(join(dirname(diagram.snapshot), path)),
+            );
           }
         }
-        hasLikeC4 ||= Boolean(image.likec4);
-        hasTrestle ||= Boolean(image.trestle);
+        hasTrestle = true;
       }
 
       // Twin URLs are absolute: the twin is read away from the site.

@@ -9,6 +9,7 @@ import {
   pageEnvironment,
   registryEnvironment,
 } from "../../../site/src/content-core/environment.mjs";
+import { markerNode } from "../../../site/src/plugins/lib/trestle-ref.mjs";
 import remarkPrerequisitesEnv from "../../../site/src/plugins/remark-prerequisites-env.mjs";
 import { emitOne } from "../../emit.mjs";
 import { docsSiteTarget } from "../../targets/docs-site.mjs";
@@ -120,12 +121,13 @@ async function render(
     const envsDir = join(dir, "envs");
     if (diagram) {
       mkdirSync(join(envsDir, "uc"), { recursive: true });
-      writeFileSync(join(envsDir, "uc", "diagram.png"), "");
+      writeFileSync(join(envsDir, "uc", "diagram.trestle-graph.json"), "{}");
     }
     const { output } = await emitOne({
       inputPath,
       target,
       likec4OutDir: join(dir, "likec4"),
+      envsDir,
       plugins: [
         [remarkPrerequisitesEnv, { environment, guide: GUIDE, diataxis, resolve, envsDir }],
       ],
@@ -202,10 +204,9 @@ test("a keyed :::environment naming no registry stack fails the emit", async () 
   await expect(render(site(), page)).rejects.toThrow("uc/nope.yaml is not in");
 });
 
-// The emitter's image pass would ship a real PNG; the plugin only places it.
-const raw = { ...mdTwin, constructs: { ...mdTwin.constructs, likec4: undefined } };
-const DIAGRAM =
-  '![The services UC with S3 runs and how clients reach them](../../../envs/uc/diagram.png "trestle=uc")';
+// The twin would inline the environment's Mermaid; the plugin only places the marker.
+const raw = { ...mdTwin, renderTrestle: (e) => markerNode(e.ref, e.alt) };
+const DIAGRAM = "```trestle uc\nThe services UC with S3 runs and how clients reach them\n```";
 
 test("tutorial: the stack's diagram sits right below its start commands", async () => {
   const out = await render(raw, TUTORIAL, { diataxis: "tutorial", diagram: true });
@@ -225,7 +226,7 @@ test("a keyed :::environment gets its stack's diagram too", async () => {
 test("no diagram on disk, just the commands", async () => {
   const out = await render(raw, TUTORIAL, { diataxis: "tutorial" });
   expect(out).toContain(COMMANDS);
-  expect(out).not.toContain("diagram.png");
+  expect(out).not.toContain("```trestle");
 });
 
 test("the box lists no services, only Docker and the authored bullets", async () => {

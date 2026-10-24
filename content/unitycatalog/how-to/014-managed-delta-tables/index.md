@@ -9,7 +9,7 @@ references:
   - deltaSpark
   - duckdb
   - unityCatalogSpec
-status: draft
+status: ready
 ---
 
 For catalog-managed [Delta](model:deltaSpec) tables, the catalog brokers all

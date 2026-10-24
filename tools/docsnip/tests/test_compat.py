@@ -1333,6 +1333,34 @@ def test_the_estate_artifact_lists_who_may_play_each_role(tmp_path) -> None:
     assert candidates["catalog"] == [{"id": "ucServer", "via": []}]
 
 
+def test_an_extension_plays_a_role_only_through_its_host(tmp_path) -> None:
+    root = _served(tmp_path, _SPARK_READS)
+    path = root / "architecture/dist/model.json"
+    model = json.loads(path.read_text())
+    model["elements"]["duckdb"] = {"kind": "implementation", "title": "DuckDB"}
+    model["elements"]["duckdbUc"] = {
+        "kind": "implementation",
+        "title": "Extension",
+        "tags": ["library", "extension"],
+    }
+    model["relations"] |= {
+        "r10": {
+            "kind": "integrates",
+            "source": {"model": "duckdb"},
+            "target": {"model": "duckdbUc"},
+        },
+        "r11": {
+            "kind": "consumes",
+            "source": {"model": "duckdbUc"},
+            "target": {"model": "unityCatalogSpec"},
+        },
+    }
+    path.write_text(json.dumps(model))
+    client = _estate(root)["paths"]["uc"]["candidates"]["client"]
+    assert {"id": "duckdb", "via": ["duckdbUc"]} in client
+    assert all(c["id"] != "duckdbUc" for c in client)
+
+
 def test_the_estate_artifact_joins_obligations_and_facts(tmp_path) -> None:
     data = _estate(_served(tmp_path, _SPARK_READS))
     spec = data["specs"]["unityCatalogSpec"]

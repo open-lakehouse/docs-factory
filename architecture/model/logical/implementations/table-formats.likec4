@@ -12,6 +12,8 @@ model {
 
     metadata {
       sourceRepo "delta-io/delta-rs"
+      pypi "deltalake"
+      crate "deltalake"
       license "Apache-2.0"
       language "Rust"
     }
@@ -30,6 +32,7 @@ model {
 
     metadata {
       sourceRepo "apache/iceberg-python"
+      pypi "pyiceberg"
       license "Apache-2.0"
       language "Python"
     }

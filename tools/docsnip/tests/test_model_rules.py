@@ -39,7 +39,7 @@ _MODEL = {
             "registeredIn": {},
             "appliesTo": {},
         },
-        "tags": {"public": {}, "designed": {}},
+        "tags": {"public": {}, "designed": {}, "extension": {}},
     },
     "elements": {
         "catalog": {"kind": "capability", "tags": ["public"]},
@@ -49,7 +49,11 @@ _MODEL = {
         "catSpec": {"kind": "openSpecification"},
         "server": {"kind": "implementation"},
         "engine": {"kind": "implementation"},
-        "plugin": {"kind": "implementation"},
+        "plugin": {
+            "kind": "implementation",
+            "tags": ["extension"],
+            "metadata": {"maven": "io.example:plugin_2.13"},
+        },
     },
     "relations": {
         "r1": _rel("specifies", "catSpec", "catalog"),
@@ -140,6 +144,18 @@ def _broken(edit):
         (
             lambda m: m["specification"]["tags"].update(optional={}),
             "tag `#optional` is declared but unused",
+        ),
+        (
+            lambda m: m["relations"].pop("r4"),
+            "plugin: an #extension needs the host that `integrates` it",
+        ),
+        (
+            lambda m: m["elements"]["plugin"]["metadata"].update(package="plugin"),
+            "plugin: `package` is retired",
+        ),
+        (
+            lambda m: m["elements"]["plugin"]["metadata"].update(maven="plugin"),
+            'plugin: maven "plugin" is not `group:artifact`',
         ),
         (
             lambda m: m["views"]["techAll"]["nodes"].pop(),

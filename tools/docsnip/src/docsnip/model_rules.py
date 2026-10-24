@@ -39,6 +39,9 @@ _ECHO = re.compile(
 # Declared on purpose without users: applied on a reconciliation pass (ADR-0008).
 _RESERVED_TAGS = {"designed", "prototype"}
 
+# A Maven coordinate without a version: `group:artifact`.
+_MAVEN = re.compile(r"^[\w.-]+:[\w.-]+$")
+
 # The per-area technology views (views/logical-views.likec4).
 _AREA_VIEW = re.compile(r"^tech[A-Z]")
 
@@ -122,6 +125,21 @@ def check(model_json: Path) -> list[str]:
                 f"  - {eid}: a concern with facets carries no appliesTo of its own; "
                 "put the edge on a facet"
             )
+
+    hosted = {t for k, _, t, _ in edges if k == "integrates"}
+    for eid, el in sorted(elements.items()):
+        if "extension" in (el.get("tags") or []) and eid not in hosted:
+            errors.append(
+                f"  - {eid}: an #extension needs the host that `integrates` it"
+            )
+        meta = el.get("metadata") or {}
+        if "package" in meta:
+            errors.append(
+                f"  - {eid}: `package` is retired; use pypi, crate, maven, npm, "
+                "or duckdbExtension"
+            )
+        if "maven" in meta and not _MAVEN.match(str(meta["maven"])):
+            errors.append(f'  - {eid}: maven "{meta["maven"]}" is not `group:artifact`')
 
     for eid, kind in kinds.items():
         if kind == "openSpecification" and not eid.endswith("Spec"):

@@ -15,6 +15,8 @@ model {
 
     metadata {
       sourceRepo "apache/datafusion"
+      crate "datafusion"
+      pypi "datafusion"
       license "Apache-2.0"
       language "Rust"
     }
@@ -35,6 +37,8 @@ model {
 
     metadata {
       sourceRepo "apache/spark"
+      pypi "pyspark"
+      maven "org.apache.spark:spark-sql_2.13"
       license "Apache-2.0"
       language "Scala"
     }
@@ -48,14 +52,14 @@ model {
   // Spark reaches catalogs and table formats through integrations that ship
   // separately from Spark itself.
   unityCatalogSpark = implementation "Unity Catalog Spark connector" {
-    #library #public
+    #library #extension #public
 
     description "Spark catalog plugin that resolves tables, views, and credentials through a Unity Catalog server."
     link https://github.com/unitycatalog/unitycatalog/tree/main/connectors/spark
 
     metadata {
       sourceRepo "unitycatalog/unitycatalog"
-      package "io.unitycatalog:unitycatalog-spark"
+      maven "io.unitycatalog:unitycatalog-spark_4.1_2.13"
       license "Apache-2.0"
       language "Scala"
     }
@@ -65,14 +69,14 @@ model {
   unityCatalogSpark -[consumes]-> unityCatalogDeltaApiSpec "commits catalog-managed tables through"
 
   icebergSparkRuntime = implementation "Iceberg Spark runtime" {
-    #library #public
+    #library #extension #public
 
     description "Apache Iceberg's Spark integration: Iceberg tables and catalogs, including REST catalogs, in Spark SQL and DataFrames."
     link https://iceberg.apache.org/docs/latest/spark-getting-started/
 
     metadata {
       sourceRepo "apache/iceberg"
-      package "org.apache.iceberg:iceberg-spark-runtime"
+      maven "org.apache.iceberg:iceberg-spark-runtime-4.1_2.13"
       license "Apache-2.0"
       language "Java"
     }
@@ -83,7 +87,7 @@ model {
   icebergSparkRuntime -[consumes]-> icebergRestSpec "resolves tables via"
 
   deltaSpark = implementation "Delta Spark" {
-    #library #public
+    #library #extension #public
 
     description "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
 
@@ -91,6 +95,8 @@ model {
 
     metadata {
       sourceRepo "delta-io/delta"
+      pypi "delta-spark"
+      maven "io.delta:delta-spark_2.13"
       license "Apache-2.0"
       language "Scala"
     }
@@ -109,6 +115,7 @@ model {
 
     metadata {
       sourceRepo "duckdb/duckdb"
+      pypi "duckdb"
       license "MIT"
       language "C++"
     }
@@ -119,14 +126,14 @@ model {
 
   // DuckDB extensions: each is a separate artifact DuckDB installs and loads.
   duckdbUnityCatalog = implementation "DuckDB unity_catalog extension" {
-    #library #public
+    #library #extension #public
 
     description "DuckDB extension that attaches a Unity Catalog server as a database and reads and writes its tables."
     link https://duckdb.org/docs/current/core_extensions/unity_catalog.html
 
     metadata {
       sourceRepo "duckdb/unity_catalog"
-      package "unity_catalog"
+      duckdbExtension "unity_catalog"
       maturity "nightly"
       license "MIT"
       language "C++"
@@ -137,14 +144,14 @@ model {
   duckdbUnityCatalog -[consumes]-> unityCatalogDeltaApiSpec "commits catalog-managed tables through"
 
   duckdbDelta = implementation "DuckDB delta extension" {
-    #library #public
+    #library #extension #public
 
     description "DuckDB extension that reads Delta tables and appends to them."
     link https://duckdb.org/docs/current/core_extensions/delta.html
 
     metadata {
       sourceRepo "duckdb/duckdb-delta"
-      package "delta"
+      duckdbExtension "delta"
       license "MIT"
       language "C++"
     }
@@ -154,14 +161,14 @@ model {
   duckdbDelta -[realizes]-> lakehouse.tableFormat
 
   duckdbIceberg = implementation "DuckDB iceberg extension" {
-    #library #public
+    #library #extension #public
 
     description "DuckDB extension that reads and writes Iceberg tables and attaches Iceberg REST catalogs."
     link https://duckdb.org/docs/current/core_extensions/iceberg/overview.html
 
     metadata {
       sourceRepo "duckdb/duckdb-iceberg"
-      package "iceberg"
+      duckdbExtension "iceberg"
       license "MIT"
       language "C++"
     }
@@ -184,6 +191,8 @@ model {
 
     metadata {
       sourceRepo "pola-rs/polars"
+      pypi "polars"
+      crate "polars"
       license "MIT"
       language "Rust"
     }
@@ -202,6 +211,7 @@ model {
 
     metadata {
       sourceRepo "Eventual-Inc/Daft"
+      pypi "daft"
       license "Apache-2.0"
       language "Rust"
     }

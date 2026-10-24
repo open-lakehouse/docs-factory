@@ -345,13 +345,20 @@ kbd {
 }
 .cmdk-footer span { display: inline-flex; align-items: center; gap: 0.25rem; }
 
+/* The outer 1fr gutters split the leftover width, so main and the TOC stay one
+   block centered right of the sidebar instead of pinned to opposite edges. */
 .layout {
+  --content-max: 58rem;
   display: grid;
-  grid-template-columns: 16.5rem minmax(0, 1fr);
+  grid-template-columns: 16.5rem minmax(0, 1fr) minmax(0, var(--content-max)) minmax(0, 1fr);
+  grid-template-areas: "sidebar . main ." "sidebar status status status";
   grid-template-rows: 1fr auto;
   min-height: calc(100vh - var(--topbar-height));
 }
-.layout[data-aside] { grid-template-columns: 16.5rem minmax(0, 1fr) 14rem; }
+.layout[data-aside] {
+  grid-template-columns: 16.5rem minmax(0, 1fr) minmax(0, var(--content-max)) 14rem minmax(0, 1fr);
+  grid-template-areas: "sidebar . main aside ." "sidebar status status status status";
+}
 .sidebar, .aside {
   position: sticky;
   top: var(--topbar-height);
@@ -361,13 +368,13 @@ kbd {
   scrollbar-color: var(--border) transparent;
 }
 .sidebar {
-  grid-row: 1 / -1;
+  grid-area: sidebar;
   padding: 1.25rem 0.75rem 3rem;
   border-right: 1px solid var(--border);
   background: var(--panel);
 }
-.main { min-width: 0; padding: 2.25rem clamp(1.25rem, 4vw, 3.5rem) 4rem; }
-.aside { padding: 2.5rem 1.25rem 2rem 0.5rem; height: calc(100vh - var(--topbar-height) - var(--statusbar-height)); }
+.main { grid-area: main; min-width: 0; padding: 2.25rem clamp(1.25rem, 4vw, 3.5rem) 4rem; }
+.aside { grid-area: aside; padding: 2.5rem 1.25rem 2rem 0.5rem; height: calc(100vh - var(--topbar-height) - var(--statusbar-height)); }
 
 /* --- Sidebar (project panel) --- */
 .nav-list { list-style: none; margin: 0; padding: 0; }
@@ -483,7 +490,7 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  grid-column: 2 / -1;
+  grid-area: status;
   padding: 0 1rem;
   height: var(--statusbar-height);
   flex: none;
@@ -801,7 +808,6 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  max-width: 48rem;
   margin-top: 3rem;
 }
 .pager-link {
@@ -834,7 +840,7 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 .console-err { color: var(--err); }
 
 /* --- Prose --- */
-.prose { max-width: 48rem; line-height: 1.7; font-size: 1rem; color: var(--body); }
+.prose { line-height: 1.7; font-size: 1rem; color: var(--body); }
 .prose p, .prose li { color: var(--body); }
 .prose h1, .prose h2, .prose h3, .prose h4 {
   color: var(--heading);
@@ -1273,8 +1279,7 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 /* --- REST API reference ---
    Scalar brings its own endpoint sidebar, so API pages render without the docs
    one; the topbar's section tabs lead back. */
-.shell[data-no-sidebar] .layout { grid-template-columns: minmax(0, 1fr); }
-.shell[data-no-sidebar] .statusbar { grid-column: 1; }
+.shell[data-no-sidebar] .layout { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "status"; }
 .shell[data-no-sidebar] .main { padding: 0; }
 .api-placeholder { max-width: 60rem; padding: 2.25rem clamp(1.25rem, 4vw, 3.5rem); }
 .api-reference { min-height: 60vh; }
@@ -1286,12 +1291,14 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 
 /* --- Narrow screens --- */
 @media (max-width: 1200px) {
-  .layout, .layout[data-aside] { grid-template-columns: 15.5rem minmax(0, 1fr); }
+  .layout, .layout[data-aside] {
+    grid-template-columns: 15.5rem minmax(0, 1fr) minmax(0, var(--content-max)) minmax(0, 1fr);
+    grid-template-areas: "sidebar . main ." "sidebar status status status";
+  }
   .aside { display: none; }
 }
 @media (max-width: 860px) {
-  .layout, .layout[data-aside] { grid-template-columns: minmax(0, 1fr); }
-  .statusbar { grid-column: 1; }
+  .layout, .layout[data-aside] { grid-template-columns: minmax(0, 1fr); grid-template-areas: "main" "status"; }
   .nav-toggle { display: inline-flex; }
   .sidebar {
     position: fixed;

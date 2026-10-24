@@ -90,10 +90,10 @@ dated folder name), authors are `reference("profiles")`, `category` is the enum
   cross-post whose primary is another site), then default imports
   `import Journey from "@/components/blog/Journey.astro"` (+ `JourneyStep`,
   `LikeC4View`), then body. `::::journey`→`<Journey><JourneyStep step="…">`;
-  `likec4=`→`<LikeC4View viewId="…" />`; `:::` callouts LEFT as directives;
+  ```` ```likec4 ````→`<LikeC4View viewId="…" />`; `:::` callouts LEFT as directives;
   MDX-significant chars in prose (`<`,`>`,`{`,`}`) escaped to HTML entities.
 - `assets.json` — image manifest (`filename` = `./<filename>` in the MDX;
-  `localPath` = file to copy in, incl. the regenerated LikeC4 PNG fallback).
+  `localPath` = file to copy in). LikeC4 views ship no PNG.
 - `likec4-webcomponent.mjs` — the `<likec4-view>` custom-element bundle (present
   when the post has a diagram). Attributes: `view-id`, `dynamic-variant`.
 

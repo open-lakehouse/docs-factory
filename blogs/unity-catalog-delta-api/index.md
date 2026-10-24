@@ -157,7 +157,13 @@ The interactive diagram below explains the full end to end flow of creating
 a table and writing data into a table via the UC Delta API. Expand it and 
 click through the sequence to get the full picture.
 
-![Sequence diagram](./assets/managedTableFlow.png "likec4=ucDeltaApi_managedTableFlow")
+```likec4 ucDeltaApi_managedTableFlow
+A query engine negotiates with GET /delta/v1/config, stages a table and gets
+back its location, a READ_WRITE credential, and the required protocol, writes
+version 0 to object storage, creates the table, then loads it, writes a staged
+commit, and posts that commit with assert-table-uuid and assert-etag before
+publishing it to the Delta log
+```
 
 Rather than reiterating the full sequence piece by piece, we'll focus on
 two moments in that sequence which highlight some Delta specifics in the specification.

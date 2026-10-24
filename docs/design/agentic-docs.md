@@ -180,7 +180,7 @@ competition with the `.md` twins.
 ## Phase 1 — .md twins, site-level llms.txt, sitemap, robots, RSS, 308s — SHIPPED
 
 **Shipped notes (deviations from the plan below, worth knowing):**
-- The twin/PNG/script generation runs in a **CI prebuild** (Chromium + `uv`), via a
+- The twin/script generation runs in a **CI prebuild** (`uv`), via a
   `site/scripts/build-artifacts.mjs` orchestrator wired into `build:vercel` as
   `build:artifacts` (script-index → twins → prerender shells → sitemap → rss →
   site-llmstxt); the Vercel build consumes the produced `dist/`.
@@ -204,10 +204,10 @@ canonical URLs); each sub-generator is independently shippable.
 
 The twins must NOT be the raw canonical source. Canonical source
 (`content/**/*.md`, `blogs/*/index.md`) is annotation-heavy and authoring-shaped:
-`file=` fences, `:::callout`, `::::journey`, `model:` links, `likec4=<viewId>`
-embeds. The twin an agent fetches should be the *reader-optimized* rendering —
+`file=` fences, `:::callout`, `::::journey`, `model:` links, `likec4` view
+blocks. The twin an agent fetches should be the *reader-optimized* rendering —
 snippets inlined, callouts/journeys flattened to clean readable markdown, LikeC4
-views resolved to referenced PNGs — i.e. exactly what our **emitter pipeline**
+views resolved to their Mermaid — i.e. exactly what our **emitter pipeline**
 already produces for the sibling sites. **Reuse the emitter, don't reimplement.**
 
 The emitter ([`emit/emit.mjs`](../../emit/emit.mjs)) is a **target-agnostic** parse
@@ -216,20 +216,20 @@ a target is the intended extension point (the `delta` target was added exactly t
 way). It already: inlines `file=`/`start=`/`end=` snippets
 (`site/src/plugins/remark-code-snippets.mjs`, imported verbatim), flattens
 `:::callout` → blockquote (`remark-callouts-md.mjs`), flattens `::::journey` →
-numbered `### Step N — …` (`remark-journey-md.mjs`), and **regenerates LikeC4
-PNGs** (`regenerateLikeC4()` → `likec4 export png --sequence --flat` →
-`dist/.likec4-export/<viewId>.png`, keyed by view id) with a per-image
-`assets.json` manifest (`{filename, localPath, altText, likec4}`).
+numbered `### Step N — …` (`remark-journey-md.mjs`), and **generates each LikeC4
+view's Mermaid** (`site/scripts/likec4-mermaid.mjs` →
+`dist/.likec4-export/<viewId>.mmd`, keyed by view id; a `variant sequence`
+dynamic view becomes a `sequenceDiagram`) with a per-image `assets.json`
+manifest (`{filename, localPath, altText}`).
 
 **Add `emit/targets/md-twin.mjs`** (a target module — the flattening target that
 renders portable Markdown rather than MDX components): reuse the `-md` construct plugins (callouts, journey) +
 shared snippet inlining; `titleAsH1: false`, `unwrapProse: false` (preserve
 authored breaks for readability); a small preamble/frontmatter hook (title,
-canonical site URL, summary, diataxis, project); `renderImage` emitting a
-site-served PNG path (see PNG handling below); `outputFile` shaped to the twin
-route. `likec4=` handled by the `-md` variant (`remark-likec4-md.mjs`) →
-`![alt](<png-url>)` referencing the regenerated PNG (not the interactive component
-— a twin is static markdown).
+canonical site URL, summary, diataxis, project); `outputFile` shaped to the twin
+route. A `likec4` block becomes its alt text plus the view's Mermaid
+(`remark-likec4-blocks.mjs`), not the interactive component — a twin is static
+markdown.
 
 **Add a `:::tldr` construct.** A key-takeaways box — per
 [`blogs/QUALITY.md`](../../blogs/QUALITY.md), "the single most-quoted block" for
@@ -256,18 +256,11 @@ to accept a content path, or add a thin site-side driver
 `dist/blog/<slug>.md`. Keep identity/URL through `content-core` (`docIdentity`,
 `hrefFromIdentity`) so twin paths match canonical routes.
 
-**LikeC4 PNGs as site assets — currently MISSING, this phase adds it.** The site
-today persists **no** LikeC4 PNGs — diagrams render only as interactive canvases
-via the Vite LikeC4 plugin; `site/public/` has no diagram images. So a twin that
-references a diagram has nothing to point at. The emitter's `regenerateLikeC4()`
-already produces the PNGs into `dist/.likec4-export/<viewId>.png`; the twin build
-must **copy those PNGs into the site's served assets** (e.g.
-`dist/assets/likec4/<viewId>.png`) and have `md-twin`'s `renderImage` emit that
-URL. This gives twins working diagram references and, as a bonus, makes static
-LikeC4 PNGs available for OpenGraph images (Phase 2) and the `<noscript>` shell
-(Phase 0). Requires the LikeC4 export prerequisite (headless Chromium via
-Playwright) in the build environment — flag for the Vercel build (may need a
-prebuilt-PNG step run in CI rather than in the Vercel build image).
+**Diagrams as Mermaid, not PNGs.** Twins first referenced LikeC4 PNGs copied to
+`dist/assets/likec4/`, which needed headless Chromium in the build. They now
+carry each view's Mermaid inline, as they do Trestle's, so a twin's diagram is
+text an agent can read and the build needs no browser. The review app's
+Markdown tab draws those fences with Mermaid.
 
 Scaffold "Related concepts" / "Runnable examples" sections here; fill in Phases
 2–3.
@@ -536,12 +529,9 @@ Function untouched.
    `olai-stack-topology` WASM artifact pinned to a trestle version; rebuild +
    revalidate on trestle bumps, and keep it in the MCP Function only so it never
    touches the review app's deploy.
-7. **LikeC4 PNG generation in the build** — twins reuse the emitter's
-   `regenerateLikeC4()`, which shells out to `likec4 export png` and needs headless
-   Chromium (Playwright). The Vercel build image may not have it. Likely run PNG
-   export (and possibly the whole twin/emit step) in a **CI prebuild** that
-   commits/uploads the PNGs + twins as build inputs, rather than inside the Vercel
-   build. Decide where the emitter runs in the pipeline early.
+7. **LikeC4 PNG generation in the build** — resolved: twins carry each view's
+   Mermaid (`likec4 gen mermaid` plus our `sequenceDiagram` for sequence views),
+   which needs no browser.
 8. **Emitter blogs→content generalization** — the emitter targets `blogs/` today;
    twins need it over `content/**` too. Verify the resolve stage isn't
    blogs-path-coupled; add a content driver if so.
@@ -556,9 +546,8 @@ Function untouched.
   [`site/src/content-core/__tests__/head.test.mjs`](../../site/src/content-core/__tests__/head.test.mjs).)
 - **Phase 1:** confirm `dist/docs/<...>.md` twins are the RICH emitter output —
   snippets inlined, `:::callout`/`::::journey` flattened to readable markdown, and
-  `likec4=` diagrams referencing a real PNG that resolves under the site's served
-  assets (`dist/assets/likec4/<viewId>.png`); spot-check a twin against the
-  emitter's `assets.json` manifest. `curl -H 'Accept: text/markdown'` a doc route →
+  `likec4` blocks resolved to the alt text plus the view's Mermaid; spot-check a
+  twin against the emitter's `assets.json` manifest. `curl -H 'Accept: text/markdown'` a doc route →
   markdown (or, in the fallback, the advertised `.md` URL resolves); fetch
   `/llms.txt`, `/llms-full.txt`, `/sitemap.xml`, `/robots.txt`, `/blog/rss.xml`;
   confirm `.md` responses carry `X-Robots-Tag: noindex`; confirm a renamed page
@@ -588,8 +577,8 @@ Function untouched.
 - `site/src/content-core/head.mjs` + `render-markdown.mjs` + `prerender-shells.mjs`
   — Phase 0 (shipped)
 - `emit/emit.mjs` + `emit/targets/*.mjs` — the emitter core + targets; add an
-  `md-twin` target here (rich twins). `regenerateLikeC4()` already exports view PNGs
-- `emit/plugins/remark-{callouts,journey,likec4}-md.mjs` — the flattening plugins
+  `md-twin` target here (rich twins). The core generates each view's Mermaid
+- `emit/plugins/remark-{callouts,journey,images}-md.mjs` — the flattening plugins
   the twin target reuses
 - `site/src/content-core/identity.mjs` — canonical identity/URL mapping (reused
   everywhere)

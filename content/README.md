@@ -642,6 +642,26 @@ snapshot, the snapshot has no Mermaid, or the block has no alt text. The alt
 text is the diagram's only text equivalent on the sites: say what talks to
 what.
 
+## Model diagrams
+
+Show a flow or a slice of the [estate model](../architecture/) with a LikeC4
+view, a `likec4` block naming the view, with the alt text as its body:
+
+````md
+```likec4 ucCredentialVending_tableRead
+The engine resolves the table, asks Unity Catalog for a credential, and reads
+object storage with it
+```
+````
+
+Docs views live in `architecture/model/views/docs-views.likec4`, with
+page-prefixed ids. A `dynamic view` that declares `variant sequence` opens as
+lifelines. The preview and the sites draw the interactive view; the `.md` twin
+gets the alt text and the view's Mermaid (a `sequenceDiagram` for a sequence
+view), and the docs sites carry the same for no-JS readers. Nothing is exported
+or committed per diagram. `docsnip check` fails when the block names no view
+of the built model or has no alt text.
+
 ## Linking prose to the architecture model
 
 Pages connect to the [estate model](../architecture/) (LikeC4) three ways. All

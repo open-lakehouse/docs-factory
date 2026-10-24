@@ -216,45 +216,40 @@ bullets. Copy this to start a post.
 - **Front matter** present (§3); keep the body portable across targets.
 - **Diagrams as code — [LikeC4](https://likec4.dev) is preferred.** Author
   interactive diagrams as dedicated views in
-  `architecture/model/views/blog-views.likec4` and commit the rendered fallback image
-  in the post's `assets/`, so the draft renders without a build step. This keeps
-  the local preview on one LikeC4 Vite-plugin runtime while still allowing a
-  post to carry purpose-built, protocol-level views with slug-prefixed ids.
+  `architecture/model/views/blog-views.likec4`. This keeps the local preview on
+  one LikeC4 Vite-plugin runtime while still allowing a post to carry
+  purpose-built, protocol-level views with slug-prefixed ids.
   - **Richness is a property of the renderer, never the source.** `index.md`
     stays plain, portable Markdown that renders acceptably everywhere — on GitHub,
-    in any Markdown viewer, and as the flattened `.md` twin the site serves. A diagram
-    is embedded as its committed **static image** and *upgraded* to an interactive
-    LikeC4 view only by a richer renderer (the local `site/` harness and the
-    published MDX site). Never put JSX or builder-specific syntax in `index.md`.
-  - **Name the view in the image title** so a renderer can find it, staying
-    100% CommonMark: `![real alt text](./assets/<name>.png "likec4=<viewId>")`.
-    On static targets the title is just a tooltip and the PNG renders as-is; the
-    `site/` harness (and the site) key off `likec4=<viewId>` to swap in the
-    interactive view, which keeps the alt text as the diagram's only text
-    equivalent for crawlers, agents, and screen readers: describe what the flow
-    shows, not its name. An image with no `likec4=` title (a D2 SVG, a screenshot)
-    stays a plain static image. **View ids are globally unique and slug-prefixed**
-    (e.g. `ucDeltaApi_managedTableFlow`) because blog views share the estate
-    LikeC4 workspace.
+    in any Markdown viewer, and as the flattened `.md` twin the site serves. Never
+    put JSX or builder-specific syntax in `index.md`.
+  - **Embed a view as a `likec4` block** naming the view, with the alt text as
+    its body:
+    ````
+    ```likec4 ucDeltaApi_managedTableFlow
+    A query engine stages a table, writes version 0, and commits through the
+    catalog …
+    ```
+    ````
+    The `site/` preview and the sites draw the interactive view; the `.md` twins
+    get the alt text and the view's Mermaid, and the docs sites carry the same
+    for no-JS readers. The alt text is the diagram's text equivalent for
+    crawlers, agents, and screen readers: describe what the flow shows, not its
+    name. Nothing is exported or committed per diagram, and `docsnip check` fails
+    when the block names no view of the model or has no alt text. **View ids are
+    globally unique and slug-prefixed** (e.g. `ucDeltaApi_managedTableFlow`)
+    because blog views share the estate LikeC4 workspace.
   - **Preview it richly (optional).** To see a draft rendered with the site's
-    look and *interactive* diagrams before staging, run the throwaway root-level
-    harness: `cd preview && bun install && bun run dev`. It reads drafts in place
-    and never edits them — see [`site/README.md`](../site/README.md).
+    look and *interactive* diagrams before staging, run `just preview`. It reads
+    drafts in place and never edits them — see [`site/README.md`](../site/README.md).
   - **Sequence diagrams** are a LikeC4 `dynamic view` (ordered
-    `source -> target "label"` steps). Render with **`--sequence`** for a real
-    lifeline layout — without it the static export falls back to a box-and-arrow
-    graph (see [likec4#2532](https://github.com/likec4/likec4/issues/2532)):
-    ```
-    bunx likec4 export png --sequence --flat -f "<viewId>" -o blogs/<slug>/assets architecture/model
-    ```
-    (`likec4 start <dir>` opens the interactive viewer; pick the "sequence"
-    variant there.) Static export needs a headless Chromium
-    (`bunx playwright install chromium` once).
+    `source -> target "label"` steps) that declares **`variant sequence`**. The
+    variant makes the interactive view open as lifelines and gives the twins a
+    Mermaid `sequenceDiagram`; without it, both draw a box-and-arrow graph.
+    (`likec4 start <dir>` opens the interactive viewer.)
   - Keep blog-only elements clearly slug/topic-prefixed in `blog-views.likec4`.
     They may be more protocol-specific than the logical model, but they still
     share one renderer and should not masquerade as core architecture facts.
-  - A publishing target may need a different export (SVG, inline) than the
-    committed PNG — regenerate from the same `.likec4` source at publish.
   - **Environment topology — Trestle.** To show what a stack runs, embed a
     Trestle diagram, not a hand-drawn view: a ```` ```trestle <name> ```` block
     for a docs environment, or ```` ```trestle ./assets/<stem>.trestle-graph.json ````
@@ -393,11 +388,11 @@ bullets. Copy this to start a post.
     fine; if a post needs one, note why in that post.
 - **Emit to a downstream target.** `index.md` is canonical, portable CommonMark; a
   *target emitter* resolves it into what a downstream target consumes. The
-  deterministic core [`emit/`](../emit/) reuses the same snippet-inlining and LikeC4
-  PNG-regeneration the `site/` harness runs, and renders each rich construct the way
-  the chosen target needs: a `file=` fence is inlined with the real code, and each
-  `likec4=` image is re-exported from the unified `architecture/model` workspace to a
-  PNG. Run it for every target in the post's `target:` list, or name the targets:
+  deterministic core [`emit/`](../emit/) reuses the same snippet inlining the
+  `site/` harness runs, and renders each rich construct the way the chosen target
+  needs: a `file=` fence is inlined with the real code, and each `likec4` block
+  becomes the target's interactive `<LikeC4View>`, drawn from the unified
+  `architecture/model` workspace. Run it for every target in the post's `target:` list, or name the targets:
   ```
   just emit <slug>                      # every listed target, primary first
   just emit <slug> unitycatalog delta   # just these

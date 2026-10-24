@@ -26,7 +26,13 @@ designed the way it is.
 The diagram follows one table through the API, from negotiation to its first
 commit. Expand it to step through each call:
 
-![A query engine negotiates with GET /delta/v1/config, stages a table and gets back its location, a READ_WRITE credential, and the required protocol, writes version 0 to object storage, creates the table, then loads it, writes a staged commit, and posts that commit with assert-table-uuid and assert-etag before publishing it to the Delta log](./assets/managedTableFlow.png "likec4=ucDeltaApi_managedTableFlow")
+```likec4 ucDeltaApi_managedTableFlow
+A query engine negotiates with GET /delta/v1/config, stages a table and gets
+back its location, a READ_WRITE credential, and the required protocol, writes
+version 0 to object storage, creates the table, then loads it, writes a staged
+commit, and posts that commit with assert-table-uuid and assert-etag before
+publishing it to the Delta log
+```
 
 This page's script, `delta_api_semantics.py`, sends the requests shown here
 to a server and checks the responses the page describes.

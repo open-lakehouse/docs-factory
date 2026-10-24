@@ -20,21 +20,18 @@ what "good" looks like as a scored rubric, see `blogs/QUALITY.md`.
 ## Diagrams as code — LikeC4 preferred
 
 Author diagrams in [LikeC4](https://likec4.dev) as dedicated views in
-`architecture/model/views/blog-views.likec4` and commit the rendered fallback image in
-the post's `assets/`, so the draft renders without a build step while the preview
-uses one LikeC4 Vite-plugin runtime.
+`architecture/model/views/blog-views.likec4`, so the preview uses one LikeC4
+Vite-plugin runtime.
 
+- **Embed a view** in `index.md` as a ```` ```likec4 <viewId> ```` block whose body
+  is real alt text (what the flow shows). Nothing is exported or committed: the
+  preview and the sites draw the interactive view, the `.md` twin gets the view's
+  Mermaid, and `docsnip check` fails on an unknown view or missing alt text.
 - **Sequence diagrams** are a LikeC4 `dynamic view` — ordered
-  `source -> target "label"` steps. Render with **`--sequence`** for a real lifeline
-  layout; without it the static export falls back to a box-and-arrow graph
-  ([likec4#2532](https://github.com/likec4/likec4/issues/2532)):
-  `bunx likec4 export png --sequence --flat -f "<viewId>" -o blogs/<slug>/assets architecture/model`
-  (static export needs a headless Chromium once: `bunx playwright install chromium`).
+  `source -> target "label"` steps — that declares `variant sequence`, so the view
+  opens as lifelines and the twin gets a Mermaid `sequenceDiagram`.
 - Keep blog-only elements slug/topic-prefixed in `blog-views.likec4`; protocol/wire
   detail may live there, but it should not masquerade as core architecture fact.
-- Reference the rendered image from `index.md` as `![alt](./assets/<name>.png)` with
-  real alt text; regenerate a different export (SVG, inline) at publish if the target
-  needs it.
 - **D2** ([d2lang.com](https://d2lang.com)) stays fine for an existing `.d2` or a
   quick one-off: commit `.d2` + `.svg`, render with `blogs/render-diagrams.sh` (needs
   `brew install d2`). Prefer LikeC4 for new diagrams.

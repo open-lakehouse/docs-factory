@@ -36,7 +36,7 @@ things by eye.
 - Images (added or newly referenced): open each one. A leaked credential,
   personal email, or internal hostname is a Blocker. Words baked into a
   screenshot, an oversized file (over 1 MB), or untrimmed UI chrome is a
-  Should-fix. A LikeC4 PNG is regenerated from its view, so review the view
+  Should-fix. A `likec4` block has no image: review its view and alt text
   instead.
 
 ## (b) Reader altitude & Diátaxis fit

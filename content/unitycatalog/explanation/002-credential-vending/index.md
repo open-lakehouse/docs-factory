@@ -52,7 +52,12 @@ request. Neither has to trust the client.
 A client that reads a table makes two calls to the catalog before it touches
 storage. Expand the diagram and step through it:
 
-![Credential vending for a table read: the engine resolves the table, asks Unity Catalog for a credential, the server authorizes and mints a scoped credential through the storage credential issuer, and the engine reads object storage with it](./assets/credentialVendingFlow.png "likec4=ucCredentialVending_tableRead")
+```likec4 ucCredentialVending_tableRead
+Credential vending for a table read: the engine resolves the table, asks Unity
+Catalog for a credential, the server authorizes and mints a scoped credential
+through the storage credential issuer, and the engine reads object storage with
+it
+```
 
 1. **Resolve.** The client looks up the table by name with its own bearer
    token. The answer includes the table's ID and its storage location.

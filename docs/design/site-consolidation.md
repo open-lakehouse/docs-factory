@@ -131,7 +131,7 @@ The recommendations for [D4](#8-decisions-to-make) and [D5](#8-decisions-to-make
   and CTAs are YAML in `src/brand/content/`. Editing them is a one-file PR.
 - **Blog source moves into `blogs/`.** A new target, `emit/targets/site-blog.mjs`,
   writes portable Markdown with directives into the site, and the Astro MDX
-  target (`emit/targets/unitycatalog.mjs`) retires. `::::journey`, `likec4=`,
+  target (`emit/targets/unitycatalog.mjs`) retires. `::::journey`, `likec4` blocks,
   and callouts already render through the shell's vendored plugins
   (`components/journey.tsx`, `LikeC4View.tsx`, `callout.tsx`).
 - **The 26 published posts and 17 profiles are imported once.** A script maps

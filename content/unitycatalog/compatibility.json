@@ -11218,7 +11218,30 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "mlflow": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/009-register-model-mlflow/snippets/hello_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "register-model-mlflow"
+              },
+              "anchor": "register-it-in-unity-catalog",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "3.17.0",
+              "api": "mlflow.register_model",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "model.view",
@@ -11264,7 +11287,30 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "mlflow": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/009-register-model-mlflow/snippets/hello_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "register-model-mlflow"
+              },
+              "anchor": "load-the-version-and-predict",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "3.17.0",
+              "api": "mlflow.pyfunc.load_model",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "model.update",

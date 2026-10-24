@@ -10,7 +10,7 @@ references:
   - lakehouse.governance.authorization
   - unityCatalogServer
   - apacheSpark
-status: draft
+status: ready
 ---
 
 In [Unity Catalog](model:unityCatalogServer), a [view](model:lakehouse.sqlView) is
@@ -60,8 +60,7 @@ The engine that reads a view runs it. It fetches the stored definition, parses
 it in its own SQL dialect, and plans the expanded query as if you had typed it.
 So a view's definition only works in engines that understand its dialect. A
 client that only talks to the REST API can store and return a definition, but
-it can't run one, and the Iceberg REST catalog serves no views. For which Spark
-versions run views, see [Apache Spark](../../reference/engine-support/index.md#apache-spark).
+it can't run one, and the Iceberg REST catalog serves no views.
 
 For a SQL view, Spark works out the dependencies from the query as best it
 can. A view over `samples.views_explained.orders` records that table. A view

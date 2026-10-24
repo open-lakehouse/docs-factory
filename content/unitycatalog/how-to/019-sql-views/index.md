@@ -7,7 +7,7 @@ references:
   - unityCatalogServer
   - deltaSpark
   - lakehouse.sqlView
-status: draft
+status: ready
 ---
 
 A SQL view stores its query text and output columns in Unity Catalog. The

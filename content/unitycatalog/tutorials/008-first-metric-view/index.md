@@ -170,5 +170,7 @@ same revenue per customer, because none of them define it.
 - [Manage metric views](../../how-to/metric-views/index.md)
   covers query sources, joins, registering a definition through the REST API,
   and changing one.
+- [SQL views and metric views as catalog objects](../../explanation/views-and-metric-views/index.md)
+  explains what the catalog stores for a metric view and where it runs.
 - [Seed the TPC-H sample data](../../how-to/seed-tpch-data/index.md) gives you
   a larger dataset to define metrics over.

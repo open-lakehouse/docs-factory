@@ -119,6 +119,10 @@ location, the client writes the first commit there, and creating the table
 ratifies it. See
 [External tables and catalog-managed Delta tables](../external-and-managed-tables/index.md).
 
+A view holds no data. The catalog stores its definition, and the engine that
+queries it runs that definition. See
+[SQL views and metric views as catalog objects](../views-and-metric-views/index.md).
+
 The API's `TableType` enum also lists `STREAMING_TABLE` and
 `MATERIALIZED_VIEW`. An enum value is not the same as a supported workflow, so
 check the release's compatibility notes before relying on those types.

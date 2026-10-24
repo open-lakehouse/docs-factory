@@ -10,16 +10,17 @@
 //      (issuer + audience = NEON_AUTH_URL's host); trust `sub` + `email`
 //   3. read our persisted user_identity row for that user id (resolved GitHub
 //      login/name/email) — NO GitHub API call for a returning user
-//   4. if absent/unresolved: one-time enrich from neon_auth.account (GitHub login
-//      via the OAuth token, verified emails) and upsert user_identity
+//   4. if absent/unresolved: enrich from neon_auth.account (GitHub login from
+//      the numeric account id, verified emails if the OAuth token works) and
+//      upsert user_identity
 //   5. look the user id up in reviewer_allowlist -> role
 //
 // Step 4 subtlety: neon_auth.account stores GitHub's numeric OAuth account id in
-// "accountId", NOT the @handle. We exchange the account's stored "accessToken"
-// for the real login via GitHub's /user API ONCE (at first login), persisting it
-// so later requests read the stored value. A failed resolution leaves
-// github_login null (never the numeric id masqueraded as a handle) and retries
-// on the next login; the numeric id lives in user_identity.github_id.
+// "accountId", NOT the @handle. We resolve the handle from that id via GitHub's
+// public /user/{id} API and persist it so later requests read the stored value.
+// A failed resolution leaves github_login null (never the numeric id masqueraded
+// as a handle) and is retried at most every RESOLVE_RETRY_MS; the numeric id
+// lives in user_identity.github_id.
 //
 // The enrichment is best-effort: a validly-signed JWT is already an authenticated
 // identity even if the github account row is absent. The resolver fails closed
@@ -30,7 +31,7 @@ import { hasAdminRole, hasAnyContentGrant, lookupRole } from "../allowlist.js";
 import { db } from "../db.js";
 import { Role, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
 // GitHub @handle / verified-email resolution + persistence into user_identity.
-import { persistUserIdentity, readUserIdentity } from "./github-identity.js";
+import { persistUserIdentity, readUserIdentity, type UserIdentityRow } from "./github-identity.js";
 import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
 
 export interface NeonIdentity {
@@ -148,10 +149,27 @@ export async function verifyJwtWith(
 }
 
 /**
+ * How long an unresolved github_login waits before the next resolution attempt.
+ * Without it, a GitHub outage or rate limit would put two GitHub calls and a
+ * neon_auth read on every request of every unresolved user.
+ */
+const RESOLVE_RETRY_MS = 15 * 60 * 1000;
+
+/** Whether resolveIdentity should (re)run the GitHub resolution for this row. */
+export function shouldResolveIdentity(row: UserIdentityRow | null, now: number): boolean {
+  if (!row) return true;
+  if (row.github_login) return false;
+  // A row without updated_at is treated as stale. A stub row from the allowlist
+  // grant path has no login, so it resolves once its owner signs in.
+  const updated = row.updated_at ? new Date(row.updated_at).getTime() : 0;
+  return now - updated >= RESOLVE_RETRY_MS;
+}
+
+/**
  * Resolve a bearer to a user identity: verify the JWT for a trusted user id,
  * then read our persisted user_identity row. If the row is absent or its
- * github_login is still unresolved, do the one-time neon_auth.account join +
- * GitHub /user resolution and upsert it (login-time persistence + the runtime
+ * github_login is still unresolved (throttled, see shouldResolveIdentity), do
+ * the neon_auth.account join + GitHub resolution and upsert it (login-time persistence + the runtime
  * backfill that overwrites any earlier fake numeric login). Returns null only
  * when the JWT does not verify.
  *
@@ -170,7 +188,7 @@ async function resolveIdentity(token: string): Promise<NeonIdentity | null> {
     // user_identity unavailable → fall through to (re)resolution below.
   }
 
-  if (!persisted || !persisted.github_login) {
+  if (!persisted || shouldResolveIdentity(persisted, Date.now())) {
     // First login (or a prior resolution that never got the handle): read the
     // GitHub account from neon_auth and persist. A DB hiccup or missing account
     // row must not drop a validly-authenticated identity.

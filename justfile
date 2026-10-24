@@ -143,6 +143,12 @@ db-migrate: _server-deps
 db-seed: _server-deps
     cd server && set -a && [ -f .env ] && . ./.env; set +a; node scripts/seed.mjs
 
+# Resolve null user_identity.github_login rows from their GitHub account id.
+# Point DATABASE_URL at the target DB (prod included); pass --dry-run to preview.
+# GITHUB_TOKEN (optional, no scopes) lifts GitHub's 60/h unauthenticated limit.
+db-backfill-github *args: _server-deps
+    cd server && set -a && [ -f .env ] && . ./.env; set +a; node scripts/backfill-github-logins.mjs {{args}}
+
 # Run the review backend locally (same Hono+Connect app the Neon Function runs).
 # Defaults AUTH_MODE=mock (x-dev-persona impersonation; under anon the login-gated
 # site admits nobody). Reads server/.env if present. See server/README.md.

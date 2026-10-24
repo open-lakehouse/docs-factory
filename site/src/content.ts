@@ -14,7 +14,8 @@ export interface Frontmatter {
   series?: string;
   series_order?: number;
   author?: string;
-  target?: string;
+  /** Blog only: one site, or the sites it is cross-posted to; the first is the primary. */
+  target?: string | string[];
   /** Blog only: one of vocab.json `postTypes`; review calibrates fact density by it. */
   post_type?: string;
   /** Blog only: who the post is for and what they already know. */

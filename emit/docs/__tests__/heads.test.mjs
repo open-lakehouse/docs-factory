@@ -3,7 +3,9 @@
 import { expect, test } from "bun:test";
 import { publicProjection } from "../../../site/src/content-core/projection.mjs";
 import { docPageHead } from "../heads.mjs";
+import delta from "../sites/delta-docs.mjs";
 import { DOCS_SITES } from "../sites/index.mjs";
+import { guestKey, withGuests } from "../sites/routes.mjs";
 import uc from "../sites/unitycatalog-docs.mjs";
 
 const page = {
@@ -24,6 +26,17 @@ test("docPageHead uses the site's origin, routes, and title", () => {
     description: "Create a managed or external table in Unity Catalog.",
     isPartOf: { "@type": "TechArticle", name: `${uc.title} documentation` },
   });
+});
+
+test("a cross-published copy credits its original in every head signal", () => {
+  const original = `${uc.origin}/how-to/create-tables`;
+  const host = { ...delta, hrefFor: withGuests(delta.hrefFor, new Set([guestKey(page.identity)])) };
+  const head = docPageHead(host, page, { canonical: original });
+  expect(head.canonical).toBe(original);
+  expect(head.og).toContainEqual(["og:url", original]);
+  expect(head.jsonLd.url).toBe(original);
+  // The twin a reader of this site opens stays on it.
+  expect(head.twin).toBe(`${delta.origin}/unitycatalog/how-to/create-tables.md`);
 });
 
 test("DOCS_SITES has one site per project", () => {

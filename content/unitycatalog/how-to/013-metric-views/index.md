@@ -205,4 +205,6 @@ Dropping a metric view leaves its source tables in place:
 ## Related
 
 - [Working with metric views](../../tutorials/first-metric-view/index.md)
+- [Learn how SQL views and metric views work](../../explanation/views-and-metric-views/index.md)
+- [Manage SQL views](../sql-views/index.md)
 - [Configure Spark to use Unity Catalog](../configure-spark/index.md)

@@ -13,8 +13,8 @@ function filesBeside(snapshot: string) {
     );
 }
 
-// A canvas chunk that fails to load (or a render error) leaves the PNG, not a
-// crashed page: React rethrows a rejected lazy() import to the nearest boundary.
+// A canvas chunk that fails to load (or a render error) leaves the alt text, not
+// a crashed page: React rethrows a rejected lazy() import to the nearest boundary.
 class CanvasBoundary extends Component<{ fallback: ReactNode; children: ReactNode }> {
   state = { failed: false };
   static getDerivedStateFromError() {
@@ -26,19 +26,11 @@ class CanvasBoundary extends Component<{ fallback: ReactNode; children: ReactNod
 }
 
 /**
- * Markdown-facing Trestle renderer. `remark-trestle-views` turns
- * `![...](<stem>.png "trestle=<ref>")` into this component; `snapshot` is the
- * sibling `<stem>.trestle-graph.json`, fetched at runtime like the PNG.
+ * Markdown-facing Trestle renderer. `remark-trestle-views` turns a
+ * ```` ```trestle <ref> ```` marker into this component; `snapshot` is the
+ * resolved `<stem>.trestle-graph.json` URL, fetched at runtime.
  */
-export function TrestleDiagram({
-  image,
-  snapshot,
-  alt,
-}: {
-  image: string;
-  snapshot: string;
-  alt?: string;
-}) {
+export function TrestleDiagram({ snapshot, alt }: { snapshot: string; alt?: string }) {
   const { resolvedTheme } = useTheme();
   const [data, setData] = useState<unknown>(null);
   const readFile = useMemo(() => filesBeside(snapshot), [snapshot]);
@@ -55,7 +47,7 @@ export function TrestleDiagram({
     };
   }, [snapshot]);
 
-  const fallback = <img src={image} alt={alt ?? ""} className="trestle-frame-image" />;
+  const fallback = <p className="trestle-frame-placeholder">{alt || "Environment diagram"}</p>;
   return (
     <figure className="trestle-frame" aria-label={alt || undefined}>
       {data && !failed ? (

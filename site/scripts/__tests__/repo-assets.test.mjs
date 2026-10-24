@@ -5,20 +5,18 @@ import { join, resolve } from "node:path";
 import { assetFiles } from "../repo-assets.mjs";
 
 const ENV = resolve(import.meta.dir, "../../../envs/unitycatalog");
-const PNG = join(ENV, "diagram.png");
+const SNAPSHOT = join(ENV, "diagram.trestle-graph.json");
 
 test("a Trestle diagram brings its snapshot and the snapshot's files", () => {
-  const snapshot = join(ENV, "diagram.trestle-graph.json");
-  const { files } = JSON.parse(readFileSync(snapshot, "utf8"));
+  const { files } = JSON.parse(readFileSync(SNAPSHOT, "utf8"));
   expect(files.length).toBeGreaterThan(0);
-  expect(assetFiles(PNG, { trestle: true })).toEqual([
-    PNG,
-    snapshot,
+  expect(assetFiles(SNAPSHOT, { trestle: true })).toEqual([
+    SNAPSHOT,
     ...files.map((f) => join(ENV, f)),
   ]);
 });
 
-test("any other image is only itself", () => {
-  expect(assetFiles(PNG)).toEqual([PNG]);
+test("any other asset is only itself", () => {
+  expect(assetFiles(SNAPSHOT)).toEqual([SNAPSHOT]);
   expect(assetFiles(join(ENV, "a.svg"), { trestle: true })).toEqual([join(ENV, "a.svg")]);
 });

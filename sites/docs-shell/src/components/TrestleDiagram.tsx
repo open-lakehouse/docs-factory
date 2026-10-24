@@ -1,6 +1,7 @@
-// A Trestle environment diagram. The prerendered page carries the PNG, which is
-// what crawlers and no-JS readers get; once hydrated, the component fetches the
-// snapshot served beside it and swaps in the interactive canvas. React Flow and
+// A Trestle environment diagram. The prerendered page carries the alt text,
+// which is what crawlers and no-JS readers get (agents read the .md twin's
+// Mermaid); once hydrated, the component fetches the snapshot and swaps in the
+// interactive canvas. React Flow and
 // ELK (~2 MB) load only on pages that have a diagram.
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useDarkMode } from "../lib/theme";
@@ -16,15 +17,7 @@ function filesBeside(snapshot: string) {
     );
 }
 
-export function TrestleDiagram({
-  image,
-  snapshot,
-  alt,
-}: {
-  image: string;
-  snapshot: string;
-  alt?: string;
-}) {
+export function TrestleDiagram({ snapshot, alt }: { snapshot: string; alt?: string }) {
   const dark = useDarkMode();
   const [data, setData] = useState<unknown>(null);
   const readFile = useMemo(() => filesBeside(snapshot), [snapshot]);
@@ -40,7 +33,7 @@ export function TrestleDiagram({
     };
   }, [snapshot]);
 
-  const picture = <img src={image} alt={alt || "Environment diagram"} loading="lazy" />;
+  const picture = <p className="trestle-frame-placeholder">{alt || "Environment diagram"}</p>;
   return (
     <figure className="trestle-frame" aria-label={alt || undefined}>
       {data ? (

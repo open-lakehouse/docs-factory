@@ -2974,11 +2974,13 @@ button.tag {
 .trestle-frame {
   margin: 1.5rem 0;
 }
-.trestle-frame-image {
-  display: block;
-  width: 100%;
-  border: 1px solid var(--border);
+.trestle-frame-placeholder {
+  margin: 0;
+  padding: 2rem 1rem;
+  border: 1px dashed var(--border);
   border-radius: var(--radius);
+  color: var(--muted-foreground);
+  text-align: center;
 }
 
 /* --- Model links (inline model: refs + concept header) ------------------ */

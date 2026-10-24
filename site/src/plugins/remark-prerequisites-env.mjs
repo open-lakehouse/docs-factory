@@ -17,11 +17,10 @@
  * The commands are plain Markdown, so the site, the review app, and the .md
  * twin render them alike. Both emit targets and the review app run this.
  *
- * Below the commands goes the stack's committed topology,
- * `<envsDir>/<folder>/diagram.png` titled `trestle=<folder>`, as an image
- * relative to the page, so the image plugins that run later ship the PNG and
- * upgrade it to the interactive diagram. Without `envsDir`, or a folder with no
- * diagram, the commands stand alone.
+ * Below the commands goes the stack's topology, a ```` ```trestle <folder> ````
+ * marker (lib/trestle-ref.mjs), which the plugins that run later draw as the
+ * interactive diagram, or the twin as Trestle's Mermaid. Without `envsDir`, or a
+ * folder with no snapshot, the commands stand alone.
  *
  * `:::deployment{key="uc-hybrid/compose.yaml"}` is replaced by that stack's
  * deployment (content-core deploymentSteps) as an ordered list: download the
@@ -35,9 +34,10 @@
  * drops keyed markers too.
  */
 import { existsSync } from "node:fs";
-import { dirname, join, relative, sep } from "node:path";
+import { join } from "node:path";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { composeParts, deploymentSteps } from "../content-core/environment.mjs";
+import { ENV_SNAPSHOT, markerNode } from "./lib/trestle-ref.mjs";
 
 const text = (value) => ({ type: "text", value });
 const code = (value) => ({ type: "inlineCode", value });
@@ -69,29 +69,21 @@ function pointerItem(env, guide) {
     : listItem(text(`${env.title}, running locally.`));
 }
 
-/** The stack's diagram as an image relative to `pagePath`, or none. */
-function diagramNodes(env, { envsDir, pagePath }) {
-  if (!envsDir || !pagePath) return [];
+/** The stack's diagram marker, or none. */
+function diagramNodes(env, envsDir) {
+  if (!envsDir) return [];
   const { dir } = composeParts(env.key);
-  const png = join(envsDir, dir, "diagram.png");
-  if (!existsSync(png)) return [];
-  const url = relative(dirname(pagePath), png).split(sep).join("/");
-  const image = {
-    type: "image",
-    url,
-    alt: `The services ${env.title} runs and how clients reach them`,
-    title: `trestle=${dir}`,
-  };
-  return [paragraph(image)];
+  if (!existsSync(join(envsDir, dir, ENV_SNAPSHOT))) return [];
+  return [markerNode(dir, `The services ${env.title} runs and how clients reach them`)];
 }
 
-function startNodes(env, where) {
+function startNodes(env, envsDir) {
   return [
     paragraph(
       text(`Download the docs' environment and start ${env.title}. Already running it? Skip this.`),
     ),
     commandsBlock(env),
-    ...diagramNodes(env, where),
+    ...diagramNodes(env, envsDir),
     paragraph(
       text("Stop it later with "),
       code(env.stop),
@@ -182,11 +174,11 @@ function findDirective(node, name) {
   return null;
 }
 
-function insertTutorialStep(tree, env, where) {
+function insertTutorialStep(tree, env, envsDir) {
   const journey = findDirective(tree, "journey");
   if (journey) {
     const heading = { type: "heading", depth: 3, children: [text(STEP_TITLE)] };
-    journey.children.unshift(heading, ...startNodes(env, where));
+    journey.children.unshift(heading, ...startNodes(env, envsDir));
     return;
   }
   const heading = { type: "heading", depth: 2, children: [text(STEP_TITLE)] };
@@ -195,7 +187,7 @@ function insertTutorialStep(tree, env, where) {
     first === -1 ? tree.children.length : first,
     0,
     heading,
-    ...startNodes(env, where),
+    ...startNodes(env, envsDir),
   );
 }
 
@@ -211,20 +203,19 @@ export default function remarkPrerequisitesEnv({
   resolve = null,
   envsDir = null,
 }) {
-  return (tree, file) => {
-    const where = { envsDir, pagePath: file?.history?.[0] ?? file?.path ?? null };
+  return (tree) => {
     replaceDeployments(tree, resolve);
     const nodesFor = (key) => {
       if (key) {
         if (!resolve) return [];
         const env = resolve(key);
-        return [commandsBlock(env), ...diagramNodes(env, where)];
+        return [commandsBlock(env), ...diagramNodes(env, envsDir)];
       }
-      return environment ? startNodes(environment, where) : [];
+      return environment ? startNodes(environment, envsDir) : [];
     };
     const placed = replaceMarkers(tree, nodesFor);
     if (!environment) return;
-    if (!placed && diataxis === "tutorial") insertTutorialStep(tree, environment, where);
+    if (!placed && diataxis === "tutorial") insertTutorialStep(tree, environment, envsDir);
 
     const box = tree.children.find(isDirective("prerequisites"));
     if (!box) return;

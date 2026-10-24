@@ -15,7 +15,8 @@ A [registered model](model:lakehouse.mlModel) in
 three-level name, such as `unity.manage_models.linear`. It holds numbered
 versions, and each version has its own copy of the model's files in the
 catalog's managed storage. MLflow's tracking server keeps the runs and the
-logged models. Unity Catalog keeps the registered models and their versions.
+logged models. Unity Catalog keeps the registered models and their versions
+([how the two services divide the work](../../explanation/models-and-mlflow/index.md)).
 
 On this page, MLflow uploads a version's files and loads them. MLflow, the
 Python SDK, and the CLI all view, update, and delete models and versions, and

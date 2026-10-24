@@ -236,8 +236,9 @@ nav:
         items:
           - planned: E07
             title: Where catalog functions execute
-          - planned: E08
-            title: How Unity Catalog and MLflow divide responsibilities
+          - page: explanation/models-and-mlflow
+            id: E08
+            label: Unity Catalog and MLflow
           - page: explanation/views-and-metric-views
             id: E09
 

@@ -174,7 +174,7 @@ files stay in MLflow. Leave the session with `Ctrl+D`.
 
 - [Manage registered models](../../how-to/manage-models/index.md) to register
   new versions, load one by number, rename, and delete models.
-- [Manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
-  to create the catalogs and schemas your models live in.
 - [Learn how credential vending works](../../explanation/credential-vending/index.md),
   the mechanism that let MLflow write the version's files.
+- [Learn how Unity Catalog and MLflow divide responsibilities](../../explanation/models-and-mlflow/index.md)
+  for runs, models, versions, and their files.

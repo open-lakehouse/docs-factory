@@ -1,10 +1,11 @@
-// A Trestle environment diagram. The prerendered page carries the alt text,
-// which is what crawlers and no-JS readers get (agents read the .md twin's
-// Mermaid); once hydrated, the component fetches the snapshot and swaps in the
+// A Trestle environment diagram. The prerendered page carries the alt text and
+// Trestle's Mermaid (DiagramFallback), which is what crawlers and no-JS readers
+// get; once hydrated, the component fetches the snapshot and swaps in the
 // interactive canvas. React Flow and
 // ELK (~2 MB) load only on pages that have a diagram.
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useDarkMode } from "../lib/theme";
+import { DiagramFallback } from "./DiagramFallback";
 
 const TrestleCanvas = lazy(() => import("./TrestleCanvas"));
 
@@ -17,7 +18,15 @@ function filesBeside(snapshot: string) {
     );
 }
 
-export function TrestleDiagram({ snapshot, alt }: { snapshot: string; alt?: string }) {
+export function TrestleDiagram({
+  snapshot,
+  alt,
+  mermaid,
+}: {
+  snapshot: string;
+  alt?: string;
+  mermaid?: string;
+}) {
   const dark = useDarkMode();
   const [data, setData] = useState<unknown>(null);
   const readFile = useMemo(() => filesBeside(snapshot), [snapshot]);
@@ -33,7 +42,7 @@ export function TrestleDiagram({ snapshot, alt }: { snapshot: string; alt?: stri
     };
   }, [snapshot]);
 
-  const picture = <p className="trestle-frame-placeholder">{alt || "Environment diagram"}</p>;
+  const picture = <DiagramFallback alt={alt || "Environment diagram"} mermaid={mermaid} />;
   return (
     <figure className="trestle-frame" aria-label={alt || undefined}>
       {data ? (

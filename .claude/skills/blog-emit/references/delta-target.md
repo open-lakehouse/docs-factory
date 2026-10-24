@@ -18,12 +18,12 @@ pushes or opens a PR (that is the user's action).
   [<profile-id>]`, `publishedAt` ISO date, `thumbnail: ./<file>`, and `canonical` on
   a cross-post whose primary is another site), then default
   imports (`Journey`, `JourneyStep`, `LikeC4View` from `@/components/blog`), then body.
-  `::::journey`→`<Journey><JourneyStep step="…">`; `likec4=`→`<LikeC4View viewId="…" />`;
+  `::::journey`→`<Journey><JourneyStep step="…">`; ```` ```likec4 ````→`<LikeC4View viewId="…" />`;
   `:::` callouts LEFT as directives but **remapped** to the delta site's vocabulary
   (`tip`→`note`, `caution`→`danger`; `note`/`info`/`warning`/`danger` unchanged);
   MDX-significant chars in prose escaped.
 - `assets.json` — image manifest (`filename` = `./<filename>` in the MDX; `localPath`
-  = file to copy in, incl. the regenerated LikeC4 PNG fallback).
+  = file to copy in). LikeC4 views ship no PNG.
 - `likec4-webcomponent.mjs` — the `<likec4-view>` bundle (present when the post has a
   diagram).
 

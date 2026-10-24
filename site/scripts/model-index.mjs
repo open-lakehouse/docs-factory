@@ -19,8 +19,8 @@ import { modelLinkIds, PUBLIC_TAG } from "../src/content-core/projection.mjs";
 import { loadRegistry } from "../src/content-core/registry.mjs";
 import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
 
-// `![alt](… "likec4=<viewId>")`, the form remark-likec4-views renders.
-const VIEW_EMBED_RE = /"likec4=([\w.-]+)"/g;
+// A ```` ```likec4 <viewId> ```` block, the form remark-likec4-views renders.
+const VIEW_EMBED_RE = /^[ \t]*(?:`{3,}|~{3,})likec4[ \t]+([\w.-]+)/gm;
 
 /** Every docs page under content/ and every blog post. */
 export function readPages(repoRoot) {

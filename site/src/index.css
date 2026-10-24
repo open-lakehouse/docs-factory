@@ -2970,7 +2970,7 @@ button.tag {
   max-height: 80vh;
 }
 
-/* A Trestle diagram sizes itself to its aspect ratio; the PNG stands in until it loads. */
+/* A Trestle diagram sizes itself to its aspect ratio; the alt text stands in until it loads. */
 .trestle-frame {
   margin: 1.5rem 0;
 }
@@ -2981,6 +2981,31 @@ button.tag {
   border-radius: var(--radius);
   color: var(--muted-foreground);
   text-align: center;
+}
+
+/* A .md twin's frontmatter, as the twin view renders it. */
+.prose table.frontmatter th {
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: top;
+}
+.prose table.frontmatter td {
+  overflow-wrap: anywhere;
+}
+
+/* A ```mermaid fence the .md twin view drew. */
+.twin-mermaid {
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  text-align: center;
+}
+.twin-mermaid svg {
+  max-width: 100%;
+  height: auto;
+}
+.twin-mermaid-error {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
 }
 
 /* --- Model links (inline model: refs + concept header) ------------------ */

@@ -25,7 +25,7 @@ from docs-factory, so it can move to another repo unchanged.
 | `src/generated/site.json` | Navigation tree, page list (route, title, section trail, headings, prev/next, the page's scripts), and the REST API references (`apis`). |
 | `src/generated/heads.json` | Per-route `<head>` from `content-core/head.mjs` `pageHead()`; content pages go through `emit/docs/heads.mjs` `docPageHead()`, which also builds the review app's Head tab. |
 | `src/vendor/plugins/` | Verbatim copies of the preview's directive plugins (`site/src/plugins/`). |
-| `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + scripts and their helpers, `env/` (one archive per environment and `environments.json`), images, LikeC4 PNGs and web component. |
+| `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + scripts and their helpers, `env/` (one archive per environment and `environments.json`), images, LikeC4 web component. |
 | `.docs-emit.json` | The emit manifest (below). |
 
 The shell owns everything else: layout, components, styles, and the prerender
@@ -210,8 +210,7 @@ untouched. Then the sync:
 - deletes files the previous manifest listed that this run didn't produce;
 - refuses any path outside the emitter-owned set.
 
-Rendering is deterministic: an unchanged source writes zero files, LikeC4 PNGs
-included.
+Rendering is deterministic: an unchanged source writes zero files.
 
 `.docs-emit.json` records:
 - `source`: the commit, and whether `content/` or the model had uncommitted changes;
@@ -255,7 +254,7 @@ records the source commit and so differs on every run. If upstream main
 already matches, an open sync PR is closed.
 
 Upstream deploys with Vercel's Git integration. The mirrored site builds with
-bun alone, because uv, Chromium, and `envs/` are needed only to emit, and
+bun alone, because uv and `envs/` are needed only to emit, and
 `sites/<name>/vercel.json` pins the build and the clean-URL routing.
 
 ## Deferred
@@ -270,7 +269,7 @@ with unitycatalog.io; it covers search, redirects, and blog delivery below.
 - **Search:** Pagefind over the built `dist/`.
 - **Redirects:** for legacy MkDocs paths (plan §7 migration map) and for renames
   the manifest records.
-- **Shell CI:** a build job for the shell (it needs Chromium for the LikeC4 export).
+- **Shell CI:** a build job for the shell.
 - **Blog release automation:** a push-to-main workflow that emits each blog
   newly at `status: ready` to its `target` and opens a PR in that site repo, as
   `uc-docs-sync.yml` does for docs (ADR-0002). Delivery is the `blog-emit` skill

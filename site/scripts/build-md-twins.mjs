@@ -3,20 +3,18 @@
 //
 // A twin is the RICH emitter rendering of a page — NOT its authoring-shaped
 // source. Our on-disk content/**/*.md and blogs/*/index.md carry `file=` snippet
-// fences, `:::callout`/`:::tldr`/`::::journey` directives, and `likec4=` view
-// embeds; that raw form must never be served. This driver runs the shared emitter
+// fences, `:::callout`/`:::tldr`/`::::journey` directives, and `likec4` view
+// blocks; that raw form must never be served. This driver runs the shared emitter
 // core (emit/emit.mjs `emitOne`) with the `md-twin` target over each public page,
-// producing clean markdown with snippets inlined, constructs flattened, and LikeC4
-// views resolved to site-served PNGs. The twin is written at the page's canonical
+// producing clean markdown with snippets inlined, constructs flattened, and
+// diagrams resolved to their Mermaid. The twin is written at the page's canonical
 // route + `.md` (e.g. /docs/<project>/<bucket>/<slug>.md, /blog/<slug>.md), which
 // is exactly what `twinUrl()` advertises and the gen-vercel-config `.md` rules
 // serve.
 //
-// Run order: after `vite build`, before assemble-vercel-output.mjs. Needs a
-// headless Chromium for the LikeC4 PNG export (emitOne → regenerateLikeC4), so
-// it runs in the CI prebuild stage. DB-free: gated on git-authoritative
-// `isPublic()` (status: ready).
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+// Run order: after `vite build`, before assemble-vercel-output.mjs. DB-free:
+// gated on git-authoritative `isPublic()` (status: ready).
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defaultModelDir, emitOne } from "../../emit/emit.mjs";
@@ -30,10 +28,9 @@ const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
 const repoRoot = resolve(siteRoot, "..");
 const distDir = resolve(siteRoot, "dist");
-// Throwaway dir the emitter exports LikeC4 <viewId>.png into; the driver copies the
-// ones a twin references into dist/assets/likec4/ (served) below.
+// Throwaway dir the emitter writes each LikeC4 view's <viewId>.mmd into, once per run.
 const likec4ExportDir = resolve(distDir, ".likec4-export");
-const likec4AssetDir = resolve(distDir, "assets", "likec4");
+let likec4Exported = false;
 
 const origin = siteOrigin();
 
@@ -259,18 +256,6 @@ export function scaffoldSections(output, { isTutorial, examples = "" } = {}) {
   return out;
 }
 
-/** Copy the LikeC4 PNGs a twin references from the throwaway export dir into the
- *  served assets dir (dist/assets/likec4/<viewId>.png), matching the URL
- *  md-twin.renderImage emits. */
-function copyLikeC4Pngs(manifest) {
-  for (const entry of manifest) {
-    if (!entry.likec4 || !entry.localPath) continue;
-    const dest = resolve(likec4AssetDir, `${entry.likec4}.png`);
-    mkdirSync(dirname(dest), { recursive: true });
-    cpSync(entry.localPath, dest);
-  }
-}
-
 /** Load dist/scripts.json (written by build-script-index) into a route → scripts
  *  map, so a tutorial twin's "Runnable examples" can be filled. Empty map if the
  *  index hasn't been built (then the placeholder stays). */
@@ -303,26 +288,23 @@ async function buildTwin(absPath, scriptsByRoute) {
   if (!href) return null;
 
   let output;
-  let manifest;
   try {
-    ({ output, manifest } = await emitOne({
+    let likec4Dir;
+    ({ output, likec4Dir } = await emitOne({
       inputPath: absPath,
       target: mdTwin,
       modelDir: defaultModelDir(),
       likec4OutDir: likec4ExportDir,
+      likec4Exported,
       assetsDir: dirname(absPath),
     }));
+    likec4Exported ||= likec4Dir != null;
   } catch (err) {
-    // The only heavy dependency in emitOne is the LikeC4 PNG export (headless
-    // Chromium). In a bare build env (no Chromium) it throws; twins are produced
-    // in the CI prebuild that HAS Chromium, so here we skip the page with a
-    // warning rather than crashing the deploy. Pages without a `likec4=` diagram
-    // never invoke the export and are unaffected.
+    // A page that can't be emitted (a missing snapshot, an unknown view) is
+    // skipped with a warning rather than crashing the deploy.
     console.warn(`build-md-twins: skipping ${href} — ${err.message.split("\n")[0]}`);
     return null;
   }
-
-  copyLikeC4Pngs(manifest);
 
   const isTutorial = identity.bucket === "tutorials";
   const withCanonical = injectCanonical(output, canonicalUrl(identity, origin));

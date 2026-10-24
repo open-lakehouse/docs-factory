@@ -147,7 +147,11 @@ The last step moves the server too. Unity Catalog runs in the cloud, next to
 a managed PostgreSQL database and the object storage. Your machine runs only
 clients: engines, SDKs, and the CLI, which reach the catalog over HTTPS.
 
-![Clients on your machine call Unity Catalog in the cloud over its REST API and read and write Amazon S3 with vended credentials; in the cloud, Unity Catalog keeps its metadata in PostgreSQL and its files in Amazon S3](./assets/ucDeploymentPatterns_hosted.png "likec4=ucDeploymentPatterns_hosted")
+```likec4 ucDeploymentPatterns_hosted
+Clients on your machine call Unity Catalog in the cloud over its REST API and
+read and write Amazon S3 with vended credentials; in the cloud, Unity Catalog
+keeps its metadata in PostgreSQL and its files in Amazon S3
+```
 
 What changes is where the secrets live. The database password and the
 storage identity stay in the cloud with the server, and clients hold only

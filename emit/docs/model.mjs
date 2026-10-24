@@ -89,13 +89,6 @@ export function modelLinkResolver(model, explainers) {
   };
 }
 
-/** A diagram's alt text when the author wrote none: the view's title and description. */
-export function viewAltText(model, viewId) {
-  const view = model.views.get(viewId);
-  if (!view) return null;
-  return view.description ? `${view.title}: ${view.description}` : view.title;
-}
-
 /**
  * The site's refs.json for Trestle diagrams: what each node's name and role
  * line link to, through the same resolver as `model:` links, so a card links

@@ -2,8 +2,8 @@
 name: blog-emit
 description: |
   Emit a canonical blog draft (blogs/<slug>/index.md) to a downstream target. Runs
-  the deterministic emitter core (resolves file= snippets, regenerates LikeC4 PNGs,
-  renders journeys/callouts/diagrams per the target), then delivers the result and
+  the deterministic emitter core (resolves file= snippets, renders
+  journeys/callouts/diagrams per the target), then delivers the result and
   records the delivery for idempotent re-emits. Targets:
     - unitycatalog — a rich native Astro MDX post in the sibling unitycatalog-website
       repo (interactive LikeC4, <Journey> timelines, :::callouts).
@@ -28,8 +28,8 @@ re-emit updates in place rather than duplicating.
 The design is a **target-agnostic spine + one per-target runbook**:
 
 - **Deterministic core** — [`emit/`](../../../emit/), a committed Node package. It
-  does everything scriptable: resolve `file=` snippets, regenerate LikeC4 PNGs, and
-  render each rich construct (`::::journey`, `:::callout`, `likec4=`, code captions)
+  does everything scriptable: resolve `file=` snippets and render each rich
+  construct (`::::journey`, `:::callout`, `likec4` blocks, code captions)
   the way the chosen target needs — upgraded to site components (unitycatalog,
   delta). It dispatches on `--target`; each target is a module in
   [`emit/targets/`](../../../emit/targets/). **Do not reimplement any of this in the
@@ -82,14 +82,12 @@ This writes, under `blogs/<slug>/dist/<target>/`:
 - the render — `index.mdx` (unitycatalog, delta);
 - `assets.json` — `{ slug, target, primary, canonical, title, existing, images: [...] }`;
 - `likec4-webcomponent.mjs` — the interactive-diagram bundle (rich targets, only when
-  the post has a `likec4=` diagram);
+  the post has a `likec4` block).
 
-and, shared at `blogs/<slug>/dist/.likec4-export/<viewId>.png`, regenerated PNGs. It
-also prints whether delivery should **CREATE** or **UPDATE**. The core refuses a
+It also prints whether delivery should **CREATE** or **UPDATE**. The core refuses a
 `private` post and warns when the post isn't `ready`: rendering a draft to check
 the target is fine, but deliver only a `ready` post (merged to main is the
-release, ADR-0002), unless the user explicitly asks for a draft delivery. If the LikeC4 export
-fails for want of a browser, run `bunx playwright install chromium` once and re-run.
+release, ADR-0002), unless the user explicitly asks for a draft delivery.
 
 ### 2. Read the render + manifest
 
@@ -106,9 +104,9 @@ fails for want of a browser, run `bunx playwright install chromium` once and re-
     delivery recorded, and the core prints `canonical: pending`: deliver the primary
     first (through step 4), then re-run step 1 for the cross-post. Never deliver a
     cross-post without its canonical.
-  - each `images[]` entry is `{ filename, localPath, altText, likec4 }`; `localPath`
-    is the real file on disk to upload/copy (for a `likec4=` image it is the freshly
-    regenerated export, not any committed copy).
+  - each `images[]` entry is `{ filename, localPath, altText }`; `localPath` is the
+    real file on disk to upload/copy. LikeC4 views aren't images: the render's
+    `<LikeC4View>` draws them from the web-component bundle.
 
 ### 3. Deliver — follow the runbook from step 0
 

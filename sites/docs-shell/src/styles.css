@@ -1195,9 +1195,13 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   background: var(--card);
 }
 .prose .likec4-view { display: block; min-height: 20rem; }
-.prose .likec4-view img { display: block; width: 100%; border: 0; border-radius: 0; }
 .prose .trestle-frame { margin: 1.75rem 0; }
-.prose .trestle-frame-placeholder { margin: 0; padding: 2rem 1rem; border: 1px dashed var(--border); border-radius: var(--radius); color: var(--muted-foreground); text-align: center; }
+.prose .diagram-fallback { padding: 2rem 1rem; border: 1px dashed var(--border); border-radius: var(--radius); color: var(--muted-foreground); text-align: center; }
+.prose .diagram-frame .diagram-fallback { border: 0; }
+.prose .diagram-fallback p { margin: 0; }
+.prose .diagram-fallback details { margin-top: 1rem; text-align: left; }
+.prose .diagram-fallback summary { cursor: pointer; font-size: 0.875rem; text-align: center; }
+.prose .diagram-fallback pre { margin: 0.75rem 0 0; font-size: 0.8125rem; }
 /* Diagram node links. The diagram's scoped preflight resets link decoration
    inside it, hence the extra class on .concept-ref; the card portals outside. */
 .trestle-diagram .concept-ref {

@@ -19,12 +19,23 @@ import {
   trestleMermaid,
 } from "../../site/src/plugins/lib/trestle-ref.mjs";
 
-/** Default: the alt text as a paragraph, then the Mermaid fence. */
-export function mermaidNodes(entry) {
+/** A diagram as plain Markdown: the alt text as a paragraph, then the Mermaid fence. */
+export function altAndMermaid(alt, mermaid) {
   const nodes = [];
-  if (entry.alt) nodes.push({ type: "paragraph", children: [{ type: "text", value: entry.alt }] });
-  nodes.push({ type: "code", lang: "mermaid", meta: null, value: trestleMermaid(entry) });
+  if (alt) nodes.push({ type: "paragraph", children: [{ type: "text", value: alt }] });
+  nodes.push({ type: "code", lang: "mermaid", meta: null, value: mermaid });
   return nodes;
+}
+
+/** The docs-site fallback fence remark-trestle-views / remark-likec4-views fold
+ * into the diagram component. */
+export function mermaidFallback(mermaid) {
+  return { type: "code", lang: "mermaid", meta: "fallback", value: mermaid };
+}
+
+/** Default: the alt text, then Trestle's Mermaid. */
+export function mermaidNodes(entry) {
+  return altAndMermaid(entry.alt, trestleMermaid(entry));
 }
 
 export default function remarkTrestleMd({ entries = [], envsDir, pageDir, renderTrestle } = {}) {

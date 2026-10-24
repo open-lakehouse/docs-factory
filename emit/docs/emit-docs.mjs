@@ -16,7 +16,7 @@
  *      the sitemap for;
  *   3. render every page twice through the shared emitter core (emitOne): the
  *      site page (docs-site target) and its `.md` twin (md-twin target);
- *   4. add images, LikeC4 PNGs + web component, runnable scripts, the env
+ *   4. add images, the LikeC4 web component, runnable scripts, the env
  *      bundle (env-bundle.mjs), the vendored
  *      remark plugins, site.json / heads.json, llms.txt, llms-full.txt,
  *      sitemap.xml, robots.txt, and the palette's search-index.json, plus a
@@ -78,7 +78,7 @@ import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget, trestleSnapshotUrl } from "../targets/docs-site.mjs";
-import mdTwin, { LIKEC4_ASSET_BASE, TRESTLE_ASSET_BASE } from "../targets/md-twin.mjs";
+import mdTwin, { TRESTLE_ASSET_BASE } from "../targets/md-twin.mjs";
 import { apiEntries, apiIndexRoute } from "./api.mjs";
 import {
   conceptEnvironments,
@@ -92,14 +92,7 @@ import {
 } from "./discovery.mjs";
 import { buildEnvBundles, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
-import {
-  loadCompat,
-  loadModel,
-  loadProjection,
-  modelLinkResolver,
-  trestleRefs,
-  viewAltText,
-} from "./model.mjs";
+import { loadCompat, loadModel, loadProjection, modelLinkResolver, trestleRefs } from "./model.mjs";
 import { projectNav } from "./nav.mjs";
 import { searchContext, searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
@@ -181,10 +174,8 @@ function linkErrors() {
   };
 }
 
-/** Where the site serves a manifest image: LikeC4 views site-wide, anything else
- * under its page's `assetBase`. */
+/** Where the site serves a manifest image: under its page's `assetBase`. */
 function imageUrl(entry, assetBase) {
-  if (entry.likec4) return `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`;
   return `${assetBase}/${entry.filename}`;
 }
 
@@ -380,8 +371,6 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       [remarkUnwrapDeadLinks],
       [remarkModelLinks, { resolve: (id) => resolveModelLink(id, { route }) }],
     ];
-    const altText = (entry) =>
-      entry.altText || (entry.likec4 && viewAltText(model, entry.likec4)) || "";
     const pages = [];
     const environments = new Map();
     const search = [];
@@ -442,7 +431,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
 
       const rendered = await emitOne({
         ...common,
-        target: docsSiteTarget({ assetBase, altText }),
+        target: docsSiteTarget({ assetBase }),
         prePlugins: [[remarkCollapseCoverage, site.project]],
         plugins: [
           ...linkPlugins(route),
@@ -463,8 +452,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
         if (!image.localPath) continue;
         const url = imageUrl(image, assetBase);
         files.set(`public${url}`, readFileSync(image.localPath));
-        hasLikeC4 ||= Boolean(image.likec4);
       }
+      hasLikeC4 ||= rendered.likec4.length > 0;
       // remark-trestle-views fetches each diagram's snapshot from where the
       // docs-site target pointed its marker.
       for (const diagram of rendered.trestle) {
@@ -493,7 +482,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
             {
               type: "image",
               url: `${origin}${imageUrl(entry, assetBase)}`,
-              alt: altText(entry),
+              alt: entry.altText,
               title: null,
             },
           ],

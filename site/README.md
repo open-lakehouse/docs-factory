@@ -76,7 +76,7 @@ All `.md` / `.mdx` files share one pipeline (`vite.config.ts`):
 | `remark-journey` | `::::journey` → timeline steps |
 | `remark-tabs` | adjacent `:::tab[Label]` containers → one label-synced tab group |
 | `remark-fence-meta` | Attach filename/lang metadata for code chrome |
-| `remark-likec4-views` | `likec4=<viewId>` images → interactive views |
+| `remark-likec4-views` | ```` ```likec4 <viewId> ```` blocks → interactive views |
 | `remark-resolve-images` | Relative image paths → `/repo-assets/<repo path>`, served in dev and emitted into the build (`scripts/repo-assets.mjs`) |
 | `@shikijs/rehype` | Build-time syntax highlighting |
 
@@ -103,7 +103,7 @@ A fence's meta string carries chrome hints the `<Pre>` component reads:
 
 The site uses a single `LikeC4VitePlugin` workspace: `../architecture/model`.
 That workspace serves virtual modules (`likec4:react`, `likec4:single-project`,
-...) used by Markdown `likec4=<viewId>` embeds and model-ref diagrams.
+...) used by Markdown ```` ```likec4 <viewId> ```` blocks and model-ref diagrams.
 
 Blog-specific diagrams live as dedicated views in
 `../architecture/model/blog-views.likec4`. This keeps the heavy LikeC4 runtime

@@ -30,8 +30,8 @@ this change, almost none of it reached a reader:
   Sharing tagline. Harmless in a modeling tool, a liability once the text is
   published as link tooltips and machine-readable summaries.
 - **Interactive diagrams are fragile.** The docs site embeds the
-  `<likec4-view>` web component (the whole estate model in one bundle) with a
-  PNG fallback that only exists when the emit can run a Chromium export. Why
+  `<likec4-view>` web component (the whole estate model in one bundle), with
+  the alt text and the view's Mermaid as its fallback. Why
   rendering misbehaves in practice is not yet diagnosed (§5).
 
 ## 2. What actually helps SEO, GEO, and readers
@@ -225,8 +225,7 @@ ready page, and the contract and `operatesOn` edges they verify (§8 there).
 ## 5. Open questions
 
 - **Why does the interactive diagram misbehave?** Candidates: the web
-  component bundle carries the whole estate model; the PNG fallback needs a
-  Chromium export the Vercel and upstream builds may not run; `min-height` on
+  component bundle carries the whole estate model; `min-height` on
   a shadow-DOM host collapsing. Diagnose before investing in more embeds.
 - ~~**Which elements are public?**~~ `#public` on the element. The docs sites
   publish only tagged elements (and edges whose both ends are tagged). A ready

@@ -72,7 +72,9 @@ interface under `/api/2.1/unity-catalog/delta/v1/`. Its
 [managed-tables protocol](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/spec/protocols/ManagedDeltaTablesSpec.md)
 defines each step. Expand the diagram and step through it:
 
-![The managed-table lifecycle through the Delta API](./assets/managedTableFlow.png "likec4=ucDeltaApi_managedTableFlow")
+```likec4 ucDeltaApi_managedTableFlow
+The managed-table lifecycle through the Delta API
+```
 
 The lifecycle has four parts.
 

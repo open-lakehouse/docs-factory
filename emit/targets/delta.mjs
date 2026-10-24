@@ -6,7 +6,7 @@
  * rich constructs are emitted as an `.mdx` post that renders interactively on the
  * Astro site.
  *   - `::::journey`   → `<Journey><JourneyStep>` (rich timeline, Journey.astro).
- *   - `likec4=` image → `<LikeC4View viewId=…>` (interactive canvas via the
+ *   - `likec4` block → `<LikeC4View viewId=…>` (interactive canvas via the
  *                       framework-agnostic web-component bundle emit.mjs generates).
  *   - `:::tip`/…      → passed through as `:::` directives BUT REMAPPED onto the
  *                       delta site's supported vocabulary (`note/info/warning/danger`).
@@ -29,8 +29,9 @@
  */
 
 import remarkCalloutsDirectiveRemap from "../plugins/remark-callouts-directive-remap.mjs";
+import remarkImagesMd from "../plugins/remark-images-md.mjs";
 import remarkJourneyMdx from "../plugins/remark-journey-mdx.mjs";
-import remarkLikeC4Mdx from "../plugins/remark-likec4-mdx.mjs";
+import remarkLikeC4Mdx, { renderLikeC4Mdx } from "../plugins/remark-likec4-mdx.mjs";
 import remarkMdxSafeText from "../plugins/remark-mdx-safe-text.mjs";
 import remarkStringifyMdx from "../plugins/remark-stringify-mdx.mjs";
 
@@ -121,8 +122,10 @@ const delta = {
     callouts: remarkCalloutsDirectiveRemap,
     // codeCaption: OMITTED — keep `title="x.py"` meta on the fence.
     journey: remarkJourneyMdx, // ::::journey → <Journey><JourneyStep>
-    likec4: remarkLikeC4Mdx, // likec4= image → <LikeC4View> + manifest + fallback PNG
+    likec4: remarkLikeC4Mdx, // imports LikeC4View.astro for the rendered views
+    images: remarkImagesMd, // local images → `./<filename>` + manifest
   },
+  renderLikeC4: renderLikeC4Mdx, // likec4 block → <LikeC4View viewId=…>
   // Co-located post assets: Astro resolves `./file.png` relative to index.mdx.
   renderImage(entry) {
     return { type: "image", url: `./${entry.filename}`, alt: entry.altText, title: null };

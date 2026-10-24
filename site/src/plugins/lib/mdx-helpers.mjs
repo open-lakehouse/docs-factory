@@ -102,3 +102,17 @@ export function directiveAttr(node, name) {
   }
   return attrs[name];
 }
+
+/**
+ * The Mermaid of the ```` ```mermaid fallback ```` fence directly after
+ * `parent.children[i]`, removed from the tree, else undefined. The docs-site
+ * emitter writes one after each diagram marker for the no-JS fallback.
+ */
+export function takeMermaidFallback(parent, i) {
+  const next = parent.children[i + 1];
+  if (next?.type !== "code" || next.lang !== "mermaid" || next.meta?.trim() !== "fallback") {
+    return undefined;
+  }
+  parent.children.splice(i + 1, 1);
+  return next.value;
+}

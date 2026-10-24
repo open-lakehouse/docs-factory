@@ -1,4 +1,4 @@
-"""Trestle diagram markers: snapshot resolution, alt text, the twins' Mermaid."""
+"""Diagram markers: Trestle snapshot resolution and Mermaid, LikeC4 view ids, alt text."""
 
 from __future__ import annotations
 
@@ -136,3 +136,40 @@ def test_markers_inside_other_fences_are_examples(tmp_path):
     )
     assert diagrams.embeds(page) == []
     assert diagrams.check(root, [page], ["demo"]) == []
+
+
+def _model(root: Path, *views: str) -> None:
+    path = root / "architecture" / "dist" / "model.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"views": {v: {} for v in views}}))
+
+
+def test_likec4_marker_names_a_model_view(tmp_path):
+    root = _repo(tmp_path)
+    _model(root, "flow")
+    page = _page(root, "```likec4 flow\nA client\nasks\n```\n")
+    assert diagrams.embeds(page, "likec4") == [(1, "A client asks", "flow")]
+    assert diagrams.check(root, [page], ["demo"]) == []
+
+
+def test_likec4_unknown_view_and_missing_alt(tmp_path):
+    root = _repo(tmp_path)
+    _model(root, "flow")
+    page = _page(root, "```likec4 nope\nAlt\n```\n\n```likec4 flow\n```\n")
+    errors = diagrams.check(root, [page], ["demo"])
+    assert len(errors) == 2
+    assert "likec4 nope is not a view of the architecture model" in errors[0]
+    assert "a LikeC4 view needs alt text" in errors[1]
+
+
+def test_likec4_views_go_unchecked_without_a_built_model(tmp_path):
+    root = _repo(tmp_path)
+    page = _page(root, "```likec4 anything\nAlt\n```\n")
+    assert diagrams.check(root, [page], ["demo"]) == []
+
+
+def test_the_likec4_png_embed_is_retired(tmp_path):
+    root = _repo(tmp_path)
+    page = _page(root, '![A flow](./assets/flow.png "likec4=flow")\n')
+    errors = diagrams.check(root, [page], ["demo"])
+    assert len(errors) == 1 and "are ```likec4 <viewId> blocks now" in errors[0]

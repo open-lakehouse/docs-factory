@@ -5,10 +5,10 @@
  * Phase-0 <noscript> shell) fetches instead of our authoring-shaped source. The
  * emitter flattens every rich construct to portable markdown: `file=` snippets
  * inlined, `:::callout`/`:::tldr`/`:::prerequisites` → bold-led blockquotes,
- * `::::journey` → numbered `### Step N — …`, `likec4=<viewId>` images → a plain `![](…)` pointing at the
- * site-served PNG, and ```` ```trestle ```` diagram markers → Trestle's Mermaid
- * (the emitter core's default, remark-trestle-md.mjs). The raw `content/**` / `blogs/*` source is NEVER served — only
- * this twin. See docs/design/agentic-docs.md (Phase 1a).
+ * `::::journey` → numbered `### Step N — …`, and ```` ```likec4 ```` and
+ * ```` ```trestle ```` diagram markers → the alt text plus the diagram's Mermaid
+ * (the emitter core's default, remark-likec4-blocks.mjs / remark-trestle-md.mjs).
+ * The raw `content/**` / `blogs/*` source is NEVER served — only this twin. See docs/design/agentic-docs.md (Phase 1a).
  *
  * The docs-site emitter adds to this per page: absolute URLs, a `companions:`
  * frontmatter list, and a leading "Companion files" section (see
@@ -20,8 +20,6 @@
  *     clean (the driver puts title in the twin's own frontmatter).
  *   - `unwrapProse: true` — reflow the authoring-time hard wraps into clean
  *     single-line paragraphs (see remark-unwrap-prose.mjs).
- *   - `renderImage` points a likec4 view at `/assets/likec4/<viewId>.png` (the
- *     site-served copy the driver writes).
  *   - `frontmatter` emits a small agent-readable preamble; the driver post-injects
  *     the `canonical:` line (it alone knows identity/origin), so this module stays
  *     free of any site/content-core dependency.
@@ -29,15 +27,12 @@
 
 import remarkCalloutsMd from "../plugins/remark-callouts-md.mjs";
 import remarkCodeCaption from "../plugins/remark-code-caption.mjs";
+import remarkImagesMd from "../plugins/remark-images-md.mjs";
 import remarkJourneyMd from "../plugins/remark-journey-md.mjs";
-import remarkLikeC4Md from "../plugins/remark-likec4-md.mjs";
 import remarkPrerequisitesMd from "../plugins/remark-prerequisites-md.mjs";
 import remarkTabsMd from "../plugins/remark-tabs-md.mjs";
 import remarkTldrMd from "../plugins/remark-tldr-md.mjs";
 
-/** Where the twin driver serves the regenerated LikeC4 PNGs from. Kept here so the
- * driver's PNG copy destination and this renderImage URL agree on one path. */
-export const LIKEC4_ASSET_BASE = "/assets/likec4";
 /** Where environment diagrams are served, one folder per environment holding the
  * snapshot and the render's viewable files at their envs/<name>/ paths. */
 export const TRESTLE_ASSET_BASE = "/assets/trestle";
@@ -49,16 +44,14 @@ export function trestleEnvSnapshot(env) {
 }
 
 /**
- * The mdast node left for a STANDALONE image: a likec4 view points at the
- * site-served PNG, any other image at its bare filename. Wrapped in a `paragraph`
- * because remark-stringify only blank-line-separates BLOCK nodes — a bare inline
- * `image` would glue the following block onto it.
+ * The mdast node left for a STANDALONE image, at its bare filename. Wrapped in a
+ * `paragraph` because remark-stringify only blank-line-separates BLOCK nodes — a
+ * bare inline `image` would glue the following block onto it.
  */
 export function renderImage(entry) {
-  const url = entry.likec4 ? `${LIKEC4_ASSET_BASE}/${entry.likec4}.png` : entry.filename;
   return {
     type: "paragraph",
-    children: [{ type: "image", url, alt: entry.altText, title: null }],
+    children: [{ type: "image", url: entry.filename, alt: entry.altText, title: null }],
   };
 }
 
@@ -99,7 +92,7 @@ const mdTwin = {
     tabs: remarkTabsMd, // :::tab[Label] → every panel in order, led by **Label**
     journey: remarkJourneyMd, // ::::journey → numbered ### Step N — … headings
     codeCaption: remarkCodeCaption, // title="x.py" → bold caption line, clean fence
-    likec4: remarkLikeC4Md, // likec4= image → site-served PNG + manifest
+    images: remarkImagesMd, // local images → bare filenames + manifest
   },
   renderImage,
 };

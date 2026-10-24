@@ -404,8 +404,12 @@ raw `model.json` stays internal.
   (`emit/plugins/remark-trestle-md.mjs`): an environment's is the
   `## Architecture` block `trestle env render` writes into its `README.md`,
   which the Trestle workflow keeps current with the pin; an exported snapshot's
-  is its `mermaid` field. There is no image, so neither rendering nor emission
-  needs Chromium, and nothing can go stale beside the snapshot.
+  is its `mermaid` field. The docs sites put the same Mermaid, collapsed under
+  the alt text, in the prerendered page for crawlers and no-JS readers
+  (`DiagramFallback`). There is no image, so neither rendering nor emission
+  needs Chromium, and nothing can go stale beside the snapshot. LikeC4 views
+  work the same way (```` ```likec4 <viewId> ````, `remark-likec4-blocks.mjs`),
+  their Mermaid generated per emit by `site/scripts/likec4-mermaid.mjs`.
 - **The context artifact** (`trestle-context.json`) records, per module and
   role, the concept refs, titles, summaries, and links. It carries model facts
   only, no evidence.

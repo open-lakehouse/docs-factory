@@ -41,7 +41,7 @@ scripts gate CI and its claims render.
   `references:` to the specs and engines it relates and a LikeC4 diagram. It
   stays engine-neutral, with no steps.
 - `content/unitycatalog/explanation/002-credential-vending/index.md`: a
-  mechanism explained with a `likec4=` sequence diagram from
+  mechanism explained with a `likec4` sequence diagram from
   `docs-views.likec4`, ending where its guarantees end.
 
 ### Reference

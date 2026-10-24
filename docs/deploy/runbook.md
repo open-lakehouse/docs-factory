@@ -55,9 +55,8 @@ rewrite in `config.json` (written by `site/scripts/gen-vercel-config.mjs` from
 per-deploy Function host is applied to that same deployment — a plain top-level
 `vercel.json` can't do this because Vercel reads it *before* the build. The build
 runs in CI (not on Vercel) because `build:vercel` now runs the agentic-docs
-artifact pass, which needs **uv** (for `docsnip scripts --json`) and **headless
-Chromium** (for the LikeC4 PNG export) — neither is present in Vercel's build
-image. Each workflow supplies `NEON_FUNCTION_HOST` for the build it performs and
+artifact pass, which needs **uv** (for `docsnip scripts --json`), which Vercel's
+build image lacks. Each workflow supplies `NEON_FUNCTION_HOST` for the build it performs and
 ships the result with `vercel deploy --prebuilt`; **Vercel builds nothing** (its
 git build is turned off via the Ignored Build Step, §3a):
 
@@ -229,10 +228,10 @@ longer a Vercel value at all — the workflows capture it and pass it into the b
 ### 3a. Turn OFF Vercel's git builds — CI ships every deploy prebuilt
 
 **Vercel builds nothing.** Both environments' SPAs are built in GitHub Actions
-(`build:vercel`, which needs uv + Chromium — absent from Vercel's build image) and
+(`build:vercel`, which needs uv — absent from Vercel's build image) and
 shipped with `vercel deploy --prebuilt`. If Vercel's own git integration built the
-site it would silently produce an **incomplete corpus** (no `scripts.json`, missing
-PNG twins), so the git build is disabled outright. Two **dashboard** settings on the
+site it would silently produce an **incomplete corpus** (no `scripts.json`), so the
+git build is disabled outright. Two **dashboard** settings on the
 Vercel project (Root Directory is `site`):
 
 1. **Ignored Build Step → skip ALL git builds** (Project → Settings → Git). Every
@@ -406,7 +405,7 @@ PR, prod on push to `main`). Verify end to end:
 1. `deploy-function.yml` (`deploy` job) migrates the prod branch and redeploys the
    prod Function, exporting its host as a job output.
 2. The same workflow's `deploy-site` job builds the SPA in CI with
-   `bun run build:vercel` (installing uv + Chromium first), emitting the Build
+   `bun run build:vercel` (installing uv first), emitting the Build
    Output API tree whose `config.json` routes `/api/*` to the prod Function (host
    from the `deploy` job output), then `vercel deploy --prebuilt --prod`. This is
    the step that gives production its `/api` rewrite and the full agentic-docs

@@ -108,7 +108,7 @@ Commit in logical pieces. The pin bump and its generated output go in
 `docs(<project>): …`. Then:
 
 ```bash
-uv run docsnip check && uv run ruff check . && uv run ty check
+uv run docsnip check && uv run ruff check . && uv run ruff format --check . && uv run ty check
 ```
 
 The PR description carries the "what's new" list, the claims table, any

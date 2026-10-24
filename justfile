@@ -257,6 +257,7 @@ check: _site-deps
 # Lint + type-check the Python workspace.
 lint:
     uv run ruff check .
+    uv run ruff format --check .
     uv run ty check
 
 # --- JS/TS tooling (Biome lint+format, tsc typecheck) -----------------------

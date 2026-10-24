@@ -114,9 +114,7 @@ def test_a_second_spark_line_follows_its_own_pins(tmp_path: Path) -> None:
 
 
 def test_mlflow_pins_follow_their_keys(tmp_path: Path) -> None:
-    manifest = MANIFEST + (
-        "  mlflow: 3.17.0\n  scikit-learn: 1.9.1\n"
-    )
+    manifest = MANIFEST + ("  mlflow: 3.17.0\n  scikit-learn: 1.9.1\n")
     pages = {
         # Extras and `pip_requirements` follow `mlflow`; so does the image tag.
         "tutorials/t/snippets/s.py": (

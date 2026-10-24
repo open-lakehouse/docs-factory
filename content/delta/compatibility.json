@@ -4353,18 +4353,7 @@
               "note": "through Unity Catalog; RENAME COLUMN is rejected"
             }
           ],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "`RENAME`/`DROP COLUMN` (column mapping)",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
-              "api": "RENAME",
-              "verified": null,
-              "note": null,
-              "implementation": null
-            }
-          ]
+          "evidence": []
         },
         "spark-python": {
           "status": "documented",
@@ -4473,18 +4462,7 @@
               "note": "through Unity Catalog"
             }
           ],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "`ALTER COLUMN … TYPE` (type widening)",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
-              "api": "ALTER COLUMN … TYPE",
-              "verified": null,
-              "note": null,
-              "implementation": null
-            }
-          ]
+          "evidence": []
         },
         "spark-python": {
           "status": "documented",
@@ -6474,18 +6452,7 @@
               "note": "on an external Unity Catalog table"
             }
           ],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "`alter.set_table_properties`",
-              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
-              "api": "alter.set_table_properties()",
-              "verified": null,
-              "note": null,
-              "implementation": null
-            }
-          ]
+          "evidence": []
         },
         "delta-rs-rust": {
           "status": "documented",

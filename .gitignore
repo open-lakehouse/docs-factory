@@ -83,3 +83,6 @@ sites/*/.ssr/
 # scala-cli build state, next to any Scala script it runs
 .scala-build/
 .bsp/
+
+# marimo session caches (marimo export / edit write __marimo__/ beside a notebook)
+__marimo__/

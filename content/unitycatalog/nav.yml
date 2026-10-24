@@ -84,8 +84,9 @@ nav:
         items:
           - page: how-to/manage-python-functions
             id: H11
-          - planned: H12
-            title: Execute functions in applications and notebooks
+          - page: how-to/run-functions
+            id: H12
+            label: Run functions in apps and notebooks
           - page: how-to/langchain-tools
             id: H13
           - planned: H14

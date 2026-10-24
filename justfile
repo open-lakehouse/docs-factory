@@ -355,20 +355,14 @@ env-status:
     uv run docsnip stack status
 
 # Re-render a generated environment (envs/<name>/env.toml), or all of them, with
-# the pinned Trestle, then refresh the model fragments, registry facts, and diagram.
+# the pinned Trestle, then refresh the model fragments, registry facts, and diagram
+# snapshot.
 env-render name='': trestle-install
     #!/usr/bin/env bash
     set -euo pipefail
     if [ -n "{{ name }}" ]; then dirs=("envs/{{ name }}"); else dirs=(envs/*/env.toml); dirs=("${dirs[@]%/env.toml}"); fi
     scripts/env-render.sh "${dirs[@]}"
     uv run docsnip envs --fix
-    just trestle-diagrams "${dirs[@]}"
-
-# Paths are environment dirs or *.trestle-graph.json files (default: every one in
-# use); current PNGs are skipped. Needs Chromium once: `cd site && bunx playwright install chromium`.
-# Render the PNG beside each Trestle graph snapshot.
-trestle-diagrams *paths: _site-deps
-    cd site && bun scripts/render-trestle-diagrams.mjs {{ paths }}
 
 # Install the LikeC4 tooling on first run.
 _arch-deps:

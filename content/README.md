@@ -260,8 +260,8 @@ Diátaxis type wants them:
   that still walks through a stack declares it:
   `:::prerequisites{environment="uc-aws/compose.yaml"}`.
 - **Below the start commands**, wherever they land, the emitter places the
-  stack's committed diagram (`envs/<name>/diagram.png`, upgraded to the
-  interactive canvas). Don't embed it by hand next to a start step or marker.
+  stack's diagram (a `trestle <name>` block: the interactive canvas on the
+  sites, Trestle's Mermaid in the `.md` twin). Don't embed it by hand next to a start step or marker.
   The box itself lists no services: what the stack runs belongs in the
   diagram, not in the prerequisites.
 - **A stack with setup beyond `docker compose up`** (hosted resources to
@@ -620,22 +620,27 @@ validation and breadth; it never creates a journey or a green cell.
 
 ## Environment diagrams
 
-Show what an environment runs with its Trestle diagram, as a standalone image:
+Show what an environment runs with its Trestle diagram, a `trestle` block whose
+body is the alt text:
 
-```md
-![Clients reach Envoy on port 8080, which routes the Unity Catalog REST API to the server](../../../../envs/unitycatalog/diagram.png "trestle=unitycatalog")
+````md
+```trestle unitycatalog
+Clients reach Envoy on port 8080, which routes the Unity Catalog REST API to the server
 ```
+````
 
-`trestle=<name>` names a generated environment; `docsnip envs --fix` writes its
-snapshot (`envs/<name>/diagram.trestle-graph.json`) from `plan.json`, and
-`just env-render` re-renders the PNG beside it. For a stack no environment
-runs, export a snapshot from Trestle's editor into the page's `assets/` and
-reference it as `trestle=./assets/<stem>.trestle-graph.json`, with the image
-`./assets/<stem>.png`; `just trestle-diagrams` renders it. The PNG is what GitHub
-and the `.md` twin show; the preview and the site draw the interactive canvas.
-`docsnip check` fails when the image isn't the snapshot's sibling PNG or the
-PNG is stale. The alt text is the diagram's only text equivalent: say what
-talks to what.
+`trestle <name>` names a generated environment; `docsnip envs --fix` writes its
+snapshot (`envs/<name>/diagram.trestle-graph.json`) from `plan.json`. For a
+stack no environment runs, export a snapshot from Trestle's editor into the
+page's `assets/` and reference it as `trestle ./assets/<stem>.trestle-graph.json`.
+The preview and the sites draw the interactive canvas. The `.md` twin gets the
+alt text and Trestle's Mermaid flowchart, so an agent reads the graph as text:
+an environment's from the `## Architecture` section of its generated
+`README.md`, an exported snapshot's from its `mermaid` field. On GitHub the
+block shows as its alt text. `docsnip check` fails when the ref names no
+snapshot, the snapshot has no Mermaid, or the block has no alt text. The alt
+text is the diagram's only text equivalent on the sites: say what talks to
+what.
 
 ## Linking prose to the architecture model
 

@@ -8,14 +8,22 @@
  * resolve on its own: `file=` snippets are inlined (core), and images point at
  * the URLs the emitter serves them from. A `likec4=` image keeps its title, so
  * the vendored remark-likec4-views still upgrades it to an interactive view,
- * with the PNG as its fallback; a `trestle=` image likewise keeps its title for
- * remark-trestle-views, which finds the snapshot beside the served PNG.
+ * with the PNG as its fallback; a ```` ```trestle ```` diagram marker stays a
+ * marker, its ref rewritten to the served snapshot remark-trestle-views draws.
  *
  * The result is portable Markdown, so a PR into the target repo reads like a
  * docs change rather than a JSX diff.
  */
+import { basename } from "node:path";
+import { markerNode } from "../../site/src/plugins/lib/trestle-ref.mjs";
 import remarkLikeC4Md from "../plugins/remark-likec4-md.mjs";
-import { LIKEC4_ASSET_BASE, trestleEnvImage } from "./md-twin.mjs";
+import { LIKEC4_ASSET_BASE, trestleEnvSnapshot } from "./md-twin.mjs";
+
+/** Where the site serves a diagram marker's snapshot: an environment's
+ * site-wide, a page's own under its `assetBase`. */
+export function trestleSnapshotUrl(entry, assetBase) {
+  return entry.env ? trestleEnvSnapshot(entry.env) : `${assetBase}/${basename(entry.snapshot)}`;
+}
 
 /** Keep only what the site renders; drafting fields (status, id, refs…) stay home. */
 function frontmatter(draft) {
@@ -55,13 +63,12 @@ export function docsSiteTarget({ assetBase, altText = (entry) => entry.altText }
           }
         : {
             type: "image",
-            url: entry.trestle?.env
-              ? trestleEnvImage(entry.trestle.env)
-              : `${assetBase}/${entry.filename}`,
+            url: `${assetBase}/${entry.filename}`,
             alt: altText(entry),
-            title: entry.trestle ? entry.originalTitle : null,
+            title: null,
           };
       return { type: "paragraph", children: [image] };
     },
+    renderTrestle: (entry) => markerNode(trestleSnapshotUrl(entry, assetBase), entry.alt),
   };
 }

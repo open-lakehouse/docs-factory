@@ -15,12 +15,30 @@ function run(url, title) {
 }
 
 test("a relative image becomes a repo-relative URL and is reported", () => {
-  const { url, reported } = run("../../../../envs/uc/diagram.png", "trestle=uc");
-  expect(url).toBe("/repo-assets/envs/uc/diagram.png");
-  expect(reported).toEqual([["/repo/envs/uc/diagram.png", { trestle: true }]]);
-  expect(run("./assets/a.svg").reported).toEqual([
-    ["/repo/content/uc/how-to/011-x/assets/a.svg", { trestle: false }],
-  ]);
+  const { url, reported } = run("./assets/a.svg");
+  expect(url).toBe("/repo-assets/content/uc/how-to/011-x/assets/a.svg");
+  expect(reported).toEqual([["/repo/content/uc/how-to/011-x/assets/a.svg", undefined]]);
+});
+
+function runMarker(meta) {
+  const node = { type: "code", lang: "trestle", meta, value: "The stack" };
+  const reported = [];
+  const tree = { type: "root", children: [node] };
+  remarkResolveImages({ repoRoot: ROOT, onAsset: (abs, o) => reported.push([abs, o]) })(tree, {
+    path: PAGE,
+  });
+  return { meta: node.meta, reported };
+}
+
+test("a trestle marker's ref becomes its snapshot's URL and is reported", () => {
+  expect(runMarker("uc")).toEqual({
+    meta: "/repo-assets/envs/uc/diagram.trestle-graph.json",
+    reported: [["/repo/envs/uc/diagram.trestle-graph.json", { trestle: true }]],
+  });
+  expect(runMarker("./assets/s.trestle-graph.json")).toEqual({
+    meta: "/repo-assets/content/uc/how-to/011-x/assets/s.trestle-graph.json",
+    reported: [["/repo/content/uc/how-to/011-x/assets/s.trestle-graph.json", { trestle: true }]],
+  });
 });
 
 test("absolute, external, and data: URLs are left alone", () => {

@@ -87,7 +87,7 @@ research/         existing research reports (leave alone)
    doesn't publish it.
 
 6. **Richness is a property of the renderer.** Blog constructs (`:::tip`, `::::journey`,
-   LikeC4 diagrams, `trestle=` environment diagrams) degrade to plain Markdown on
+   LikeC4 diagrams, `trestle` environment diagrams) degrade to plain Markdown on
    GitHub; the preview upgrades them. See `blogs/CONVENTIONS.md` §5 and `site/README.md`.
 
 7. **A comment earns its place by stating the non-obvious.** Write the *why* — an

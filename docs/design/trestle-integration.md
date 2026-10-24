@@ -47,11 +47,10 @@ flowchart LR
 | `architecture/integrations/trestle.yaml` | hand | `docsnip trestle`, `envgen`, `query` |
 | `architecture/dist/trestle-context.json` | `docsnip trestle --fix` | the docs emitter (`refs.json`), the review app's diagrams |
 | `envs/<name>/env.toml` + `image/` | hand | `trestle env render` |
-| `envs/<name>/{compose.yaml,modules/,client/,LAYOUT.md,.env,plan.json}` | `just env-render <name>` | Compose, `docsnip envs`, the harness |
+| `envs/<name>/{compose.yaml,modules/,client/,LAYOUT.md,README.md,.env,plan.json}` | `just env-render <name>` | Compose, `docsnip envs`, the harness; `README.md`'s Mermaid, the `.md` twins |
 | `architecture/model/deployment/generated/<name>.likec4` | `docsnip envs --fix` | LikeC4 (everything under `model/` loads) |
 | `envs/environments.generated.json` | `docsnip envs --fix` | `environments.py`, `registry.mjs` |
-| `envs/<name>/diagram.trestle-graph.json` | `docsnip envs --fix` (the plan's `graph`) | `trestle=` embeds, the renderer |
-| `envs/<name>/diagram.png` | `just trestle-diagrams` (Chromium) | GitHub, `.md` twins, the sites' no-JS fallback |
+| `envs/<name>/diagram.trestle-graph.json` | `docsnip envs --fix` (the plan's `graph`) | `trestle` blocks, the interactive canvas |
 
 Only the Trestle CI workflow builds Trestle. Everything else (the content job,
 the bare Vercel build, the reader bundle) reads committed files and needs no
@@ -376,8 +375,8 @@ raw `model.json` stays internal.
   internal metadata and script paths. A `model:` link to a non-public element
   unwraps to its label.
 - **"What's in this environment."** The environment's diagram sits right below
-  its start commands (remark-prerequisites-env places
-  `envs/<name>/diagram.png`), so the reader sees what the stack runs where they
+  its start commands (remark-prerequisites-env places a `trestle <name>`
+  block), so the reader sees what the stack runs where they
   start it. The `:::prerequisites` box names no services. The `.md` twin's
   frontmatter keeps the public service ids.
 - **JSON-LD** (`docPageHead`, `site/src/content-core/head.mjs`): terms are
@@ -392,20 +391,21 @@ raw `model.json` stays internal.
 - A `--drafts` preview keeps linking draft explainers, but every public payload
   (twin service ids, JSON-LD, `concepts.json`), and the review app's Head tab, uses
   the ready-only projection.
-- **Environment diagrams.** A page embeds an environment's topology as
-  `![alt](…/envs/<name>/diagram.png "trestle=<name>")`, or a snapshot exported
-  from Trestle's editor as `![alt](./assets/<stem>.png
-  "trestle=./assets/<stem>.trestle-graph.json")`. The snapshot is the
-  `trestle-graph` v1 envelope `@open-lakehouse/trestle-diagram` draws; for an
-  environment, `docsnip envs --fix` writes it from `plan.json`'s `graph`. The
-  PNG beside it is what GitHub, the twins, and no-JS readers see; the preview
-  and the sites swap in the interactive canvas (`remark-trestle-views`, which
-  fetches the snapshot beside the PNG). `just trestle-diagrams` renders the PNG
-  by screenshotting the package in headless Chromium, and stamps it with the
-  snapshot's SHA-256 in a `tEXt` chunk. Chromium's bytes aren't stable across
-  machines, so `docsnip check` compares that digest, never the bytes, and the
-  renderer skips current PNGs. The emitter ships the committed PNG; emission
-  needs no Chromium.
+- **Environment diagrams.** A page embeds an environment's topology as a
+  ```` ```trestle <name> ```` block, or a snapshot exported from Trestle's
+  editor as ```` ```trestle ./assets/<stem>.trestle-graph.json ````, with the
+  alt text as the body (`site/src/plugins/lib/trestle-ref.mjs`). The snapshot is
+  the `trestle-graph` v1 envelope `@open-lakehouse/trestle-diagram` draws; for
+  an environment, `docsnip envs --fix` writes it from `plan.json`'s `graph`. The
+  preview and the sites always draw the interactive canvas
+  (`remark-trestle-views`; the review app and the docs-site emitter first point
+  the block at the served snapshot). The `.md` twins, the copy agents read, get
+  the alt text and Trestle's Mermaid flowchart instead
+  (`emit/plugins/remark-trestle-md.mjs`): an environment's is the
+  `## Architecture` block `trestle env render` writes into its `README.md`,
+  which the Trestle workflow keeps current with the pin; an exported snapshot's
+  is its `mermaid` field. There is no image, so neither rendering nor emission
+  needs Chromium, and nothing can go stale beside the snapshot.
 - **The context artifact** (`trestle-context.json`) records, per module and
   role, the concept refs, titles, summaries, and links. It carries model facts
   only, no evidence.
@@ -482,6 +482,5 @@ When content moves an answer, update the test by hand.
   tag, which `release.yml` moves.
 - A public MCP and a `generate_stack(capabilities[])` tool wait until the
   internal queries prove accurate.
-- Diagram PNGs are element screenshots of the embed; a headless image export
-  in `@open-lakehouse/trestle-diagram` would drop the framing heuristics.
-  The blog MDX targets ship a `trestle=` image as a plain static image.
+- The blog targets ship a `trestle` block as its Mermaid, not the canvas, and
+  no-JS readers of the sites see only the alt text.

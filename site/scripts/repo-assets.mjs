@@ -3,9 +3,8 @@
 // emitted assets in the build so Vercel's filesystem route serves them.
 import { readFileSync, statSync } from "node:fs";
 import { dirname, extname, join, relative, sep } from "node:path";
+import { SNAPSHOT_SUFFIX } from "../src/plugins/lib/trestle-ref.mjs";
 import { REPO_ASSET_BASE } from "../src/plugins/remark-resolve-images.mjs";
-
-const SNAPSHOT_SUFFIX = ".trestle-graph.json";
 
 const TYPES = {
   ".png": "image/png",
@@ -18,15 +17,14 @@ const TYPES = {
 };
 
 /**
- * The files an embedded image needs served. A Trestle diagram's canvas fetches
- * the sibling snapshot and opens a node's files from beside it — the same set
+ * The files an embed needs served. A Trestle diagram's canvas fetches its
+ * snapshot and opens a node's files from beside it — the same set
  * emit/docs/emit-docs.mjs ships to the docs sites.
  */
 export function assetFiles(absPath, { trestle = false } = {}) {
-  if (!trestle || !absPath.endsWith(".png")) return [absPath];
-  const snapshot = absPath.replace(/\.png$/, SNAPSHOT_SUFFIX);
-  const { files = [] } = JSON.parse(readFileSync(snapshot, "utf8"));
-  return [absPath, snapshot, ...files.map((path) => join(dirname(snapshot), path))];
+  if (!trestle || !absPath.endsWith(SNAPSHOT_SUFFIX)) return [absPath];
+  const { files = [] } = JSON.parse(readFileSync(absPath, "utf8"));
+  return [absPath, ...files.map((path) => join(dirname(absPath), path))];
 }
 
 /** `{ onAsset, plugin }`: pass `onAsset` to remark-resolve-images, `plugin` to Vite. */

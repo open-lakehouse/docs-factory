@@ -34,6 +34,7 @@ docs/
     information-system.md            how the site consumes the estate model
     interactive-docs-site.md         islands / roadmap / auth platform study
     journey-graph.md                 one estate-wide journey catalog, spec obligations, coverage from the graph (proposal)
+    lakehouse-mcp.md                 MCP server over the model, journeys, and Trestle's planner (proposal)
     multi-domain-single-deployment.md one deployment, three doc domains
     prompt-tracking.md               assistant prompts we track, each mapped to the page it should cite
     release-bump-agent.md            the Omnigent agent a bump could become (not built)

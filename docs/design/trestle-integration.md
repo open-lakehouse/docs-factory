@@ -485,6 +485,7 @@ When content moves an answer, update the test by hand.
 - Image digests aren't locked; the docs Dockerfile's `FROM` follows the release
   tag, which `release.yml` moves.
 - A public MCP and a `generate_stack(capabilities[])` tool wait until the
-  internal queries prove accurate.
+  internal queries prove accurate; [`lakehouse-mcp.md`](./lakehouse-mcp.md)
+  designs the internal server first.
 - The blog targets ship a `trestle` block as its Mermaid, not the canvas, and
   no-JS readers of the sites see only the alt text.

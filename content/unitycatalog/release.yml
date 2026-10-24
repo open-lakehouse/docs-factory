@@ -16,6 +16,10 @@ pins:
   langgraph-prebuilt: 1.0.8
   # Tracing and the AI Gateway on the LangChain tools page.
   mlflow: 3.10.0
+  # The tracking server in envs/uc-mlflow and the clients that talk to it: the
+  # pinned Trestle routes the API under the server's static prefix, which 3.10
+  # doesn't serve.
+  mlflow-server: 3.17.0
   # `ChatMlflow`, the chat model that talks to the MLflow AI Gateway.
   langchain-community: 0.4.1
   # The newest delta-spark the release's Spark connector is tested with.

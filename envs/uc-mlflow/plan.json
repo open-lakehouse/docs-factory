@@ -1,0 +1,803 @@
+{
+  "format": "trestle-plan",
+  "version": 1,
+  "state": "planned",
+  "generator": {
+    "name": "trestle",
+    "version": "0.0.13",
+    "revision": "2ccc26d7d4d5b3b0b585a108ad6044d6556e2c1e"
+  },
+  "catalog": {
+    "baseline": "olai-stack-topology@0.0.9",
+    "manifests": [],
+    "digest": "sha256:ad4c35d2d1b7bd4e2b32d1cd86e83e4caac2dcc6f349629fc4347dfb683e40c6"
+  },
+  "recipe": {
+    "digest": "sha256:0f24e177ec2924588816f13285b8e13f8ab116affc70efbc04d42844d8bd12dd"
+  },
+  "context": {
+    "env_name": "uc-docs",
+    "target": "compose",
+    "gateway_service": "envoy",
+    "gateway_internal_port": 10000,
+    "gateway_host_port": 8080,
+    "gateway_admin_port": 9901,
+    "dedicated_listener_ports": [
+      9000
+    ],
+    "dedicated_listener_port_base": 9100,
+    "provider_preference": {},
+    "data_root": "./.data",
+    "local_secrets": "inline"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "@clients",
+        "model": null,
+        "kind": "clients",
+        "display_name": "Clients",
+        "summary": "Browsers, SDKs and CLIs on the host.",
+        "category": null,
+        "role": null,
+        "placement": null,
+        "cloud": null,
+        "surfaces": [],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      },
+      {
+        "id": "envoy",
+        "model": "envoy",
+        "kind": "gateway",
+        "display_name": "Envoy",
+        "summary": "Single-port gateway, Databricks-shaped URL rewrites.",
+        "category": "gateway",
+        "role": "gateway",
+        "placement": "container:envoy",
+        "cloud": null,
+        "surfaces": [
+          {
+            "host_port": 8080,
+            "kind": "platform",
+            "protocols": [],
+            "exposes": [
+              {
+                "module": "unity-catalog",
+                "endpoint": "rest",
+                "kind": "api",
+                "prefix": "/api/2.1/unity-catalog",
+                "gated": false
+              },
+              {
+                "module": "unity-catalog",
+                "endpoint": "rest_alias",
+                "kind": "api",
+                "prefix": "/unity-catalog",
+                "gated": false
+              },
+              {
+                "module": "mlflow",
+                "endpoint": "tracking",
+                "kind": "api",
+                "prefix": "/api/2.0/mlflow",
+                "gated": false
+              },
+              {
+                "module": "mlflow",
+                "endpoint": "otel",
+                "kind": "api",
+                "prefix": "/api/2.0/otel",
+                "gated": false
+              },
+              {
+                "module": "mlflow",
+                "endpoint": "ai_gateway",
+                "kind": "api",
+                "prefix": "/ai-gateway",
+                "gated": false
+              },
+              {
+                "module": "mlflow",
+                "endpoint": "ui",
+                "kind": "ui",
+                "prefix": "/mlflow",
+                "gated": false
+              }
+            ]
+          },
+          {
+            "host_port": 9000,
+            "kind": "service",
+            "protocols": [
+              "S3 + STS"
+            ],
+            "exposes": [
+              {
+                "module": "rustfs",
+                "endpoint": "s3",
+                "kind": "service",
+                "prefix": "/",
+                "gated": false
+              }
+            ]
+          }
+        ],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      },
+      {
+        "id": "postgres",
+        "model": "postgresql",
+        "kind": "component",
+        "display_name": "Postgres",
+        "summary": "Postgres 16; auto-creates DBs other modules declare.",
+        "category": "metadata_db",
+        "role": "relational_db",
+        "placement": "container:db",
+        "cloud": null,
+        "surfaces": [],
+        "offers": [
+          "PostgreSQL"
+        ],
+        "provisions": [
+          {
+            "resource": "relational_db",
+            "name": "unitycatalog",
+            "consumers": [
+              "unity-catalog"
+            ]
+          },
+          {
+            "resource": "relational_db",
+            "name": "mlflow",
+            "consumers": [
+              "mlflow"
+            ]
+          }
+        ],
+        "resource_nouns": [
+          {
+            "kind": "relational_db",
+            "singular": "database",
+            "plural": "databases"
+          }
+        ]
+      },
+      {
+        "id": "rustfs",
+        "model": "rustfs",
+        "kind": "component",
+        "display_name": "RustFS",
+        "summary": "Self-hosted S3-compatible object store with STS; answers the AWS S3/STS hostnames in-network.",
+        "category": "storage",
+        "role": "object_store",
+        "placement": "container:rustfs",
+        "cloud": null,
+        "surfaces": [],
+        "offers": [
+          "S3 + STS"
+        ],
+        "provisions": [
+          {
+            "resource": "object_store",
+            "name": "uc-docs",
+            "consumers": [
+              "unity-catalog"
+            ]
+          },
+          {
+            "resource": "object_store",
+            "name": "mlflow",
+            "consumers": [
+              "mlflow"
+            ]
+          }
+        ],
+        "resource_nouns": [
+          {
+            "kind": "object_store",
+            "singular": "bucket",
+            "plural": "buckets"
+          }
+        ]
+      },
+      {
+        "id": "unity-catalog",
+        "model": "unityCatalogServer",
+        "kind": "component",
+        "display_name": "Unity Catalog",
+        "summary": "Open-source Unity Catalog server; Databricks-shaped REST API.",
+        "category": "catalog",
+        "role": "data_catalog",
+        "placement": "container:unitycatalog",
+        "cloud": null,
+        "surfaces": [],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      },
+      {
+        "id": "mlflow",
+        "model": "mlflow",
+        "kind": "component",
+        "display_name": "MLflow",
+        "summary": "Experiment + model tracking and an AI Gateway; Databricks-shaped URLs.",
+        "category": "ml",
+        "role": "experiment_tracking",
+        "placement": "container:mlflow",
+        "cloud": null,
+        "surfaces": [],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      }
+    ],
+    "edges": [
+      {
+        "kind": "access",
+        "key": "access:@clients→envoy:8080",
+        "from": "@clients",
+        "to": "envoy",
+        "host_port": 8080
+      },
+      {
+        "kind": "access",
+        "key": "access:@clients→envoy:9000",
+        "from": "@clients",
+        "to": "envoy",
+        "host_port": 9000
+      },
+      {
+        "kind": "route",
+        "key": "route:envoy→unity-catalog:8080",
+        "from": "envoy",
+        "to": "unity-catalog",
+        "host_port": 8080,
+        "gated": false
+      },
+      {
+        "kind": "route",
+        "key": "route:envoy→mlflow:8080",
+        "from": "envoy",
+        "to": "mlflow",
+        "host_port": 8080,
+        "gated": false
+      },
+      {
+        "kind": "route",
+        "key": "route:envoy→rustfs:9000",
+        "from": "envoy",
+        "to": "rustfs",
+        "host_port": 9000,
+        "gated": false
+      },
+      {
+        "kind": "uses",
+        "key": "uses:unity-catalog→postgres:relational_db",
+        "from": "unity-catalog",
+        "to": "postgres",
+        "role": "relational_db",
+        "protocol": "PostgreSQL",
+        "resources": [
+          "unitycatalog"
+        ]
+      },
+      {
+        "kind": "uses",
+        "key": "uses:unity-catalog→rustfs:object_store",
+        "from": "unity-catalog",
+        "to": "rustfs",
+        "role": "object_store",
+        "protocol": "S3",
+        "resources": [
+          "uc-docs"
+        ]
+      },
+      {
+        "kind": "uses",
+        "key": "uses:mlflow→postgres:relational_db",
+        "from": "mlflow",
+        "to": "postgres",
+        "role": "relational_db",
+        "protocol": "PostgreSQL",
+        "resources": [
+          "mlflow"
+        ]
+      },
+      {
+        "kind": "uses",
+        "key": "uses:mlflow→rustfs:object_store",
+        "from": "mlflow",
+        "to": "rustfs",
+        "role": "object_store",
+        "protocol": "S3",
+        "resources": [
+          "mlflow"
+        ]
+      }
+    ]
+  },
+  "containers": [
+    {
+      "name": "envoy",
+      "component": "envoy",
+      "kind": "service"
+    },
+    {
+      "name": "gateway-certs",
+      "component": "envoy",
+      "kind": "init"
+    },
+    {
+      "name": "db",
+      "component": "postgres",
+      "kind": "service"
+    },
+    {
+      "name": "rustfs",
+      "component": "rustfs",
+      "kind": "service"
+    },
+    {
+      "name": "sts-shim",
+      "component": "rustfs",
+      "kind": "sidecar"
+    },
+    {
+      "name": "rustfs-init",
+      "component": "rustfs",
+      "kind": "init"
+    },
+    {
+      "name": "unitycatalog",
+      "component": "unity-catalog",
+      "kind": "service"
+    },
+    {
+      "name": "unitycatalog-storage",
+      "component": "unity-catalog",
+      "kind": "sidecar"
+    },
+    {
+      "name": "unitycatalog-mounts",
+      "component": "unity-catalog",
+      "kind": "init"
+    },
+    {
+      "name": "mlflow",
+      "component": "mlflow",
+      "kind": "service"
+    },
+    {
+      "name": "mlflow-gateway-init",
+      "component": "mlflow",
+      "kind": "init"
+    }
+  ],
+  "services": {
+    "envoy": [
+      {
+        "name": "envoy",
+        "role": "gateway",
+        "placement": {
+          "kind": "container",
+          "service": "envoy"
+        },
+        "endpoints": [
+          {
+            "id": "http",
+            "scheme": "http",
+            "internal_port": 10000,
+            "host_port": 9080,
+            "intent": {
+              "kind": "internal"
+            },
+            "rewrite": "inherit"
+          }
+        ],
+        "depends_on": []
+      }
+    ],
+    "mlflow": [
+      {
+        "name": "mlflow",
+        "role": "experiment_tracking",
+        "placement": {
+          "kind": "container",
+          "service": "mlflow"
+        },
+        "endpoints": [
+          {
+            "id": "tracking",
+            "scheme": "http",
+            "internal_port": 5000,
+            "intent": {
+              "kind": "api"
+            },
+            "mount_prefix": "/api/2.0/mlflow",
+            "rewrite": "inherit"
+          },
+          {
+            "id": "otel",
+            "scheme": "http",
+            "internal_port": 5000,
+            "intent": {
+              "kind": "api"
+            },
+            "mount_prefix": "/api/2.0/otel",
+            "rewrite": {
+              "to": "/mlflow"
+            }
+          },
+          {
+            "id": "ai_gateway",
+            "scheme": "http",
+            "internal_port": 5000,
+            "intent": {
+              "kind": "api"
+            },
+            "mount_prefix": "/ai-gateway",
+            "rewrite": {
+              "to": "/mlflow/gateway"
+            },
+            "route": {
+              "streaming": true,
+              "strip_client_credentials": true
+            }
+          },
+          {
+            "id": "ui",
+            "scheme": "http",
+            "internal_port": 5000,
+            "intent": {
+              "kind": "ui_prefixable"
+            },
+            "rewrite": "inherit"
+          }
+        ],
+        "depends_on": [],
+        "base_path": "/mlflow"
+      }
+    ],
+    "postgres": [
+      {
+        "name": "db",
+        "role": "relational_db",
+        "placement": {
+          "kind": "container",
+          "service": "db"
+        },
+        "endpoints": [
+          {
+            "id": "sql",
+            "scheme": "tcp",
+            "internal_port": 5432,
+            "host_port": 5432,
+            "intent": {
+              "kind": "internal"
+            },
+            "rewrite": "inherit"
+          }
+        ],
+        "depends_on": []
+      }
+    ],
+    "rustfs": [
+      {
+        "name": "rustfs",
+        "role": "object_store",
+        "placement": {
+          "kind": "container",
+          "service": "rustfs"
+        },
+        "endpoints": [
+          {
+            "id": "s3",
+            "scheme": "http",
+            "internal_port": 9000,
+            "intent": {
+              "kind": "gatewayed"
+            },
+            "rewrite": "inherit"
+          }
+        ],
+        "depends_on": []
+      }
+    ],
+    "unity-catalog": [
+      {
+        "name": "unitycatalog",
+        "role": "data_catalog",
+        "placement": {
+          "kind": "container",
+          "service": "unitycatalog"
+        },
+        "endpoints": [
+          {
+            "id": "rest",
+            "scheme": "http",
+            "internal_port": 8080,
+            "intent": {
+              "kind": "api"
+            },
+            "mount_prefix": "/api/2.1/unity-catalog",
+            "rewrite": "inherit"
+          },
+          {
+            "id": "rest_alias",
+            "scheme": "http",
+            "internal_port": 8080,
+            "intent": {
+              "kind": "api"
+            },
+            "mount_prefix": "/unity-catalog",
+            "rewrite": "inherit"
+          }
+        ],
+        "depends_on": []
+      }
+    ]
+  },
+  "gateway": {
+    "listeners": [
+      {
+        "host_port": 8080,
+        "routes": [
+          {
+            "prefix": "/api/2.1/unity-catalog",
+            "cluster": "unitycatalog",
+            "rewrite": null
+          },
+          {
+            "prefix": "/api/2.0/mlflow",
+            "cluster": "mlflow",
+            "rewrite": "/mlflow/api/2.0/mlflow"
+          },
+          {
+            "prefix": "/unity-catalog",
+            "cluster": "unitycatalog",
+            "rewrite": null
+          },
+          {
+            "prefix": "/api/2.0/otel",
+            "cluster": "mlflow",
+            "rewrite": "/mlflow"
+          },
+          {
+            "prefix": "/ai-gateway",
+            "cluster": "mlflow",
+            "rewrite": "/mlflow/gateway"
+          },
+          {
+            "prefix": "/mlflow",
+            "cluster": "mlflow",
+            "rewrite": null
+          }
+        ]
+      },
+      {
+        "host_port": 9000,
+        "routes": [
+          {
+            "prefix": "/",
+            "cluster": "rustfs",
+            "rewrite": null
+          }
+        ]
+      }
+    ],
+    "clusters": [
+      {
+        "name": "mlflow",
+        "host": "mlflow",
+        "port": 5000
+      },
+      {
+        "name": "rustfs",
+        "host": "rustfs",
+        "port": 9000
+      },
+      {
+        "name": "sts-shim",
+        "host": "sts-shim",
+        "port": 8080
+      },
+      {
+        "name": "unitycatalog",
+        "host": "unitycatalog",
+        "port": 8080
+      }
+    ],
+    "admin_port": 9901,
+    "auth": null,
+    "tls": {
+      "port": 443,
+      "hosts": [
+        "mlflow.s3.amazonaws.com",
+        "mlflow.s3.us-east-1.amazonaws.com",
+        "s3.amazonaws.com",
+        "s3.us-east-1.amazonaws.com",
+        "sts.amazonaws.com",
+        "sts.us-east-1.amazonaws.com",
+        "uc-docs.s3.amazonaws.com",
+        "uc-docs.s3.us-east-1.amazonaws.com"
+      ],
+      "virtual_hosts": [
+        {
+          "cluster": "sts-shim",
+          "hosts": [
+            "sts.amazonaws.com",
+            "sts.us-east-1.amazonaws.com"
+          ]
+        },
+        {
+          "cluster": "rustfs",
+          "hosts": [
+            "s3.amazonaws.com",
+            "s3.us-east-1.amazonaws.com",
+            "uc-docs.s3.amazonaws.com",
+            "mlflow.s3.amazonaws.com",
+            "uc-docs.s3.us-east-1.amazonaws.com",
+            "mlflow.s3.us-east-1.amazonaws.com"
+          ]
+        }
+      ]
+    },
+    "policy": null
+  },
+  "client": {
+    "host": {
+      "AWS_ALLOW_HTTP": "true",
+      "AWS_ENDPOINT_URL": "http://localhost:9000",
+      "AWS_ENDPOINT_URL_S3": "http://localhost:9000",
+      "AWS_REGION": "us-east-1",
+      "MLFLOW_AI_GATEWAY_URL": "http://localhost:8080/ai-gateway",
+      "MLFLOW_REGISTRY_URI": "uc:http://localhost:8080",
+      "MLFLOW_TRACKING_URI": "http://localhost:8080",
+      "UNITY_CATALOG_URL": "http://localhost:8080/api/2.1/unity-catalog"
+    },
+    "container": {
+      "AWS_ALLOW_HTTP": "true",
+      "AWS_ENDPOINT_URL": "http://envoy:9000",
+      "AWS_ENDPOINT_URL_S3": "http://envoy:9000",
+      "AWS_REGION": "us-east-1",
+      "MLFLOW_AI_GATEWAY_URL": "http://envoy:10000/ai-gateway",
+      "MLFLOW_REGISTRY_URI": "uc:http://envoy:10000",
+      "MLFLOW_TRACKING_URI": "http://envoy:10000",
+      "UNITY_CATALOG_URL": "http://envoy:10000/api/2.1/unity-catalog"
+    }
+  },
+  "files": [
+    {
+      "path": "compose.yaml",
+      "sensitive": false
+    },
+    {
+      "path": ".env",
+      "sensitive": false
+    },
+    {
+      "path": ".gitignore",
+      "sensitive": false
+    },
+    {
+      "path": "client/host.env",
+      "sensitive": false
+    },
+    {
+      "path": "client/container.env",
+      "sensitive": false
+    },
+    {
+      "path": "LAYOUT.md",
+      "sensitive": false
+    },
+    {
+      "path": "README.md",
+      "sensitive": false
+    },
+    {
+      "path": "modules/envoy/envoy.yaml",
+      "sensitive": false
+    },
+    {
+      "path": "modules/envoy/compose.yaml",
+      "sensitive": false
+    },
+    {
+      "path": "modules/envoy/certs.sh",
+      "sensitive": false
+    },
+    {
+      "path": "modules/postgres/compose.yaml",
+      "sensitive": false
+    },
+    {
+      "path": "modules/postgres/init-databases.sh",
+      "sensitive": false
+    },
+    {
+      "path": "modules/postgres/.env/db.env",
+      "sensitive": false
+    },
+    {
+      "path": "modules/postgres/secrets/postgres_password",
+      "sensitive": false
+    },
+    {
+      "path": "modules/rustfs/compose.yaml",
+      "sensitive": false
+    },
+    {
+      "path": "modules/rustfs/.env/rustfs.env",
+      "sensitive": false
+    },
+    {
+      "path": "modules/rustfs/sts_shim.py",
+      "sensitive": false
+    },
+    {
+      "path": "modules/unity-catalog/compose.yaml",
+      "sensitive": false
+    },
+    {
+      "path": "modules/unity-catalog/secrets/server.properties",
+      "sensitive": false
+    },
+    {
+      "path": "modules/unity-catalog/secrets/hibernate.properties",
+      "sensitive": false
+    },
+    {
+      "path": "modules/unity-catalog/storage.txt",
+      "sensitive": false
+    },
+    {
+      "path": "modules/unity-catalog/bootstrap_storage.py",
+      "sensitive": false
+    },
+    {
+      "path": "modules/mlflow/compose.yaml",
+      "sensitive": false
+    },
+    {
+      "path": "modules/mlflow/.env/mlflow.env",
+      "sensitive": false
+    },
+    {
+      "path": "modules/mlflow/seed_gateway.py",
+      "sensitive": false
+    },
+    {
+      "path": "modules/mlflow/uc-registry/trestle_mlflow_uc_registry.py",
+      "sensitive": false
+    },
+    {
+      "path": "modules/mlflow/uc-registry/METADATA",
+      "sensitive": false
+    },
+    {
+      "path": "modules/mlflow/uc-registry/entry_points.txt",
+      "sensitive": false
+    }
+  ],
+  "deploy": [
+    {
+      "order": 1,
+      "phase": "configure",
+      "id": "local-credentials",
+      "title": "Set the services' own credentials",
+      "instructions": "The services the stack runs use these credentials. Unless `secrets.env` sets them, they are fixed development values, the same in every environment.\n\n| Credential | Name in `secrets.env` |\n| --- | --- |\n| Postgres superuser password | `LOCAL_POSTGRES_PASSWORD` |\n| RustFS root access key | `LOCAL_RUSTFS_ACCESS_KEY` |\n| RustFS root secret key | `LOCAL_RUSTFS_SECRET_KEY` |\n\nTo replace them with random ones, add them to `secrets.env` and render again. Rendering writes each value into every file that uses it (`.env`, `modules/*/.env/`, `modules/*/secrets/`):\n\n```bash\ncat >> secrets.env <<EOF\nLOCAL_POSTGRES_PASSWORD=$(openssl rand -hex 32)\nLOCAL_RUSTFS_ACCESS_KEY=$(openssl rand -hex 10)\nLOCAL_RUSTFS_SECRET_KEY=$(openssl rand -hex 20)\nEOF\ntrestle env render .\n```\n\nDo this before the first start. Services keep the credentials they first started with in their persisted data (under the data root, `.data/` by default), so a later change also needs that data removed, or the credential changed inside the service."
+    },
+    {
+      "order": 2,
+      "phase": "start",
+      "id": "up",
+      "title": "Start the stack",
+      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nThe gateway then serves the stack at <http://localhost:8080>. [LAYOUT.md](LAYOUT.md) lists every route and address."
+    }
+  ]
+}

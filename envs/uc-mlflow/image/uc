@@ -1,0 +1,6 @@
+#!/bin/sh
+# `docker exec` runs as root; run the CLI as the server's user instead.
+if [ "$(id -u)" = 0 ]; then
+  exec su-exec unitycatalog /home/unitycatalog/bin/uc-cli "$@"
+fi
+exec /home/unitycatalog/bin/uc-cli "$@"

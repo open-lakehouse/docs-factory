@@ -10,6 +10,7 @@ files (`compose.yaml`, `modules/`, `client/`, `deploy/`, `LAYOUT.md`,
 | --- | --- | --- |
 | [`unitycatalog`](unitycatalog/env.toml) | UC on `:8080` with no gateway, authorization off, metadata in the server's own H2 file (with the image's sample catalogs) | every page under `content/unitycatalog/` except the S3 and PostgreSQL ones |
 | [`uc-aws`](uc-aws/env.toml) | UC behind an Envoy gateway on `:8080` that answers on the AWS hostnames, RustFS as S3 on `:9000`, metadata in PostgreSQL | the S3 and PostgreSQL pages |
+| [`uc-mlflow`](uc-mlflow/env.toml) | UC and an MLflow tracking server behind an Envoy gateway on `:8080`, RustFS as S3 on `:9000`, metadata in PostgreSQL; MLflow's model registry is UC, in a `unity` catalog with managed storage | the MLflow model pages (T07) |
 | [`uc-local`](uc-local/env.toml) | UC, PostgreSQL, and RustFS on one machine with no gateway: UC on `:8080`, S3 on `:9000` | the deployment patterns page |
 | [`uc-hybrid`](uc-hybrid/env.toml) | UC on `:8080` with no gateway, metadata in a Neon project, data in an S3-compatible bucket | the deployment patterns page; rendered and diagrammed, never run |
 
@@ -42,7 +43,7 @@ upstream image with two fixes for Linux:
 
 Both are worth raising upstream (add `gcompat`, and support running as an
 arbitrary uid); the folder can go back to the upstream image once a release
-has them. `uc-aws` builds the same image from its own copy, `uc-aws/image/`.
+has them. `uc-aws` and `uc-mlflow` build the same image from their own copies, `uc-aws/image/` and `uc-mlflow/image/`.
 
 ## The bundle
 

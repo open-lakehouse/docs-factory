@@ -29,18 +29,10 @@
             "via": []
           },
           {
-            "id": "deltaSpark",
-            "via": []
-          },
-          {
             "id": "duckdb",
             "via": [
               "duckdbDelta"
             ]
-          },
-          {
-            "id": "duckdbDelta",
-            "via": []
           },
           {
             "id": "polars",
@@ -87,10 +79,6 @@
             ]
           },
           {
-            "id": "duckdbUnityCatalog",
-            "via": []
-          },
-          {
             "id": "hydrofoil",
             "via": []
           },
@@ -112,10 +100,6 @@
           },
           {
             "id": "unityCatalogPythonSdk",
-            "via": []
-          },
-          {
-            "id": "unityCatalogSpark",
             "via": []
           }
         ],
@@ -273,14 +257,6 @@
             ]
           },
           {
-            "id": "duckdbIceberg",
-            "via": []
-          },
-          {
-            "id": "icebergSparkRuntime",
-            "via": []
-          },
-          {
             "id": "polars",
             "via": [
               "pyIceberg"
@@ -338,14 +314,6 @@
             "via": [
               "duckdbIceberg"
             ]
-          },
-          {
-            "id": "duckdbIceberg",
-            "via": []
-          },
-          {
-            "id": "icebergSparkRuntime",
-            "via": []
           },
           {
             "id": "polars",

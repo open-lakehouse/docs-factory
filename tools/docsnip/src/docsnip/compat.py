@@ -201,6 +201,7 @@ class Model:
     kinds: dict[str, str]  # element id → kind
     titles: dict[str, str]
     edges: set[tuple[str, str, str]]  # (relationship kind, source, target)
+    tags: dict[str, frozenset[str]] = dataclasses.field(default_factory=dict)
 
     def has(self, kinds: set[str], source: str, target: str) -> str | None:
         """The first of ``kinds`` (sorted) with an edge source → target."""
@@ -1085,6 +1086,7 @@ def load_model(repo_root: Path) -> Model:
         kinds={k: str(v.get("kind")) for k, v in elements.items()},
         titles={k: str(v.get("title") or k) for k, v in elements.items()},
         edges=edges,
+        tags={k: frozenset(v.get("tags") or ()) for k, v in elements.items()},
     )
 
 
@@ -2488,7 +2490,8 @@ def _requires_json(requires: Requirements) -> dict[str, dict[str, list[str]]]:
 
 def _candidates(model: Model, contracts: dict[str, tuple[str, ...]]) -> list[dict]:
     """The implementations the model lets play a role: each contract edge held
-    by the implementation or something it integrates, which ``via`` names.
+    by the implementation or something it integrates, which ``via`` names. An
+    ``#extension`` plays a role only through its host.
 
     The model allowing it never makes a cell pass; claims do (ADR-0009)."""
     integrates: dict[str, set[str]] = {}
@@ -2497,6 +2500,8 @@ def _candidates(model: Model, contracts: dict[str, tuple[str, ...]]) -> list[dic
             integrates.setdefault(source, set()).add(target)
     found = []
     for impl in sorted(k for k, v in model.kinds.items() if v == "implementation"):
+        if "extension" in model.tags.get(impl, ()):
+            continue
         speakers = [impl, *sorted(integrates.get(impl, ()))]
         held = [
             next((s for s in speakers if (edge, s, target) in model.edges), None)

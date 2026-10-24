@@ -1,5 +1,6 @@
 # /// script
-# requires-python = ">=3.11"
+# # 3.14 fails at exit; see asyncio_py314.py beside this script.
+# requires-python = "==3.12.*"
 # dependencies = ["unitycatalog-ai==0.4.0"]
 #
 # [tool.docs-factory]

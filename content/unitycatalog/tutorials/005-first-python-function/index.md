@@ -28,10 +28,11 @@ catalog functions:
 
 ```bash
 mkdir first-function && cd first-function
-EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --with unitycatalog-ai==0.4.0 python -m asyncio
+EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 --with unitycatalog-ai==0.4.0 python -m asyncio
 ```
 
-Enter each of the following snippets in it, in order.
+Use Python 3.12, the version this page's scripts run on. Enter each of the
+following snippets in the session, in order.
 
 :::note
 `python -m asyncio` is a Python shell that accepts `await` at the top level,

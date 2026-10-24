@@ -71,7 +71,9 @@ Diátaxis grouping above as the full content index.
   sections. Changing the nav never moves prose or changes URLs. A page's first
   occurrence is its primary placement, which breadcrumbs and prev/next follow.
 - **Entries** are `section:` + `items:` (at most 3 levels deep),
-  `page:` (optional `id:` backlog id and `label:` override), or `planned:` +
+  `page:` (optional `id:` backlog id and `label:` override), `page:
+  <project>:<bucket>/<slug>` for another project's page (optional `label:`; see
+  below), or `planned:` +
   `title:` (optional `request:`). A planned entry is a backlog slot with no page
   yet. Only reviewers see it, and it is never a placeholder `.md` file.
   Reviewers can open a slot in the review workspace and comment on it. The
@@ -85,6 +87,15 @@ Diátaxis grouping above as the full content index.
   section the request names (its placement is the section trail, `A › B`),
   opens a PR, and marks the request done with `complete-request`. Blog requests
   land in `blogs/IDEAS.md` instead.
+- **Another project's page can be cross-published.** List it as
+  `page: <project>:<bucket>/<slug>` and this project's docs site carries a copy
+  at `/<project>/<bucket>/<slug>`, so a reader never leaves the site to read it.
+  The copy names its original, the page on its own project's site, as its
+  canonical URL, and stays out of the sitemap. Its backlog `id:` stays in its own
+  project's `nav.yml`, which must list it too. Cross-publish a page only as it
+  is: a page adapted for this site is this project's own page. Links in the copy
+  to pages this site doesn't carry go to their own site. See
+  [`docs-site-emission.md`](../docs/design/docs-site-emission.md#cross-published-pages).
 - **Every page must be listed.** `site/scripts/check-nav.mjs` (run at prebuild,
   in `just check`, and in CI) fails on unknown pages, orphans, duplicate ids,
   empty sections, and over-deep nesting.

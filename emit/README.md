@@ -169,6 +169,10 @@ site shell under `../sites/<site>/`. Each page goes through `emitOne` twice: the
 `md-twin`. The driver then adds navigation, head metadata, llms.txt, the
 sitemap, scripts, and the vendored preview plugins.
 
+A `nav.yml` entry `page: <project>:<bucket>/<slug>` cross-publishes another
+project's page onto the site at `/<project>/<bucket>/<slug>`; its canonical URL
+names the page on its own project's site.
+
 It renders everything in memory, writes only files whose bytes changed, and
 prints a page-level change report against the target's `.docs-emit.json`. The
 site config (`docs/sites/<site>.mjs`) holds the project and the URL scheme.

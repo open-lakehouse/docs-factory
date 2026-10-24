@@ -163,12 +163,43 @@ shell.
   it. The factory builders (`pageHead`, `sitemapUrls`, `toEntry`, `scriptEntry`,
   `remark-source-links`) take it as an option and default to the preview's own
   routes.
-- A link to a page this emit doesn't publish (an unready page, another project,
-  a typo) **fails a publish emit**. With `--drafts` the emit only warns. Either
-  way the link is unwrapped to its label, so the site never ships a 404.
+- A link to another project's page goes to the page on that project's site,
+  unless this site cross-publishes it (below). Any other link to a page this emit
+  doesn't publish (an unready page, a typo) **fails a publish emit**. With
+  `--drafts` the emit only warns. Either way the link is unwrapped to its label,
+  so the site never ships a 404.
   A `model:` link goes to the published page that `explains:` the element, else
   the element's external link, else it becomes plain text (see
   [`model-leverage.md`](./model-leverage.md) §4).
+
+## Cross-published pages
+
+A site's `nav.yml` can list another project's page
+(`page: <project>:<bucket>/<slug>`). The emit publishes it on this site at
+`/<project>/<bucket>/<slug>`, where it can't collide with the site's own
+routes. The reader stays on the site: the page has a place in the sidebar,
+prev/next, and search, and a link to it from this site's pages resolves
+in-site. The entry is wrapped around the site's `hrefFor` (`withGuests` in
+`sites/routes.mjs`), so every builder above sees the guest route.
+
+The copy is the same page, so it **defers to its original** on its own
+project's site. For GEO this is what puts every AI-search citation on one URL:
+Google and Bing fold the copies into the canonical URL, and the AI answers that
+draw on those indexes cite it. Every signal agrees:
+
+| Surface | The copy on this site |
+| --- | --- |
+| `<link rel="canonical">`, `og:url`, JSON-LD `url` | the original's URL |
+| `.md` twin `canonical:` | the original's URL |
+| `sitemap.xml` | left out: a sitemap lists canonical URLs only |
+| `llms.txt`, `llms-full.txt` | listed with the original's URL and twin, so an agent cites the original |
+| `⌘K` search, sidebar, links | the in-site route |
+
+This holds only while the copy is the same page. A page rewritten for this
+site isn't a copy; it belongs in this project's own content with its own
+canonical. A project with no docs site of its own (`open-lakehouse`) has no
+original, so its copy is its own canonical, and two sites that both carry it
+compete for it.
 
 ## Full regeneration, minimal writes
 

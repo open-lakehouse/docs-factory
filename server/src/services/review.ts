@@ -535,7 +535,7 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string, viewerUser
         where rq.area = ${area} and rq.slug = ${slug}) as latest_satisfied_at,
       (select coalesce(jsonb_agg(
           jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
-            'approver_login', ui.github_login, 'approver_user_id', ca.approver_user_id,
+            'approver_login', coalesce(ui.github_login, ui.name), 'approver_user_id', ca.approver_user_id,
             'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
         from content_approval ca
         left join user_identity ui on ui.user_id = ca.approver_user_id
@@ -652,7 +652,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               where rq.area = k.area and rq.slug = k.slug) as latest_satisfied_at,
             (select coalesce(jsonb_agg(
                 jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
-                  'approver_login', ui.github_login, 'approver_user_id', ca.approver_user_id,
+                  'approver_login', coalesce(ui.github_login, ui.name), 'approver_user_id', ca.approver_user_id,
                   'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
               from content_approval ca
               left join user_identity ui on ui.user_id = ca.approver_user_id
@@ -1586,11 +1586,18 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           Math.max(req.limit ?? CONTENT_EVENTS_DEFAULT, 1),
           CONTENT_EVENTS_MAX,
         );
+        // Names resolve at read time, so an event recorded before the actor's
+        // handle was known still renders a name rather than a user id.
         const rows = await sql<ContentEventRow[]>`
-          select * from content_event
-          where area = ${area} and slug = ${req.ref.slug}
-            and kind <> 'content-revised'
-          order by id desc limit ${limit}
+          select e.*,
+                 coalesce(ua.github_login, ua.name) as actor_name,
+                 coalesce(ur.github_login, ur.name) as reviewer_name
+          from content_event e
+          left join user_identity ua on ua.user_id = e.actor
+          left join user_identity ur on ur.user_id = e.payload ->> 'reviewer_user_id'
+          where e.area = ${area} and e.slug = ${req.ref.slug}
+            and e.kind <> 'content-revised'
+          order by e.id desc limit ${limit}
         `;
         return create(ListContentEventsResponseSchema, {
           events: rows.map(contentEventFromRow),

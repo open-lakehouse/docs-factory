@@ -492,8 +492,8 @@ message ReviewRequest {
 message Approval {
   string id = 1;
   ContentRef ref = 2;
-  // Resolved display login of the approver (from user_identity); may be absent
-  // if the handle was never resolved.
+  // Display name of the approver from user_identity (github login, else name);
+  // may be absent if neither was ever resolved.
   optional string approver_login = 3;
   // Stable Neon Auth user id — the approval's key.
   string approver_user_id = 4;
@@ -565,6 +565,12 @@ message ContentEvent {
   optional ReviewState to_state = 7;
   optional string reviewer_login = 8;
   google.protobuf.Timestamp created_at = 9;
+  // Display name of `actor` from user_identity (github login, else name);
+  // absent for system actors ("git", "build") and unregistered ids.
+  optional string actor_name = 10;
+  // Display name of the event's reviewer (review requests, approvals,
+  // dismissals), resolved the same way at read time.
+  optional string reviewer_name = 11;
 }
 
 // Lifecycle of a content request. A maintainer accepts or declines an OPEN

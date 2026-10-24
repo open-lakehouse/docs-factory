@@ -103,6 +103,9 @@ export interface ContentEventRow {
     moved?: string;
   } | null;
   created_at: Date;
+  // Resolved display names from the user_identity joins (nullable).
+  actor_name?: string | null;
+  reviewer_name?: string | null;
 }
 
 /** Human summary of a content-revised event's change counts, for the timeline. */
@@ -163,6 +166,8 @@ export function contentEventFromRow(r: ContentEventRow): ContentEvent {
     toState: p.to_state ? STATE_BY_DB[p.to_state] : undefined,
     reviewerLogin: p.reviewer_login ?? undefined,
     createdAt: timestampFromDate(r.created_at),
+    actorName: r.actor_name ?? undefined,
+    reviewerName: r.reviewer_name ?? p.reviewer_login ?? undefined,
   });
 }
 

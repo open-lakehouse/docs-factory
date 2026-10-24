@@ -93,9 +93,21 @@ function shortSha(sha: string): string {
   return sha && sha !== "unknown" ? sha.slice(0, 8) : "";
 }
 
-function eventDetail(e: ContentEvent): string {
+// System actors ("git", "build") and logins render as-is; a bare user id
+// means the actor has no user_identity row, which reads better as "someone".
+const USER_ID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function eventActor(e: ContentEvent): string | undefined {
+  if (e.actorName) return e.actorName;
+  if (!e.actor) return undefined;
+  return USER_ID.test(e.actor) ? "someone" : e.actor;
+}
+
+function eventDetail(e: ContentEvent, actor: string | undefined): string {
   const parts: string[] = [];
-  if (e.reviewerLogin) parts.push(e.reviewerLogin);
+  // An approval's reviewer is its actor; don't print the name twice.
+  const reviewer = e.reviewerName || e.reviewerLogin;
+  if (reviewer && reviewer !== actor) parts.push(reviewer);
   if (e.note) parts.push(`“${e.note}”`);
   return parts.join(" · ");
 }
@@ -152,12 +164,13 @@ function lifecycleItems(events: ContentEvent[]): TimelineItem[] {
     .filter((e) => e.kind !== EventKind.CONTENT_REVISED && e.kind !== EventKind.UNSPECIFIED)
     .map((e) => {
       const appearance = eventAppearance(e.kind);
+      const actor = eventActor(e);
       return {
         id: e.id,
         kindLabel: KIND_LABEL[e.kind] ?? "Event",
         ...appearance,
-        actor: e.actor || undefined,
-        detail: eventDetail(e) || undefined,
+        actor,
+        detail: eventDetail(e, actor) || undefined,
         createdAt: e.createdAt,
       };
     });

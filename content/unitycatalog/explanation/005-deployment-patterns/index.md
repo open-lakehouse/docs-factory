@@ -46,7 +46,9 @@ stack, an Envoy proxy imitates AWS so that the server's credential vending
 works against RustFS. It's internal AWS emulation, not a client-facing
 gateway, and it publishes no port.
 
-![Clients on the host reach Unity Catalog on port 8080 and RustFS on port 9000; Unity Catalog keeps its metadata in PostgreSQL and its files in RustFS](../../../../envs/uc-local/diagram.png "trestle=uc-local")
+```trestle uc-local
+Clients on the host reach Unity Catalog on port 8080 and RustFS on port 9000; Unity Catalog keeps its metadata in PostgreSQL and its files in RustFS
+```
 
 The two stores persist differently. PostgreSQL writes the catalog's metadata
 into the environment's `.data/postgres` folder, a bind mount, so the catalog
@@ -82,7 +84,9 @@ change: [PostgreSQL](model:postgresql) becomes a Neon project, and RustFS
 becomes a bucket on hosted object storage. Unity Catalog still runs in a
 container on your machine.
 
-![Clients on the host reach Unity Catalog on port 8080; Unity Catalog keeps its metadata in a hosted PostgreSQL database on Neon and its files in a bucket on an external S3-compatible store](../../../../envs/uc-hybrid/diagram.png "trestle=uc-hybrid")
+```trestle uc-hybrid
+Clients on the host reach Unity Catalog on port 8080; Unity Catalog keeps its metadata in a hosted PostgreSQL database on Neon and its files in a bucket on an external S3-compatible store
+```
 
 Because the catalog lives in the database, this is already a shared
 deployment. Each person runs the same environment with the same database

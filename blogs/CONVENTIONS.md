@@ -256,13 +256,13 @@ bullets. Copy this to start a post.
   - A publishing target may need a different export (SVG, inline) than the
     committed PNG — regenerate from the same `.likec4` source at publish.
   - **Environment topology — Trestle.** To show what a stack runs, embed a
-    Trestle diagram, not a hand-drawn view:
-    `![alt](../../envs/<name>/diagram.png "trestle=<name>")` for a docs
-    environment, or `![alt](./assets/<stem>.png "trestle=./assets/<stem>.trestle-graph.json")`
-    for a snapshot exported from Trestle's editor ("Export snapshot"). The image
-    must be the snapshot's sibling PNG; render it with `just trestle-diagrams`.
-    `docsnip check` fails on a stale or mismatched PNG. The preview and the docs
-    sites draw the interactive canvas; the blog targets ship the PNG.
+    Trestle diagram, not a hand-drawn view: a ```` ```trestle <name> ```` block
+    for a docs environment, or ```` ```trestle ./assets/<stem>.trestle-graph.json ````
+    for a snapshot exported from Trestle's editor ("Export snapshot"), with the
+    alt text as the block's body. `docsnip check` fails when the ref names no
+    snapshot or the snapshot has no Mermaid. The preview and the docs sites draw
+    the interactive canvas; the `.md` twins and the blog targets get the alt
+    text and Trestle's Mermaid flowchart.
   - **D2** ([d2lang.com](https://d2lang.com)) is still fine for an existing `.d2`
     or a quick one-off — commit `.d2` + `.svg`, render with
     `blogs/render-diagrams.sh` (needs `brew install d2`). Prefer LikeC4 for new

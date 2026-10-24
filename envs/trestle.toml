@@ -1,8 +1,9 @@
 # The Trestle revision that renders the docs environments and the committed
 # catalog snapshot (architecture/dist/trestle-catalog.json): the olai-trestle
-# v0.0.13 release, whose unity-catalog module names unityCatalogServer
-# (trestle#158); `just trestle-catalog` installs it.
+# v0.0.13 release plus trestle#159, the fixes that let an MLflow + Unity Catalog
+# stack start with `--wait` and register models from the host;
+# `just trestle-catalog` installs it.
 [trestle]
 git = "https://github.com/open-lakehouse/trestle"
-rev = "fa3c780cae8736d0e6083138016f24b9949d5d4c"
+rev = "2ccc26d7d4d5b3b0b585a108ad6044d6556e2c1e"
 package = "olai-trestle"

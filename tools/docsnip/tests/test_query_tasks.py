@@ -91,7 +91,13 @@ def test_explain_why_full_governance_lacks_evidence(idx):
 
 def test_pages_affected_by_a_uc_release_change(idx):
     answer = _ask(idx, "impact", "pin:unitycatalog/release")
-    assert answer["environments"] == ["uc-aws", "uc-hybrid", "uc-local", "unitycatalog"]
+    assert answer["environments"] == [
+        "uc-aws",
+        "uc-hybrid",
+        "uc-local",
+        "uc-mlflow",
+        "unitycatalog",
+    ]
     # Not an exact list: every new UC page with a script joins this set, so
     # pinning it failed CI on each new page. Pin the shape and both edges.
     uc = "content/unitycatalog/"

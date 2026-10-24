@@ -51,6 +51,9 @@ permissions:
 
 jobs:
   preview:
+    # Disabled until the Vercel-side configuration it needs is in place: every
+    # run fails at the Vercel step until then. Delete this line to re-enable.
+    if: false
     # Preview-scoped secrets/vars live in the `preview` environment (a preview
     # NEON_API_KEY). The Function's CORS origin is derived per-deploy from Vercel's
     # VERCEL_BRANCH_URL, not a static var. See runbook §3.

@@ -39,8 +39,8 @@ nav:
             title: Build an agent tool from a catalog function
           - page: tutorials/first-metric-view
             id: T08
-          - planned: T07
-            title: Register and reload a model with MLflow
+          - page: tutorials/register-model-mlflow
+            id: T07
 
       - section: Catalogs and schemas
         items:

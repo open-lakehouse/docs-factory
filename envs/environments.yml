@@ -25,6 +25,10 @@ environments:
     guide: how-to/run-local-server#start-the-server-with-simulated-s3
     generated: uc-aws
 
+  uc-mlflow/compose.yaml:
+    title: Unity Catalog 0.7.0 with MLflow, simulated S3, and PostgreSQL
+    generated: uc-mlflow
+
   uc-local/compose.yaml:
     title: Unity Catalog 0.7.0 with PostgreSQL and RustFS on one machine
     generated: uc-local

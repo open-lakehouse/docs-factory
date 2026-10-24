@@ -3,7 +3,8 @@
 // view — no selection/comment layer — because the review DB anchors comments on
 // the ContentRef with no twin discriminator, so a comment here would collide
 // with the rendered view's anchors. A header toggle flips between:
-//   - Rendered: the twin markdown → semantic HTML (what a formatted agent sees).
+//   - Rendered: the twin markdown → semantic HTML (what a formatted agent sees),
+//     with its ```mermaid fences drawn as diagrams.
 //   - Raw: the exact bytes served at the `.md` URL, in a <pre>.
 //
 // The twin lives at `<canonical>.md` (refHref(ref) + ".md"), fetched at runtime.
@@ -11,7 +12,8 @@
 // the page isn't published, which we surface as an empty state.
 
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useTheme } from "next-themes";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { renderMarkdownToHtml } from "../../../content-core/render-markdown.mjs";
 import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
@@ -32,15 +34,62 @@ async function fetchTwin(url: string): Promise<string> {
   return text;
 }
 
+let mermaidSeq = 0;
+
+// Mermaid (~1 MB) loads only when a twin has a diagram. Strict mode sanitizes
+// labels, so the SVG is as safe to insert as the twin's own HTML.
+async function drawMermaid(root: HTMLElement, dark: boolean, live: () => boolean) {
+  const blocks = [...root.querySelectorAll<HTMLElement>("pre > code.language-mermaid")];
+  if (!blocks.length) return;
+  const { default: mermaid } = await import("mermaid");
+  mermaid.initialize({
+    startOnLoad: false,
+    securityLevel: "strict",
+    theme: dark ? "dark" : "default",
+  });
+  for (const code of blocks) {
+    const pre = code.parentElement;
+    if (!pre || !live()) return;
+    try {
+      const { svg } = await mermaid.render(`twin-mermaid-${++mermaidSeq}`, code.textContent ?? "");
+      if (!live()) return;
+      const figure = document.createElement("figure");
+      figure.className = "twin-mermaid";
+      figure.innerHTML = svg;
+      pre.replaceWith(figure);
+    } catch (err) {
+      // The source stays readable; the note says why it isn't a diagram.
+      const note = document.createElement("p");
+      note.className = "twin-mermaid-error";
+      note.textContent = `Mermaid couldn't draw this diagram: ${err instanceof Error ? err.message : err}`;
+      pre.after(note);
+    }
+  }
+}
+
 export default function MarkdownTwinView({ contentRef }: { contentRef: ContentRef }) {
   const url = `${refHref(contentRef)}.md`;
   const [raw, setRaw] = useState(false);
+  const dark = useTheme().resolvedTheme === "dark";
+  const article = useRef<HTMLElement>(null);
   const { data, isLoading, error } = useQuery({
     queryKey: ["md-twin", url],
     queryFn: () => fetchTwin(url),
     staleTime: Infinity,
     retry: false,
   });
+
+  // Drawing replaces the fences in place, so the article is keyed on the theme:
+  // a theme change remounts the twin's HTML and draws it again.
+  useEffect(() => {
+    const root = article.current;
+    if (raw || data === undefined || !root) return;
+    let live = true;
+    void drawMermaid(root, dark, () => live);
+    return () => {
+      live = false;
+    };
+  }, [data, raw, dark]);
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -86,6 +135,8 @@ export default function MarkdownTwinView({ contentRef }: { contentRef: ContentRe
             </pre>
           ) : (
             <article
+              key={dark ? "dark" : "light"}
+              ref={article}
               className="prose mx-auto max-w-3xl px-6 py-8"
               // Safe: renderMarkdownToHtml runs mdast→hast with allowDangerousHtml:false.
               dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(data) }}

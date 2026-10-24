@@ -10840,6 +10840,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/020-run-functions/snippets/run_sync.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "run-functions"
+              },
+              "anchor": "call-a-function-from-synchronous-code",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "execute_function",
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
               "page": {
                 "project": "unitycatalog",

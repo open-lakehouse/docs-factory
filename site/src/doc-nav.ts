@@ -167,7 +167,16 @@ export const docNav = buildDocNav();
 /** A resolved nav.yml entry (content-core/nav.mjs `resolveNav`). */
 export type NavNode =
   | { kind: "section"; label: string; children: NavNode[] }
-  | { kind: "page"; bucket: string; slug: string; label: string; id?: string; primary: boolean }
+  | {
+      kind: "page";
+      /** Set when the page belongs to another project, cross-published here. */
+      project?: string;
+      bucket: string;
+      slug: string;
+      label: string;
+      id?: string;
+      primary: boolean;
+    }
   | { kind: "planned"; id: string; title: string; request?: string };
 
 const navManifests = import.meta.glob<string>("../../content/*/nav.yml", {
@@ -176,14 +185,17 @@ const navManifests = import.meta.glob<string>("../../content/*/nav.yml", {
   eager: true,
 });
 
+const navDocs = discoveredDocs
+  .filter((d) => d.slug.toLowerCase() !== "readme")
+  .map((d) => ({ project: d.project, bucket: d.bucket, slug: d.slug, title: d.title }));
+
 /** Resolved manifest tree per project that ships a nav.yml. */
 export const projectNav: Record<string, NavNode[]> = Object.fromEntries(
   Object.entries(navManifests).map(([path, raw]) => {
     const project = path.split("/").at(-2) ?? "";
-    const docs = discoveredDocs
-      .filter((d) => d.project === project && d.slug.toLowerCase() !== "readme")
-      .map((d) => ({ bucket: d.bucket, slug: d.slug, title: d.title }));
-    const { tree, errors } = resolveNav(yaml.load(raw), docs);
+    const docs = navDocs.filter((d) => d.project === project);
+    const guests = navDocs.filter((d) => d.project !== project);
+    const { tree, errors } = resolveNav(yaml.load(raw), docs, guests);
     // check-nav.mjs fails the build on these; at runtime we can only surface them.
     for (const e of errors) console.error(`content/${project}/nav.yml: ${e}`);
     return [project, tree as NavNode[]];

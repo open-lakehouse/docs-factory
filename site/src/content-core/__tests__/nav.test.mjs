@@ -125,3 +125,41 @@ test("a planned slot keeps the content request it was promoted from", () => {
     'nav[0].items[3]: planned "T10" request must be a content request id (uuid)',
   ]);
 });
+
+const guests = [{ project: "delta", bucket: "how-to", slug: "time-travel", title: "Time travel" }];
+
+test("a project-qualified entry cross-publishes another project's page", () => {
+  const manifest = {
+    nav: [
+      ...ok.nav,
+      { section: "Delta", items: [{ page: "delta:how-to/time-travel", label: "Travel" }] },
+    ],
+  };
+  const { tree, errors } = resolveNav(manifest, docs, guests);
+  expect(errors).toEqual([]);
+  expect(tree[2].children[0]).toEqual({
+    kind: "page",
+    project: "delta",
+    bucket: "how-to",
+    slug: "time-travel",
+    label: "Travel",
+    primary: true,
+  });
+});
+
+test("a cross-published page is not an orphan, takes no id, and must exist", () => {
+  const manifest = {
+    nav: [
+      ...ok.nav,
+      {
+        section: "Delta",
+        items: [{ page: "delta:how-to/time-travel", id: "D01" }, { page: "delta:how-to/vacuum" }],
+      },
+    ],
+  };
+  expect(resolveNav(manifest, docs, guests).errors).toEqual([
+    `nav[2].items[0]: "delta:how-to/time-travel" keeps its id in its own project's nav.yml`,
+    `nav[2].items[1]: unknown page "delta:how-to/vacuum"`,
+  ]);
+  expect(resolveNav(ok, docs, guests).errors).toEqual([]);
+});

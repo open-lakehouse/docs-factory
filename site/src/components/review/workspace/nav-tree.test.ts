@@ -32,8 +32,8 @@ test("sections become branches keyed by their label trail", () => {
 });
 
 test("pages carry the manifest label, a doc ref, and frontmatter status", () => {
-  const [leaf] = navBranches("uc", [page("explanation", "what-is", "What is UC?")], (b, s) =>
-    b === "explanation" && s === "what-is" ? "ready" : undefined,
+  const [leaf] = navBranches("uc", [page("explanation", "what-is", "What is UC?")], (p, b, s) =>
+    p === "uc" && b === "explanation" && s === "what-is" ? "ready" : undefined,
   );
   if (leaf.kind !== "leaf") throw new Error("expected leaf");
   expect(leaf.label).toBe("What is UC?");
@@ -41,6 +41,14 @@ test("pages carry the manifest label, a doc ref, and frontmatter status", () => 
   expect(leaf.ref.bucket).toBe("explanation");
   expect(leaf.ref.slug).toBe("what-is");
   expect(leaf.frontmatterStatus).toBe("ready");
+});
+
+test("a cross-published page points at its own project", () => {
+  const guest: NavNode = { ...page("how-to", "time-travel"), project: "delta" };
+  const [leaf] = navBranches("uc", [guest], (p) => (p === "delta" ? "draft" : undefined));
+  if (leaf.kind !== "leaf") throw new Error("expected leaf");
+  expect(leaf.ref.project).toBe("delta");
+  expect(leaf.frontmatterStatus).toBe("draft");
 });
 
 test("planned slots map through and secondary placements are kept", () => {

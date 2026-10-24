@@ -56,3 +56,18 @@ def test_gaps_name_missing_fields_on_posts_headed_for_release() -> None:
     ]
     assert blog_metadata_gaps(_page(status="idea")) == []
     assert blog_metadata_gaps(_page(status="private")) == []
+
+
+def test_target_may_list_cross_posts() -> None:
+    assert _errors(target=["unitycatalog", "delta"]) == []
+
+
+def test_cross_post_targets_are_known_and_unique() -> None:
+    assert _errors(target=["delta", "delta", "medium", 3]) == [
+        "target 'delta' is listed twice",
+        "target 'medium' not in ['delta', 'openlakehouse', 'unitycatalog']",
+        "target 3 must be a string",
+    ]
+    assert _errors(target=[]) == [
+        "'target' must be a target name or a non-empty list of them"
+    ]

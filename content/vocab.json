@@ -6,6 +6,8 @@
   "pageWorthyKinds": ["capability", "concern", "openSpecification", "implementation"],
   "$postTypesComment": "Blog `post_type`. blogs/QUALITY.md facet (a) calibrates fact density by it: an essay is carried by reasoning, every other type is fact-dense.",
   "postTypes": ["essay", "how-to", "deep-dive", "announcement", "comparison", "benchmark"],
+  "$blogTargetsComment": "Blog `target`: one site or a list to cross-post to; the first is the primary and holds the canonical URL. An emittable target also needs emit/targets/<name>.mjs.",
+  "blogTargets": ["unitycatalog", "delta", "openlakehouse"],
   "$topicsComment": "The controlled product/topic axis for the review layer's version rows and the 'what changed for X' rollup. `topics` are the canonical ids; `topicSynonyms` folds blog `tags` spellings and doc `project` values onto a canonical id (unmatched tags are dropped with a warning at manifest time). A canonical id with no tagged content yet (e.g. duckdb) is valid — it renders an empty rollup.",
   "topics": [
     "delta",

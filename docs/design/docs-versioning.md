@@ -134,5 +134,6 @@ outside R01 joins the list in the same change.
 | unitycatalog | E03 `explanation/003-uc-basics` | Securable types, the `TableType` note, the privilege model, principals (no groups or service principals), and the Databricks note. |
 | unitycatalog | H13 `how-to/013-metric-views`, T08 `tutorials/008-first-metric-view` | Spark's metric-view limits (YAML version, replace, rename). |
 | unitycatalog | H12 `how-to/012-iceberg-rest` | Which tables the Iceberg endpoint serves; UniForm. |
+| unitycatalog | H12 `how-to/020-run-functions` | On a `unitycatalog-ai` bump: the one-client `gather` deadlock, the process-wide `nest_asyncio` patch (uvloop), `close()` not closing the connection, `async def` registration, `EXECUTOR_DISALLOWED_MODULES` parsing, the sandbox's blocked imports, limits, and kill signals, local-mode result caching, the list-argument remedy, and the Python 3.12 advice. |
 | delta | `reference/090-coverage`, `reference/001-table-features` | Engine support per feature. |
 | delta | `how-to/003-append-and-overwrite-data` | DuckDB's write limits. |

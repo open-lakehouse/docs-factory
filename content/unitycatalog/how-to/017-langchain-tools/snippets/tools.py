@@ -11,7 +11,7 @@
 #   # langgraph-prebuilt 1.0.9 and later need a newer langgraph, and
 #   # `import langchain.agents` fails with their ImportError.
 #   "langgraph-prebuilt==1.0.8",
-#   "mlflow==3.10.0",
+#   "mlflow==3.17.0",
 # ]
 #
 # [tool.docs-factory]
@@ -353,6 +353,7 @@ async def _run(api, client, UnitycatalogClient, CatalogsApi) -> None:
     assert by_type[-1][0] == "ai"
 
     # --8<-- [start:traces]
+    mlflow.flush_trace_async_logging()
     trace = mlflow.search_traces(max_results=1, return_type="list")[0]
     for span in trace.data.spans:
         print(span.span_type, span.name)

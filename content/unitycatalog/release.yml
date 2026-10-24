@@ -17,9 +17,6 @@ pins:
   # MLflow: the tracking server image in envs/uc-mlflow and every client of
   # the model registry. The `ghcr.io/mlflow/mlflow:v…` tag follows this key.
   mlflow: 3.17.0
-  # The LangChain tools page only: its standalone `mlflow gateway` CLI, which
-  # 3.17 removed.
-  mlflow-gateway: 3.10.0
   # The model the MLflow pages train, log, and register.
   scikit-learn: 1.9.1
   # `ChatMlflow`, the chat model that talks to the MLflow AI Gateway.

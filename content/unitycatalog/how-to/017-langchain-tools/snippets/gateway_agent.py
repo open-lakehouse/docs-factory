@@ -7,9 +7,10 @@ the same catalog functions and async adapter as in tools.py.
 Needs a provider behind the gateway, so it doesn't run unattended. Run it with
 the Unity Catalog server and the gateway started:
 
-    uv run --python 3.12 --with unitycatalog-langchain==0.4.0 \
+    EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 \
+      --with unitycatalog-langchain==0.4.0 \
       --with langgraph-prebuilt==1.0.8 --with langchain-community==0.4.1 \
-      --with mlflow==3.10.0 python gateway_agent.py
+      --with mlflow==3.17.0 python gateway_agent.py
 
 `ChatMlflow` needs `mlflow` in this process too: it builds MLflow's
 deployments client for the gateway URL.

@@ -32,7 +32,7 @@ Start Python with the LangChain integration, LangGraph, MLflow, and the
 MLflow chat model for LangChain:
 
 ```bash
-EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 --with unitycatalog-langchain==0.4.0 --with langgraph-prebuilt==1.0.8 --with mlflow==3.10.0 --with langchain-community==0.4.1 python -m asyncio
+EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 --with unitycatalog-langchain==0.4.0 --with langgraph-prebuilt==1.0.8 --with mlflow==3.17.0 --with langchain-community==0.4.1 python -m asyncio
 ```
 
 Use Python 3.12, or 3.13.3 or later. On 3.13.0 to 3.13.2, a function that
@@ -227,7 +227,8 @@ session's folder. Turn it on, then run the agent again:
 ```python file=./snippets/tools.py start=start:autolog end=end:autolog
 ```
 
-Print the spans of the latest trace:
+MLflow writes traces in the background, so flush them before you read them
+back. Print the spans of the latest trace:
 
 ```python file=./snippets/tools.py start=start:traces end=end:traces
 ```

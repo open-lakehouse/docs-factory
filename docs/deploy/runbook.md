@@ -208,6 +208,15 @@ Function URL — those don't exist until Phase 4.
    on conflict (user_id) do nothing;
    ```
 
+4. **(If handles are missing) Backfill GitHub logins.** The app resolves each
+   user's `github_login` from the numeric GitHub account id in `neon_auth.account`
+   on their next request. For users who don't come back, resolve the rest in one
+   pass (`--dry-run` first):
+   ```bash
+   DATABASE_URL='<prod-direct-url>' just db-backfill-github --dry-run
+   DATABASE_URL='<prod-direct-url>' just db-backfill-github
+   ```
+
 ---
 
 ## Phase 3 — Configure GitHub + Vercel (values you have now)

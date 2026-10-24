@@ -1,30 +1,46 @@
 # docs-factory
 
-Authoritative, builder-agnostic content for the open lakehouse documentation
-sites and narrative blog drafts.
+docs-factory is where the open-source **Delta Lake** and **Unity Catalog**
+documentation is written and tested before it goes to
+[delta.io](https://delta.io) and [unitycatalog.io](https://unitycatalog.io).
+Pages are plain Markdown. Every code example is a runnable script that CI runs
+against the pinned Delta Lake and Unity Catalog releases, so the examples you
+read have actually run.
 
-- **Docs** (`content/`) — Diátaxis-organized reference content for
-  [delta.io](https://delta.io) and [unitycatalog.io](https://unitycatalog.io)
-- **Blogs** (`blogs/`) — authored posts with custom transpilation (callouts,
-  journeys, LikeC4, snippet inlining) and cross-publish emit to unitycatalog.io /
-  delta.io
-- **Architecture** (`architecture/`) — LikeC4 model + canonical estate facts about the
-  *lakehouse* we document
-- **Design & decisions** (`docs/`) — design records about the *docs factory itself*
-  (site, emitters, review server, authoring pipeline)
-- **Examples** (`examples/`) — CI-tested snippet source for docs
+## What's in the repo
 
-The three documentation scopes are kept apart: **fact** about the lakehouse lives in
-`architecture/`, **decisions about this factory** in `docs/`, and **narrative** in
-`blogs/` (see `architecture/adr/ADR-0002`).
+| Path | What it holds |
+| --- | --- |
+| `content/` | Docs pages for Unity Catalog, Delta Lake, and the open lakehouse, organized by [Diátaxis](https://diataxis.fr): tutorials, how-to guides, reference, and explanation |
+| `blogs/` | Long-form blog drafts for unitycatalog.io and delta.io |
+| `sites/` | The static docs sites the pages render into |
+| `envs/` | Local environments (Docker Compose) that the examples run against |
+| `architecture/` | A [LikeC4](https://likec4.dev) model of the open lakehouse: components, capabilities, and compatibility journeys |
+| `site/`, `server/` | The review app, where drafts get comments and approvals |
+| `docs/` | Design notes and decisions about this repo |
+
+## How examples are tested
+
+Pages never inline code. Each example sits next to its page in a `snippets/`
+folder as a self-contained script: Python (with a PEP 723 header), SQL, shell,
+Scala, Java, or Rust. The page shows only the marked region, and CI runs the
+whole script. Compatibility tables, which list what each engine and client can
+read, write, or create, are generated from what those scripts prove rather than
+written by hand.
+
+## Quick start
 
 ```bash
-just preview          # unified local preview at :4321 (docs + blogs)
-uv run docsnip check    # CI gate: frontmatter, snippets, artifacts
-just emit <slug> <target>  # emit a blog draft (target: unitycatalog | delta)
-just arch-dev         # architecture model at :5173
+uv sync --all-packages   # install the Python workspace
+uv run docsnip check     # validate frontmatter, snippets, and prose
+uv run pytest            # run the tested examples
+just uc-docs             # build and preview the Unity Catalog docs at :4322
+just delta-docs          # the same for Delta Lake at :4323
 ```
 
-See [`AGENTS.md`](AGENTS.md) for layout, conventions, and common commands.
+## Contributing
 
-Wikipedia articles remain in the sibling [`writing`](../writing) repo.
+See [`CONTRIBUTING.md`](CONTRIBUTING.md) to get set up and open a pull request.
+[`AGENTS.md`](AGENTS.md) has notes for agents and the full command list. Content
+conventions live in [`content/README.md`](content/README.md) and
+[`blogs/CONVENTIONS.md`](blogs/CONVENTIONS.md).

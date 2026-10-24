@@ -9,7 +9,7 @@ references:
   - deltaSpark
   - deltaRs
   - lakehouse.table
-status: draft
+status: ready
 ---
 
 Unity Catalog keeps two records of a Delta table: the Delta log in storage,

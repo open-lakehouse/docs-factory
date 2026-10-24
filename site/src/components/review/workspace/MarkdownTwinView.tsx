@@ -8,8 +8,9 @@
 //   - Raw: the exact bytes served at the `.md` URL, in a <pre>.
 //
 // The twin lives at `<canonical>.md` (refHref(ref) + ".md"), fetched at runtime.
-// It only exists for published pages; a 404 (or a non-markdown response) means
-// the page isn't published, which we surface as an empty state.
+// Every page has one once the build artifacts exist; a 404 (or a non-markdown
+// response) means they weren't built or this page failed to emit, which we
+// surface as an empty state.
 
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "next-themes";
@@ -122,9 +123,7 @@ export default function MarkdownTwinView({ contentRef }: { contentRef: ContentRe
       <div className="min-h-0 flex-1 overflow-y-auto">
         {isLoading && <p className="p-6 text-muted-foreground">Loading markdown…</p>}
         {error && (
-          <p className="p-6 text-muted-foreground">
-            No markdown twin — this page isn't published yet.
-          </p>
+          <p className="p-6 text-muted-foreground">No markdown twin was built for this page.</p>
         )}
         {!isLoading &&
           !error &&

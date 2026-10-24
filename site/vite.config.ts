@@ -20,7 +20,7 @@ import { DOCS_SITES } from "../emit/docs/sites/index.mjs";
 import { buildConcepts, buildModelIndex } from "./scripts/model-index.mjs";
 import { loadEnvironmentResolver } from "./scripts/page-environments.mjs";
 import { repoAssets } from "./scripts/repo-assets.mjs";
-import { isEmitted, isPublic, splitFrontmatter } from "./src/content-core/frontmatter.mjs";
+import { isPublic, splitFrontmatter } from "./src/content-core/frontmatter.mjs";
 import { docIdentity, hrefFromIdentity } from "./src/content-core/identity.mjs";
 import { walkContent } from "./src/content-core/walk.mjs";
 import remarkCallouts from "./src/plugins/remark-callouts.mjs";
@@ -191,7 +191,7 @@ function devCompanionFiles(): Plugin {
 
 // Every docs page's <head> as its docs site emits it, for the review workspace's
 // Head tab (src/lib/page-heads.ts). Built from the same docPageHead the emitter
-// calls, over the pages a `--drafts` emit selects. Dev builds it per request, so
+// calls, over every page whatever its status. Dev builds it per request, so
 // a content edit only needs to tell the client to refetch.
 function buildPageHeads(): Record<string, unknown> {
   const repoRoot = path.resolve(__dirname, "..");
@@ -210,7 +210,6 @@ function buildPageHeads(): Record<string, unknown> {
     // Ready-only, as the emitter's: the tab shows what the page will publish.
     const projection = loadProjection(site, pages, { repoRoot });
     for (const { absPath, source, meta, body, identity } of pages) {
-      if (!isEmitted(meta, { drafts: true })) continue;
       let environment = null;
       try {
         environment = environmentFor?.(absPath, source)?.environment ?? null;

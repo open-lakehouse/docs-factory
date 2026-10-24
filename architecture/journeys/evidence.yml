@@ -661,15 +661,6 @@
   why: Doesn't work.
   source: https://duckdb.org/docs/current/core_extensions/delta.html
 - interfaces:
-  - spark-sql
-  journeys:
-  - schema.rename-drop
-  outcome: works
-  why: '`RENAME`/`DROP COLUMN` (column mapping)'
-  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx
-  api:
-    spark-sql: RENAME
-- interfaces:
   - spark-python
   journeys:
   - schema.rename-drop
@@ -692,15 +683,6 @@
   outcome: fails
   why: Doesn't work.
   source: https://duckdb.org/docs/current/core_extensions/delta.html
-- interfaces:
-  - spark-sql
-  journeys:
-  - schema.type-widening
-  outcome: works
-  why: '`ALTER COLUMN … TYPE` (type widening)'
-  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx
-  api:
-    spark-sql: ALTER COLUMN … TYPE
 - interfaces:
   - spark-python
   journeys:
@@ -1302,15 +1284,6 @@
   source: unitycatalog:tutorials/managed-delta-table
   api:
     spark-python: spark.sql(...)
-- interfaces:
-  - delta-rs-python
-  journeys:
-  - feature.properties
-  outcome: works
-  why: '`alter.set_table_properties`'
-  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
-  api:
-    delta-rs-python: alter.set_table_properties()
 - interfaces:
   - duckdb-sql
   journeys:

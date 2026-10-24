@@ -10679,7 +10679,7 @@
                 "slug": "manage-python-functions"
               },
               "anchor": "register-a-function",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",
@@ -10730,7 +10730,7 @@
       "cells": {
         "unitycatalog-ai": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
@@ -10740,7 +10740,7 @@
                 "slug": "manage-python-functions"
               },
               "anchor": "register-a-function-that-calls-helpers",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",
@@ -10786,7 +10786,7 @@
                 "slug": "manage-python-functions"
               },
               "anchor": "view-a-function-and-get-its-source-back",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",
@@ -10893,7 +10893,7 @@
                 "slug": "manage-python-functions"
               },
               "anchor": "view-a-function-and-get-its-source-back",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",
@@ -10944,7 +10944,7 @@
       "cells": {
         "unitycatalog-ai": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
@@ -10954,7 +10954,7 @@
                 "slug": "manage-python-functions"
               },
               "anchor": "view-a-function-and-get-its-source-back",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",
@@ -10990,7 +10990,7 @@
       "cells": {
         "unitycatalog-ai": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
@@ -11000,7 +11000,7 @@
                 "slug": "manage-python-functions"
               },
               "anchor": "replace-a-function",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",
@@ -11046,7 +11046,7 @@
                 "slug": "manage-python-functions"
               },
               "anchor": "delete-a-function",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",
@@ -12759,10 +12759,13 @@
       ],
       "journeys": [
         "function.create",
+        "function.create-wrapped",
         "function.delete",
         "function.describe",
         "function.execute",
-        "function.list"
+        "function.get-source",
+        "function.list",
+        "function.replace"
       ]
     },
     {
@@ -12774,10 +12777,13 @@
       ],
       "journeys": [
         "function.create",
+        "function.create-wrapped",
         "function.delete",
         "function.describe",
         "function.execute",
-        "function.list"
+        "function.get-source",
+        "function.list",
+        "function.replace"
       ]
     },
     {

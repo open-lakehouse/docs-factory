@@ -2983,6 +2983,16 @@ button.tag {
   text-align: center;
 }
 
+/* A .md twin's frontmatter, as the twin view renders it. */
+.prose table.frontmatter th {
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: top;
+}
+.prose table.frontmatter td {
+  overflow-wrap: anywhere;
+}
+
 /* A ```mermaid fence the .md twin view drew. */
 .twin-mermaid {
   margin: 1.5rem 0;

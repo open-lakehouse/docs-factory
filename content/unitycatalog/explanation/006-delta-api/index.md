@@ -11,19 +11,22 @@ references:
   - deltaSpark
   - lakehouse.table
   - lakehouse.credentialIssuer
-status: draft
+status: ready
 ---
 
 The *Delta API* is a versioned REST interface that
 [Unity Catalog](model:unityCatalogServer) serves under
 `/api/2.1/unity-catalog/delta/v1/`, next to the Unity Catalog REST API's
-`/tables` endpoints. [Delta](model:deltaSpec) clients speak it: Spark through
-the Unity Catalog connector and [Delta Spark](model:deltaSpark), and DuckDB
-through its `unity_catalog` extension. A client uses it to stage, create,
-load, and commit to a catalog-managed Delta table.
+`/tables` endpoints. A [Delta](model:deltaSpec) client uses it to stage,
+create, load, and commit to a catalog-managed Delta table.
 [External tables and catalog-managed Delta tables](../external-and-managed-tables/index.md)
 walks through that lifecycle. This page explains why each part of the API is
 designed the way it is.
+
+The diagram follows one table through the API, from negotiation to its first
+commit. Expand it to step through each call:
+
+![A query engine negotiates with GET /delta/v1/config, stages a table and gets back its location, a READ_WRITE credential, and the required protocol, writes version 0 to object storage, creates the table, then loads it, writes a staged commit, and posts that commit with assert-table-uuid and assert-etag before publishing it to the Delta log](./assets/managedTableFlow.png "likec4=ucDeltaApi_managedTableFlow")
 
 This page's script, `delta_api_semantics.py`, sends the requests shown here
 to a server and checks the responses the page describes.
@@ -45,9 +48,15 @@ protocol upgrade, and a property change. They can share one request, so a
 change and the commit that writes it land together or not at all.
 
 All or nothing extends to a request the server rejects as malformed. A
-request may carry at most one action of each type, and at most one
-requirement of each type. A `set-properties` and a `remove-properties` that
-touch the same key are rejected rather than applied in order. The order of
+request may carry at most one update of each action type, `add-commit`
+included, and at most one requirement of each type
+([spec](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/spec/protocols/ManagedDeltaTablesSpec.md#write-a-commit),
+[`delta.yaml`](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/api/delta.yaml)).
+The file actions a writer repeats, Delta's `add` and `remove`, aren't
+actions in this API. They live in the commit file that the one `add-commit`
+names, and a commit file holds as many as the commit needs. A
+`set-properties` and a `remove-properties` that touch the same key are
+rejected rather than applied in order. The order of
 entries in either list carries no meaning, because the server applies actions
 in a fixed order of its own
 ([spec](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/spec/protocols/ManagedDeltaTablesSpec.md#write-a-commit)).

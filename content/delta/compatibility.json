@@ -4199,7 +4199,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
@@ -4209,7 +4209,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "add-columns-and-comments",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -4249,7 +4249,7 @@
         },
         "delta-rs-python": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
@@ -4259,7 +4259,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "1.6.6",
@@ -4335,7 +4335,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
@@ -4345,7 +4345,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "drop-or-widen-a-column",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -4455,7 +4455,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
@@ -4465,7 +4465,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "drop-or-widen-a-column",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -6408,7 +6408,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "set-and-remove-table-properties",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -6456,7 +6456,7 @@
         },
         "delta-rs-python": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
@@ -6466,7 +6466,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "1.6.6",
@@ -7550,7 +7550,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
@@ -7560,7 +7560,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "add-columns-and-comments",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7575,7 +7575,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "add-columns-and-comments",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -7587,7 +7587,7 @@
         },
         "spark-python": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
@@ -7597,7 +7597,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "add-columns-and-comments",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7609,7 +7609,7 @@
         },
         "delta-rs-python": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
@@ -7619,7 +7619,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "choose-a-client",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "Max catalog version is required when loading a catalog-managed table",
               "version": "1.6.6",
@@ -7631,7 +7631,7 @@
         },
         "duckdb-sql": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
@@ -7641,7 +7641,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "choose-a-client",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "UCTableSet::AlterTable",
               "version": "1.5.6",
@@ -7682,7 +7682,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
@@ -7692,7 +7692,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "set-and-remove-table-properties",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7707,7 +7707,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "set-and-remove-table-properties",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -7719,7 +7719,7 @@
         },
         "spark-python": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
@@ -7729,7 +7729,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "set-and-remove-table-properties",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7741,7 +7741,7 @@
         },
         "delta-rs-python": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
@@ -7751,7 +7751,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "choose-a-client",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "Max catalog version is required when loading a catalog-managed table",
               "version": "1.6.6",
@@ -7792,7 +7792,7 @@
       "cells": {
         "spark-sql": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
@@ -7802,7 +7802,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "rename-a-table-or-column",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
               "version": "4.1.0",
@@ -7817,7 +7817,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "rename-a-table-or-column",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
               "version": null,
@@ -7829,7 +7829,7 @@
         },
         "spark-python": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
@@ -7839,7 +7839,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "rename-a-table-or-column",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
               "version": "4.1.0",
@@ -7851,7 +7851,7 @@
         },
         "delta-rs-python": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
@@ -7861,7 +7861,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "choose-a-client",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "Max catalog version is required when loading a catalog-managed table",
               "version": "1.6.6",
@@ -7900,7 +7900,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
@@ -7910,7 +7910,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -7925,7 +7925,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7937,7 +7937,7 @@
         },
         "spark-python": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
@@ -7947,7 +7947,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7959,7 +7959,7 @@
         },
         "delta-rs-python": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
@@ -7969,7 +7969,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "1.6.6",
@@ -7981,7 +7981,7 @@
         },
         "duckdb-sql": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
@@ -7991,7 +7991,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "choose-a-client",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "UCTableSet::AlterTable",
               "version": "1.5.6",
@@ -8030,7 +8030,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
@@ -8040,7 +8040,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -8055,7 +8055,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -8067,7 +8067,7 @@
         },
         "spark-python": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
@@ -8077,7 +8077,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -8089,7 +8089,7 @@
         },
         "delta-rs-python": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
@@ -8099,7 +8099,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "change-the-delta-log",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "1.6.6",
@@ -8111,7 +8111,7 @@
         },
         "duckdb-sql": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
@@ -8121,7 +8121,7 @@
                 "slug": "change-table-schema"
               },
               "anchor": "choose-a-client",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "Only altering tables is supported for now",
               "version": "1.5.6",
@@ -9947,16 +9947,20 @@
       "kind": "operatesOn",
       "target": "lakehouse.table",
       "interfaces": [
+        "spark-python",
         "spark-sql"
       ],
       "journeys": [
         "column-mapping.read",
         "column-mapping.write",
+        "external.alter-schema",
+        "external.set-properties",
         "feature.properties",
         "history.detail",
         "history.list",
         "history.restore",
         "in-commit-timestamp.write",
+        "managed.alter-schema",
         "managed.append",
         "managed.create",
         "managed.create-as-select",
@@ -9967,10 +9971,54 @@
         "managed.read",
         "managed.replace",
         "managed.replace-where",
+        "managed.set-properties",
         "managed.time-travel",
         "managed.update",
         "row-tracking.write",
-        "schema.overwrite"
+        "schema.add-column",
+        "schema.overwrite",
+        "schema.rename-drop",
+        "schema.type-widening"
+      ]
+    },
+    {
+      "source": "deltaRs",
+      "kind": "consumes",
+      "target": "unityCatalogSpec",
+      "interfaces": [
+        "delta-rs-python"
+      ],
+      "journeys": [
+        "external.alter-schema",
+        "external.set-properties"
+      ]
+    },
+    {
+      "source": "deltaRs",
+      "kind": "implements",
+      "target": "deltaSpec",
+      "interfaces": [
+        "delta-rs-python"
+      ],
+      "journeys": [
+        "external.alter-schema",
+        "external.set-properties",
+        "feature.properties",
+        "schema.add-column"
+      ]
+    },
+    {
+      "source": "deltaRs",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "delta-rs-python"
+      ],
+      "journeys": [
+        "external.alter-schema",
+        "external.set-properties",
+        "feature.properties",
+        "schema.add-column"
       ]
     },
     {
@@ -9978,16 +10026,20 @@
       "kind": "implements",
       "target": "deltaSpec",
       "interfaces": [
+        "spark-python",
         "spark-sql"
       ],
       "journeys": [
         "column-mapping.read",
         "column-mapping.write",
+        "external.alter-schema",
+        "external.set-properties",
         "feature.properties",
         "history.detail",
         "history.list",
         "history.restore",
         "in-commit-timestamp.write",
+        "managed.alter-schema",
         "managed.append",
         "managed.create",
         "managed.create-as-select",
@@ -9998,10 +10050,14 @@
         "managed.read",
         "managed.replace",
         "managed.replace-where",
+        "managed.set-properties",
         "managed.time-travel",
         "managed.update",
         "row-tracking.write",
-        "schema.overwrite"
+        "schema.add-column",
+        "schema.overwrite",
+        "schema.rename-drop",
+        "schema.type-widening"
       ]
     },
     {
@@ -10064,9 +10120,11 @@
       "kind": "consumes",
       "target": "unityCatalogDeltaApiSpec",
       "interfaces": [
+        "spark-python",
         "spark-sql"
       ],
       "journeys": [
+        "managed.alter-schema",
         "managed.append",
         "managed.create",
         "managed.create-as-select",
@@ -10077,6 +10135,7 @@
         "managed.read",
         "managed.replace",
         "managed.replace-where",
+        "managed.set-properties",
         "managed.time-travel",
         "managed.update"
       ]
@@ -10086,9 +10145,13 @@
       "kind": "consumes",
       "target": "unityCatalogSpec",
       "interfaces": [
+        "spark-python",
         "spark-sql"
       ],
       "journeys": [
+        "external.alter-schema",
+        "external.set-properties",
+        "managed.alter-schema",
         "managed.append",
         "managed.create",
         "managed.create-as-select",
@@ -10099,6 +10162,7 @@
         "managed.read",
         "managed.replace",
         "managed.replace-where",
+        "managed.set-properties",
         "managed.time-travel",
         "managed.update"
       ]
@@ -11494,11 +11558,5 @@
       ]
     }
   ],
-  "diagnostics": [
-    {
-      "kind": "unverified-asset-edge",
-      "source": "deltaRs",
-      "asset": "lakehouse.table"
-    }
-  ]
+  "diagnostics": []
 }

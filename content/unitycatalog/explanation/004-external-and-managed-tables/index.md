@@ -152,8 +152,11 @@ What each client can do with a table, as tested in CI:
 | Append to a managed table | [✓](../../how-to/managed-delta-tables/index.md#write-to-the-table) | [✓](../../how-to/duckdb/index.md#append-rows) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) on local storage | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | — | — | — |
 | Update rows in a managed table | [✓](../../how-to/managed-delta-tables/index.md#write-to-the-table) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — |
 | Delete rows from a managed table | [✓](../../how-to/managed-delta-tables/index.md#write-to-the-table) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — |
-| Change a managed table's columns | — | — | ✗ | ✗ | ✗ | — | ✗ | ✗ |
-| Set a managed table's properties | — | — | ✗ | ✗ | ✗ | — | ✗ | ✗ |
+| Change a managed table's columns | [✓](../../how-to/change-table-schema/index.md#add-columns-and-comments) | [✗](../../how-to/change-table-schema/index.md#choose-a-client) | ✗ | ✗ | ✗ | — | ✗ | ✗ |
+| Set a managed table's properties | [✓](../../how-to/change-table-schema/index.md#set-and-remove-table-properties) | — | ✗ | ✗ | ✗ | — | ✗ | ✗ |
+| Rename a managed table or column | [✗](../../how-to/change-table-schema/index.md#rename-a-table-or-column) | — | — | — | — | — | — | — |
+| Change an external table's columns | [✓](../../how-to/change-table-schema/index.md#change-the-delta-log) sync through the Delta API | [✗](../../how-to/change-table-schema/index.md#choose-a-client) | — | — | — | — | — | — |
+| Set an external table's properties | [✓](../../how-to/change-table-schema/index.md#change-the-delta-log) sync through the Delta API | [✗](../../how-to/change-table-schema/index.md#choose-a-client) | — | — | — | — | — | — |
 | Replace a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#replace-a-tables-definition-and-rows) | — | — | — | — | — | — | — |
 | Overwrite a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#overwrite-all-rows) | — | — | — | — | — | — | — |
 | Replace rows that match a condition | [✓](../../how-to/replace-and-overwrite-tables/index.md#replace-the-rows-that-match-a-condition) | — | — | — | — | — | — | — |

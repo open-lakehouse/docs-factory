@@ -6859,7 +6859,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "create-a-managed-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -6911,7 +6911,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "create-a-managed-table",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": null,
               "version": "1.5.6",
@@ -6972,7 +6972,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "read-the-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7045,7 +7045,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "read-the-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "1.5.6",
@@ -7106,7 +7106,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "write-to-the-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7179,7 +7179,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "write-to-the-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "1.5.6",
@@ -7230,7 +7230,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "write-to-the-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7318,7 +7318,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "write-to-the-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7406,7 +7406,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "drop-a-managed-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -7494,7 +7494,7 @@
                 "slug": "managed-delta-tables"
               },
               "anchor": "read-an-earlier-version",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",

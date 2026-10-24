@@ -12,8 +12,10 @@
 //   license       — an implementation's SPDX license identifier; omitted for
 //                   managed services and closed-source software.
 //   language      — the language an implementation is written in.
-//   package       — the coordinate an implementation installs by: a Maven
-//                   artifact, a PyPI name, or a DuckDB extension name.
+//   pypi / crate / npm — the PyPI project, crates.io crate, or npm package an
+//                   implementation installs by; an element carries each it ships.
+//   maven         — its Maven `group:artifact`, Scala suffix included.
+//   duckdbExtension — the name a DuckDB extension is INSTALLed by.
 //   maturity      — the release channel, when it isn't a stable release
 //                   ("nightly", "preview").
 //   trestleModule / trestleEdge — written by `docsnip envs --fix` on generated
@@ -137,6 +139,10 @@ specification {
   tag library
   tag client
   tag infra
+  // Loads only into the host that `integrates` it (a Spark connector, a DuckDB
+  // extension). Its support is the host's, so it is never a path candidate or
+  // an implementation card of its own.
+  tag extension
   tag generated   // rendered from a Trestle plan; excluded from estate views
   // On a `realizes` edge: the implementation meets the target only together
   // with another contributor. Whether the target is fully met is a property of

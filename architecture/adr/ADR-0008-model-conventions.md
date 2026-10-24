@@ -89,6 +89,10 @@ not the engine, so "which formats and catalogs does engine X support?" is
 always `X -[integrates]-> I -[implements|consumes]-> spec`, plus X's own
 edges for support built into it. An integration doesn't realize its host's
 capability; one that implements a table format realizes the table format.
+An integration that runs only inside its host (the Spark plugins, DuckDB's
+extensions) is also tagged `#extension`. Its support rolls up into the host's,
+so it is never a path candidate of its own; delta-rs, useful without Polars,
+isn't one.
 
 **Formats are implemented; APIs are consumed.** Whatever reads or writes a
 format's bytes `implements` the format spec (Delta Lake, Iceberg, Parquet). A

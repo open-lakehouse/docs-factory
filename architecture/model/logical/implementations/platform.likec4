@@ -16,6 +16,7 @@ model {
 
     metadata {
       sourceRepo "mlflow/mlflow"
+      pypi "mlflow"
       license "Apache-2.0"
       language "Python"
     }
@@ -30,6 +31,7 @@ model {
 
     metadata {
       sourceRepo "marimo-team/marimo"
+      pypi "marimo"
       license "Apache-2.0"
       language "Python"
     }

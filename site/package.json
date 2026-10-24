@@ -58,7 +58,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react-swc": "^4.3.1",
-    "likec4": "1.58.0",
+    "likec4": "1.60.0",
     "postcss": "^8.5.6",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",

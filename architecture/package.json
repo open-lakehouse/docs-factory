@@ -11,6 +11,6 @@
     "model": "likec4 export json --pretty --skip-layout -o dist/model.json model && likec4 gen webcomponent -o dist/likec4-views.js model"
   },
   "devDependencies": {
-    "likec4": "1.58.0"
+    "likec4": "1.60.0"
   }
 }

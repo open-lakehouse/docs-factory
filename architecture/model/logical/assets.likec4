@@ -91,7 +91,8 @@ model {
       summary "A governed ML model."
       description "
         A model is the ML asset kind: a trained machine-learning artifact with
-        versions and lifecycle stages, tracked and governed as a catalogued asset.
+        numbered versions, which some registries extend with aliases or stages,
+        tracked and governed as a catalogued asset.
       "
       metadata { designDoc "design/asset-kinds.md" }
     }

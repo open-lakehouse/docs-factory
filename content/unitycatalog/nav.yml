@@ -98,8 +98,8 @@ nav:
 
       - section: Models
         items:
-          - planned: H15
-            title: Manage model versions and load a model with MLflow
+          - page: how-to/manage-models
+            id: H15
 
   - section: Connect engines and clients
     items:

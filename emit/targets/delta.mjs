@@ -59,13 +59,13 @@ function emitDay() {
 
 /**
  * Map the draft frontmatter → the delta blog collection's zod schema
- * (src/content.config.ts): { title, description, author[], publishedAt, thumbnail }.
+ * (src/content.config.ts): { title, description, author[], publishedAt, thumbnail, canonical? }.
  * Deterministic — no network. `description` and `thumbnail` are REQUIRED by the
  * schema; we emit what the draft has and let the delivery skill HALT if either is
  * missing (it can't fabricate a thumbnail image or a meaningful description).
  * Author-profile EXISTENCE is reconciled by the delivery skill, not here.
  */
-function frontmatter(draft) {
+function frontmatter(draft, { canonical } = {}) {
   const authors = (Array.isArray(draft.author) ? draft.author : [draft.author])
     .filter(Boolean)
     .map(authorSlug);
@@ -84,12 +84,19 @@ function frontmatter(draft) {
   // it out so the delivery skill halts with a clear "thumbnail required" message.
   const thumb = draft.thumbnail ?? draft.hero;
   if (thumb) fm.thumbnail = `./${String(thumb).replace(/^\.?\//, "")}`;
+  // A cross-post points search engines at the primary target's copy.
+  if (canonical) fm.canonical = canonical;
   // Drop draft-only fields (slug/status/tags/series/target) — not in the delta schema.
   return fm;
 }
 
 const delta = {
   name: "delta",
+  siteUrl: "https://delta.io",
+  // The site routes a post by its content-collection folder (`src/pages/blog/[id].astro`).
+  postUrl(postDir) {
+    return `${this.siteUrl}/blog/${postDir}/`;
+  },
   outputFile: "index.mdx", // the content-collection entry filename
   // Base stringify options; remark-mdx does the JSX-aware serialization.
   stringify: {

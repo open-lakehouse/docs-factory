@@ -56,11 +56,12 @@ _site-deps:
 
 # --- Emit a blog draft to a downstream target ------------------------------
 
-# Emit blogs/<slug>/index.md to a downstream target. `target` is required:
-# `unitycatalog` (unitycatalog.io) or `delta` (delta.io). Produces
-# blogs/<slug>/dist/<target>/. See emit/README.md.
-emit slug target: _emit-deps
-    cd emit && bun emit.mjs --slug {{slug}} --target {{target}}
+# Emit blogs/<slug>/index.md to downstream targets: `unitycatalog`
+# (unitycatalog.io) and/or `delta` (delta.io); with none given, every target in
+# the draft's `target:` list. Produces blogs/<slug>/dist/<target>/ for each.
+# See emit/README.md.
+emit slug *targets: _emit-deps
+    cd emit && bun emit.mjs --slug {{slug}} {{ if targets == "" { "" } else { "--target " + replace(targets, " ", ",") } }}
 
 # --- Emit a project's docs into a static target site ------------------------
 

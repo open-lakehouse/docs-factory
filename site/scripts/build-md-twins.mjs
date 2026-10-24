@@ -12,6 +12,10 @@
 // is exactly what `twinUrl()` advertises and the gen-vercel-config `.md` rules
 // serve.
 //
+// A docs page's environment markers expand as the docs emitter expands them
+// (the same remark-prerequisites-env, via page-environments.mjs), so the twin carries the
+// start commands and the stack's Mermaid.
+//
 // Run order: after `vite build`, before assemble-vercel-output.mjs. DB-free:
 // gated on git-authoritative `isPublic()` (status: ready).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -23,6 +27,8 @@ import { isPublic, splitFrontmatter } from "../src/content-core/frontmatter.mjs"
 import { canonicalUrl, siteOrigin } from "../src/content-core/head.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
 import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
+import remarkPrerequisitesEnv from "../src/plugins/remark-prerequisites-env.mjs";
+import { loadEnvironmentResolver } from "./page-environments.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
@@ -278,14 +284,23 @@ function loadScriptsByRoute() {
 }
 
 /** Emit one page's twin. Returns the written path (relative to dist/), or null if
- *  the page isn't public or has no route. */
-async function buildTwin(absPath, scriptsByRoute) {
+ *  the page isn't public, has no route, or can't be emitted. `environmentFor` is
+ *  page-environments' resolver, or null without a script index. */
+async function buildTwin(absPath, scriptsByRoute, environmentFor) {
   const raw = readFileSync(absPath, "utf8");
   const { meta } = splitFrontmatter(raw);
   if (!isPublic(meta)) return null;
   const identity = docIdentity(absPath, meta);
   const href = hrefFromIdentity(identity);
   if (!href) return null;
+
+  let derived = null;
+  try {
+    derived = environmentFor?.(absPath, raw) ?? null;
+  } catch (err) {
+    // The docs emitter fails on this; the twin still builds, minus the commands.
+    console.warn(`build-md-twins: ${href} — ${err.message.split("\n")[0]}`);
+  }
 
   let output;
   try {
@@ -297,6 +312,8 @@ async function buildTwin(absPath, scriptsByRoute) {
       likec4OutDir: likec4ExportDir,
       likec4Exported,
       assetsDir: dirname(absPath),
+      // Without one, still drop any `:::environment` marker.
+      plugins: [[remarkPrerequisitesEnv, derived ?? { environment: null }]],
     }));
     likec4Exported ||= likec4Dir != null;
   } catch (err) {
@@ -323,12 +340,13 @@ async function main() {
   // build-script-index runs before us (CI prebuild), so dist/scripts.json exists;
   // if it doesn't, tutorial twins keep the "_None yet._" placeholder.
   const scriptsByRoute = loadScriptsByRoute();
+  const environmentFor = loadEnvironmentResolver(repoRoot);
   const written = [];
   for (const absPath of [
     ...walkContent(resolve(repoRoot, "content")),
     ...walkBlogs(resolve(repoRoot, "blogs")),
   ]) {
-    const out = await buildTwin(absPath, scriptsByRoute);
+    const out = await buildTwin(absPath, scriptsByRoute, environmentFor);
     if (out) written.push(out);
   }
   console.log(`build-md-twins: wrote ${written.length} .md twin(s) into dist/.`);

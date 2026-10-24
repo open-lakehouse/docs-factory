@@ -172,6 +172,8 @@ files stay in MLflow. Leave the session with `Ctrl+D`.
 
 ## Next steps
 
+- [Manage registered models](../../how-to/manage-models/index.md) to register
+  new versions, load one by number, rename, and delete models.
 - [Manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
   to create the catalogs and schemas your models live in.
 - [Learn how credential vending works](../../explanation/credential-vending/index.md),

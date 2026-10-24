@@ -11224,6 +11224,21 @@
           "draft": true,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "register-a-model-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "3.17.0",
+              "api": "mlflow.register_model",
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/009-register-model-mlflow/snippets/hello_mlflow.py",
               "page": {
                 "project": "unitycatalog",
@@ -11264,7 +11279,74 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "view-models-and-versions",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc model_version get",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "view-models-and-versions",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "ModelVersionsApi.get_model_version",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "mlflow": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "view-models-and-versions",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "3.17.0",
+              "api": "MlflowClient.search_model_versions",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "model.load",
@@ -11292,6 +11374,21 @@
           "status": "tested",
           "draft": true,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "load-a-model-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "3.17.0",
+              "api": "mlflow.pyfunc.load_model",
+              "note": null
+            },
             {
               "script": "content/unitycatalog/tutorials/009-register-model-mlflow/snippets/hello_mlflow.py",
               "page": {
@@ -11333,7 +11430,74 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "update-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc registered_model update --comment",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "update-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "RegisteredModelsApi.update_registered_model",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "mlflow": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "update-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "3.17.0",
+              "api": "MlflowClient.update_model_version",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "model.rename",
@@ -11356,7 +11520,74 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "rename-a-model",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc registered_model update --new_name",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "rename-a-model",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "UpdateRegisteredModel(new_name=...)",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "mlflow": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "rename-a-model",
+              "ready": false,
+              "works": false,
+              "fails": "Method not implemented",
+              "version": "3.17.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "model.delete-version",
@@ -11379,7 +11610,74 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "delete-a-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc model_version delete",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "delete-a-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "ModelVersionsApi.delete_model_version",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "mlflow": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "delete-a-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "3.17.0",
+              "api": "MlflowClient.delete_model_version",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "model.delete",
@@ -11402,7 +11700,74 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "delete-a-model",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc registered_model delete --force",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "delete-a-model",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "RegisteredModelsApi.delete_registered_model",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "mlflow": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "delete-a-model",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "3.17.0",
+              "api": "MlflowClient.delete_registered_model",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "model.alias",
@@ -11425,7 +11790,30 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "mlflow": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-models"
+              },
+              "anchor": "load-a-model-version",
+              "ready": false,
+              "works": false,
+              "fails": "Method not implemented",
+              "version": "3.17.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "function.tool",

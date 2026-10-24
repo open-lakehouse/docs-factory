@@ -19,7 +19,7 @@ export interface PageHead {
 export interface PageHeadEntry {
   /** The docs site that emits the page, e.g. `unitycatalog-docs`. */
   site: string;
-  /** `status: ready`; a draft only appears in a `--drafts` preview. */
+  /** `status: ready`: the page ships with this head. */
   published: boolean;
   /** Where the description came from: frontmatter `summary`, or the first paragraph. */
   descriptionSource: "summary" | "body";
@@ -36,10 +36,9 @@ export type PageHeads = Record<string, PageHeadEntry>;
  */
 export const HEAD_PROJECTS: readonly string[] = ["unitycatalog", "delta"];
 
-/** Whether a docs page gets a head: a project with a site, emitted by a `--drafts` emit. */
-export function hasPageHead(project: string | undefined, status: string | undefined): boolean {
-  const s = status ?? "draft";
-  return !!project && HEAD_PROJECTS.includes(project) && (s === "draft" || s === "ready");
+/** Whether a docs page gets a head: its project has a docs site. Any status. */
+export function hasPageHead(project: string | undefined): boolean {
+  return !!project && HEAD_PROJECTS.includes(project);
 }
 
 export function pageHeadKey(project: string, bucket: string, slug: string): string {

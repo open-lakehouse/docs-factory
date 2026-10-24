@@ -67,8 +67,8 @@ export default function PageHeadView({ contentRef }: { contentRef: ContentRef })
           <div className="prose mx-auto max-w-3xl px-6 py-8">
             {!entry.published && (
               <p className="muted text-sm">
-                As a <code>--drafts</code> preview of {entry.site} emits it; the page ships with
-                this head once it is <code>status: ready</code>.
+                As {entry.site} would emit it; the page ships with this head once it is{" "}
+                <code>status: ready</code>.
               </p>
             )}
             {mode === "json-ld" ? <JsonLd entry={entry} /> : <Meta entry={entry} />}

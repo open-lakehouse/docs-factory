@@ -1,10 +1,7 @@
 // viewsFor fans a page out to its tab views. The rules under test: every page
-// has a rendered view; only PUBLISHED (status: ready) pages get a Markdown twin;
-// scripts attach whenever a scripts.json entry's tutorialRoute matches the page's
-// route — INDEPENDENT of status (docsnip indexes scripts regardless of
-// frontmatter), so a draft tutorial still shows its scripts. Blog routes match too.
-// A docs page of a project with a docs site gets a Head view when an emit with
-// --drafts would select it (ready or draft).
+// has a rendered view and a Markdown twin, whatever its status; scripts attach
+// whenever a scripts.json entry's tutorialRoute matches the page's route. Blog
+// routes match too. A docs page of a project with a docs site gets a Head view.
 import { expect, test } from "bun:test";
 import type { ContentPage } from "../../../content";
 import { blogRef, docRef } from "../../../lib/content-ref";
@@ -34,21 +31,18 @@ function indexWith(...routes: string[]): ScriptsIndex {
   };
 }
 
-test("a draft page has no Markdown twin but STILL shows its scripts", () => {
+test("a draft page gets a Markdown twin and STILL shows its scripts", () => {
   const views = viewsFor(ref, draftPage, indexWith(route));
   expect(views).toEqual([
     { kind: "rendered" },
+    { kind: "md" },
     { kind: "script", fetchUrl: `${route}/snippets/s0.py` },
   ]);
 });
 
-test("a draft page with no matching scripts is rendered-only", () => {
-  expect(viewsFor(ref, draftPage, indexWith())).toEqual([{ kind: "rendered" }]);
-});
-
-test("a published page gets rendered + markdown", () => {
-  const views = viewsFor(ref, readyPage, indexWith());
-  expect(views).toEqual([{ kind: "rendered" }, { kind: "md" }]);
+test("a page gets rendered + markdown", () => {
+  expect(viewsFor(ref, draftPage, indexWith())).toEqual([{ kind: "rendered" }, { kind: "md" }]);
+  expect(viewsFor(ref, readyPage, indexWith())).toEqual([{ kind: "rendered" }, { kind: "md" }]);
 });
 
 test("a published tutorial attaches its own scripts, not others'", () => {
@@ -80,24 +74,18 @@ function docPage(project: string, status?: string): ContentPage {
   return { area: "docs", project, frontmatter: { status } } as unknown as ContentPage;
 }
 
-test("a ready or draft docs-site page gets a Head view after the twin", () => {
-  expect(viewsFor(ref, docPage("delta", "ready"), indexWith())).toEqual([
-    { kind: "rendered" },
-    { kind: "md" },
-    { kind: "head" },
-  ]);
-  expect(viewsFor(ref, docPage("unitycatalog", "draft"), indexWith())).toEqual([
-    { kind: "rendered" },
-    { kind: "head" },
-  ]);
-  // Unset status is a draft.
-  expect(viewsFor(ref, docPage("delta"), indexWith())).toContainEqual({ kind: "head" });
+test("a docs-site page of any status gets a Head view after the twin", () => {
+  for (const status of ["ready", "draft", "idea", "private", undefined]) {
+    expect(viewsFor(ref, docPage("unitycatalog", status), indexWith())).toEqual([
+      { kind: "rendered" },
+      { kind: "md" },
+      { kind: "head" },
+    ]);
+  }
 });
 
-test("idea, private, site-less projects, and blogs get no Head view", () => {
+test("site-less projects and blogs get no Head view", () => {
   for (const page of [
-    docPage("delta", "idea"),
-    docPage("delta", "private"),
     docPage("open-lakehouse", "ready"),
     { area: "blogs", frontmatter: { status: "ready" } } as unknown as ContentPage,
   ]) {

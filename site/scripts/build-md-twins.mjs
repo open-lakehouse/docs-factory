@@ -1,4 +1,4 @@
-// Build the reader-optimized `.md` twin of every public page (Phase 1a of the
+// Build the reader-optimized `.md` twin of every page (Phase 1a of the
 // agentic-docs plan).
 //
 // A twin is the RICH emitter rendering of a page — NOT its authoring-shaped
@@ -12,18 +12,19 @@
 // is exactly what `twinUrl()` advertises and the gen-vercel-config `.md` rules
 // serve.
 //
-// A docs page's environment markers expand as the docs emitter expands them
-// (the same remark-prerequisites-env, via page-environments.mjs), so the twin carries the
+// Every page gets one, whatever its status: the review app is login-gated, and
+// a draft's twin is as much under review as its rendered page. A docs page's
+// environment markers expand as the docs emitter expands them (the same
+// remark-prerequisites-env, via page-environments.mjs), so the twin carries the
 // start commands and the stack's Mermaid.
 //
-// Run order: after `vite build`, before assemble-vercel-output.mjs. DB-free:
-// gated on git-authoritative `isPublic()` (status: ready).
+// Run order: after `vite build`, before assemble-vercel-output.mjs. DB-free.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defaultModelDir, emitOne } from "../../emit/emit.mjs";
 import mdTwin from "../../emit/targets/md-twin.mjs";
-import { isPublic, splitFrontmatter } from "../src/content-core/frontmatter.mjs";
+import { splitFrontmatter } from "../src/content-core/frontmatter.mjs";
 import { canonicalUrl, siteOrigin } from "../src/content-core/head.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
 import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
@@ -284,12 +285,11 @@ function loadScriptsByRoute() {
 }
 
 /** Emit one page's twin. Returns the written path (relative to dist/), or null if
- *  the page isn't public, has no route, or can't be emitted. `environmentFor` is
+ *  the page has no route or can't be emitted. `environmentFor` is
  *  page-environments' resolver, or null without a script index. */
 async function buildTwin(absPath, scriptsByRoute, environmentFor) {
   const raw = readFileSync(absPath, "utf8");
   const { meta } = splitFrontmatter(raw);
-  if (!isPublic(meta)) return null;
   const identity = docIdentity(absPath, meta);
   const href = hrefFromIdentity(identity);
   if (!href) return null;

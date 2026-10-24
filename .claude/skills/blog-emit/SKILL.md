@@ -9,9 +9,11 @@ description: |
       repo (interactive LikeC4, <Journey> timelines, :::callouts).
     - delta — a rich native Astro MDX post in the sibling delta-io/website repo
       (../website), same rich rendering.
+  A post may list several targets to cross-post to; the first is the primary and the
+  others carry a canonical link to it.
   Use when the user wants to emit / export / cross-publish a draft to unitycatalog.io
   or delta.io, or to refresh an already-delivered post there.
-argument-hint: 'A blogs/<slug> to emit. --target <unitycatalog|delta> is required.'
+argument-hint: 'A blogs/<slug> to emit. Optional --target <unitycatalog|delta>[,…]; defaults to the target: list in the draft.'
 ---
 
 # blog-emit: emit a draft to a downstream target
@@ -46,15 +48,17 @@ don't restate them here.
 
 ## Steps
 
-### 0. Resolve the target and load its runbook
+### 0. Resolve the targets and load their runbooks
 
-Read `--target` from the arguments; it is **required** — if it is absent, ask the
-user which target to emit to rather than guessing (a cross-publish delivers to an
-external site). Valid targets are the delivery modules in `emit/targets/`
-(`unitycatalog`, `delta`).
+The draft's `target:` is one site or a list of sites to cross-post to; the **first is
+the primary**. Take the targets from `--target` if given, else from that list, and
+**confirm the list with the user before delivering** (each delivers to an external
+site). Valid targets are the delivery modules in `emit/targets/` (`unitycatalog`,
+`delta`); a listed target without one (`openlakehouse`) can't be emitted.
 
-Then **read the matching runbook and follow it for step 3** — and only that one (this
-is the progressive-disclosure seam; don't load the others):
+Work through the targets **one at a time, primary first**, running steps 1–4 for
+each. For each target, **read the matching runbook and follow it for step 3** — only
+that one (this is the progressive-disclosure seam; don't load the others):
 
 | target        | runbook                                      | delivers to                              |
 | ------------- | -------------------------------------------- | ---------------------------------------- |
@@ -70,10 +74,13 @@ cd emit && bun install    # first run only (installs unified/remark deps)
 bun emit.mjs --slug <slug> --target <target>
 ```
 
+(`--target a,b` or no `--target` at all emits several targets in one run; render the
+cross-posts again after the primary's delivery is recorded, see below.)
+
 This writes, under `blogs/<slug>/dist/<target>/`:
 
 - the render — `index.mdx` (unitycatalog, delta);
-- `assets.json` — `{ slug, target, title, existing, images: [...] }`;
+- `assets.json` — `{ slug, target, primary, canonical, title, existing, images: [...] }`;
 - `likec4-webcomponent.mjs` — the interactive-diagram bundle (rich targets, only when
   the post has a `likec4=` diagram);
 
@@ -93,6 +100,12 @@ fails for want of a browser, run `bunx playwright install chromium` once and re-
     `.emitted.json` sidecar under the `<target>` key: `null` → CREATE; an object →
     UPDATE that delivery in place. Its shape is `{ post_dir, updated }` — the runbook
     you loaded describes it.
+  - `canonical` is set on a cross-post: the primary's delivered URL, which the render's
+    frontmatter carries so the site points search engines at the primary. It is
+    `null` on the primary. On a cross-post it is `null` only while the primary has no
+    delivery recorded, and the core prints `canonical: pending`: deliver the primary
+    first (through step 4), then re-run step 1 for the cross-post. Never deliver a
+    cross-post without its canonical.
   - each `images[]` entry is `{ filename, localPath, altText, likec4 }`; `localPath`
     is the real file on disk to upload/copy (for a `likec4=` image it is the freshly
     regenerated export, not any committed copy).
@@ -113,7 +126,9 @@ folder (it travels with the post, no global registry) while `index.md` stays pur
   it back, and commit it (tracked, not gitignored). This is what makes the next emit
   an UPDATE, not a duplicate.
 - **On UPDATE**, refresh that target's `updated` to today's date.
-- **Report** the result (post dir + preview URL) to the user.
+- **Report** the result (post dir + preview URL) to the user, then continue with the
+  next target. A cross-post's render needs the primary's sidecar entry, so record
+  the primary before you emit the cross-posts.
 
 ## What this skill must NOT do (all targets)
 

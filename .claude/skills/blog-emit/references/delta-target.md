@@ -4,7 +4,7 @@ The delivery step (step 3 of `/blog-emit --target delta`) copies the core's rich
 `.mdx` post into the sibling **`delta-io/website`** repo, expected at `../website`.
 It renders richly there — interactive LikeC4 (`<likec4-view>`), `<Journey>` step
 timelines, and `:::` callouts — via the same one-time wiring the unitycatalog target
-uses, ported to this site (§D, already installed).
+uses, ported to this site (§D, installed except the cross-post canonical, item 9).
 
 Confirm `../website` exists and is on a clean working branch before writing into it.
 No MCP needed — it's a repo the user owns; this is a human-in-the-loop copy that never
@@ -15,7 +15,8 @@ pushes or opens a PR (that is the user's action).
 `bun emit.mjs --slug <slug> --target delta` → `blogs/<slug>/dist/delta/`:
 
 - `index.mdx` — delta-shaped YAML frontmatter (`title`, `description`, `author:
-  [<profile-id>]`, `publishedAt` ISO date, `thumbnail: ./<file>`), then default
+  [<profile-id>]`, `publishedAt` ISO date, `thumbnail: ./<file>`, and `canonical` on
+  a cross-post whose primary is another site), then default
   imports (`Journey`, `JourneyStep`, `LikeC4View` from `@/components/blog`), then body.
   `::::journey`→`<Journey><JourneyStep step="…">`; `likec4=`→`<LikeC4View viewId="…" />`;
   `:::` callouts LEFT as directives but **remapped** to the delta site's vocabulary
@@ -25,6 +26,15 @@ pushes or opens a PR (that is the user's action).
   = file to copy in, incl. the regenerated LikeC4 PNG fallback).
 - `likec4-webcomponent.mjs` — the `<likec4-view>` bundle (present when the post has a
   diagram).
+
+## A0. A cross-post needs canonical wiring (BEFORE copying)
+
+If `assets.json` has a `canonical` (this post is cross-posted, and `delta` is not its
+primary), the render's frontmatter carries `canonical: <url>`. The site must both
+accept that field and put it in `<link rel="canonical">`, or a build fails on the
+unknown field or the copy competes with the primary in search. Check the wiring
+(§D item 9). **If it is missing, HALT and report**; don't strip the
+field to make the build pass.
 
 ## A. Reconcile the author → profile (the sharp edge — BEFORE copying)
 
@@ -92,7 +102,7 @@ Then **report** the post dir + preview URL. The skill's shared step 4 records th
 
 ---
 
-## D. One-time site wiring (installed + verified 2026-07-17 — reference / re-verify)
+## D. One-time site wiring (installed + verified 2026-07-17 except item 9 — reference / re-verify)
 
 The below is the enabling wiring the delta site needed to render rich MDX posts. It
 was added and verified when the delta target was built; treat this as documentation
@@ -158,6 +168,17 @@ restore it. The site is **Astro 5, pnpm, `astro-orbit`**; the delta site uses ca
 
 8. **`public/likec4/likec4-webcomponent.mjs`** — the delivery step (§B) drops the
    generated bundle here (loaded by `LikeC4View.astro`).
+
+9. **Cross-post canonical — NOT installed yet.** Needed only for a post whose primary
+   is another site (§A0). The `<head>` comes from `astro-orbit`'s `PageLayout`, which
+   always renders `<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />`
+   and takes no override, so a second `<link>` from the site would conflict. Wire:
+   - `astro-orbit`: an optional `canonical` prop on `PageLayout` (upstream, or a
+     `pnpm patch` until it lands) that replaces the self URL when set.
+   - `src/content.config.ts`: add `canonical: z.string().url().optional()` to the
+     blog schema.
+   - `src/layouts/Layout.astro`: accept `canonical` and pass it to `<PageLayout>`;
+     `src/layouts/Post.astro`: pass `canonical={post.data.canonical}` to `<Layout>`.
 
 ## Gotchas
 

@@ -3,12 +3,22 @@
 The delivery step (step 3 of `/blog-emit --target unitycatalog`) copies the core's
 rich `.mdx` post into the sibling `unitycatalog-website` repo. This runbook is the
 CREATE-or-UPDATE mechanics (§§A–C); the one-time site wiring (§D) is **already
-installed** — it's a reference/re-verify checklist, not a to-do.
+installed** — it's a reference/re-verify checklist, not a to-do — except the
+cross-post canonical (§D item 8).
 
 The sibling repo is expected at `../unitycatalog-website`. Confirm it exists and is
 on a clean working branch before writing into it. No MCP needed — it's a repo the
 user owns, so this is a human-in-the-loop copy: this never pushes/opens a PR — that
 is the user's action.
+
+## A0. A cross-post needs canonical wiring (BEFORE copying)
+
+If `assets.json` has a `canonical` (this post is cross-posted, and `unitycatalog` is
+not its primary), the render's frontmatter carries `canonical: <url>`. The site must
+both accept that field and put it in `<link rel="canonical">`, or a build fails on the
+unknown field or the copy competes with the primary in search. Check the wiring
+(§D item 8). **If it is missing, HALT and report**; don't strip the field to make the
+build pass.
 
 ## A. Reconcile the author → profile (the sharp edge — BEFORE copying)
 
@@ -58,7 +68,7 @@ records the `unitycatalog` sidecar block `{ post_dir, updated }`. Opening a PR i
 
 ---
 
-## D. One-time site wiring (already installed — reference / re-verify)
+## D. One-time site wiring (installed except item 8 — reference / re-verify)
 
 The below is the enabling wiring the site needed the first time this target was used.
 It is **already present** in `../unitycatalog-website`; treat this as documentation
@@ -76,7 +86,8 @@ dated folder name), authors are `reference("profiles")`, `category` is the enum
 `blogs/<slug>/dist/unitycatalog/`:
 
 - `index.mdx` — frontmatter first (`title`, `authors: [<profile-id>]`,
-  `category: guide`, `date`, optional `description`), then default imports
+  `category: guide`, `date`, optional `description`, and `canonical` on a
+  cross-post whose primary is another site), then default imports
   `import Journey from "@/components/blog/Journey.astro"` (+ `JourneyStep`,
   `LikeC4View`), then body. `::::journey`→`<Journey><JourneyStep step="…">`;
   `likec4=`→`<LikeC4View viewId="…" />`; `:::` callouts LEFT as directives;
@@ -144,6 +155,15 @@ dated folder name), authors are `reference("profiles")`, `category` is the enum
 
 7. **`public/likec4/likec4-webcomponent.mjs`** — the delivery step drops the
    generated bundle here (loaded by `LikeC4View.astro`).
+
+8. **Cross-post canonical — NOT installed yet.** Needed only for a post whose primary
+   is another site (§A0). `src/layouts/Layout.astro` always renders
+   `<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />`. Wire:
+   - `src/content.config.ts`: add `canonical: z.string().url().optional()` to the
+     blog schema.
+   - `src/layouts/Layout.astro`: add an optional `canonical?: string` prop and render
+     `href={canonical ?? new URL(Astro.url.pathname, Astro.site)}`.
+   - `src/pages/blogs/[id].astro`: pass `canonical={post.data.canonical}` to `<Layout>`.
 
 ## Gotchas confirmed during bring-up
 

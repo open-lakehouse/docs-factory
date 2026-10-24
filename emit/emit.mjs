@@ -6,9 +6,11 @@
  * constructs into portable, self-contained Markdown for a downstream target, plus
  * an image manifest. See emit/README.md and blogs/CONVENTIONS.md §5.
  *
- *   bun emit.mjs --slug <slug> --target <target>
+ *   bun emit.mjs --slug <slug> [--target <target>[,<target>…]]…
  *     → blogs/<slug>/dist/<target>/index.mdx
  *     → blogs/<slug>/dist/<target>/assets.json
+ *
+ * Without `--target` it emits every target in the draft's `target:` list.
  *
  * The two target-agnostic transforms (snippet inlining, the prose-colon guard) are
  * imported VERBATIM from the preview harness so there is exactly one implementation
@@ -47,20 +49,48 @@ const REPO_ROOT = resolve(HERE, "..");
 // --- args -----------------------------------------------------------------
 
 function parseArgs(argv) {
-  const args = {};
+  const args = { targets: [] };
+  const addTargets = (v) =>
+    args.targets.push(
+      ...String(v ?? "")
+        .split(",")
+        .filter(Boolean),
+    );
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === "--slug") args.slug = argv[++i];
-    else if (a === "--target") args.target = argv[++i];
+    else if (a === "--target") addTargets(argv[++i]);
     else if (a.startsWith("--slug=")) args.slug = a.slice(7);
-    else if (a.startsWith("--target=")) args.target = a.slice(9);
+    else if (a.startsWith("--target=")) addTargets(a.slice(9));
   }
   return args;
 }
 
 async function loadTarget(name) {
-  const mod = await import(`./targets/${name}.mjs`);
+  const path = join(HERE, "targets", `${name}.mjs`);
+  if (!existsSync(path))
+    throw new Error(`no emitter for target '${name}' (emit/targets/${name}.mjs)`);
+  const mod = await import(path);
   return mod.default ?? mod;
+}
+
+/** A draft's `target:` as a list — one site, or the sites it is cross-posted to.
+ *  The first entry is the primary, which holds the canonical URL. */
+export function blogTargets(meta) {
+  const t = meta?.target;
+  if (t == null || t === "") return [];
+  return (Array.isArray(t) ? t : [t]).map(String);
+}
+
+/**
+ * The `canonical` URL a cross-post points at: the primary's delivered post.
+ * Null for the primary itself (its site canonicalizes to itself), and when the
+ * primary has no recorded delivery yet, since its post dir is only known then.
+ */
+export function crossPostCanonical(name, primary, sidecar) {
+  if (!primary || name === primary.name) return null;
+  const postDir = sidecar?.[primary.name]?.post_dir;
+  return postDir && primary.postUrl ? primary.postUrl(postDir) : null;
 }
 
 // --- frontmatter + HTML-comment handling ----------------------------------
@@ -104,7 +134,7 @@ function stripComments(node) {
 
 /**
  * @param capture  object the parsed frontmatter is captured onto (`capture.frontmatter`).
- * @param opts     `{ titleAsH1, frontmatter }`:
+ * @param opts     `{ titleAsH1, frontmatter, frontmatterContext }`:
  *                 - `titleAsH1` — when true, the frontmatter `title` is prepended as
  *                   a top-level `#` heading, for a target whose body has no title of
  *                   its own. Targets whose site renders the title from frontmatter
@@ -115,10 +145,13 @@ function stripComments(node) {
  *                   content-collection target (unitycatalog) returns the target-shaped
  *                   frontmatter, which is prepended to the tree as a `yaml` node so
  *                   remark-frontmatter serializes it as a leading `--- … ---` block.
+ *                 - `frontmatterContext` — passed to the hook as its second
+ *                   argument: `{ canonical }` for a cross-post.
  */
 function remarkPrelude(capture, opts = {}) {
   const titleAsH1 = opts.titleAsH1 ?? true;
   const frontmatterFn = opts.frontmatter ?? null;
+  const frontmatterContext = opts.frontmatterContext ?? {};
   return (tree) => {
     const kept = [];
     let title;
@@ -156,7 +189,7 @@ function remarkPrelude(capture, opts = {}) {
     // object is serialized to YAML, a returned string is used verbatim. Prepend it
     // FIRST (before any H1) so it is the document's opening block.
     if (frontmatterFn) {
-      const mapped = frontmatterFn(capture.frontmatter ?? {});
+      const mapped = frontmatterFn(capture.frontmatter ?? {}, frontmatterContext);
       if (mapped != null) {
         const yaml = typeof mapped === "string" ? mapped : stringifyYaml(mapped).replace(/\n$/, "");
         tree.children.unshift({ type: "yaml", value: yaml });
@@ -275,6 +308,8 @@ export function defaultModelDir() {
  *                                  bundle (only for targets with `likec4WebComponent`).
  * @param {boolean} [o.likec4Exported] `likec4OutDir` already holds this run's
  *                                  export (a multi-page caller exports once).
+ * @param {object} [o.frontmatterContext] passed to the target's `frontmatter`
+ *                                  hook (`{ canonical }` for a cross-post).
  * @param {Array} [o.plugins]      extra `[plugin, options]` remark transforms, run
  *                                  right after snippet inlining and before the
  *                                  target's constructs (e.g. the docs-site emitter's
@@ -289,6 +324,7 @@ export async function emitOne({
   assetsDir,
   webComponentPath: webComponentOut,
   likec4Exported = false,
+  frontmatterContext = {},
   prePlugins = [],
   plugins = [],
 }) {
@@ -328,6 +364,7 @@ export async function emitOne({
     .use(remarkPrelude, capture, {
       titleAsH1: target.titleAsH1,
       frontmatter: target.frontmatter,
+      frontmatterContext,
     }) // strip draft fm + comments, opt. title → # H1, opt. emit target frontmatter
     .use(remarkCodeSnippets); // inline file=/start=/end= (real code from snippets/)
   for (const [plugin, options] of plugins) processor = processor.use(plugin, options);
@@ -385,11 +422,10 @@ export async function emitOne({
 // --- main (blog CLI) -------------------------------------------------------
 
 async function main() {
-  const { slug, target: targetName } = parseArgs(process.argv.slice(2));
-  if (!slug) throw new Error("usage: bun emit.mjs --slug <slug> --target <target>");
-  if (!targetName) throw new Error("usage: bun emit.mjs --slug <slug> --target <target>");
+  const usage = "usage: bun emit.mjs --slug <slug> [--target <target>[,<target>…]]…";
+  const { slug, targets: requested } = parseArgs(process.argv.slice(2));
+  if (!slug) throw new Error(usage);
 
-  const target = await loadTarget(targetName);
   const draftDir = join(REPO_ROOT, "blogs", slug);
   const draftPath = join(draftDir, "index.md");
   if (!existsSync(draftPath)) throw new Error(`draft not found: ${draftPath}`);
@@ -401,26 +437,77 @@ async function main() {
     console.warn(`warning: ${slug} is status: ${meta.status ?? "draft"}, not ready`);
   }
 
+  const listed = blogTargets(meta);
+  for (const name of requested) {
+    if (!listed.includes(name)) console.warn(`warning: ${slug} does not list target '${name}'`);
+  }
+  const names = [...new Set(requested.length ? requested : listed)];
+  if (!names.length) throw new Error(`${slug} has no target: set \`target:\` or pass --target`);
+  // Primary first, so its render (and later its delivery) precedes the cross-posts'.
+  const rank = (n) => (listed.includes(n) ? listed.indexOf(n) : listed.length);
+  names.sort((a, b) => rank(a) - rank(b));
+  // Load every emitter before writing anything, so a missing one fails cleanly.
+  const loaded = new Map();
+  for (const name of names) loaded.set(name, await loadTarget(name));
+
+  const primaryName = listed[0] ?? names[0];
+  let primary = loaded.get(primaryName) ?? null;
+  if (!primary) {
+    try {
+      primary = await loadTarget(primaryName);
+    } catch {
+      console.warn(`warning: primary target '${primaryName}' has no emitter; no canonical URL`);
+    }
+  }
+
+  const sidecar = readSidecar(draftDir);
+  let likec4Exported = false;
+  for (const [name, target] of loaded) {
+    const { likec4Dir } = await emitTarget({
+      slug,
+      draftDir,
+      draftPath,
+      name,
+      target,
+      primaryName,
+      canonical: crossPostCanonical(name, primary, sidecar),
+      existing: sidecar[name] ?? null,
+      likec4Exported,
+    });
+    likec4Exported ||= likec4Dir != null;
+  }
+}
+
+async function emitTarget({
+  slug,
+  draftDir,
+  draftPath,
+  name,
+  target,
+  primaryName,
+  canonical,
+  existing,
+  likec4Exported,
+}) {
   // dist/ root holds the shared, target-agnostic LikeC4 PNG export; each target's
   // RENDERED output lands under dist/<target>/ so cross-publishing to several
   // targets (unitycatalog → delta → …) is non-destructive: one target's index.mdx
   // never clobbers another's. dist/ is gitignored.
   const distDir = join(draftDir, "dist");
-  const targetDistDir = join(distDir, targetName);
+  const targetDistDir = join(distDir, name);
   mkdirSync(targetDistDir, { recursive: true });
 
-  const { output, frontmatter, manifest, webComponentPath } = await emitOne({
+  const { output, frontmatter, manifest, likec4Dir, webComponentPath } = await emitOne({
     inputPath: draftPath,
     target,
     likec4OutDir: join(distDir, ".likec4-export"),
+    likec4Exported,
     // The likec4-md plugin resolves committed (non-likec4) images against the
     // draft folder itself, as before.
     assetsDir: draftDir,
     webComponentPath: join(targetDistDir, "likec4-webcomponent.mjs"),
+    frontmatterContext: { canonical },
   });
-
-  // Existing delivery for this target (if any) — the create-vs-update hint.
-  const existing = readSidecar(draftDir)[targetName] ?? null;
 
   const outName = target.outputFile ?? `${slug}.md`;
   const outPath = join(targetDistDir, outName);
@@ -431,7 +518,9 @@ async function main() {
     JSON.stringify(
       {
         slug,
-        target: targetName,
+        target: name,
+        primary: primaryName,
+        canonical,
         title: frontmatter?.title ?? null,
         // The delivery agent reads this: null → CREATE (a new post dir) and
         // record it in the sidecar `.emitted.json`; set → UPDATE that target in
@@ -446,7 +535,7 @@ async function main() {
   );
 
   const rel = (p) => p.replace(REPO_ROOT + "/", "");
-  console.log(`emitted (${targetName}):`);
+  console.log(`emitted (${name}${name === primaryName ? ", primary" : ""}):`);
   console.log(`  ${rel(outPath)}`);
   console.log(
     `  ${rel(assetsPath)}  (${manifest.length} image${manifest.length === 1 ? "" : "s"})`,
@@ -454,9 +543,17 @@ async function main() {
   if (webComponentPath) console.log(`  ${rel(webComponentPath)}  (LikeC4 web component)`);
   console.log(
     existing
-      ? `  delivery: UPDATE existing ${targetName} target (${existing.post_dir ?? "recorded"})`
-      : `  delivery: CREATE new ${targetName} target (no "${targetName}" in ${slug}/.emitted.json)`,
+      ? `  delivery: UPDATE existing ${name} target (${existing.post_dir ?? "recorded"})`
+      : `  delivery: CREATE new ${name} target (no "${name}" in ${slug}/.emitted.json)`,
   );
+  if (name !== primaryName) {
+    console.log(
+      canonical
+        ? `  canonical: ${canonical}`
+        : `  canonical: pending — deliver ${primaryName} first, then re-emit ${name}`,
+    );
+  }
+  return { likec4Dir };
 }
 
 // Run the blog CLI only when invoked directly (bun emit.mjs …), not when this

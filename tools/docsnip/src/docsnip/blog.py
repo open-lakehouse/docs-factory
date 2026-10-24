@@ -78,6 +78,28 @@ def iter_blog_drafts(blogs_root: Path):
         yield parse(path)
 
 
+def _target_errors(target: object) -> list[str]:
+    """``target`` is one site or a cross-post list whose first entry is the primary."""
+    if target is None or target == "":
+        return []
+    targets = [target] if isinstance(target, str) else target
+    if not isinstance(targets, list) or not targets:
+        return ["'target' must be a target name or a non-empty list of them"]
+    errors: list[str] = []
+    known = vocab.blog_targets()
+    seen: set[str] = set()
+    for t in targets:
+        if not isinstance(t, str):
+            errors.append(f"target {t!r} must be a string")
+        elif t in seen:
+            errors.append(f"target '{t}' is listed twice")
+        elif t not in known:
+            errors.append(f"target '{t}' not in {sorted(known)}")
+        else:
+            seen.add(t)
+    return errors
+
+
 def validate_blog(page: Page, known_tags: set[str]) -> list[str]:
     """Return validation errors for one blog draft (empty if valid)."""
     errors: list[str] = []
@@ -108,6 +130,7 @@ def validate_blog(page: Page, known_tags: set[str]) -> list[str]:
     # git frontmatter.
     if status not in ("idea", "private") and not require("target"):
         pass
+    errors.extend(_target_errors(m.get("target")))
 
     tags = m.get("tags")
     if tags is None:

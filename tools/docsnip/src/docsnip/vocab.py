@@ -44,6 +44,10 @@ def post_types() -> set[str]:
     return set(_load()["postTypes"])
 
 
+def blog_targets() -> set[str]:
+    return set(_load()["blogTargets"])
+
+
 def statuses() -> set[str]:
     return set(_load()["statuses"])
 

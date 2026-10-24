@@ -13,6 +13,8 @@ bun install                                             # first run only
 bun emit.mjs --slug unity-catalog-delta-api --target unitycatalog
 #   → blogs/unity-catalog-delta-api/dist/unitycatalog/index.mdx
 #   → blogs/unity-catalog-delta-api/dist/unitycatalog/assets.json
+bun emit.mjs --slug unity-catalog-delta-api             # every target in its `target:` list
+bun emit.mjs --slug unity-catalog-delta-api --target unitycatalog,delta
 ```
 
 This is the **deterministic, scriptable half** of the emitter. It needs no agent
@@ -81,6 +83,21 @@ because plain Markdown has no code-block chrome to hang a filename on, so it lif
 fence's `title=` into a bold caption line; the `unitycatalog`/`delta` targets instead
 leave `title=` on the fence for Expressive Code to render.
 
+## Cross-posting — one primary, canonical cross-posts
+
+A draft's `target:` is one site or a list (`target: [unitycatalog, delta]`). Without
+`--target` the core emits every listed target; `--target` (repeatable, or a comma
+list) picks some, with a warning for one the draft doesn't list. Targets render in
+list order, and the LikeC4 export runs once for all of them.
+
+The first listed target is the **primary**. Every other target's frontmatter hook
+receives `{ canonical }`, the primary's delivered URL, built by the primary module's
+`postUrl(post_dir)` from its entry in `.emitted.json`, and writes it as `canonical`
+so the copy defers to the primary in search. Until the primary has a recorded
+delivery its URL is unknown: the core prints `canonical: pending` and emits the
+cross-post without one, to re-emit once the primary is delivered. `assets.json`
+carries `primary` and `canonical` for the delivery step.
+
 ## Idempotency — update the same post, don't duplicate
 
 `index.md` (and its `dist/<target>/index.mdx` render) is the canonical source; a
@@ -119,7 +136,9 @@ gitignored).
 
 ## Targets
 
-`--target` is **required** and selects a target module in `targets/`:
+`--target` (or each entry of the draft's `target:` list) selects a target module in
+`targets/`; a listed site without one (`openlakehouse`) fails with
+`no emitter for target`:
 
 - **`unitycatalog`** — the UnityCatalog.io / OpenLakehouse Astro site (a RICH,
   component target: MDX with interactive LikeC4 + `<Journey>` + `:::` callouts).
@@ -135,7 +154,8 @@ The pipeline is **target-aware**: a target module declares its per-construct
 renderers (`constructs: { callouts, journey, codeCaption, likec4 }`) plus flags
 (`titleAsH1`, `unwrapProse`, `stringifyExtension`, `safeText`, `outputFile`,
 `componentImportBase`, `likec4WebComponent`) — so one target can flatten while
-another upgrades to components, over one shared `resolve` core. A new target is a new
+another upgrades to components, over one shared `resolve` core. A blog target also
+declares `siteUrl` and `postUrl(postDir)`, which a cross-post's canonical is built from. A new target is a new
 `targets/<name>.mjs` (+ any rewrite plugins in `plugins/`) plus a
 `references/<name>-target.md` runbook in the `/blog-emit` skill; the core stays
 untouched.

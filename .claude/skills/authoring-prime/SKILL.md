@@ -90,8 +90,9 @@ sites.
   other concepts add `references: [...]` or inline `model:` links.
 - Give a runnable script a PEP 723 block, `[tool.docs-factory]` (compose,
   services, claims), and inline asserts in `__main__`. Running it is its test.
-- Run `uv run docsnip check` (includes `docsnip prose`) and
-  `node site/scripts/check-nav.mjs` before handing off.
+- Run `uv run docsnip check` (includes `docsnip prose`),
+  `uv run ruff format --check .`, and `node site/scripts/check-nav.mjs` before
+  handing off.
 - Use sentence-case headings, H2 for tasks or main ideas, H3 for detail, and
   no H4 outside reference pages.
 

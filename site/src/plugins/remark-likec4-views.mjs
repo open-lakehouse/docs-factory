@@ -1,43 +1,39 @@
 /**
- * remark-likec4-views — upgrade `likec4=<viewId>` image titles to <LikeC4View>.
- * The image's alt text rides along: it is the diagram's only text equivalent.
+ * remark-likec4-views — upgrade a ```` ```likec4 <viewId> ```` marker to
+ * <LikeC4View>. The body is the diagram's alt text, its only text equivalent;
+ * the view's own `variant` picks diagram or sequence. A ```` ```mermaid fallback ````
+ * fence right after it (from the docs-site emitter) becomes the `mermaid` prop.
+ * Self-contained, as the emitter vendors it to the sites.
  */
-import { expressionAttr, injectImport, jsxFlow, stringAttr, walkTree } from "./lib/mdx-helpers.mjs";
+import {
+  expressionAttr,
+  injectImport,
+  jsxFlow,
+  stringAttr,
+  takeMermaidFallback,
+  walkTree,
+} from "./lib/mdx-helpers.mjs";
 
-const LIKEC4_TITLE_RE = /^likec4=(\S+)$/;
 const IMPORT_SOURCE = "@/components/LikeC4View";
 const IMPORT_NAME = "LikeC4View";
 
-function soleLikeC4Image(node) {
-  if (node.type !== "paragraph" || !node.children || node.children.length !== 1) {
-    return null;
-  }
-  const only = node.children[0];
-  if (only.type === "image" && typeof only.title === "string") {
-    const m = only.title.match(LIKEC4_TITLE_RE);
-    if (m) return { viewId: m[1], alt: only.alt ?? "" };
-  }
-  return null;
-}
-
-function likec4ViewNode({ viewId, alt }) {
-  const attributes = [stringAttr("viewId", viewId), stringAttr("dynamicViewVariant", "sequence")];
+function likec4ViewNode(node, mermaid) {
+  const attributes = [stringAttr("viewId", node.meta.trim())];
+  const alt = (node.value ?? "").replace(/\s+/g, " ").trim();
   if (alt) attributes.push(expressionAttr("alt", alt));
+  if (mermaid) attributes.push(expressionAttr("mermaid", mermaid));
   return jsxFlow(IMPORT_NAME, { attributes });
 }
 
 export default function remarkLikeC4Views() {
   return (tree) => {
     let upgraded = false;
-
     walkTree(tree, (child, i, parent) => {
-      const view = soleLikeC4Image(child);
-      if (view) {
-        parent.children[i] = likec4ViewNode(view);
+      if (child.type === "code" && child.lang === "likec4" && child.meta?.trim()) {
+        parent.children[i] = likec4ViewNode(child, takeMermaidFallback(parent, i));
         upgraded = true;
       }
     });
-
     injectImport(tree, { names: IMPORT_NAME, source: IMPORT_SOURCE, used: upgraded });
   };
 }

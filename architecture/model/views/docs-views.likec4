@@ -4,6 +4,7 @@
 views {
 
   dynamic view ucCredentialVending_tableRead {
+    variant sequence
     title "UC credential vending"
     description "
       How a client reads a Unity Catalog table with a credential the server vends

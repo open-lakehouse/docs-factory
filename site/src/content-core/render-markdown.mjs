@@ -10,7 +10,7 @@
  * nothing else.
  *
  * The canonical source body is annotation-heavy (`file=` fences, `:::callout`,
- * `::::journey`, `likec4=` embeds). Those unknown directives degrade gracefully:
+ * `::::journey`, `likec4` blocks). Those unknown directives degrade gracefully:
  * a `file=` fence renders as an (empty) code block, a `:::callout` container
  * renders as its inner text. The plan's intent is to feed this the RICH emitter
  * output once Phase 1 twins exist; until then the raw body still produces a

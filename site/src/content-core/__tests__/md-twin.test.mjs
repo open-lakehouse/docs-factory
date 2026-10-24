@@ -1,13 +1,9 @@
 // The md-twin target's pure hooks (emit/targets/md-twin.mjs) + the driver's pure
-// helpers (site/scripts/build-md-twins.mjs). The full emitter integration (LikeC4
-// PNG export needs Chromium) is exercised separately; these cover the parts that
-// shape twin paths, frontmatter, and image URLs with no I/O.
+// helpers (site/scripts/build-md-twins.mjs). The full emitter integration is
+// exercised in emit/; these cover the parts that shape twin paths, frontmatter,
+// and image URLs with no I/O.
 import { expect, test } from "bun:test";
-import mdTwin, {
-  frontmatter,
-  LIKEC4_ASSET_BASE,
-  renderImage,
-} from "../../../../emit/targets/md-twin.mjs";
+import mdTwin, { frontmatter, renderImage } from "../../../../emit/targets/md-twin.mjs";
 import {
   companionsFrontmatter,
   companionsSection,
@@ -20,18 +16,13 @@ import {
   twinPathForHref,
 } from "../../../scripts/build-md-twins.mjs";
 
-test("renderImage points a likec4 view at the site-served PNG, wrapped in a paragraph", () => {
-  const node = renderImage({ likec4: "managedTableFlow", filename: "x.png", altText: "Flow" });
+test("renderImage leaves an image at its bare filename, wrapped in a paragraph", () => {
+  const node = renderImage({ filename: "screenshot.png", altText: "Shot" });
   expect(node.type).toBe("paragraph"); // block node → keeps blank-line separators
   const img = node.children[0];
   expect(img.type).toBe("image");
-  expect(img.url).toBe(`${LIKEC4_ASSET_BASE}/managedTableFlow.png`);
-  expect(img.alt).toBe("Flow");
-});
-
-test("renderImage leaves a non-likec4 image as a plain filename", () => {
-  const node = renderImage({ likec4: null, filename: "screenshot.png", altText: "Shot" });
-  expect(node.children[0].url).toBe("screenshot.png");
+  expect(img.url).toBe("screenshot.png");
+  expect(img.alt).toBe("Shot");
 });
 
 test("frontmatter emits title/summary/diataxis/project but never canonical", () => {

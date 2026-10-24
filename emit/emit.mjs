@@ -33,14 +33,15 @@ import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 
 // Shared, target-agnostic transforms — imported verbatim from the preview.
 import { isPublic, splitFrontmatter } from "../site/src/content-core/frontmatter.mjs";
+import { generateLikeC4Mermaid, hasLikeC4Marker } from "../site/src/plugins/lib/likec4-ref.mjs";
 import remarkCodeSnippets from "../site/src/plugins/remark-code-snippets.mjs";
 import remarkDirectiveProseGuard from "../site/src/plugins/remark-directive-prose-guard.mjs";
-
-// The construct renderers (journey / callout / likec4 / code-caption) and the
+// The construct renderers (journey / callout / images / code-caption) and the
 // prose-unwrap are now TARGET-PROVIDED (each target module declares which plugins
 // it uses via its `constructs` map + flags), so the core imports none of them
 // directly — see emit/targets/*.mjs. This keeps one linear core pipeline while
 // letting a target flatten (md-twin) OR upgrade to components (unitycatalog).
+import remarkLikeC4Blocks from "./plugins/remark-likec4-blocks.mjs";
 import remarkTrestleMd from "./plugins/remark-trestle-md.mjs";
 import remarkUnwrapProse from "./plugins/remark-unwrap-prose.mjs";
 
@@ -199,37 +200,21 @@ function remarkPrelude(capture, opts = {}) {
   };
 }
 
-// --- LikeC4 PNG regeneration ----------------------------------------------
+// --- LikeC4 Mermaid --------------------------------------------------------
 
 /**
- * Regenerate PNGs from the unified architecture LikeC4 workspace,
- * deterministically into `outDir` (throwaway, under dist/). The emitter reads
- * back `<viewId>.png` by the `likec4=<viewId>` title on the draft image.
- * Returns `outDir` if anything was exported, else null.
+ * Write every view's `<viewId>.mmd` from the unified architecture LikeC4
+ * workspace into `outDir` (throwaway, under dist/), for remark-likec4-blocks to
+ * read by view id. Returns `outDir`, or null when the draft has no marker.
  */
 function regenerateLikeC4(modelDir, outDir, hasLikeC4Refs) {
   if (!hasLikeC4Refs) return null;
   if (!existsSync(modelDir)) return null;
-  mkdirSync(outDir, { recursive: true });
-  // Use the preview harness's pinned likec4 binary if present; else fall back to
-  // bunx. Mirrors blogs/CONVENTIONS.md §5: --sequence is required for dynamic views
-  // (real lifelines, not a box-and-arrow graph). --flat keeps the output dir flat
-  // (one <viewId>.png per view, no per-view subfolders). Output dir is absolute so
-  // it does not depend on the process cwd.
-  const localBin = join(REPO_ROOT, "site", "node_modules", ".bin", "likec4");
-  const useLocal = existsSync(localBin);
-  const bin = useLocal ? localBin : "bunx";
-  const base = ["export", "png", "--sequence", "--flat", "-o", outDir, modelDir];
-  const args = useLocal ? base : ["likec4", ...base];
   try {
-    execFileSync(bin, args, { stdio: "inherit" });
+    return generateLikeC4Mermaid(modelDir, outDir);
   } catch (err) {
-    throw new Error(
-      `LikeC4 PNG export failed for ${modelDir}. Ensure a headless Chromium is ` +
-        `installed (\`bunx playwright install chromium\` once). Underlying error: ${err.message}`,
-    );
+    throw new Error(`LikeC4 Mermaid generation failed for ${modelDir}: ${err.message}`);
   }
-  return outDir;
 }
 
 /**
@@ -238,7 +223,7 @@ function regenerateLikeC4(modelDir, outDir, hasLikeC4Refs) {
  * React). The bundle registers a `<likec4-view view-id="…">` custom element backed
  * by the unified architecture model.
  *
- * Returns `outFile` on success, else null (draft has no likec4= refs).
+ * Returns `outFile` on success, else null (draft has no likec4 block).
  */
 export function generateLikeC4WebComponent(modelDir, outFile, hasLikeC4Refs) {
   if (!hasLikeC4Refs) return null;
@@ -284,7 +269,7 @@ function readSidecar(draftDir) {
 
 // --- core: emit one file ---------------------------------------------------
 
-/** Source workspace for `likec4=` view PNGs. */
+/** Source workspace for `likec4` blocks' views. */
 export function defaultModelDir() {
   return join(REPO_ROOT, "architecture", "model");
 }
@@ -300,11 +285,11 @@ export function defaultModelDir() {
  * @param {string} o.inputPath     absolute path to the source .md
  *                                  (blogs/<slug>/index.md OR content/**\/*.md).
  * @param {object} o.target        a loaded target module (see targets/*.mjs).
- * @param {string} [o.modelDir]    architecture model dir for LikeC4 export
+ * @param {string} [o.modelDir]    architecture model dir for the LikeC4 views
  *                                  (default: `defaultModelDir()`).
- * @param {string} o.likec4OutDir  throwaway dir where regenerated <viewId>.png land.
- * @param {string} [o.assetsDir]   dir the likec4-md plugin resolves non-likec4
- *                                  images against (default: dirname(inputPath)).
+ * @param {string} o.likec4OutDir  throwaway dir where each view's <viewId>.mmd lands.
+ * @param {string} [o.assetsDir]   dir the images plugin resolves local images
+ *                                  against (default: dirname(inputPath)).
  * @param {string} [o.webComponentPath] where to write the LikeC4 web-component
  *                                  bundle (only for targets with `likec4WebComponent`).
  * @param {boolean} [o.likec4Exported] `likec4OutDir` already holds this run's
@@ -317,8 +302,9 @@ export function defaultModelDir() {
  *                                  right after snippet inlining and before the
  *                                  target's constructs (e.g. the docs-site emitter's
  *                                  link rewriting).
- * @returns {Promise<{output:string, frontmatter:object, manifest:Array, trestle:Array, likec4Dir:(string|null), webComponentPath:(string|null)}>}
- *   `trestle` lists the page's diagram markers (see plugins/remark-trestle-md.mjs).
+ * @returns {Promise<{output:string, frontmatter:object, manifest:Array, likec4:Array, trestle:Array, likec4Dir:(string|null), webComponentPath:(string|null)}>}
+ *   `likec4` and `trestle` list the page's diagram markers (see
+ *   plugins/remark-likec4-blocks.mjs, plugins/remark-trestle-md.mjs).
  */
 export async function emitOne({
   inputPath,
@@ -336,7 +322,7 @@ export async function emitOne({
   if (!existsSync(inputPath)) throw new Error(`source not found: ${inputPath}`);
   const input = readFileSync(inputPath, "utf8");
   const imageDir = assetsDir ?? dirname(inputPath);
-  const hasLikeC4Refs = /\blikec4=\S+/.test(input);
+  const hasLikeC4Refs = hasLikeC4Marker(input);
   const likec4Dir =
     likec4Exported && hasLikeC4Refs
       ? likec4OutDir
@@ -344,6 +330,7 @@ export async function emitOne({
 
   const capture = {};
   const manifest = [];
+  const likec4 = [];
   const trestle = [];
 
   // The construct renderers are TARGET-PROVIDED. A flattening target (md-twin)
@@ -376,21 +363,27 @@ export async function emitOne({
   for (const [plugin, options] of plugins) processor = processor.use(plugin, options);
 
   // Prerequisites, then TL;DR, then callouts, then tabs, then journey (so a callout/tldr/tab nested in a
-  // step is already rendered), then code-caption, then likec4 — mirroring the preview's
-  // plugin order. A target that doesn't declare a construct simply skips it.
+  // step is already rendered), then code-caption, then diagrams and images —
+  // mirroring the preview's plugin order. A target that doesn't declare a
+  // construct simply skips it.
   if (constructs.prerequisites) processor = processor.use(constructs.prerequisites);
   if (constructs.tldr) processor = processor.use(constructs.tldr, { componentImportBase });
   if (constructs.callouts) processor = processor.use(constructs.callouts, { componentImportBase });
   if (constructs.tabs) processor = processor.use(constructs.tabs);
   if (constructs.journey) processor = processor.use(constructs.journey, { componentImportBase });
   if (constructs.codeCaption) processor = processor.use(constructs.codeCaption);
-  if (constructs.likec4)
-    processor = processor.use(constructs.likec4, {
+  // Every target resolves LikeC4 markers: by default to the view's Mermaid.
+  processor = processor.use(remarkLikeC4Blocks, {
+    entries: likec4,
+    likec4Dir,
+    renderLikeC4: target.renderLikeC4,
+  });
+  if (constructs.likec4) processor = processor.use(constructs.likec4, { componentImportBase });
+  if (constructs.images)
+    processor = processor.use(constructs.images, {
       manifest,
       assetsDir: imageDir,
-      likec4Dir,
       renderImage: target.renderImage,
-      componentImportBase,
     });
   // Every target resolves Trestle diagram markers: the twin and the blog targets
   // to Trestle's Mermaid, the docs-site target to a marker its canvas reads.
@@ -418,7 +411,7 @@ export async function emitOne({
   // Interactive-LikeC4 targets (no React) get the framework-agnostic web-component
   // bundle registering <likec4-view>. Deterministic + no network, so it belongs in
   // the core. Guarded on the target opting in, a write path being supplied, AND the
-  // source actually having a .likec4 reference.
+  // source actually having a likec4 block.
   let webComponentPath = null;
   if (target.likec4WebComponent && webComponentOut) {
     webComponentPath = generateLikeC4WebComponent(modelDir, webComponentOut, hasLikeC4Refs);
@@ -428,6 +421,7 @@ export async function emitOne({
     output,
     frontmatter: capture.frontmatter ?? {},
     manifest,
+    likec4,
     trestle,
     likec4Dir,
     webComponentPath,
@@ -504,7 +498,7 @@ async function emitTarget({
   existing,
   likec4Exported,
 }) {
-  // dist/ root holds the shared, target-agnostic LikeC4 PNG export; each target's
+  // dist/ root holds the shared, target-agnostic LikeC4 Mermaid; each target's
   // RENDERED output lands under dist/<target>/ so cross-publishing to several
   // targets (unitycatalog → delta → …) is non-destructive: one target's index.mdx
   // never clobbers another's. dist/ is gitignored.
@@ -517,8 +511,7 @@ async function emitTarget({
     target,
     likec4OutDir: join(distDir, ".likec4-export"),
     likec4Exported,
-    // The likec4-md plugin resolves committed (non-likec4) images against the
-    // draft folder itself, as before.
+    // The images plugin resolves committed images against the draft folder.
     assetsDir: draftDir,
     webComponentPath: join(targetDistDir, "likec4-webcomponent.mjs"),
     frontmatterContext: { canonical },

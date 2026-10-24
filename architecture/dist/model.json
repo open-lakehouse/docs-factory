@@ -8428,6 +8428,7 @@
       "_type": "dynamic",
       "tags": null,
       "links": null,
+      "variant": "sequence",
       "_stage": "computed",
       "sourcePath": "views/blog-views.likec4",
       "description": {
@@ -8774,6 +8775,7 @@
       "_type": "dynamic",
       "tags": null,
       "links": null,
+      "variant": "sequence",
       "_stage": "computed",
       "sourcePath": "views/docs-views.likec4",
       "description": {

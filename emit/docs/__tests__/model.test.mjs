@@ -2,7 +2,7 @@ import { expect, test } from "bun:test";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { loadModel, modelLinkResolver, readModel, trestleRefs, viewAltText } from "../model.mjs";
+import { loadModel, modelLinkResolver, readModel, trestleRefs } from "../model.mjs";
 
 const model = readModel({
   elements: {
@@ -61,12 +61,6 @@ test("an element without #public unwraps, even with an explainer or a link", () 
 });
 
 const resolveExternal = modelLinkResolver(model, new Map());
-
-test("view alt text comes from the view's title and description", () => {
-  expect(viewAltText(model, "flow")).toBe("A flow: How it works.");
-  expect(viewAltText(model, "bare")).toBe("Bare");
-  expect(viewAltText(model, "missing")).toBeNull();
-});
 
 test("the committed model resolves the ids content links to", () => {
   const live = loadModel();

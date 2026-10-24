@@ -3,12 +3,11 @@
 // assemble-vercel-output.mjs. Ordering is load-bearing:
 //   1. build-script-index — shells out to `docsnip scripts --json`, writes
 //      dist/scripts.json + copies raw .py (needs uv).
-//   2. build-md-twins    — emits the rich .md twins (needs headless Chromium for
-//      LikeC4 PNG export); reads dist/scripts.json to fill tutorials' "Runnable
-//      examples".
+//   2. build-md-twins    — emits the rich .md twins; reads dist/scripts.json to
+//      fill tutorials' "Runnable examples".
 //
-// Because both need uv + Chromium, this whole pass runs in the CI prebuild
-// (which has both); the Vercel build consumes the produced dist/ artifacts. Run it
+// Because the script index needs uv, this whole pass runs in the CI prebuild;
+// the Vercel build consumes the produced dist/ artifacts. Run it
 // directly with `node scripts/build-artifacts.mjs` after `vite build`.
 import { execFileSync } from "node:child_process";
 import { dirname, resolve } from "node:path";

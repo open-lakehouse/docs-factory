@@ -1,6 +1,7 @@
 views {
 
   dynamic view ucDeltaApi_managedTableFlow {
+    variant sequence
     title "UC Delta API"
     description "
       The end-to-end managed-table lifecycle from the Unity Catalog managed-tables spec.

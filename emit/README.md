@@ -18,7 +18,7 @@ bun emit.mjs --slug unity-catalog-delta-api --target unitycatalog,delta
 ```
 
 This is the **deterministic, scriptable half** of the emitter. It needs no agent
-and no network beyond the one-time LikeC4 PNG export. Actual *delivery* to a target
+and no network. Actual *delivery* to a target
 (copying the MDX post into the sibling site repo, uploading images) is a separate,
 agent-driven step — the `/blog-emit` skill — because that needs judgment and
 filesystem writes into another repo.
@@ -32,14 +32,14 @@ filesystem writes into another repo.
 ## What it produces
 
 Output is written **per target** under `blogs/<slug>/dist/<target>/`, so
-cross-publishing (unitycatalog → delta → …) is non-destructive. The
-regenerated LikeC4 PNG export is shared at `dist/.likec4-export/`
-(target-agnostic) and comes from the unified `architecture/model` workspace.
+cross-publishing (unitycatalog → delta → …) is non-destructive. Each LikeC4
+view's Mermaid is generated once into `dist/.likec4-export/<viewId>.mmd`
+(target-agnostic) from the unified `architecture/model` workspace.
 
 For the `unitycatalog` (RICH, component) target, `dist/unitycatalog/`:
 
 - **`index.mdx`** — a rich Astro MDX post with UC-shaped frontmatter:
-  - `::::journey` → `<Journey><JourneyStep>`; `likec4=` images → `<LikeC4View>`
+  - `::::journey` → `<Journey><JourneyStep>`; `likec4` blocks → `<LikeC4View>`
     (interactive canvas); `:::` callouts are **left as directives** (the site styles
     them); `file=` snippets inlined; a snippet's filename is **kept on the fence** as
     `title="x.py"` meta — the site renders fences with Expressive Code, which turns
@@ -60,7 +60,8 @@ frontmatter schema and a callout-vocabulary remap.
 The one **FLATTENING** target is the internal `md-twin` (used by the site build,
 not `/blog-emit`): it renders portable CommonMark instead of MDX components —
 `::::journey` → numbered `### Step N — …` headings, `:::` callouts → bold-led
-blockquotes, `likec4=` images → plain images, and hard-wrapped prose reflowed to one
+blockquotes, `likec4` and `trestle` blocks → the alt text plus the diagram's Mermaid,
+and hard-wrapped prose reflowed to one
 line per paragraph. See [`targets/md-twin.mjs`](targets/md-twin.mjs).
 
 ## How it reuses the preview's transforms
@@ -74,10 +75,12 @@ by relative path (they are dependency-free ESM):
   text directives so prose colons (`**1:1**`, `8080:8080`) survive.
 
 The rich constructs need a *different* rendering per target — the preview emits
-React (JSX) components; this emitter emits Markdown. So the journey/callout/likec4
+React (JSX) components; this emitter emits Markdown. So the journey/callout/image
 transforms have **Markdown-emitting** variants living here in `plugins/`
-(`remark-journey-md.mjs`, `remark-callouts-md.mjs`, `remark-likec4-md.mjs`,
-`remark-code-caption.mjs`). One implementation per render flavor, deliberately.
+(`remark-journey-md.mjs`, `remark-callouts-md.mjs`, `remark-images-md.mjs`,
+`remark-code-caption.mjs`). Diagram markers are resolved by core passes every
+target runs (`remark-likec4-blocks.mjs`, `remark-trestle-md.mjs`), each target
+choosing the node a marker becomes (`renderLikeC4`, `renderTrestle`). One implementation per render flavor, deliberately.
 `remark-code-caption` is used only by **FLATTENING** targets (md-twin) — it exists
 because plain Markdown has no code-block chrome to hang a filename on, so it lifts a
 fence's `title=` into a bold caption line; the `unitycatalog`/`delta` targets instead
@@ -88,7 +91,7 @@ leave `title=` on the fence for Expressive Code to render.
 A draft's `target:` is one site or a list (`target: [unitycatalog, delta]`). Without
 `--target` the core emits every listed target; `--target` (repeatable, or a comma
 list) picks some, with a warning for one the draft doesn't list. Targets render in
-list order, and the LikeC4 export runs once for all of them.
+list order, and the LikeC4 Mermaid is generated once for all of them.
 
 The first listed target is the **primary**. Every other target's frontmatter hook
 receives `{ canonical }`, the primary's delivered URL, built by the primary module's
@@ -181,7 +184,5 @@ Tests: `bun test docs`.
 
 ## Prerequisites
 
-- Bun (matches `preview/`). Deps installed via `bun install`.
-- For LikeC4 PNG regeneration: a headless Chromium — run `bunx playwright install
-  chromium` once. The `--sequence` export lays a dynamic view out as a real
-  sequence (lifelines), per `blogs/CONVENTIONS.md` §5.
+- Bun (matches `preview/`). Deps installed via `bun install`, plus `site/`'s
+  (`likec4`, for the views' Mermaid).

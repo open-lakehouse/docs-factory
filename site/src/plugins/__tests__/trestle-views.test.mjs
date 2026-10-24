@@ -29,3 +29,15 @@ test("other fences and a marker without a ref are left alone", () => {
   ]);
   expect(tree.children.map((n) => n.type)).toEqual(["code", "code", "code"]);
 });
+
+test("a mermaid fallback fence after the marker becomes its mermaid prop", () => {
+  const tree = run([
+    marker("/s.trestle-graph.json"),
+    { type: "code", lang: "mermaid", meta: "fallback", value: "flowchart LR\n  a --> b" },
+    { type: "code", lang: "mermaid", meta: null, value: "flowchart LR" },
+  ]);
+  const [, diagram, kept] = tree.children;
+  expect(attrs(diagram).mermaid.value).toBe('"flowchart LR\\n  a --> b"');
+  expect(kept.type).toBe("code");
+  expect(tree.children).toHaveLength(3);
+});

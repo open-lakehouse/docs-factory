@@ -1,6 +1,7 @@
 // Trestle diagram markers: the docs site keeps a marker pointing at the served
 // snapshot (an environment's site-wide, a page's own under its assets), which the
-// vendored remark-trestle-views upgrades; the .md twin gets Trestle's Mermaid.
+// vendored remark-trestle-views upgrades, with Trestle's Mermaid after it as the
+// no-JS fallback; the .md twin gets Trestle's Mermaid.
 import { expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -68,7 +69,7 @@ test("the docs site keeps a marker pointing at the served snapshot", async () =>
     docsSiteTarget({ assetBase: "/assets/how-to/run" }),
   );
   expect(output).toContain(
-    "```trestle /assets/trestle/demo/diagram.trestle-graph.json\nThe demo stack\n```",
+    `\`\`\`trestle /assets/trestle/demo/diagram.trestle-graph.json\nThe demo stack\n\`\`\`\n\n\`\`\`mermaid fallback\n${ENV_MERMAID}\n\`\`\``,
   );
   expect(output).toContain(
     "```trestle /assets/how-to/run/sketch.trestle-graph.json\nA sketch\n```",

@@ -6,18 +6,21 @@
  * site renders them with verbatim copies of the preview's own remark plugins
  * (vendored by the emitter). What changes is only what the target can't
  * resolve on its own: `file=` snippets are inlined (core), and images point at
- * the URLs the emitter serves them from. A `likec4=` image keeps its title, so
- * the vendored remark-likec4-views still upgrades it to an interactive view,
- * with the PNG as its fallback; a ```` ```trestle ```` diagram marker stays a
- * marker, its ref rewritten to the served snapshot remark-trestle-views draws.
+ * the URLs the emitter serves them from. A ```` ```likec4 ```` or
+ * ```` ```trestle ```` diagram marker stays a marker (a trestle ref rewritten to
+ * the served snapshot), followed by a ```` ```mermaid fallback ```` fence: the
+ * vendored remark-likec4-views / remark-trestle-views upgrade the marker to the
+ * interactive diagram and hand it the Mermaid, which no-JS readers get.
  *
  * The result is portable Markdown, so a PR into the target repo reads like a
  * docs change rather than a JSX diff.
  */
 import { basename } from "node:path";
-import { markerNode } from "../../site/src/plugins/lib/trestle-ref.mjs";
-import remarkLikeC4Md from "../plugins/remark-likec4-md.mjs";
-import { LIKEC4_ASSET_BASE, trestleEnvSnapshot } from "./md-twin.mjs";
+import { markerNode as likec4MarkerNode } from "../../site/src/plugins/lib/likec4-ref.mjs";
+import { markerNode, trestleMermaid } from "../../site/src/plugins/lib/trestle-ref.mjs";
+import remarkImagesMd from "../plugins/remark-images-md.mjs";
+import { mermaidFallback } from "../plugins/remark-trestle-md.mjs";
+import { trestleEnvSnapshot } from "./md-twin.mjs";
 
 /** Where the site serves a diagram marker's snapshot: an environment's
  * site-wide, a page's own under its `assetBase`. */
@@ -36,10 +39,9 @@ function frontmatter(draft) {
 
 /**
  * The target for one page. `assetBase` is the URL the page's own images are
- * served under (e.g. `/assets/how-to/duckdb`); LikeC4 PNGs are shared site-wide.
- * `altText(entry)` may supply alt text the author left out (e.g. from the model).
+ * served under (e.g. `/assets/how-to/duckdb`).
  */
-export function docsSiteTarget({ assetBase, altText = (entry) => entry.altText }) {
+export function docsSiteTarget({ assetBase }) {
   return {
     name: "docs-site",
     stringify: {
@@ -52,23 +54,23 @@ export function docsSiteTarget({ assetBase, altText = (entry) => entry.altText }
     titleAsH1: false, // the site renders the title from site.json
     unwrapProse: false, // keep authored line breaks: smaller, reviewable diffs
     frontmatter,
-    constructs: { likec4: remarkLikeC4Md },
+    constructs: { images: remarkImagesMd },
     renderImage(entry) {
-      const image = entry.likec4
-        ? {
-            type: "image",
-            url: `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`,
-            alt: altText(entry),
-            title: `likec4=${entry.likec4}`,
-          }
-        : {
-            type: "image",
-            url: `${assetBase}/${entry.filename}`,
-            alt: altText(entry),
-            title: null,
-          };
+      const image = {
+        type: "image",
+        url: `${assetBase}/${entry.filename}`,
+        alt: entry.altText,
+        title: null,
+      };
       return { type: "paragraph", children: [image] };
     },
-    renderTrestle: (entry) => markerNode(trestleSnapshotUrl(entry, assetBase), entry.alt),
+    renderLikeC4: (entry) => [
+      likec4MarkerNode(entry.viewId, entry.alt),
+      mermaidFallback(entry.mermaid),
+    ],
+    renderTrestle: (entry) => [
+      markerNode(trestleSnapshotUrl(entry, assetBase), entry.alt),
+      mermaidFallback(trestleMermaid(entry)),
+    ],
   };
 }

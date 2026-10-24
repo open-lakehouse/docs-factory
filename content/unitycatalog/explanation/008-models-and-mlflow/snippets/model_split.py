@@ -150,7 +150,9 @@ def _verify() -> None:
     # 1. The run, its parameter and its metric are MLflow's: read from the tracking server.
     tracked = client.get_run(run_id)
     assert tracked.data.params == {"fit_intercept": "True"}, tracked.data.params
-    assert math.isclose(tracked.data.metrics["r2"], 1.0, abs_tol=1e-9), tracked.data.metrics
+    assert math.isclose(tracked.data.metrics["r2"], 1.0, abs_tol=1e-9), (
+        tracked.data.metrics
+    )
     # The logged model belongs to the run, under its own `models:/m-<id>` URI.
     assert re.fullmatch(r"models:/m-[0-9a-f]{32}", info.model_uri), info.model_uri
     logged = mlflow.get_logged_model(info.model_id)
@@ -194,7 +196,9 @@ def _verify() -> None:
 
     client.delete_model_version(MODEL, "1")
     client.delete_registered_model(MODEL)
-    assert asyncio.run(_catalog_versions_or_none()) is None, "model still in the catalog"
+    assert asyncio.run(_catalog_versions_or_none()) is None, (
+        "model still in the catalog"
+    )
 
 
 def _check_catalog_survives_mlflow(mlflow, client, run_id: str, logged, pd) -> None:
@@ -217,7 +221,10 @@ def _check_catalog_survives_mlflow(mlflow, client, run_id: str, logged, pd) -> N
     assert mlflow.artifacts.list_artifacts(artifact_uri=logged.artifact_location) == []
 
     (v1,) = asyncio.run(_catalog_versions())
-    assert v1.status == uc.ModelVersionStatus.READY and v1.source == f"models:/{logged.model_id}"
+    assert (
+        v1.status == uc.ModelVersionStatus.READY
+        and v1.source == f"models:/{logged.model_id}"
+    )
     loaded = mlflow.pyfunc.load_model(f"models:/{MODEL}/1")
     predicted = loaded.predict(pd.DataFrame({"x": [10.0]}))
     assert [round(float(p), 6) for p in predicted] == [21.0], predicted
@@ -233,7 +240,9 @@ async def _check_storage_resolution() -> None:
     async with uc.ApiClient(uc.Configuration(host=UC_URL)) as api:
         schema = await uc.SchemasApi(api).create_schema(
             uc.CreateSchema(
-                name=ROOTED_SCHEMA.split(".")[1], catalog_name="unity", storage_root=SCHEMA_ROOT
+                name=ROOTED_SCHEMA.split(".")[1],
+                catalog_name="unity",
+                storage_root=SCHEMA_ROOT,
             )
         )
         rooted = await uc.RegisteredModelsApi(api).create_registered_model(
@@ -267,7 +276,9 @@ async def _check_storage_resolution() -> None:
                     )
                 )
             except BadRequestException as exc:
-                assert "FAILED_PRECONDITION" in exc.body and NO_STORAGE in exc.body, exc.body
+                assert "FAILED_PRECONDITION" in exc.body and NO_STORAGE in exc.body, (
+                    exc.body
+                )
             else:
                 raise AssertionError("created a model with no managed storage")
         finally:
@@ -313,7 +324,9 @@ def _check_copies(mlflow, client, logged) -> None:
 
     def files(uri: str) -> dict[str, bytes]:
         with tempfile.TemporaryDirectory() as tmp:
-            local = Path(mlflow.artifacts.download_artifacts(artifact_uri=uri, dst_path=tmp))
+            local = Path(
+                mlflow.artifacts.download_artifacts(artifact_uri=uri, dst_path=tmp)
+            )
             return {
                 p.relative_to(local).as_posix(): p.read_bytes()
                 for p in local.rglob("*")
@@ -347,7 +360,9 @@ async def _check_pending_then_ready(source: str) -> None:
         )
         assert created.version == 3, created
         assert created.status == uc.ModelVersionStatus.PENDING_REGISTRATION, created
-        assert re.fullmatch(re.escape(CATALOG_ROOT) + VERSION_PATH, created.storage_location)
+        assert re.fullmatch(
+            re.escape(CATALOG_ROOT) + VERSION_PATH, created.storage_location
+        )
         finalized = await versions.finalize_model_version(
             full_name=MODEL,
             version=3,

@@ -5,9 +5,24 @@ import type { CompatCoverageCounts } from "../../../compat";
 import { catalog } from "../../../estate";
 import { elementSummary, likec4model } from "../../../explain";
 import { answered, type ImplementationProfile } from "../../../lib/estate-graph";
-import { BucketBar, CoverageRing, implHref, specHref } from "./primitives";
+import { BucketBar, CoverageRing, ElementRef, implHref, specHref } from "./primitives";
 
 const KIND_TAGS = ["service", "library", "client", "infra"];
+
+export const isExtension = (id: string) =>
+  likec4model.findElement(id)?.tags.includes("extension") ?? false;
+
+/** The extensions a host integrates, whose support its own columns count. */
+export const extensionsOf = (id: string) =>
+  [...(likec4model.findElement(id)?.outgoing() ?? [])]
+    .filter((r) => r.kind === "integrates" && isExtension(String(r.target.id)))
+    .map((r) => String(r.target.id));
+
+/** The hosts an extension loads into. */
+export const hostsOf = (id: string) =>
+  [...(likec4model.findElement(id)?.incoming() ?? [])]
+    .filter((r) => r.kind === "integrates")
+    .map((r) => String(r.source.id));
 
 export function ImplementationIdentity({ id, href }: { id: string; href?: string }) {
   const el = likec4model.findElement(id);
@@ -84,11 +99,20 @@ export default function ImplementationCard({
   const rings = headlineCoverage(profile);
   const paths = [...new Set(profile.paths.map((p) => `${p.path}:${p.role}`))];
   const blockedJourneys = new Set(profile.blockedBy.flatMap((b) => b.journeys));
+  const extensions = extensionsOf(profile.id);
   return (
     <article className={compact ? "impl-card is-compact" : "impl-card"}>
       {!compact && <ImplementationIdentity id={profile.id} href={implHref(profile.id)} />}
       {summary && !compact && <p className="impl-summary">{summary}</p>}
       <BucketBar counts={profile.counts} />
+      {extensions.length > 0 && (
+        <p className="impl-extensions">
+          <span className="muted">Extensions</span>
+          {extensions.map((x) => (
+            <ElementRef key={x} id={x} />
+          ))}
+        </p>
+      )}
       {rings.length > 0 && (
         <div className="impl-rings">
           {rings.map((r) => (

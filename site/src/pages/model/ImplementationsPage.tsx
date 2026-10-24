@@ -1,20 +1,23 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { matrices } from "../../compat";
-import ImplementationCard from "../../components/model/graph/ImplementationCard";
+import ImplementationCard, {
+  hostsOf,
+  isExtension,
+} from "../../components/model/graph/ImplementationCard";
 import { ElementRef } from "../../components/model/graph/primitives";
 import { catalog } from "../../estate";
 import { likec4model } from "../../explain";
 import { graphImplementations, implementationProfile } from "../../lib/estate-graph";
 import { PlanPage } from "../plan/PlanLayout";
 
-const KINDS = ["service", "library", "client", "infra"] as const;
+const KINDS = ["service", "library", "client", "infra", "extension"] as const;
 
 export default function ImplementationsPage() {
   const [params, setParams] = useSearchParams();
   const kind = params.get("kind");
   const q = (params.get("q") ?? "").toLowerCase();
-  const { inGraph, rest } = useMemo(() => {
+  const { inGraph, rest, extensions } = useMemo(() => {
     const cells = graphImplementations(catalog, matrices);
     const all = [...likec4model.elements()].filter((e) => e.kind === "implementation");
     return {
@@ -22,7 +25,8 @@ export default function ImplementationsPage() {
         .filter((e) => cells.has(e.id))
         .map((e) => implementationProfile(e.id, catalog, matrices))
         .sort((a, b) => b.cells.length - a.cells.length || a.id.localeCompare(b.id)),
-      rest: all.filter((e) => !cells.has(e.id)),
+      rest: all.filter((e) => !cells.has(e.id) && !isExtension(e.id)),
+      extensions: all.filter((e) => isExtension(e.id)),
     };
   }, []);
   const matches = (id: string) => {
@@ -39,6 +43,7 @@ export default function ImplementationsPage() {
   };
   const shown = inGraph.filter((p) => matches(p.id));
   const others = rest.filter((e) => matches(e.id));
+  const plugins = extensions.filter((e) => matches(e.id));
   return (
     <PlanPage
       title="Implementations"
@@ -82,6 +87,30 @@ export default function ImplementationsPage() {
           <ImplementationCard key={p.id} profile={p} />
         ))}
       </div>
+      {plugins.length > 0 && (
+        <section className="graph-section">
+          <h2>
+            Extensions <span className="plan-chip-count">{plugins.length}</span>
+          </h2>
+          <p className="muted text-xs">
+            They load only into their host, so their support is counted on the host&apos;s card.
+          </p>
+          <ul className="model-link-list">
+            {plugins.map((e) => (
+              <li key={e.id}>
+                <ElementRef id={e.id} />
+                <span className="muted text-xs">
+                  {" "}
+                  in{" "}
+                  {hostsOf(e.id).map((h) => (
+                    <ElementRef key={h} id={h} />
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
       {others.length > 0 && (
         <section className="graph-section">
           <h2>

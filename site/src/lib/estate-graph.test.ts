@@ -63,6 +63,9 @@ test("the graph's implementations and a journey's cells across projects", () => 
   const impls = graphImplementations(catalog, matrices);
   expect(impls.get("apacheSpark")).toBeGreaterThan(0);
   expect(impls.has("unityCatalogServer")).toBe(true);
+  // Extensions roll up into their host: DuckDB counts, its delta extension doesn't.
+  expect(impls.has("duckdb")).toBe(true);
+  expect(impls.has("duckdbDelta")).toBe(false);
   const shared = Object.entries(catalog.journeys).find(([, j]) => j.projects.length > 1);
   expect(shared).toBeDefined();
   if (shared) expect(journeyCells(shared[0], matrices).length).toBe(shared[1].projects.length);

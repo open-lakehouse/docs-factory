@@ -3,7 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import { matrices } from "../../compat";
 import {
   headlineCoverage,
+  hostsOf,
   ImplementationIdentity,
+  isExtension,
   specRoleLabel,
 } from "../../components/model/graph/ImplementationCard";
 import {
@@ -73,6 +75,15 @@ export default function ImplementationPage() {
     >
       <div className="impl-page-head">
         <ImplementationIdentity id={id} />
+        {isExtension(id) && (
+          <p className="muted text-xs">
+            An extension of{" "}
+            {hostsOf(id).map((h) => (
+              <ElementRef key={h} id={h} />
+            ))}
+            : its support is counted on the host&apos;s card.
+          </p>
+        )}
         <BucketBar counts={profile.counts} />
         <p className="impl-paths">
           {el.links.map((l) => (

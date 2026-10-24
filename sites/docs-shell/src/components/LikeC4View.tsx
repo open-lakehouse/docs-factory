@@ -1,9 +1,10 @@
 // An interactive LikeC4 diagram via the framework-agnostic <likec4-view> web
-// component. The emitter ships its bundle at WEB_COMPONENT and each view's PNG at
-// /assets/likec4/<viewId>.png; the PNG sits in the element's light DOM, so it is
-// what crawlers and no-JS readers get, and the component's shadow root replaces
-// it once the bundle registers the element.
+// component, whose bundle the emitter ships at WEB_COMPONENT. The fallback sits
+// in the element's light DOM, so it is what crawlers and no-JS readers get, and
+// the component's shadow root replaces it once the bundle registers the element.
+// The view's own `variant` picks diagram or sequence.
 import { useEffect } from "react";
+import { DiagramFallback } from "./DiagramFallback";
 
 const WEB_COMPONENT = "/likec4/likec4-webcomponent.mjs";
 
@@ -18,21 +19,17 @@ function loadWebComponent() {
 export function LikeC4View({
   viewId,
   alt,
-  dynamicViewVariant = "sequence",
+  mermaid,
 }: {
   viewId: string;
   alt?: string;
-  dynamicViewVariant?: "sequence" | "diagram";
+  mermaid?: string;
 }) {
   useEffect(loadWebComponent, []);
   return (
-    <div className="diagram-frame">
-      <likec4-view view-id={viewId} dynamic-variant={dynamicViewVariant} className="likec4-view">
-        <img
-          src={`/assets/likec4/${viewId}.png`}
-          alt={alt || `Diagram: ${viewId}`}
-          loading="lazy"
-        />
+    <div className="diagram-frame" role="figure" aria-label={alt || undefined}>
+      <likec4-view view-id={viewId} className="likec4-view">
+        <DiagramFallback alt={alt || `Diagram: ${viewId}`} mermaid={mermaid} />
       </likec4-view>
     </div>
   );

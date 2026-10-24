@@ -6,7 +6,9 @@ and **Phase 3** (runnable-script linking) have **shipped**. Phase 2 (C4 model
 integration) shipped in a narrower form: a public `concepts.json`, JSON-LD
 `about`/`mentions`/`tool`, and per-environment service ids (see
 [`trestle-integration.md`](./trestle-integration.md) §8). Phase 4 (hosted MCP)
-is not built; its local precursor is `docsnip query` (same doc, §9).
+is not built and is superseded by [`lakehouse-mcp.md`](./lakehouse-mcp.md): a
+local Rust server first, linking Trestle's planner instead of a WASM build in a
+Function. Its local precursor is `docsnip query` (same doc, §9).
 
 > **Since 2026-10:** the factory app (`site/`) is a login-gated review/admin tool
 > and no longer serves readers. The reader-facing surfaces below now live in the
@@ -402,6 +404,11 @@ noindex + `Content-Type` header rule for `.py` files.
 ---
 
 ## Phase 4 — Hosted MCP server at `/api/mcp` — dedicated Function
+
+> **Superseded** by [`lakehouse-mcp.md`](./lakehouse-mcp.md): internal agents
+> first, a local stdio server in Rust over a precomputed knowledge bundle, with
+> `olai-stack-topology` linked in-process rather than vendored as WASM. Hosting
+> is deferred until the internal answers prove accurate. Kept for history.
 
 > Review *feedback* for agents is a separate, checkout-local MCP; see
 > [agent-feedback.md](agent-feedback.md). Its tools could later join this server

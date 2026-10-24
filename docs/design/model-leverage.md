@@ -110,6 +110,7 @@ pages, and `sameAs`. `llms.txt` links it. An MCP server (`explain(id)`,
 be our own agents (blog review facets, review-feedback, `update-architecture`),
 which need grounding more than any public agent does. The raw `model.json` stays
 internal: its deployment layer names our services and unbuilt designs.
+[`lakehouse-mcp.md`](./lakehouse-mcp.md) designs that server.
 
 ### 3.5 Model as the spine of an agent-maintained wiki
 

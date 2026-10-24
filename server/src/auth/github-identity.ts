@@ -1,11 +1,13 @@
 // GitHub identity enrichment used at first login to POPULATE our user_identity
 // table. neon_auth.account stores GitHub's numeric OAuth "accountId", NOT the
-// @handle; we exchange the account's stored "accessToken" for the real login
-// (and its verified emails) via GitHub's API. This runs once per user (when
-// their user_identity row is absent or has no resolved login), not on every
-// request — the read path reads the persisted row. Every call fails soft — a
-// network error, revoked token, or missing scope returns null/empty rather than
-// throwing, and the numeric id is NEVER stored as a fake login.
+// @handle. We resolve the handle from that id via GitHub's public
+// `GET /user/{id}`, which needs no user token: Neon Auth's stored "accessToken"
+// is not usable against GitHub in prod, so the token exchange (still tried
+// first, and the only source of verified emails) can't be relied on. This runs
+// when a user_identity row is absent or has no resolved login, throttled by the
+// caller, never on the read path. Every call fails soft: a network error,
+// revoked token, or rate limit returns null/empty rather than throwing, and the
+// numeric id is NEVER stored as a fake login.
 import type { Queryable } from "../db.js";
 
 /** GitHub API headers shared by the /user and /user/emails calls. */
@@ -25,6 +27,30 @@ function githubHeaders(accessToken: string): HeadersInit {
 async function fetchGithubLogin(accessToken: string): Promise<string | null> {
   try {
     const res = await fetch("https://api.github.com/user", { headers: githubHeaders(accessToken) });
+    if (!res.ok) return null;
+    const body = (await res.json()) as { login?: unknown };
+    return typeof body.login === "string" && body.login.length > 0 ? body.login : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Resolve a numeric GitHub user id to its current @handle via the public
+ * `GET /user/{id}`. Unauthenticated calls share a 60/h limit per egress IP, so
+ * an optional GITHUB_TOKEN (any token, no scopes) lifts it. Returns null on any
+ * failure or a non-numeric id.
+ */
+export async function fetchGithubLoginById(id: string | null): Promise<string | null> {
+  if (!id || !/^\d+$/.test(id)) return null;
+  const headers: Record<string, string> = {
+    accept: "application/vnd.github+json",
+    "user-agent": "docs-factory-review",
+  };
+  const token = process.env.GITHUB_TOKEN?.trim();
+  if (token) headers.authorization = `Bearer ${token}`;
+  try {
+    const res = await fetch(`https://api.github.com/user/${id}`, { headers });
     if (!res.ok) return null;
     const body = (await res.json()) as { login?: unknown };
     return typeof body.login === "string" && body.login.length > 0 ? body.login : null;
@@ -63,6 +89,7 @@ export interface UserIdentityRow {
   name: string | null;
   email: string | null;
   avatar_url: string | null;
+  updated_at?: Date | null;
 }
 
 /** Read the persisted user_identity row for a user id, or null if none yet. */
@@ -71,7 +98,7 @@ export async function readUserIdentity(
   userId: string,
 ): Promise<UserIdentityRow | null> {
   const rows = await sql<UserIdentityRow[]>`
-    select user_id, github_login, github_id, name, email, avatar_url
+    select user_id, github_login, github_id, name, email, avatar_url, updated_at
     from user_identity where user_id = ${userId}
     limit 1
   `;
@@ -100,7 +127,9 @@ export async function persistUserIdentity(
     name: string | null;
   },
 ): Promise<UserIdentityRow> {
-  const login = input.accessToken ? await fetchGithubLogin(input.accessToken) : null;
+  const login =
+    (input.accessToken ? await fetchGithubLogin(input.accessToken) : null) ??
+    (await fetchGithubLoginById(input.accountId));
   const githubEmails = input.accessToken ? await fetchGithubEmails(input.accessToken) : [];
   // Prefer a GitHub-verified email, then the neon_auth user-row primary, then
   // the JWT email. All are trusted origins for this identity.
@@ -115,6 +144,15 @@ export async function persistUserIdentity(
     avatar_url: avatarUrl,
   };
   try {
+    // github_login is unique (case-insensitive). The id is the truth, so a handle
+    // still held by another row (a renamed-away account, a hand-set stub) is
+    // released first; otherwise the upsert below would fail on the index.
+    if (row.github_login) {
+      await sql`
+        update user_identity set github_login = null, avatar_url = null, updated_at = now()
+        where lower(github_login) = lower(${row.github_login}) and user_id <> ${row.user_id}
+      `;
+    }
     // Upsert: never overwrite a resolved github_login with null (coalesce), so a
     // later login whose GitHub call fails can't erase a previously-resolved handle.
     await sql`

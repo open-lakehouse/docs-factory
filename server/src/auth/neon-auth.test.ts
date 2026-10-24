@@ -7,7 +7,8 @@
 // and honor an Authorization: Bearer header.
 import { describe, expect, test } from "bun:test";
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
-import { elevateRoleForAdmin, sessionToken } from "./neon-auth.js";
+import type { UserIdentityRow } from "./github-identity.js";
+import { elevateRoleForAdmin, sessionToken, shouldResolveIdentity } from "./neon-auth.js";
 
 function headers(init: Record<string, string>): Headers {
   return new Headers(init);
@@ -60,5 +61,35 @@ describe("elevateRoleForAdmin", () => {
     expect(elevateRoleForAdmin(Role.ANONYMOUS, false)).toBe(Role.ANONYMOUS);
     expect(elevateRoleForAdmin(Role.REVIEWER, false)).toBe(Role.REVIEWER);
     expect(elevateRoleForAdmin(Role.MAINTAINER, false)).toBe(Role.MAINTAINER);
+  });
+});
+
+describe("shouldResolveIdentity", () => {
+  const now = Date.parse("2026-10-24T12:00:00Z");
+  const row = (login: string | null, updatedAt: string | null): UserIdentityRow => ({
+    user_id: "u",
+    github_login: login,
+    github_id: "1",
+    name: null,
+    email: null,
+    avatar_url: null,
+    updated_at: updatedAt ? new Date(updatedAt) : null,
+  });
+
+  test("resolves a user with no row yet", () => {
+    expect(shouldResolveIdentity(null, now)).toBe(true);
+  });
+
+  test("never re-resolves a resolved login", () => {
+    expect(shouldResolveIdentity(row("octocat", "2020-01-01T00:00:00Z"), now)).toBe(false);
+  });
+
+  test("waits before retrying a recent failed resolution", () => {
+    expect(shouldResolveIdentity(row(null, "2026-10-24T11:55:00Z"), now)).toBe(false);
+  });
+
+  test("retries a stale unresolved row", () => {
+    expect(shouldResolveIdentity(row(null, "2026-10-24T11:30:00Z"), now)).toBe(true);
+    expect(shouldResolveIdentity(row(null, null), now)).toBe(true);
   });
 });

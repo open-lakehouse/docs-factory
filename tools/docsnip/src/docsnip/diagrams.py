@@ -1,8 +1,16 @@
-"""Trestle diagram markers: a ``trestle`` fence naming the diagram, alt text as its body.
+"""Diagram markers: a ``trestle`` or ``likec4`` fence naming the diagram, alt text as its body.
 
     ```trestle <ref>
     Clients reach Envoy on port 8080, which routes …
     ```
+
+    ```likec4 <viewId>
+    A client asks Unity Catalog for a table, then …
+    ```
+
+A ``likec4`` block names a view of the architecture model
+(``architecture/dist/model.json``). The sites draw it interactively; the ``.md``
+twins get its Mermaid (site/scripts/likec4-mermaid.mjs).
 
 A diagram is a graph snapshot (``<stem>.trestle-graph.json``, the envelope
 ``@open-lakehouse/trestle-diagram`` draws). ``<ref>`` names a generated
@@ -27,8 +35,13 @@ ENV_STEM = "diagram"
 GENERATOR = "docs-factory"
 
 _FENCE_RE = re.compile(r"^\s*(?P<fence>`{3,}|~{3,})\s*(?P<info>.*)$")
-# The retired embed: a PNG titled with the ref.
-_IMAGE_RE = re.compile(r'^!\[[^\]]*\]\(\S+ "trestle=\S+"\)\s*$')
+
+
+def _image_re(kind: str) -> re.Pattern[str]:
+    """The retired embed: a PNG titled ``<kind>=<ref>``."""
+    return re.compile(rf'^!\[[^\]]*\]\(\S+ "{kind}=\S+"\)\s*$')
+
+
 _MERMAID_RE = re.compile(r"^```mermaid[^\n]*\n.*?\n```[ \t]*$", re.S | re.M)
 
 
@@ -90,8 +103,8 @@ def _has_mermaid(root: Path, snapshot: Path) -> bool:
     return isinstance(mermaid, str) and bool(mermaid.strip())
 
 
-def embeds(md_path: Path) -> list[tuple[int, str, str]]:
-    """``(line, alt, ref)`` for every Trestle marker not inside another fence."""
+def embeds(md_path: Path, lang: str = "trestle") -> list[tuple[int, str, str]]:
+    """``(line, alt, ref)`` for every ``lang`` marker not inside another fence."""
     found = []
     lines = md_path.read_text().splitlines()
     i = 0
@@ -114,15 +127,16 @@ def embeds(md_path: Path) -> list[tuple[int, str, str]]:
                     break
             body.append(lines[j])
             j += 1
-        if info and info[0] == "trestle":
+        if info and info[0] == lang:
             ref = info[1].strip() if len(info) > 1 else ""
             found.append((i + 1, " ".join(" ".join(body).split()), ref))
         i = j + 1
     return found
 
 
-def retired_embeds(md_path: Path) -> list[int]:
-    """Lines still using the PNG embed, outside fences."""
+def retired_embeds(md_path: Path, kind: str = "trestle") -> list[int]:
+    """Lines still using the ``<kind>=`` PNG embed, outside fences."""
+    image_re = _image_re(kind)
     found = []
     fence = None
     for number, line in enumerate(md_path.read_text().splitlines(), start=1):
@@ -132,7 +146,7 @@ def retired_embeds(md_path: Path) -> list[int]:
             elif m["fence"][0] == fence[0] and len(m["fence"]) >= len(fence):
                 fence = None
             continue
-        if fence is None and "trestle=" in line and _IMAGE_RE.match(line):
+        if fence is None and f"{kind}=" in line and image_re.match(line):
             found.append(number)
     return found
 
@@ -190,10 +204,46 @@ def check_page(root: Path, md_path: Path, envs: set[str]) -> list[str]:
     return errors
 
 
+def model_views(root: Path) -> set[str] | None:
+    """View ids of the built model, or None if it hasn't been built (then view
+    ids go unchecked rather than all reported unknown)."""
+    path = root / "architecture" / "dist" / "model.json"
+    if not path.is_file():
+        return None
+    return set((json.loads(path.read_text()).get("views") or {}).keys())
+
+
+def check_likec4_page(root: Path, md_path: Path, views: set[str] | None) -> list[str]:
+    errors = []
+    try:
+        shown = md_path.relative_to(root)
+    except ValueError:
+        shown = md_path
+    for line in retired_embeds(md_path, "likec4"):
+        errors.append(
+            f"{shown}:{line}: LikeC4 views are ```likec4 <viewId> blocks now, with "
+            "the alt text as the body"
+        )
+    for line, alt, view in embeds(md_path, "likec4"):
+        where = f"{shown}:{line}"
+        if not alt:
+            errors.append(f"{where}: a LikeC4 view needs alt text (the block's body)")
+        if not view:
+            errors.append(f"{where}: a likec4 block needs a view id")
+        elif views is not None and view not in views:
+            errors.append(
+                f"{where}: likec4 {view} is not a view of the architecture model"
+            )
+    return errors
+
+
 def check(root: Path, pages: list[Path], envs: list[str]) -> list[str]:
-    """Every Trestle marker on ``pages`` resolves to a snapshot with Mermaid."""
+    """Every Trestle marker on ``pages`` resolves to a snapshot with Mermaid, and
+    every LikeC4 marker names a view of the model."""
     known = set(envs)
+    views = model_views(root)
     errors = []
     for page in pages:
         errors += check_page(root, page, known)
+        errors += check_likec4_page(root, page, views)
     return errors

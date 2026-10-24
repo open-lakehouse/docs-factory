@@ -14,7 +14,7 @@ tags: [<from tags.yml>, …]    # every tag MUST exist in blogs/tags.yml
 series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
 author: <Full Name>           # real person; the byline. never "Admin"
-target: <delta | unitycatalog | openlakehouse | …>
+target: <site> | [<primary>, <cross-post>, …]   # from vocab.json blogTargets
 post_type: essay | how-to | deep-dive | announcement | comparison | benchmark
 audience: <who it's for and what they already know, one line>
 summary: <the answer-first one-liner, ≤160 chars>
@@ -26,8 +26,9 @@ Publish timing is not frontmatter: last-updated comes from registered
 Emit stamps the downstream site's publish date at emit time.
 
 Where a post is *emitted* (a published site) is recorded per target in
-`blogs/<slug>/.emitted.json`, not in front matter (a draft can go to several
-targets; the SEO canonical `<link>` is the publishing site's concern). See
+`blogs/<slug>/.emitted.json`, not in front matter. A cross-posted post lists every
+site in `target:`; the first is the primary, and the emitter points the others'
+SEO canonical `<link>` at the primary's copy. See
 CONVENTIONS.md §5, "Emit to a downstream target".
 
 - **`tags`** — every tag must exist in `blogs/tags.yml`. Reuse before coining; if

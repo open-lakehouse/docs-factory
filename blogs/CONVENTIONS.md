@@ -55,16 +55,16 @@ kept beside the drafts); it needs no `target`.
    front-matter/target, CTA, and links and set `status: ready` in a PR (an agent
    may do this; `review-feedback status` lists approved posts). Never set `ready`
    without an approval: CI warns when a PR does. Merging to main is the release;
-   delivery to the target site is the `blog-emit` skill today, and is meant to
-   become a workflow on push to main that emits each newly `ready` post and opens
-   a PR in its target repo (the `uc-docs-sync` pattern). When
+   delivery to each target site (primary first, §3 "Cross-posting") is the
+   `blog-emit` skill today, and is meant to become a workflow on push to main that
+   emits each newly `ready` post and opens a PR in each target repo (the
+   `uc-docs-sync` pattern). When
    rendering to an HTML target, run the **publish-target checklist** in
    [`QUALITY.md`](./QUALITY.md) (Schema.org Microdata, validated in Google's Rich
    Results Test) against the rendered page — this is a publishing concern, not a
    draft one. After publishing, record the live URL in the post's `.emitted.json`
    (per target) and in `README.md`. The SEO canonical `<link>` is emitted by the
-   publishing site at render time — not a draft field (§5, "Emit to a downstream
-   target").
+   publishing site at render time; a cross-post's points at the primary (§3).
 
 **Folder rule.** One folder per post, keyed by a kebab-case slug
 (`blogs/<slug>/`). Raw ideas live in `IDEAS.md`; a `<slug>/` folder is created when
@@ -99,7 +99,7 @@ tags: [<from tags.yml>, …]    # every tag MUST exist in blogs/tags.yml
 series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
 author: <Full Name>           # real person; the byline (§10). never "Admin"
-target: <delta | unitycatalog | openlakehouse | …>   # not needed for idea / private
+target: <site> | [<primary>, <cross-post>, …]   # vocab.json blogTargets; not needed for idea / private
 post_type: essay | how-to | deep-dive | announcement | comparison | benchmark
 audience: <who it's for and what they already know, one line>
 summary: <the answer-first one-liner, ≤160 chars>
@@ -129,10 +129,16 @@ Publish timing is **not** frontmatter. Last-updated comes from registered
 `target_release_date` (blog pipeline). Emit stamps the downstream site's
 publish date at emit time.
 
-Where a post is *emitted* (a published site) is recorded per target in
-the post's `blogs/<slug>/.emitted.json` sidecar (§5), not in the front matter — a
-draft can go to several targets, and the SEO canonical `<link>` is the publishing
-site's concern at render time, not a draft field.
+**Cross-posting.** `target` is one site (`target: unitycatalog`) or a list of the
+sites a post is cross-posted to (`target: [unitycatalog, delta]`). The first entry
+is the **primary**: its copy keeps its own canonical URL, and the emitter gives
+every other target's copy a `canonical` pointing at it, so the sites don't compete
+for the same post in search. The primary is delivered first, because its URL is
+known only once its post folder is recorded. Values come from `blogTargets` in
+`content/vocab.json`; `docsnip validate` rejects unknown or repeated ones.
+
+Where a post is *emitted* (the post folder on each site) is recorded per target in
+the post's `blogs/<slug>/.emitted.json` sidecar (§5), not in the front matter.
 
 **Tags** correlate posts by topic. Every tag used here **must exist in
 `blogs/tags.yml`**, the known-tag registry. Reuse an existing tag before coining
@@ -391,11 +397,12 @@ bullets. Copy this to start a post.
   PNG-regeneration the `site/` harness runs, and renders each rich construct the way
   the chosen target needs: a `file=` fence is inlined with the real code, and each
   `likec4=` image is re-exported from the unified `architecture/model` workspace to a
-  PNG. Run it with a **required** target:
+  PNG. Run it for every target in the post's `target:` list, or name the targets:
   ```
-  bun emit/emit.mjs --slug <slug> --target unitycatalog
+  just emit <slug>                      # every listed target, primary first
+  just emit <slug> unitycatalog delta   # just these
   ```
-  which writes `blogs/<slug>/dist/<target>/index.mdx` + `assets.json` (the `dist/`
+  which writes `blogs/<slug>/dist/<target>/index.mdx` + `assets.json` per target (the `dist/`
   render is throwaway and gitignored — the draft stays the source of truth). The
   [`/blog-emit`](../.claude/skills/blog-emit/) skill cross-publishes to the
   **UnityCatalog.io** and **Delta.io** Astro sites (`--target unitycatalog` /

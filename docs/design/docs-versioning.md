@@ -135,5 +135,9 @@ outside R01 joins the list in the same change.
 | unitycatalog | H07 `how-to/013-metric-views`, T08 `tutorials/008-first-metric-view` | Spark's metric-view limits (YAML version, replace, rename). |
 | unitycatalog | H47 `how-to/012-iceberg-rest` | Which tables the Iceberg endpoint serves; UniForm. |
 | unitycatalog | H12 `how-to/020-run-functions` | On a `unitycatalog-ai` bump: the one-client `gather` deadlock, the process-wide `nest_asyncio` patch (uvloop), `close()` not closing the connection, `async def` registration, `EXECUTOR_DISALLOWED_MODULES` parsing, the sandbox's blocked imports, limits, and kill signals, local-mode result caching, the list-argument remedy, and the Python 3.12 advice. |
+| unitycatalog | H13 `how-to/017-langchain-tools` | On an MLflow bump: that the standalone `mlflow gateway` CLI still ships with the `[gateway]` extra, and the trace flush before `search_traces`. |
+| unitycatalog | T07 `tutorials/009-register-model-mlflow` | On an MLflow bump: that registering copies the logged model's files into managed storage and needs the `databricks` extra (boto3), and the harmless `pip` warning. |
+| unitycatalog | H15 `how-to/021-manage-models` | On an MLflow bump: the `uc:` store's refusals (aliases, stages, tags, rename, `filter_string`/`order_by`, delete without `force`), dropped `tags=`, and register's create-first behavior. |
+| unitycatalog | E08 `explanation/008-models-and-mlflow` | On an MLflow bump: *What the registry doesn't do*, the copy on register, and that the client reaches Unity Catalog through the `uc:` registry URI while runs and logged models stay on the tracking server. |
 | delta | `reference/090-coverage`, R02 `reference/001-table-features` | Engine support per feature. |
 | delta | H04 `how-to/003-append-and-overwrite-data` | DuckDB's write limits. |

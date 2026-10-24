@@ -11,7 +11,7 @@ environment folder), run from this folder:
 
     EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 \
       --with unitycatalog-langchain==0.4.0 --with langgraph-prebuilt==1.0.8 \
-      --with langchain-community==0.4.1 --with mlflow==3.10.0 \
+      --with langchain-community==0.4.1 --with mlflow==3.17.0 \
       python gateway_local_check.py
 """
 

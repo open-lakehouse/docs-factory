@@ -107,11 +107,15 @@ async def _how_to() -> None:
         for model in listed.registered_models:
             print(model.full_name, model.storage_location)
 
-        listed = await versions.list_model_versions(full_name="unity.manage_models.linear")
+        listed = await versions.list_model_versions(
+            full_name="unity.manage_models.linear"
+        )
         for v in listed.model_versions:
             print(v.version, v.status.value, v.source)
 
-        v = await versions.get_model_version(full_name="unity.manage_models.linear", version=1)
+        v = await versions.get_model_version(
+            full_name="unity.manage_models.linear", version=1
+        )
         print(v.status.value, v.storage_location)
         # --8<-- [end:view]
         await _check_view(models, versions, v)
@@ -126,15 +130,19 @@ async def _how_to() -> None:
         await versions.update_model_version(
             full_name="unity.manage_models.linear",
             version=2,
-            update_model_version=UpdateModelVersion(comment="Retrained on the new slope"),
+            update_model_version=UpdateModelVersion(
+                comment="Retrained on the new slope"
+            ),
         )
         # --8<-- [end:update]
         before = await models.get_registered_model(full_name=MODEL)
         assert before.comment.startswith("Predicts"), before
-        assert (await versions.get_model_version(full_name=MODEL, version=2)).comment == (
-            "Retrained on the new slope"
-        )
-        assert not (await versions.get_model_version(full_name=MODEL, version=1)).comment
+        assert (
+            await versions.get_model_version(full_name=MODEL, version=2)
+        ).comment == ("Retrained on the new slope")
+        assert not (
+            await versions.get_model_version(full_name=MODEL, version=1)
+        ).comment
 
         # --8<-- [start:rename]
         renamed = await models.update_registered_model(
@@ -152,14 +160,18 @@ async def _how_to() -> None:
         await _check_renamed(models, versions, before, renamed)
 
         # --8<-- [start:delete-version]
-        await versions.delete_model_version(full_name="unity.manage_models.linear", version=2)
+        await versions.delete_model_version(
+            full_name="unity.manage_models.linear", version=2
+        )
         # --8<-- [end:delete-version]
         left = await versions.list_model_versions(full_name=MODEL)
         assert [v.version for v in left.model_versions] == [1], left
         await _check_needs_force(models)
 
         # --8<-- [start:delete-model]
-        await models.delete_registered_model(full_name="unity.manage_models.linear", force=True)
+        await models.delete_registered_model(
+            full_name="unity.manage_models.linear", force=True
+        )
         # --8<-- [end:delete-model]
         try:
             await models.get_registered_model(full_name=MODEL)
@@ -182,7 +194,9 @@ async def _check_view(models, versions, v) -> None:
     )
     (model,) = listed.registered_models
     assert model.full_name == MODEL, model
-    assert model.storage_location.startswith("s3://uc-docs/unity/__unitystorage/"), model
+    assert model.storage_location.startswith("s3://uc-docs/unity/__unitystorage/"), (
+        model
+    )
     listed = await versions.list_model_versions(full_name=MODEL)
     assert sorted(mv.version for mv in listed.model_versions) == [1, 2], listed
     assert v.status == uc.ModelVersionStatus.READY, v
@@ -202,7 +216,9 @@ async def _check_renamed(models, versions, before, renamed) -> None:
         renamed,
     )
     after = await models.get_registered_model(full_name=MODEL)
-    assert [getattr(after, k) for k in keep] == [getattr(before, k) for k in keep], after
+    assert [getattr(after, k) for k in keep] == [getattr(before, k) for k in keep], (
+        after
+    )
     try:
         await models.get_registered_model(full_name=RENAMED)
     except NotFoundException:
@@ -227,7 +243,9 @@ async def _drop(api) -> None:
     """Remove what a failed run left behind; a passing run deleted the model."""
     for name in (MODEL, RENAMED):
         try:
-            await uc.RegisteredModelsApi(api).delete_registered_model(full_name=name, force=True)
+            await uc.RegisteredModelsApi(api).delete_registered_model(
+                full_name=name, force=True
+            )
         except NotFoundException:
             pass
     try:

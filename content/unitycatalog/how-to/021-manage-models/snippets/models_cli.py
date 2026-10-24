@@ -101,12 +101,17 @@ if __name__ == "__main__":
         run(SCRIPT, "update")
         model = get(BASE_URL, f"models/{MODEL}")
         assert model["comment"] == "Predicts y from x with a linear fit", model
-        assert get(BASE_URL, f"models/{MODEL}/versions/2")["comment"] == "Retrained on the new slope"
+        assert (
+            get(BASE_URL, f"models/{MODEL}/versions/2")["comment"]
+            == "Retrained on the new slope"
+        )
         assert not get(BASE_URL, f"models/{MODEL}/versions/1").get("comment")
 
         # The first command prints the model under its new name, same id.
         out = run(SCRIPT, "rename")
-        assert f'"full_name" : "{RENAMED}"' in out and f'"id" : "{model["id"]}"' in out, out
+        assert (
+            f'"full_name" : "{RENAMED}"' in out and f'"id" : "{model["id"]}"' in out
+        ), out
         assert get(BASE_URL, f"models/{RENAMED}") is None
         after = get(BASE_URL, f"models/{MODEL}")
         keep = ("id", "storage_location", "comment")

@@ -175,7 +175,9 @@ def _how_to() -> None:
     # --8<-- [end:log]
     # Each logged model has a `models:/m-<id>` URI; the second is the retrained one.
     assert len(model_uris) == 2, model_uris
-    assert all(re.fullmatch(r"models:/m-[0-9a-f]{32}", u) for u in model_uris), model_uris
+    assert all(re.fullmatch(r"models:/m-[0-9a-f]{32}", u) for u in model_uris), (
+        model_uris
+    )
     first_model_id = model_uris[0].removeprefix("models:/")
     first_run_id = mlflow.get_logged_model(first_model_id).source_run_id
 
@@ -186,8 +188,12 @@ def _how_to() -> None:
         # --8<-- [end:register]
     # The first call creates the model, then adds version 1.
     assert str(version.version) == "1" and version.status == "READY", version
-    assert "Successfully registered model 'unity.manage_models.linear'." in err.getvalue()
-    assert "Created version '1' of model 'unity.manage_models.linear'." in err.getvalue()
+    assert (
+        "Successfully registered model 'unity.manage_models.linear'." in err.getvalue()
+    )
+    assert (
+        "Created version '1' of model 'unity.manage_models.linear'." in err.getvalue()
+    )
     # The version records the logged model it copied from, and no run.
     assert version.source == model_uris[0] and not version.run_id, version
 
@@ -202,7 +208,9 @@ def _how_to() -> None:
         "Registered model 'unity.manage_models.linear' already exists. "
         "Creating a new version of this model..."
     ) in err.getvalue(), err.getvalue()
-    assert "Created version '2' of model 'unity.manage_models.linear'." in err.getvalue()
+    assert (
+        "Created version '2' of model 'unity.manage_models.linear'." in err.getvalue()
+    )
     _check_tags_dropped(mlflow, client, model_uris[0])
 
     # --8<-- [start:view]
@@ -247,7 +255,10 @@ def _how_to() -> None:
     # must search again: versions 1 and 3, plus 99 more.
     asyncio.run(_pad_versions(99))
     first_page = client.search_model_versions(f"name='{MODEL}'")
-    assert len(first_page) == PAGE and first_page.token, (len(first_page), first_page.token)
+    assert len(first_page) == PAGE and first_page.token, (
+        len(first_page),
+        first_page.token,
+    )
 
     # --8<-- [start:delete-model]
     name = "unity.manage_models.linear"
@@ -292,17 +303,25 @@ def _check_search_rejections(client) -> None:
     from mlflow.exceptions import MlflowException
 
     calls = [
-        ("filter_string", lambda: client.search_registered_models(filter_string=f"name='{MODEL}'")),
+        (
+            "filter_string",
+            lambda: client.search_registered_models(filter_string=f"name='{MODEL}'"),
+        ),
         ("order_by", lambda: client.search_registered_models(order_by=["name ASC"])),
-        ("order_by", lambda: client.search_model_versions(
-            f"name='{MODEL}'", order_by=["version_number DESC"]
-        )),
+        (
+            "order_by",
+            lambda: client.search_model_versions(
+                f"name='{MODEL}'", order_by=["version_number DESC"]
+            ),
+        ),
     ]
     for arg, call in calls:
         try:
             call()
         except MlflowException as exc:
-            expected = f"Argument '{arg}' is unsupported for models in the Unity Catalog"
+            expected = (
+                f"Argument '{arg}' is unsupported for models in the Unity Catalog"
+            )
             assert expected in str(exc), exc
         else:
             raise AssertionError(f"search accepted {arg}")
@@ -315,7 +334,9 @@ def _check_load(mlflow, client, model, pd) -> None:
     predicted = model.predict(pd.DataFrame({"x": [10.0]}))
     assert [round(float(p), 6) for p in predicted] == [21.0], predicted
     v2 = mlflow.pyfunc.load_model(f"models:/{MODEL}/2")
-    assert [round(float(p), 6) for p in v2.predict(pd.DataFrame({"x": [10.0]}))] == [31.0]
+    assert [round(float(p), 6) for p in v2.predict(pd.DataFrame({"x": [10.0]}))] == [
+        31.0
+    ]
     uri = client.get_model_version_download_uri(MODEL, "1")
     pattern = rf"/__unitystorage/catalogs/{_UUID}/models/{_UUID}/versions/{_UUID}"
     assert re.fullmatch(re.escape(CATALOG_ROOT) + pattern, uri), uri
@@ -332,7 +353,9 @@ def _check_load(mlflow, client, model, pd) -> None:
         )
         mlmodel = (Path(local) / "MLmodel").read_text()
     assert "signature:" in mlmodel and '"name": "x"' in mlmodel, mlmodel
-    assert "signature" not in uc.ModelVersionInfo.model_fields, uc.ModelVersionInfo.model_fields
+    assert "signature" not in uc.ModelVersionInfo.model_fields, (
+        uc.ModelVersionInfo.model_fields
+    )
 
 
 def _check_unsupported(mlflow, client) -> None:
@@ -344,7 +367,9 @@ def _check_unsupported(mlflow, client) -> None:
         "load by alias": lambda: mlflow.pyfunc.load_model(f"models:/{MODEL}@champion"),
         "load latest": lambda: mlflow.pyfunc.load_model(f"models:/{MODEL}/latest"),
         "latest versions": lambda: client.get_latest_versions(MODEL),
-        "stage": lambda: client.transition_model_version_stage(MODEL, "1", "Production"),
+        "stage": lambda: client.transition_model_version_stage(
+            MODEL, "1", "Production"
+        ),
         "model tag": lambda: client.set_registered_model_tag(MODEL, "team", "ml"),
         "version tag": lambda: client.set_model_version_tag(MODEL, "1", "team", "ml"),
         "rename": lambda: client.rename_registered_model(MODEL, f"{SCHEMA}.forecast"),
@@ -355,7 +380,9 @@ def _check_unsupported(mlflow, client) -> None:
         except NotImplementedError as exc:
             assert str(exc) == UNSUPPORTED, (label, exc)
         else:
-            raise AssertionError(f"{label}: MLflow's Unity Catalog store now supports it")
+            raise AssertionError(
+                f"{label}: MLflow's Unity Catalog store now supports it"
+            )
     # Nothing changed: the model kept its name and both versions.
     assert client.get_registered_model(MODEL).name == MODEL
 
@@ -366,7 +393,9 @@ def _check_number_not_reused(mlflow, client, run_id: str) -> None:
     Registering from a `runs:/` URI records the run on the version; the source
     is still the logged model MLflow resolved it to.
     """
-    numbers = sorted(int(v.version) for v in client.search_model_versions(f"name='{MODEL}'"))
+    numbers = sorted(
+        int(v.version) for v in client.search_model_versions(f"name='{MODEL}'")
+    )
     assert numbers == [1], numbers
     again = mlflow.register_model(f"runs:/{run_id}/linear", MODEL)
     assert str(again.version) == "3", again

@@ -108,7 +108,7 @@ export function useReviewTree(mode: TreeMode): { tree: TreeNode[]; isLoading: bo
           ? navBranches(
               group.project,
               projectNav[group.project],
-              (bucket, slug) => findDoc(group.project, bucket, slug)?.frontmatter.status,
+              (project, bucket, slug) => findDoc(project, bucket, slug)?.frontmatter.status,
             )
           : bucketBranches(group),
     }));

@@ -6,8 +6,9 @@
 
 /**
  * @param {object[]} tree   resolveNav(...).tree
- * @param {{ isSelected: (bucket: string, slug: string) => boolean,
- *           routeFor: (bucket: string, slug: string) => string }} opts
+ * @param {{ isSelected: (bucket: string, slug: string, project?: string) => boolean,
+ *           routeFor: (bucket: string, slug: string, project?: string) => string }} opts
+ *   `project` is set for another project's cross-published page.
  * @returns {{ nav: object[], order: { route: string, section: string[] }[] }}
  *   `nav` is the sidebar tree for site.json; `order` lists each page's primary
  *   placement in nav order (prev/next and breadcrumbs follow it).
@@ -20,8 +21,8 @@ export function projectNav(tree, { isSelected, routeFor }) {
       if (node.kind === "section") {
         const items = project(node.children, [...trail, node.label]);
         if (items.length) out.push({ kind: "section", label: node.label, items });
-      } else if (node.kind === "page" && isSelected(node.bucket, node.slug)) {
-        const route = routeFor(node.bucket, node.slug);
+      } else if (node.kind === "page" && isSelected(node.bucket, node.slug, node.project)) {
+        const route = routeFor(node.bucket, node.slug, node.project);
         if (node.primary) order.push({ route, section: trail });
         out.push({ kind: "page", route, label: node.label });
       }

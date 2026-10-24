@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import delta from "../sites/delta-docs.mjs";
-import { projectRoutes } from "../sites/routes.mjs";
+import { guestKey, projectRoutes, withGuests } from "../sites/routes.mjs";
 import uc from "../sites/unitycatalog-docs.mjs";
 
 const SITES_DIR = join(import.meta.dir, "../../../sites");
@@ -24,6 +24,14 @@ test("projectRoutes gives another project's pages no route", () => {
   expect(href({ area: "docs", project: "unitycatalog", bucket: "how-to", slug: "x" })).toBeNull();
   expect(href({ area: "docs", project: "delta", bucket: "how-to" })).toBeNull();
   expect(href(null)).toBeNull();
+});
+
+test("withGuests routes a cross-published page under its project", () => {
+  const guest = { area: "docs", project: "unitycatalog", bucket: "how-to", slug: "x" };
+  const href = withGuests(projectRoutes("delta"), new Set([guestKey(guest)]));
+  expect(href(guest)).toBe("/unitycatalog/how-to/x");
+  expect(href({ ...guest, slug: "y" })).toBeNull();
+  expect(href({ area: "docs", project: "delta", bucket: "how-to", slug: "x" })).toBe("/how-to/x");
 });
 
 test("the Delta site emits content/delta with no env bundle or REST APIs", () => {

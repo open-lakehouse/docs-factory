@@ -1,6 +1,7 @@
-// Validate every `content/<project>/nav.yml` against that project's docs (a
-// prebuild step). The sidebar resolves the same manifests at runtime but can only
-// log; failing here is what stops a broken or orphaning manifest from shipping.
+// Validate every `content/<project>/nav.yml` against that project's docs, and its
+// cross-published entries against the other projects' (a prebuild step). The
+// sidebar resolves the same manifests at runtime but can only log; failing here
+// is what stops a broken or orphaning manifest from shipping.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -17,14 +18,21 @@ const contentRoot = resolve(repoRoot, "content");
 /** `{ project: errors[] }` for every project that has a nav.yml. */
 export function checkNav(root = contentRoot) {
   const results = {};
-  for (const project of readdirSync(root)) {
+  const projects = readdirSync(root).filter((p) => existsSync(resolve(root, p, "nav.yml")));
+  const docsOf = Object.fromEntries(
+    projects.map((project) => [
+      project,
+      walkContent(resolve(root, project)).map((absPath) => {
+        const { meta } = splitFrontmatter(readFileSync(absPath, "utf8"));
+        const { bucket, slug } = docIdentity(absPath, meta);
+        return { project, bucket, slug, title: meta.title ?? slug };
+      }),
+    ]),
+  );
+  for (const project of projects) {
     const navPath = resolve(root, project, "nav.yml");
-    if (!existsSync(navPath)) continue;
-    const docs = walkContent(resolve(root, project)).map((absPath) => {
-      const { meta } = splitFrontmatter(readFileSync(absPath, "utf8"));
-      const { bucket, slug } = docIdentity(absPath, meta);
-      return { bucket, slug, title: meta.title ?? slug };
-    });
+    const docs = docsOf[project];
+    const guests = projects.filter((p) => p !== project).flatMap((p) => docsOf[p]);
     let manifest;
     try {
       manifest = yaml.load(readFileSync(navPath, "utf8"));
@@ -32,7 +40,7 @@ export function checkNav(root = contentRoot) {
       results[project] = [`nav.yml is not valid YAML: ${err.message}`];
       continue;
     }
-    results[project] = resolveNav(manifest, docs).errors;
+    results[project] = resolveNav(manifest, docs, guests).errors;
   }
   return results;
 }

@@ -15,7 +15,7 @@ import type { TreeNode } from "./tree-model";
 export function navBranches(
   project: string,
   nodes: NavNode[],
-  statusOf: (bucket: string, slug: string) => string | undefined,
+  statusOf: (project: string, bucket: string, slug: string) => string | undefined,
   trail: string[] = [],
 ): TreeNode[] {
   return nodes.map((node): TreeNode => {
@@ -40,11 +40,12 @@ export function navBranches(
         ...(node.request ? { request: node.request } : {}),
       };
     }
+    const home = node.project ?? project;
     return {
       kind: "leaf",
       label: node.label,
-      ref: docRef(project, node.bucket, node.slug),
-      frontmatterStatus: statusOf(node.bucket, node.slug),
+      ref: docRef(home, node.bucket, node.slug),
+      frontmatterStatus: statusOf(home, node.bucket, node.slug),
     };
   });
 }

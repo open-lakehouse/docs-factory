@@ -259,7 +259,9 @@ function prune(obj) {
 /**
  * The full set of head inputs for a page, assembled once. The docs-site emitter
  * renders these into tags; keeping assembly here means the twin/sitemap
- * generators reuse the exact same title/description/canonical.
+ * generators reuse the exact same title/description/canonical. `canonical`
+ * replaces the page's own URL where a copy defers to another site's original;
+ * og:url and the JSON-LD name the original too, so the signals agree.
  */
 export function pageHead({
   identity,
@@ -270,8 +272,9 @@ export function pageHead({
   hrefFor = hrefFromIdentity,
   siteName = PAGE_TITLE_SUFFIX,
   concepts = null,
+  canonical = null,
 }) {
-  const url = canonicalUrl(identity, origin, hrefFor);
+  const url = canonical ?? canonicalUrl(identity, origin, hrefFor);
   const title = pageTitle(meta, identity, siteName);
   const description = metaDescription(meta, body);
   const ogType =

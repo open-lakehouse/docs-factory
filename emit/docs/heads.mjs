@@ -32,13 +32,16 @@ function pageConcepts(projection, page, environment) {
  * loadProjection) and `environment` the page's (content-core pageEnvironment).
  * @param {{ origin: string, hrefFor: Function, title: string }} site
  * @param {{ identity: object, meta: Record<string, unknown>, body: string }} page
+ * `canonical` overrides the page's own URL, for a copy cross-published from
+ * another project's site.
  * @param {{ projection?: ReturnType<typeof import("../../site/src/content-core/projection.mjs").publicProjection> | null,
- *   environment?: { key: string, title: string, bundleUrl: string } | null }} [context]
+ *   environment?: { key: string, title: string, bundleUrl: string } | null,
+ *   canonical?: string | null }} [context]
  */
 export function docPageHead(
   site,
   { identity, meta, body },
-  { projection = null, environment = null } = {},
+  { projection = null, environment = null, canonical = null } = {},
 ) {
   return pageHead({
     identity,
@@ -47,6 +50,7 @@ export function docPageHead(
     origin: site.origin,
     hrefFor: site.hrefFor,
     siteName: site.title,
+    canonical,
     concepts: pageConcepts(projection, { identity, meta, body }, environment),
   });
 }

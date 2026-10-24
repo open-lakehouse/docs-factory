@@ -76,3 +76,20 @@ test("private pages are listed but never count toward progress", () => {
   expect(root.sections[0].slots).toHaveLength(1);
   expect(root.counts).toEqual({ ready: 0, draft: 0, planned: 0, requested: 0 });
 });
+
+test("a cross-published page is listed with its project but counted at home", () => {
+  const guest: NavNode = { ...page("how-to", "time-travel"), project: "delta" };
+  const seen: (string | undefined)[] = [];
+  const root = buildRoadmap(
+    [{ kind: "section", label: "Delta", children: [guest] }],
+    (_b, _s, project) => {
+      seen.push(project);
+      return "ready";
+    },
+    [],
+  );
+  const [section] = root.sections;
+  expect(seen).toEqual(["delta"]);
+  expect(section.slots[0]).toMatchObject({ kind: "page", project: "delta", stage: "ready" });
+  expect(section.counts.ready).toBe(0);
+});

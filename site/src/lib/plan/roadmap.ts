@@ -9,6 +9,8 @@ export type RoadmapSlot =
   | {
       kind: "page";
       stage: "ready" | "draft";
+      /** Set for another project's page cross-published here. */
+      project?: string;
       bucket: string;
       slug: string;
       label: string;
@@ -30,8 +32,9 @@ export interface RoadmapSection {
   slots: RoadmapSlot[];
   sections: RoadmapSection[];
   /**
-   * Over this section and every section beneath it. Secondary placements and
-   * `private` pages (never released) are left out.
+   * Over this section and every section beneath it. Secondary placements,
+   * `private` pages (never released), and other projects' cross-published pages
+   * (their own roadmap counts them) are left out.
    */
   counts: StageCounts;
 }
@@ -68,7 +71,8 @@ export function progress(c: StageCounts): number {
  */
 export function buildRoadmap(
   nodes: NavNode[],
-  statusOf: (bucket: string, slug: string) => string | undefined,
+  /** `project` is set for another project's cross-published page. */
+  statusOf: (bucket: string, slug: string, project?: string) => string | undefined,
   requests: RoadmapRequest[],
 ): RoadmapSection {
   const promoted = new Set<string>();
@@ -109,11 +113,12 @@ export function buildRoadmap(
         });
         section.counts.planned++;
       } else {
-        const status = statusOf(n.bucket, n.slug);
+        const status = statusOf(n.bucket, n.slug, n.project);
         const stage = status === "ready" ? "ready" : "draft";
         section.slots.push({
           kind: "page",
           stage,
+          ...(n.project ? { project: n.project } : {}),
           bucket: n.bucket,
           slug: n.slug,
           label: n.label,
@@ -121,7 +126,7 @@ export function buildRoadmap(
           ...(status ? { status } : {}),
           primary: n.primary,
         });
-        if (n.primary && status !== "private") section.counts[stage]++;
+        if (n.primary && !n.project && status !== "private") section.counts[stage]++;
       }
     }
     for (const r of byPlacement.get(placement) ?? []) {

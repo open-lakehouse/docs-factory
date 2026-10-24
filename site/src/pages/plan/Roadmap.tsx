@@ -38,7 +38,8 @@ export const ROADMAP_PROJECTS = Object.keys(projectNav).sort();
 const UNPLACED_ANCHOR = "section-unplaced";
 
 function statusOf(project: string) {
-  return (bucket: string, slug: string) => findDoc(project, bucket, slug)?.frontmatter.status;
+  return (bucket: string, slug: string, from = project) =>
+    findDoc(from, bucket, slug)?.frontmatter.status;
 }
 
 /** The project's roadmap with its open page requests placed under their sections. */
@@ -214,7 +215,7 @@ function SlotList({
         <li
           key={
             slot.kind === "page"
-              ? `page:${slot.bucket}/${slot.slug}:${slot.primary}`
+              ? `page:${slot.project ?? ""}:${slot.bucket}/${slot.slug}:${slot.primary}`
               : slot.kind === "planned"
                 ? `planned:${slot.id}`
                 : `requested:${slot.requestId}`
@@ -260,7 +261,7 @@ function SlotBody({
       </>
     );
   }
-  const ref = docRef(project, slot.bucket, slot.slug);
+  const ref = docRef(slot.project ?? project, slot.bucket, slot.slug);
   const review = reviewByRef.get(refKey(ref));
   return (
     <>
@@ -268,6 +269,7 @@ function SlotBody({
         {slot.label}
       </Link>
       {slot.id && <code className="muted">{slot.id}</code>}
+      {slot.project && <span className="roadmap-slot-meta muted">from {slot.project}</span>}
       {!slot.primary && <span className="roadmap-slot-meta muted">also listed elsewhere</span>}
       <span className="roadmap-slot-badges">
         {slot.status && <FrontmatterStatusBadge status={slot.status} />}

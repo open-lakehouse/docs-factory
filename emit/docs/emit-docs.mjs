@@ -9,7 +9,11 @@
  * One run:
  *   1. inventory content/<project>/ and select pages (`status: ready`, or
  *      `ready` + `draft` with --drafts; `private` and `idea` never ship);
- *   2. project content/<project>/nav.yml onto the selection;
+ *   2. project content/<project>/nav.yml onto the selection, including the
+ *      other projects' pages it cross-publishes (`page: <project>:<bucket>/<slug>`):
+ *      each is served at /<project>/<bucket>/<slug>, and its canonical URL, twin,
+ *      and llms.txt line point at its own project's site, which it stays out of
+ *      the sitemap for;
  *   3. render every page twice through the shared emitter core (emitOne): the
  *      site page (docs-site target) and its `.md` twin (md-twin target);
  *   4. add images, LikeC4 PNGs + web component, runnable scripts, the env
@@ -27,7 +31,7 @@
  * to its label rather than shipped as a 404.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -103,6 +107,8 @@ import {
 import { projectNav } from "./nav.mjs";
 import { searchContext, searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
+import { DOCS_SITES } from "./sites/index.mjs";
+import { guestKey, withGuests } from "./sites/routes.mjs";
 import {
   applySync,
   diffPages,
@@ -189,37 +195,81 @@ function imageUrl(entry, assetBase) {
   return `${assetBase}/${entry.filename}`;
 }
 
-export async function emitDocs({ site, drafts = false }) {
+function inventory(contentDir) {
+  return walkContent(contentDir).map((absPath) => {
+    const { meta, body } = splitFrontmatter(readFileSync(absPath, "utf8"));
+    return { absPath, meta, body, identity: docIdentity(absPath, meta) };
+  });
+}
+
+/** The other projects' pages, keyed `<project>/<bucket>/<slug>`. */
+function otherProjects(project) {
+  const root = join(REPO_ROOT, "content");
+  const pages = new Map();
+  for (const name of readdirSync(root)) {
+    if (name === project || !existsSync(join(root, name, "nav.yml"))) continue;
+    for (const p of inventory(join(root, name))) pages.set(guestKey(p.identity), p);
+  }
+  return pages;
+}
+
+/**
+ * The URL a cross-published copy defers to: the page on its own project's
+ * site. A project with no site of its own has no original, so the copy is its
+ * own canonical.
+ */
+function homeCanonical(identity, homes) {
+  const home = homes.find((s) => s.project === identity.project);
+  return home ? canonicalUrl(identity, home.origin, home.hrefFor) : null;
+}
+
+export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITES }) {
   const isIncluded = (meta) => isEmitted(meta, { drafts });
-  const { hrefFor, origin } = site;
-  const contentDir = join(REPO_ROOT, "content", site.project);
+  const contentDir = join(REPO_ROOT, "content", config.project);
   const files = new Map();
   const tmp = mkdtempSync(join(tmpdir(), "emit-docs-"));
   const likec4OutDir = join(tmp, "likec4");
 
   try {
-    // 1. Inventory.
-    const all = walkContent(contentDir).map((absPath) => {
-      const { meta, body } = splitFrontmatter(readFileSync(absPath, "utf8"));
-      return { absPath, meta, body, identity: docIdentity(absPath, meta) };
-    });
-    const selected = all.filter((p) => isIncluded(p.meta));
-    // Public payloads read the ready-only projection, even in a --drafts preview.
-    const projection = loadProjection(site, all);
-    const routes = new Set(selected.map((p) => hrefFor(p.identity)));
+    // 1. Inventory: this project's pages, plus the ones its nav.yml cross-publishes.
+    const own = inventory(contentDir);
+    const others = otherProjects(config.project);
+    const docOf = (p) => ({ ...p.identity, title: p.meta.title ?? p.identity.slug });
 
     // 2. Navigation. Validated against every page so an orphan still fails here.
     const navPath = join(contentDir, "nav.yml");
     const { tree, errors: navErrors } = resolveNav(
       parseYaml(readFileSync(navPath, "utf8")),
-      all.map((p) => ({ ...p.identity, title: p.meta.title ?? p.identity.slug })),
+      own.map(docOf),
+      [...others.values()].map(docOf),
     );
     if (navErrors.length)
       throw new Error(`${relative(REPO_ROOT, navPath)}:\n  ${navErrors.join("\n  ")}`);
-    const routeFor = (bucket, slug) =>
-      hrefFor({ area: "docs", project: site.project, bucket, slug });
+    const guestKeys = new Set();
+    const collectGuests = (nodes) => {
+      for (const n of nodes) {
+        if (n.kind === "section") collectGuests(n.children);
+        else if (n.kind === "page" && n.project) guestKeys.add(guestKey(n));
+      }
+    };
+    collectGuests(tree);
+    const site = { ...config, hrefFor: withGuests(config.hrefFor, guestKeys) };
+    const { hrefFor, origin } = site;
+    const all = [...own, ...[...guestKeys].map((key) => others.get(key))];
+    const selected = all.filter((p) => isIncluded(p.meta));
+    // Public payloads read the ready-only projection, even in a --drafts preview.
+    const projection = loadProjection(site, all);
+    const routes = new Set(selected.map((p) => hrefFor(p.identity)));
+    // A cross-published copy names its original; a page of this project, itself.
+    const canonicalOf = (identity) =>
+      (identity.project !== site.project && homeCanonical(identity, homes)) ||
+      canonicalUrl(identity, origin, hrefFor);
+    const isGuest = (identity) => identity.project !== site.project;
+
+    const routeFor = (bucket, slug, project = site.project) =>
+      hrefFor({ area: "docs", project, bucket, slug });
     const { nav, order } = projectNav(tree, {
-      isSelected: (bucket, slug) => routes.has(routeFor(bucket, slug)),
+      isSelected: (bucket, slug, project) => routes.has(routeFor(bucket, slug, project)),
       routeFor,
     });
     // The shell's topbar links these, not the sidebar.
@@ -312,8 +362,28 @@ export async function emitDocs({ site, drafts = false }) {
         .map((p) => [p.meta.explains, hrefFor(p.identity)]),
     );
     const resolveModelLink = modelLinkResolver(model, explainers);
+    // A link to another project's page stays on this site when the page is
+    // cross-published here, and otherwise goes to the page on its own site.
+    const elsewhere = new Set(
+      [...others.values()]
+        .filter((p) => isIncluded(p.meta) && !routes.has(hrefFor(p.identity)))
+        .map((p) => homeCanonical(p.identity, homes))
+        .filter(Boolean),
+    );
+    const linkHref = (identity) => {
+      const href = hrefFor(identity);
+      if (href || identity?.area !== "docs" || identity.project === site.project) return href;
+      return homeCanonical(identity, homes);
+    };
     const linkPlugins = (route) => [
-      [remarkSourceLinks, { hrefFor, knownHrefs: routes, onUnresolved: links.onUnresolved }],
+      [
+        remarkSourceLinks,
+        {
+          hrefFor: linkHref,
+          knownHrefs: new Set([...routes, ...elsewhere]),
+          onUnresolved: links.onUnresolved,
+        },
+      ],
       [remarkUnwrapDeadLinks],
       [remarkModelLinks, { resolve: (id) => resolveModelLink(id, { route }) }],
     ];
@@ -328,7 +398,7 @@ export async function emitDocs({ site, drafts = false }) {
     let likec4Exported = false;
     for (const page of ordered) {
       const { absPath, identity, route } = page;
-      const assetBase = `/assets/${identity.bucket}/${identity.slug}`;
+      const assetBase = `/assets${route}`;
       // The model export covers every view, so the first page that needs it pays once.
       const common = {
         inputPath: absPath,
@@ -393,7 +463,7 @@ export async function emitDocs({ site, drafts = false }) {
       });
       likec4Exported ||= rendered.likec4Dir !== null;
       common.likec4Exported = likec4Exported;
-      const file = `${identity.bucket}/${identity.slug}.md`;
+      const file = `${route.slice(1)}.md`;
       files.set(`src/content/${file}`, rendered.output);
 
       for (const image of rendered.manifest) {
@@ -452,7 +522,7 @@ export async function emitDocs({ site, drafts = false }) {
           ],
         ],
       });
-      let twinOut = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));
+      let twinOut = injectCanonical(twin.output, canonicalOf(identity));
       if (owned.length) {
         const fm = [
           companionsFrontmatter(owned, origin),
@@ -576,6 +646,7 @@ export async function emitDocs({ site, drafts = false }) {
       heads[p.route] = docPageHead(site, p, {
         projection,
         environment: environments.get(p.route) ?? null,
+        canonical: isGuest(p.identity) ? canonicalOf(p.identity) : null,
       });
     }
     for (const a of apis) {
@@ -609,9 +680,16 @@ export async function emitDocs({ site, drafts = false }) {
     files.set("public/search-index.json", `${JSON.stringify({ version: 2, records: search })}\n`);
     files.set("src/generated/heads.json", `${JSON.stringify(heads, null, 2)}\n`);
 
+    // A copy is listed where a reader of this site finds it, but credits its
+    // original, so an agent that cites it cites the canonical URL.
     const entries = ordered
       .map((p) => toEntry(p.absPath, p.meta, p.body, origin, { hrefFor, isIncluded }))
-      .filter(Boolean);
+      .filter(Boolean)
+      .map((e) => {
+        if (!isGuest(e.identity)) return e;
+        const canonical = canonicalOf(e.identity);
+        return { ...e, canonical, twin: `${canonical}.md` };
+      });
     files.set(
       "public/llms.txt",
       renderLlmsIndex(entries, {
@@ -644,11 +722,15 @@ export async function emitDocs({ site, drafts = false }) {
     files.set(
       "public/sitemap.xml",
       renderSitemap(
-        sitemapUrls(ordered, origin, {
-          hrefFor,
-          isIncluded,
-          indexRoutes: ["/", ...apis.map((a) => a.route)],
-        }),
+        sitemapUrls(
+          ordered.filter((p) => !isGuest(p.identity) || !homeCanonical(p.identity, homes)),
+          origin,
+          {
+            hrefFor,
+            isIncluded,
+            indexRoutes: ["/", ...apis.map((a) => a.route)],
+          },
+        ),
       ),
     );
     files.set("public/robots.txt", renderRobots(origin));

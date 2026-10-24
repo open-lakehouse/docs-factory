@@ -9,6 +9,9 @@
  * Entries are one of:
  *   - { section: <label>, items: [...] }
  *   - { page: <bucket>/<slug>, id?: <backlog id>, label?: <override> }
+ *   - { page: <project>:<bucket>/<slug>, label?: <override> }: a page of another
+ *     project, cross-published on this project's site. Its backlog id stays in its
+ *     own project's manifest, and it isn't this project's orphan to list.
  *   - { planned: <backlog id>, title: <working title>, request?: <uuid> }
  * `request:` links a planned slot to the review app's content request it was
  * promoted from. `page:` is the docIdentity bucket/slug (order prefix stripped, `slug:` override
@@ -28,11 +31,14 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
  *
  * @param {unknown} manifest  parsed nav.yml (`{ nav: [...] }`)
  * @param {{bucket: string, slug: string, title: string}[]} docs  every doc of the project
+ * @param {{project: string, bucket: string, slug: string, title: string}[]} [guests]
+ *   the docs of other projects, which `<project>:<bucket>/<slug>` entries name
  * @returns {{ tree: object[], errors: string[] }}
  */
-export function resolveNav(manifest, docs) {
+export function resolveNav(manifest, docs, guests = []) {
   const errors = [];
   const byKey = new Map(docs.map((d) => [`${d.bucket}/${d.slug}`, d]));
+  const guestByKey = new Map(guests.map((d) => [`${d.project}:${d.bucket}/${d.slug}`, d]));
   const placed = new Set();
   const ids = new Set();
 
@@ -95,20 +101,24 @@ export function resolveNav(manifest, docs) {
     }
 
     const key = String(entry.page);
-    const doc = byKey.get(key);
+    const guest = key.includes(":");
+    const doc = guest ? guestByKey.get(key) : byKey.get(key);
     if (!doc) {
       errors.push(`${where}: unknown page "${key}"`);
       return null;
     }
-    if (entry.id != null) claimId(String(entry.id), where);
+    if (guest && entry.id != null) {
+      errors.push(`${where}: "${key}" keeps its id in its own project's nav.yml`);
+    } else if (entry.id != null) claimId(String(entry.id), where);
     const primary = !placed.has(key);
     placed.add(key);
     return {
       kind: "page",
+      ...(guest ? { project: doc.project } : {}),
       bucket: doc.bucket,
       slug: doc.slug,
       label: typeof entry.label === "string" && entry.label ? entry.label : doc.title,
-      ...(entry.id != null ? { id: String(entry.id) } : {}),
+      ...(entry.id != null && !guest ? { id: String(entry.id) } : {}),
       primary,
     };
   };

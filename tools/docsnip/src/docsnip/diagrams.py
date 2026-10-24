@@ -1,24 +1,23 @@
-"""Trestle diagram embeds: ``![alt](<stem>.png "trestle=<ref>")``.
+"""Trestle diagram markers: a ``trestle`` fence naming the diagram, alt text as its body.
+
+    ```trestle <ref>
+    Clients reach Envoy on port 8080, which routes …
+    ```
 
 A diagram is a graph snapshot (``<stem>.trestle-graph.json``, the envelope
-``@open-lakehouse/trestle-diagram`` draws) and the PNG beside it, which GitHub,
-the ``.md`` twins, and no-JS readers see. ``<ref>`` names a generated
+``@open-lakehouse/trestle-diagram`` draws). ``<ref>`` names a generated
 environment, whose snapshot ``docsnip envs --fix`` writes from its ``plan.json``
 (``envs/<name>/diagram.trestle-graph.json``), or a snapshot file relative to the
-page, exported from Trestle's editor.
-
-``just trestle-diagrams`` renders the PNGs in a browser, so their bytes differ
-across machines. Each PNG instead carries the SHA-256 of the snapshot it was
-drawn from in a ``tEXt`` chunk, and a PNG is stale when that digest no longer
-matches the snapshot.
+page, exported from Trestle's editor. The sites draw the snapshot as the
+interactive canvas; the ``.md`` twins get Trestle's Mermaid flowchart instead,
+an environment's from its README's ``## Architecture``, an exported snapshot's
+from its ``mermaid`` field (site/src/plugins/lib/trestle-ref.mjs).
 """
 
 from __future__ import annotations
 
-import hashlib
 import json
 import re
-import struct
 from pathlib import Path
 
 SNAPSHOT_FORMAT = "trestle-graph"
@@ -26,15 +25,11 @@ SNAPSHOT_VERSIONS = (1,)
 SUFFIX = ".trestle-graph.json"
 ENV_STEM = "diagram"
 GENERATOR = "docs-factory"
-# Mirrors DIGEST_KEY in emit/trestle/render.mjs.
-DIGEST_KEY = "trestle-graph-sha256"
 
-_PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
-# A standalone image line; the title is what marks it a Trestle diagram.
-_EMBED_RE = re.compile(
-    r'^!\[(?P<alt>[^\]]*)\]\((?P<url>\S+) "trestle=(?P<ref>\S+)"\)\s*$'
-)
-_FENCE_RE = re.compile(r"^\s*(```|~~~)")
+_FENCE_RE = re.compile(r"^\s*(?P<fence>`{3,}|~{3,})\s*(?P<info>.*)$")
+# The retired embed: a PNG titled with the ref.
+_IMAGE_RE = re.compile(r'^!\[[^\]]*\]\(\S+ "trestle=\S+"\)\s*$')
+_MERMAID_RE = re.compile(r"^```mermaid[^\n]*\n.*?\n```[ \t]*$", re.S | re.M)
 
 
 def env_snapshot_path(name: str) -> Path:
@@ -65,33 +60,6 @@ def render_env_snapshot(plan: dict, title: str | None) -> str:
     return json.dumps(snapshot, indent=2, ensure_ascii=False) + "\n"
 
 
-def snapshot_digest(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
-
-
-def png_digest(path: Path) -> str | None:
-    """The snapshot digest a rendered PNG records, or None if it has none."""
-    return png_digest_bytes(path.read_bytes())
-
-
-def png_digest_bytes(data: bytes) -> str | None:
-    if not data.startswith(_PNG_SIGNATURE):
-        return None
-    at = len(_PNG_SIGNATURE)
-    while at + 8 <= len(data):
-        (length,) = struct.unpack(">I", data[at : at + 4])
-        kind = data[at + 4 : at + 8]
-        body = data[at + 8 : at + 8 + length]
-        if kind == b"tEXt":
-            key, _, value = body.partition(b"\0")
-            if key.decode("latin-1") == DIGEST_KEY:
-                return value.decode("latin-1")
-        if kind == b"IEND":
-            return None
-        at += 12 + length
-    return None
-
-
 def _check_snapshot(path: Path, where: str) -> list[str]:
     try:
         data = json.loads(path.read_text())
@@ -109,26 +77,63 @@ def _check_snapshot(path: Path, where: str) -> list[str]:
     return []
 
 
-def check_png(root: Path, snapshot: Path) -> list[str]:
-    """The PNG beside ``snapshot`` (both repo-relative) exists and is current."""
-    png = png_for(snapshot)
-    if not (root / png).is_file():
-        return [f"{png} is missing; run `just trestle-diagrams`"]
-    if png_digest(root / png) != snapshot_digest(root / snapshot):
-        return [f"{png} is stale for {snapshot.name}; run `just trestle-diagrams`"]
-    return []
+def _has_mermaid(root: Path, snapshot: Path) -> bool:
+    """Trestle's Mermaid is there for the twins to inline."""
+    if snapshot.is_relative_to("envs"):
+        readme = root / snapshot.parent / "README.md"
+        if not readme.is_file():
+            return False
+        text = readme.read_text()
+        at = re.search(r"^## Architecture\s*$", text, re.M)
+        return bool(at and _MERMAID_RE.search(text, at.end()))
+    mermaid = json.loads((root / snapshot).read_text()).get("mermaid")
+    return isinstance(mermaid, str) and bool(mermaid.strip())
 
 
-def embeds(md_path: Path) -> list[tuple[int, str, str, str]]:
-    """``(line, alt, url, ref)`` for every Trestle diagram outside code fences."""
+def embeds(md_path: Path) -> list[tuple[int, str, str]]:
+    """``(line, alt, ref)`` for every Trestle marker not inside another fence."""
     found = []
-    fenced = False
-    for number, line in enumerate(md_path.read_text().splitlines(), start=1):
-        if _FENCE_RE.match(line):
-            fenced = not fenced
+    lines = md_path.read_text().splitlines()
+    i = 0
+    while i < len(lines):
+        m = _FENCE_RE.match(lines[i])
+        if not m:
+            i += 1
             continue
-        if not fenced and "trestle=" in line and (m := _EMBED_RE.match(line)):
-            found.append((number, m["alt"], m["url"], m["ref"]))
+        fence, info = m["fence"], m["info"].split(maxsplit=1)
+        body = []
+        j = i + 1
+        while j < len(lines):
+            close = _FENCE_RE.match(lines[j])
+            if (
+                close
+                and close["fence"][0] == fence[0]
+                and len(close["fence"]) >= len(fence)
+            ):
+                if not close["info"].strip():
+                    break
+            body.append(lines[j])
+            j += 1
+        if info and info[0] == "trestle":
+            ref = info[1].strip() if len(info) > 1 else ""
+            found.append((i + 1, " ".join(" ".join(body).split()), ref))
+        i = j + 1
+    return found
+
+
+def retired_embeds(md_path: Path) -> list[int]:
+    """Lines still using the PNG embed, outside fences."""
+    found = []
+    fence = None
+    for number, line in enumerate(md_path.read_text().splitlines(), start=1):
+        if m := _FENCE_RE.match(line):
+            if fence is None:
+                fence = m["fence"]
+            elif m["fence"][0] == fence[0] and len(m["fence"]) >= len(fence):
+                fence = None
+            continue
+        if fence is None and "trestle=" in line and _IMAGE_RE.match(line):
+            found.append(number)
     return found
 
 
@@ -151,54 +156,44 @@ def check_page(root: Path, md_path: Path, envs: set[str]) -> list[str]:
         shown = md_path.relative_to(root)
     except ValueError:
         shown = md_path
-    for line, alt, url, ref in embeds(md_path):
+    for line in retired_embeds(md_path):
+        errors.append(
+            f"{shown}:{line}: Trestle diagrams are ```trestle <ref> blocks now, with "
+            "the alt text as the body"
+        )
+    for line, alt, ref in embeds(md_path):
         where = f"{shown}:{line}"
-        if not alt.strip():
-            errors.append(f"{where}: a Trestle diagram needs alt text")
-        snapshot = resolve(root, md_path, ref, envs)
+        if not alt:
+            errors.append(
+                f"{where}: a Trestle diagram needs alt text (the block's body)"
+            )
+        snapshot = resolve(root, md_path, ref, envs) if ref else None
         if snapshot is None:
             errors.append(
-                f"{where}: trestle={ref} names no generated environment and no "
-                f"{SUFFIX} file"
+                f"{where}: trestle {ref or '(no ref)'} names no generated environment "
+                f"and no {SUFFIX} file"
             )
             continue
         if not (root / snapshot).is_file():
             errors.append(f"{where}: {snapshot} is missing")
             continue
-        errors += _check_snapshot(root / snapshot, where)
-        image = (md_path.parent / url).resolve()
-        if image != (root / png_for(snapshot)).resolve():
-            errors.append(
-                f"{where}: the image must be {png_for(snapshot).name} beside {snapshot}"
+        snapshot_errors = _check_snapshot(root / snapshot, where)
+        errors += snapshot_errors
+        if not snapshot_errors and not _has_mermaid(root, snapshot):
+            source = (
+                f"{snapshot.parent / 'README.md'} has no Architecture Mermaid block; "
+                f"run `just env-render {snapshot.parent.name}`"
+                if snapshot.is_relative_to("envs")
+                else f"{snapshot.name} has no mermaid field; re-export it from Trestle"
             )
-            continue
-        if not snapshot.is_relative_to("envs"):
-            errors += [f"{where}: {e}" for e in check_png(root, snapshot)]
+            errors.append(f"{where}: {source}")
     return errors
 
 
 def check(root: Path, pages: list[Path], envs: list[str]) -> list[str]:
-    """Every embed on ``pages`` resolves, and every environment's PNG is current."""
+    """Every Trestle marker on ``pages`` resolves to a snapshot with Mermaid."""
     known = set(envs)
     errors = []
     for page in pages:
         errors += check_page(root, page, known)
-    for name in envs:
-        snapshot = env_snapshot_path(name)
-        if (root / snapshot).is_file():
-            errors += check_png(root, snapshot)
     return errors
-
-
-def snapshots(root: Path, pages: list[Path], envs: list[str]) -> list[Path]:
-    """Every snapshot a PNG is rendered for: each environment's, and each embedded one."""
-    found = {
-        env_snapshot_path(n) for n in envs if (root / env_snapshot_path(n)).is_file()
-    }
-    known = set(envs)
-    for page in pages:
-        for _, _, _, ref in embeds(page):
-            snapshot = resolve(root, page, ref, known)
-            if snapshot is not None and (root / snapshot).is_file():
-                found.add(snapshot)
-    return sorted(found)

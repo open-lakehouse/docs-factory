@@ -418,14 +418,9 @@ def _diagram_pages(p) -> list[Path]:
     return [*iter_content_files(p["content"]), *blogs]
 
 
-def cmd_diagrams(p, list_only: bool = False) -> int:
+def cmd_diagrams(p) -> int:
     root, envs = p["root"], envgen.names(p["root"])
-    pages = _diagram_pages(p)
-    if list_only:
-        for snapshot in diagrams.snapshots(root, pages, envs):
-            print(snapshot)
-        return 0
-    errors = diagrams.check(root, pages, envs)
+    errors = diagrams.check(root, _diagram_pages(p), envs)
     if errors:
         print("\n".join(errors), file=sys.stderr)
         print(f"\n{len(errors)} diagram error(s)", file=sys.stderr)
@@ -552,10 +547,7 @@ def main(argv: list[str] | None = None) -> int:
     sp_envs.add_argument(
         "--fix", action="store_true", help="rewrite the fragments and registry facts"
     )
-    sp_diagrams = sub.add_parser("diagrams")
-    sp_diagrams.add_argument(
-        "--list", action="store_true", help="print the snapshots a PNG is rendered for"
-    )
+    sub.add_parser("diagrams")
     sp_prose = sub.add_parser("prose")
     sp_prose.add_argument(
         "--json", action="store_true", help="emit findings as JSON (for agents)"
@@ -610,7 +602,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "envs":
         return cmd_envs(p, fix=args.fix)
     if args.cmd == "diagrams":
-        return cmd_diagrams(p, list_only=args.list)
+        return cmd_diagrams(p)
     if args.cmd == "prose":
         return cmd_prose(p, as_json=args.json)
     if args.cmd == "query":

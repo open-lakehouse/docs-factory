@@ -777,8 +777,12 @@ a.graph-path:hover { border-color: var(--muted-foreground); }
   color: var(--muted-foreground);
 }
 .impl-title { margin: 0; font-weight: 600; color: var(--heading); }
-.impl-facts { display: flex; flex-wrap: wrap; gap: 0.15rem 0.5rem; margin: 0.1rem 0 0; font-size: 0.72rem; color: var(--muted-foreground); }
-.impl-facts a:hover { text-decoration: underline; }
+.impl-facts { display: flex; flex-wrap: wrap; gap: 0.15rem 0.5rem; align-items: center; margin: 0.1rem 0 0; font-size: 0.72rem; color: var(--muted-foreground); }
+.impl-facts a { display: inline-flex; }
+.impl-facts a:hover { color: var(--foreground); }
+.impl-fact-icon { width: 0.9rem; height: 0.9rem; flex-shrink: 0; }
+.impl-fact-named { display: inline-flex; align-items: center; gap: 0.25rem; }
+.impl-maturity { padding: 0 0.35rem; border-radius: 999px; background: color-mix(in srgb, #d97706 15%, transparent); color: #b45309; }
 .impl-summary { margin: 0; font-size: 0.85rem; color: var(--muted-foreground); }
 .impl-rings { display: flex; flex-wrap: wrap; gap: 0.6rem 1.1rem; }
 .impl-extensions { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; margin: 0; font-size: 0.78rem; }

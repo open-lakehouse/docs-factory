@@ -168,6 +168,17 @@
       "viaVersion": null
     },
     {
+      "key": "mlflow",
+      "label": "MLflow",
+      "version": "3.17.0",
+      "package": "mlflow",
+      "model": "mlflow",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "viaVersion": null
+    },
+    {
       "key": "unitycatalog-ai",
       "label": "unitycatalog-ai",
       "version": "0.4.0",
@@ -395,6 +406,25 @@
         "function.get-source",
         "function.replace",
         "function.delete"
+      ]
+    },
+    {
+      "id": "models",
+      "title": "Registered models",
+      "columns": [
+        "mlflow",
+        "python-sdk",
+        "cli"
+      ],
+      "rows": [
+        "model.register",
+        "model.view",
+        "model.load",
+        "model.update",
+        "model.rename",
+        "model.delete-version",
+        "model.delete",
+        "model.alias"
       ]
     },
     {
@@ -632,6 +662,25 @@
         "function.delete",
         "function.tool",
         "function.tool-call"
+      ]
+    },
+    {
+      "id": "lakehouse.mlModel",
+      "title": "Model",
+      "columns": [
+        "cli",
+        "python-sdk",
+        "mlflow"
+      ],
+      "rows": [
+        "model.register",
+        "model.view",
+        "model.load",
+        "model.update",
+        "model.rename",
+        "model.delete-version",
+        "model.delete",
+        "model.alias"
       ]
     },
     {
@@ -1429,6 +1478,22 @@
             "function.replace",
             "function.delete"
           ]
+        },
+        {
+          "table": "models",
+          "columns": [
+            "cli"
+          ],
+          "rows": [
+            "model.register",
+            "model.view",
+            "model.load",
+            "model.update",
+            "model.rename",
+            "model.delete-version",
+            "model.delete",
+            "model.alias"
+          ]
         }
       ]
     },
@@ -1511,6 +1576,22 @@
           ]
         },
         {
+          "table": "models",
+          "columns": [
+            "python-sdk"
+          ],
+          "rows": [
+            "model.register",
+            "model.view",
+            "model.load",
+            "model.update",
+            "model.rename",
+            "model.delete-version",
+            "model.delete",
+            "model.alias"
+          ]
+        },
+        {
           "table": "views",
           "columns": [
             "python-sdk"
@@ -1538,6 +1619,34 @@
             "metricview.replace",
             "metricview.rename",
             "metricview.drop"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mlflow",
+      "title": "MLflow",
+      "interfaces": [
+        "mlflow"
+      ],
+      "page": null,
+      "anchor": null,
+      "heading": null,
+      "groups": [
+        {
+          "table": "models",
+          "columns": [
+            "mlflow"
+          ],
+          "rows": [
+            "model.register",
+            "model.view",
+            "model.load",
+            "model.update",
+            "model.rename",
+            "model.delete-version",
+            "model.delete",
+            "model.alias"
           ]
         }
       ]
@@ -11089,6 +11198,190 @@
       }
     },
     {
+      "id": "model.register",
+      "title": "Register a model version",
+      "summary": "Create a registered model and add a version whose files the catalog stores.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "model.view",
+      "title": "View models and versions",
+      "summary": "List a schema's registered models and a model's versions, or get one by name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "model.load",
+      "title": "Load a model version",
+      "summary": "Load a registered model version by its number and use it.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "model.update",
+      "title": "Update a model or version",
+      "summary": "Change a registered model's or a model version's comment.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "model.rename",
+      "title": "Rename a registered model",
+      "summary": "Change a registered model's name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "model.delete-version",
+      "title": "Delete a model version",
+      "summary": "Remove one version from a registered model.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "model.delete",
+      "title": "Delete a registered model",
+      "summary": "Remove a registered model from the catalog.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "model.alias",
+      "title": "Use a model alias",
+      "summary": "Set an alias on a model version, or load a version by its alias.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
       "id": "function.tool",
       "title": "Turn a function into an agent tool",
       "summary": "Build an agent framework's tool from a registered function, with its description and typed arguments.",
@@ -16874,6 +17167,21 @@
     },
     {
       "kind": "unverified-asset",
+      "asset": "lakehouse.mlModel"
+    },
+    {
+      "kind": "unverified-asset-edge",
+      "source": "mlflow",
+      "asset": "lakehouse.mlModel"
+    },
+    {
+      "kind": "unverified-asset-edge",
+      "source": "unityCatalogCli",
+      "asset": "lakehouse.mlModel"
+    },
+    {
+      "kind": "unverified-asset-edge",
+      "source": "unityCatalogPythonSdk",
       "asset": "lakehouse.mlModel"
     }
   ]

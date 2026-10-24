@@ -24,6 +24,7 @@ class Rule:
     pattern: re.Pattern[str]  # group 1 is the version
     files: tuple[str, ...] = ()  # limit to these repo-relative paths
     skip: str | None = None  # repo-relative prefix the rule doesn't apply under
+    only: str | None = None  # repo-relative prefix the rule applies only under
     # Check a match against `<key>-<major.minor>` when the manifest has one, so
     # a second Spark line can carry its own pins beside the default. The line
     # is the pattern's `line` group, else the found version's major.minor.
@@ -68,6 +69,11 @@ def _prose_pin(key: str, package: str, project: str) -> Rule:
     )
 
 
+# The LangChain tools page runs the standalone `mlflow gateway` CLI, which
+# newer MLflow releases removed, so its MLflow pins follow their own key.
+_UC_GATEWAY_PAGE = "content/unitycatalog/how-to/017-langchain-tools/"
+_MLFLOW_PIN = re.compile(rf"\bmlflow(?:\[[^\]]*\])?=={_V}")
+
 # Blogs are dated narrative and keep the versions they were written against.
 UNITYCATALOG = Project(
     name="unitycatalog",
@@ -105,6 +111,12 @@ UNITYCATALOG = Project(
         Rule("unitycatalog-ai", re.compile(rf"\bunitycatalog-ai=={_V}")),
         _prose_pin("unitycatalog-client", "unitycatalog-client", "unitycatalog"),
         _prose_pin("unitycatalog-ai", "unitycatalog-ai", "unitycatalog"),
+        # Clients and `pip_requirements`, with or without extras.
+        Rule("mlflow", _MLFLOW_PIN, skip=_UC_GATEWAY_PAGE),
+        Rule("mlflow-gateway", _MLFLOW_PIN, only=_UC_GATEWAY_PAGE),
+        # The tracking server image in env.toml and the rendered compose files.
+        Rule("mlflow", re.compile(rf"ghcr\.io/mlflow/mlflow:v{_V}(?:-full)?\b")),
+        Rule("scikit-learn", re.compile(rf"\bscikit-learn=={_V}")),
         Rule(
             "delta-spark",
             re.compile(
@@ -122,7 +134,7 @@ UNITYCATALOG = Project(
         ),
     ),
     ranged_install=re.compile(
-        r"\bunitycatalog-(?:client|ai)(?:\[[^\]]*\])?\s*(?:[<>~!]=?)"
+        r"\b(?:unitycatalog-(?:client|ai)|mlflow|scikit-learn)(?:\[[^\]]*\])?\s*(?:[<>~!]=?)"
     ),
     bump="just bump-uc",
 )
@@ -205,6 +217,8 @@ def _line(text: str, offset: int) -> int:
 
 def _applies(rule: Rule, rel: str) -> bool:
     if rule.skip and rel.startswith(rule.skip):
+        return False
+    if rule.only and not rel.startswith(rule.only):
         return False
     return not rule.files or rel in rule.files
 

@@ -21,6 +21,7 @@ interfaces:
   - pyiceberg
   - cli
   - python-sdk
+  - mlflow
   - unitycatalog-ai
   - unitycatalog-langchain
 
@@ -174,6 +175,18 @@ tables:
       - function.get-source
       - function.replace
       - function.delete
+  models:
+    title: Registered models
+    columns: [mlflow, python-sdk, cli]
+    rows:
+      - model.register
+      - model.view
+      - model.load
+      - model.update
+      - model.rename
+      - model.delete-version
+      - model.delete
+      - model.alias
   agent-tools:
     title: Agent tools
     columns: [unitycatalog-langchain]

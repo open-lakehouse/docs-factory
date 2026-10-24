@@ -21,6 +21,7 @@ model {
   unityCatalogCli -[operatesOn]-> lakehouse.namespace "manages"
   unityCatalogCli -[operatesOn]-> lakehouse.table "manages"
   unityCatalogCli -[operatesOn]-> lakehouse.volume "manages"
+  unityCatalogCli -[operatesOn]-> lakehouse.mlModel "manages"
   unityCatalogCli -[operatesOn]-> lakehouse.credential "manages"
   unityCatalogCli -[operatesOn]-> lakehouse.externalLocation "manages"
 
@@ -41,6 +42,7 @@ model {
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.namespace "manages"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.table "manages"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.volume "manages"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.mlModel "manages"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.metricView "stores definitions for"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.credential "manages"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.externalLocation "manages"

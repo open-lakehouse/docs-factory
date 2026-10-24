@@ -14,12 +14,14 @@ pins:
   # 1.0.9–1.0.13 break `import langchain.agents` under unitycatalog-langchain's
   # `langchain<=1.2.10` cap (ImportError: ExecutionInfo).
   langgraph-prebuilt: 1.0.8
-  # Tracing and the AI Gateway on the LangChain tools page.
-  mlflow: 3.10.0
-  # The tracking server in envs/uc-mlflow and the clients that talk to it: the
-  # pinned Trestle routes the API under the server's static prefix, which 3.10
-  # doesn't serve.
-  mlflow-server: 3.17.0
+  # MLflow: the tracking server image in envs/uc-mlflow and every client of
+  # the model registry. The `ghcr.io/mlflow/mlflow:v…` tag follows this key.
+  mlflow: 3.17.0
+  # The LangChain tools page only: its standalone `mlflow gateway` CLI, which
+  # 3.17 removed.
+  mlflow-gateway: 3.10.0
+  # The model the MLflow pages train, log, and register.
+  scikit-learn: 1.9.1
   # `ChatMlflow`, the chat model that talks to the MLflow AI Gateway.
   langchain-community: 0.4.1
   # The newest delta-spark the release's Spark connector is tested with.

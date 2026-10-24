@@ -83,6 +83,10 @@
             "via": []
           },
           {
+            "id": "mlflow",
+            "via": []
+          },
+          {
             "id": "polars",
             "via": []
           },
@@ -571,6 +575,17 @@
       "rollup": [],
       "projects": {
         "unitycatalog": "0.7.0"
+      }
+    },
+    "mlflow": {
+      "label": "MLflow",
+      "package": "mlflow",
+      "model": "mlflow",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "3.17.0"
       }
     },
     "unitycatalog-ai": {
@@ -2385,6 +2400,198 @@
         "catalog": {
           "implements": [
             "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "model.register": {
+      "title": "Register a model version",
+      "summary": "Create a registered model and add a version whose files the catalog stores.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "model.view": {
+      "title": "View models and versions",
+      "summary": "List a schema's registered models and a model's versions, or get one by name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "model.load": {
+      "title": "Load a model version",
+      "summary": "Load a registered model version by its number and use it.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "model.update": {
+      "title": "Update a model or version",
+      "summary": "Change a registered model's or a model version's comment.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "model.rename": {
+      "title": "Rename a registered model",
+      "summary": "Change a registered model's name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "model.delete-version": {
+      "title": "Delete a model version",
+      "summary": "Remove one version from a registered model.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "model.delete": {
+      "title": "Delete a registered model",
+      "summary": "Remove a registered model from the catalog.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "model.alias": {
+      "title": "Use a model alias",
+      "summary": "Set an alias on a model version, or load a version by its alias.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.mlModel",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
           ]
         }
       },

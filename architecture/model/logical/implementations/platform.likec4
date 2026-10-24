@@ -22,6 +22,8 @@ model {
     }
   }
   mlflow -[realizes]-> lakehouse.modelTracking
+  mlflow -[consumes]-> unityCatalogSpec "registers models through"
+  mlflow -[operatesOn]-> lakehouse.mlModel "registers and loads"
 
   marimo = implementation "marimo" {
     #service

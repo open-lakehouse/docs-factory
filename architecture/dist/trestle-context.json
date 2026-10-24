@@ -305,7 +305,7 @@
     "lakehouse.mlModel": {
       "kind": "asset",
       "title": "Model",
-      "description": "A model is the ML asset kind: a trained machine-learning artifact with\nversions and lifecycle stages, tracked and governed as a catalogued asset."
+      "description": "A model is the ML asset kind: a trained machine-learning artifact with\nnumbered versions, which some registries extend with aliases or stages,\ntracked and governed as a catalogued asset."
     },
     "lakehouse.modelTracking": {
       "kind": "capability",
@@ -366,6 +366,9 @@
       "description": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment.",
       "links": [
         "https://mlflow.org"
+      ],
+      "assets": [
+        "lakehouse.mlModel"
       ]
     },
     "omnigent": {

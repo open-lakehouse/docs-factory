@@ -399,7 +399,7 @@ documentation. Add a UC-specific how-to only when the catalog changes the task.
 | ID | Proposed article | Priority / journeys | Required content |
 | --- | --- | --- | --- |
 | H22 | Deploy a persistent UC server with containers | P0 / J02 | Pinned server/UI images separately, configuration, database/key material mounts, data paths, readiness and restart verification. Clearly separate local convenience from shared deployment. |
-| H23 | Run a released Java distribution or build from source | P1 / J02, J10 | Runtime/build requirements, artifact acquisition and provenance, startup/config/classpath. Source builds are an explicit developer alternative. |
+| H23 | Run the Unity Catalog server with Java | P1 / J02, J10 | Runtime requirements, artifact acquisition (the Maven artifact via JBang; releases ship no tarball), startup/config/classpath. Source builds are out of scope. |
 | H24 | Deploy Unity Catalog on Kubernetes with Helm | P1 / J02 | Release-tagged chart, explicit image tags, DB/secrets, persistent signing material, ingress/UI routing, probes, resources, validation; no implied HA certification. |
 | H25 | Configure PostgreSQL as the metadata backend | P0 / J02 | JDBC/driver packaging, DB credentials/TLS, configuration, permission policy persistence, connectivity and restart checks. |
 | H26 | Configure a MySQL metadata backend | P2 / J02 | Existing upstream deployment recipe as a lead; publish only after authorization and managed-table regression tests. Otherwise retain a labeled upstream link. |

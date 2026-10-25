@@ -8520,9 +8520,9 @@
           "parent": null,
           "source": "ucMlflow.envoy",
           "target": "ucMlflow.mlflow",
-          "label": ":8080 /api/2.0/mlflow, /api/2.0/otel, /ai-gateway, /mlflow",
+          "label": ":8080 /api/2.0/mlflow, /api/3.0/mlflow, /api/4.0/mlflow, /api/2.0/otel, /ai-gateway, /mlflow",
           "relations": [
-            "e0f9af3bcb"
+            "ca6bb7c989"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8584,6 +8584,20 @@
           "line": "dashed",
           "head": "normal",
           "kind": "uses"
+        },
+        {
+          "id": "1fdxelf",
+          "parent": null,
+          "source": "ucMlflow.mlflow",
+          "target": "ucMlflow.unityCatalog",
+          "label": "HTTP",
+          "relations": [
+            "5cecda3c42"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "uses"
         }
       ],
       "nodes": [
@@ -8623,12 +8637,51 @@
           "notation": null
         },
         {
+          "id": "ucMlflow.mlflow",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "cohzac"
+          ],
+          "outEdges": [
+            "19j5l10",
+            "1uzc12y",
+            "1fdxelf"
+          ],
+          "deploymentRef": "ucMlflow.mlflow",
+          "title": "MLflow",
+          "kind": "service",
+          "color": "muted",
+          "shape": "cylinder",
+          "modelRef": "mlflow",
+          "description": {
+            "txt": "Experiment + model tracking and an AI Gateway; Databricks-shaped URLs."
+          },
+          "tags": [
+            "generated"
+          ],
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "technology": null,
+          "links": [
+            {
+              "url": "https://mlflow.org"
+            }
+          ],
+          "notation": null,
+          "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg"
+        },
+        {
           "id": "ucMlflow.unityCatalog",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "1iz6qe3"
+            "1iz6qe3",
+            "1fdxelf"
           ],
           "outEdges": [
             "238dhn",
@@ -8661,43 +8714,6 @@
           ],
           "notation": null,
           "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg"
-        },
-        {
-          "id": "ucMlflow.mlflow",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "cohzac"
-          ],
-          "outEdges": [
-            "19j5l10",
-            "1uzc12y"
-          ],
-          "deploymentRef": "ucMlflow.mlflow",
-          "title": "MLflow",
-          "kind": "service",
-          "color": "muted",
-          "shape": "cylinder",
-          "modelRef": "mlflow",
-          "description": {
-            "txt": "Experiment + model tracking and an AI Gateway; Databricks-shaped URLs."
-          },
-          "tags": [
-            "generated"
-          ],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "technology": null,
-          "links": [
-            {
-              "url": "https://mlflow.org"
-            }
-          ],
-          "notation": null,
-          "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg"
         },
         {
           "id": "ucMlflow.postgres",
@@ -8767,7 +8783,7 @@
           ]
         }
       ],
-      "hash": "tx8yOzZJCVzNAxJkKRpYTOLenTH_wAma5TeamItSAUw"
+      "hash": "medZh71CMk63YRZ1MSTMN_QntN2tvliXY_F_X9Kqwkw"
     },
     "unitycatalogDeploy": {
       "_type": "deployment",
@@ -19899,8 +19915,8 @@
         "kind": "flows",
         "id": "4075d88633"
       },
-      "e0f9af3bcb": {
-        "title": ":8080 /api/2.0/mlflow, /api/2.0/otel, /ai-gateway, /mlflow",
+      "ca6bb7c989": {
+        "title": ":8080 /api/2.0/mlflow, /api/3.0/mlflow, /api/4.0/mlflow, /api/2.0/otel, /ai-gateway, /mlflow",
         "metadata": {
           "trestleEdge": "route:envoy→mlflow:8080"
         },
@@ -19911,7 +19927,7 @@
           "deployment": "ucMlflow.mlflow"
         },
         "kind": "flows",
-        "id": "e0f9af3bcb"
+        "id": "ca6bb7c989"
       },
       "3425cfa3fd": {
         "title": ":9000 /",
@@ -19982,6 +19998,20 @@
         },
         "kind": "uses",
         "id": "f7cfd0724f"
+      },
+      "5cecda3c42": {
+        "title": "HTTP",
+        "metadata": {
+          "trestleEdge": "uses:mlflow→unity-catalog:data_catalog"
+        },
+        "source": {
+          "deployment": "ucMlflow.mlflow"
+        },
+        "target": {
+          "deployment": "ucMlflow.unityCatalog"
+        },
+        "kind": "uses",
+        "id": "5cecda3c42"
       }
     }
   },

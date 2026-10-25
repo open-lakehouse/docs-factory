@@ -4,11 +4,11 @@
   "state": "planned",
   "generator": {
     "name": "trestle",
-    "version": "0.0.13",
-    "revision": "2ccc26d7d4d5b3b0b585a108ad6044d6556e2c1e"
+    "version": "0.0.14",
+    "revision": "186c2d65f7f53b8b9bee1ce905d188e7b0df07c0"
   },
   "catalog": {
-    "baseline": "olai-stack-topology@0.0.9",
+    "baseline": "olai-stack-topology@0.0.10",
     "manifests": [],
     "digest": "sha256:ad4c35d2d1b7bd4e2b32d1cd86e83e4caac2dcc6f349629fc4347dfb683e40c6"
   },
@@ -82,6 +82,20 @@
                 "endpoint": "tracking",
                 "kind": "api",
                 "prefix": "/api/2.0/mlflow",
+                "gated": false
+              },
+              {
+                "module": "mlflow",
+                "endpoint": "tracking_v3",
+                "kind": "api",
+                "prefix": "/api/3.0/mlflow",
+                "gated": false
+              },
+              {
+                "module": "mlflow",
+                "endpoint": "tracking_v4",
+                "kind": "api",
+                "prefix": "/api/4.0/mlflow",
                 "gated": false
               },
               {
@@ -317,6 +331,15 @@
         "resources": [
           "mlflow"
         ]
+      },
+      {
+        "kind": "uses",
+        "key": "uses:mlflow→unity-catalog:data_catalog",
+        "from": "mlflow",
+        "to": "unity-catalog",
+        "role": "data_catalog",
+        "protocol": "HTTP",
+        "resources": []
       }
     ]
   },
@@ -418,6 +441,26 @@
               "kind": "api"
             },
             "mount_prefix": "/api/2.0/mlflow",
+            "rewrite": "inherit"
+          },
+          {
+            "id": "tracking_v3",
+            "scheme": "http",
+            "internal_port": 5000,
+            "intent": {
+              "kind": "api"
+            },
+            "mount_prefix": "/api/3.0/mlflow",
+            "rewrite": "inherit"
+          },
+          {
+            "id": "tracking_v4",
+            "scheme": "http",
+            "internal_port": 5000,
+            "intent": {
+              "kind": "api"
+            },
+            "mount_prefix": "/api/4.0/mlflow",
             "rewrite": "inherit"
           },
           {
@@ -557,6 +600,16 @@
             "rewrite": "/mlflow/api/2.0/mlflow"
           },
           {
+            "prefix": "/api/3.0/mlflow",
+            "cluster": "mlflow",
+            "rewrite": "/mlflow/api/3.0/mlflow"
+          },
+          {
+            "prefix": "/api/4.0/mlflow",
+            "cluster": "mlflow",
+            "rewrite": "/mlflow/api/4.0/mlflow"
+          },
+          {
             "prefix": "/unity-catalog",
             "cluster": "unitycatalog",
             "rewrite": null
@@ -655,6 +708,8 @@
       "AWS_ENDPOINT_URL_S3": "http://localhost:9000",
       "AWS_REGION": "us-east-1",
       "MLFLOW_AI_GATEWAY_URL": "http://localhost:8080/ai-gateway",
+      "MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD": "false",
+      "MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD": "false",
       "MLFLOW_REGISTRY_URI": "uc:http://localhost:8080",
       "MLFLOW_TRACKING_URI": "http://localhost:8080",
       "UNITY_CATALOG_URL": "http://localhost:8080/api/2.1/unity-catalog"
@@ -665,6 +720,8 @@
       "AWS_ENDPOINT_URL_S3": "http://envoy:9000",
       "AWS_REGION": "us-east-1",
       "MLFLOW_AI_GATEWAY_URL": "http://envoy:10000/ai-gateway",
+      "MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD": "false",
+      "MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD": "false",
       "MLFLOW_REGISTRY_URI": "uc:http://envoy:10000",
       "MLFLOW_TRACKING_URI": "http://envoy:10000",
       "UNITY_CATALOG_URL": "http://envoy:10000/api/2.1/unity-catalog"

@@ -8,7 +8,7 @@ references:
   - lakehouse.credentialIssuer
   - obstore
   - s3Spec
-status: draft
+status: ready
 ---
 
 [obstore](model:obstore) reads and writes object storage from Python. Instead

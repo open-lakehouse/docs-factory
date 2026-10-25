@@ -8,7 +8,7 @@ references:
   - lakehouse.volume
   - marimo
   - obstore
-status: draft
+status: ready
 ---
 
 [marimo](model:marimo) shows any [obstore](model:obstore) store a notebook

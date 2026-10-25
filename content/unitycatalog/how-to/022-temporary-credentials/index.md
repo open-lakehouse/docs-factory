@@ -8,7 +8,7 @@ references:
   - lakehouse.credentialIssuer
   - lakehouse.objectStorage
   - s3Spec
-status: draft
+status: ready
 ---
 
 A client that reads or writes data under [Unity Catalog](model:unityCatalogServer)

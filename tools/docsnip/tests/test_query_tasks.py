@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[3]
 AWS_STORAGE = (
     "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py"
 )
+TEMPORARY_CREDENTIALS = "content/unitycatalog/how-to/022-temporary-credentials/snippets/temporary_credentials.py"
 
 
 @pytest.fixture(scope="module")
@@ -43,6 +44,10 @@ def test_find_a_vended_credential_example(idx):
         (
             "content/unitycatalog/tutorials/006-read-volume-files/snippets/volume_files.py",
             "unitycatalog/credentials.vend-volume",
+        ),
+        *(
+            (TEMPORARY_CREDENTIALS, f"unitycatalog/credentials.vend-{kind}")
+            for kind in ("table", "volume", "model-version", "path")
         ),
     }
 

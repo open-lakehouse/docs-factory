@@ -9,11 +9,11 @@ references:
 status: ready
 ---
 
-[TPC-H](https://www.tpc.org/tpch/) is the standard benchmark schema: eight
-related tables (`region`, `nation`, `supplier`, `customer`, `part`,
-`partsupp`, `orders`, and `lineitem`) modeling a wholesale supplier. Seeded into
-[Unity Catalog](model:unityCatalogServer), it gives joins, access grants, and
-cross-engine queries data that looks like a real business.
+[TPC-H](https://www.tpc.org/tpch/) is the standard benchmark schema. Its eight
+related tables model a wholesale supplier: `region`, `nation`, `supplier`,
+`customer`, `part`, `partsupp`, `orders`, and `lineitem`. Seeded into
+[Unity Catalog](model:unityCatalogServer), it gives you realistic business data
+to try joins, access grants, and cross-engine queries on.
 
 This guide generates TPC-H with DuckDB, writes each table as Delta, and
 registers it as an external table, three steps per table:
@@ -24,18 +24,19 @@ registers it as an external table, three steps per table:
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).
 :::
 
-Unity Catalog only records where an external table lives and never reads the
+Unity Catalog only records where an external table lives. It never reads the
 files itself, so the script writes the Delta tables to a local directory it
-owns (override with `TPCH_STORAGE_ROOT`).
+owns. Set `TPCH_STORAGE_ROOT` to use another directory.
 
 ::::journey
 
 ### Generate TPC-H
 
 [DuckDB](https://duckdb.org/docs/stable/core_extensions/tpch) ships a `tpch`
-extension that generates the benchmark data in-process. `dbgen(sf = ...)` builds every
-table at the given **scale factor** (`0.01` here keeps it small and fast; bump it for more data),
-and each table comes straight back as an Arrow table.
+extension that generates the benchmark data in-process. `dbgen(sf = ...)` builds
+every table at the given **scale factor**, and each table comes straight back as
+an Arrow table. A scale factor of `0.01` keeps it small and fast; raise it for
+more data.
 
 ```python file=./seed_tpch.py start=start:generate end=end:generate
 ```
@@ -60,8 +61,8 @@ column list derived from the table's Arrow schema. The tables are then
 ```
 
 :::tip
-The `arrow_to_columns` helper (just above `main` in the script) maps Arrow types
-to Unity Catalog column types and builds the `type_json` each column needs —
+The `arrow_to_columns` helper, just above `main` in the script, maps Arrow types
+to Unity Catalog column types. It also builds the `type_json` each column needs,
 including the `metadata` field the server requires.
 :::
 
@@ -78,9 +79,9 @@ back from Delta to prove the data is really there.
 ## Next steps
 
 You now have an eight-table TPC-H dataset in Unity Catalog. To regenerate it at
-a larger scale, raise the `sf` argument to `main` (for example `0.1` for about
-600,000 `lineitem` rows) and run the script again; it replaces the earlier
-tables.
+a larger scale, raise the `sf` argument to `main` and run the script again. For
+example, `0.1` gives about 600,000 `lineitem` rows. The new run replaces the
+earlier tables.
 
 - [Read and write Unity Catalog tables from DuckDB](../duckdb/index.md) queries
   the tables by name.

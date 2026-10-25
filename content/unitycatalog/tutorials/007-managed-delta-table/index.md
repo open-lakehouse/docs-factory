@@ -78,9 +78,9 @@ table managed:
 ```python file=./snippets/managed_table.py start=start:create-table end=end:create-table
 ```
 
-Behind this statement, Spark asks the server to reserve a table, receives a
-location and a short-lived credential to write there, writes the first Delta
-log entry, and asks the server to make the table official.
+Behind this statement, Spark asks the server to reserve a table. The server
+returns a location and a short-lived credential to write there. Spark writes the
+first Delta log entry, then asks the server to make the table official.
 
 ### Write some rows
 

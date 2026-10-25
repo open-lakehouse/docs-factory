@@ -80,7 +80,7 @@ model {
       to create, load, and commit Iceberg tables through any conforming catalog.
     "
 
-    link https://iceberg.apache.org/concepts/catalog/
+    link https://iceberg.apache.org/rest-catalog-spec/
   }
   icebergRestSpec -[specifies]-> lakehouse.catalog
   icebergRestSpec -[governs]-> lakehouse.namespace

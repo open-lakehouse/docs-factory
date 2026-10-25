@@ -833,7 +833,7 @@
       },
       "links": [
         {
-          "url": "https://docs.unitycatalog.io/usage/cli/"
+          "url": "https://docs.unitycatalog.io/how-to/run-local-server#run-the-uc-cli"
         }
       ],
       "tags": [
@@ -1812,7 +1812,7 @@
       },
       "links": [
         {
-          "url": "https://iceberg.apache.org/concepts/catalog/"
+          "url": "https://iceberg.apache.org/rest-catalog-spec/"
         }
       ],
       "tags": [
@@ -6068,7 +6068,7 @@
           "notation": "Implementation (software / service)",
           "links": [
             {
-              "url": "https://docs.unitycatalog.io/usage/cli/"
+              "url": "https://docs.unitycatalog.io/how-to/run-local-server#run-the-uc-cli"
             }
           ],
           "kind": "implementation"
@@ -7751,7 +7751,7 @@
           "notation": "Specification / open standard",
           "links": [
             {
-              "url": "https://iceberg.apache.org/concepts/catalog/"
+              "url": "https://iceberg.apache.org/rest-catalog-spec/"
             }
           ],
           "kind": "openSpecification"
@@ -10949,7 +10949,7 @@
           "notation": "Specification / open standard",
           "links": [
             {
-              "url": "https://iceberg.apache.org/concepts/catalog/"
+              "url": "https://iceberg.apache.org/rest-catalog-spec/"
             }
           ],
           "kind": "openSpecification"
@@ -12868,7 +12868,7 @@
           "notation": "Specification / open standard",
           "links": [
             {
-              "url": "https://iceberg.apache.org/concepts/catalog/"
+              "url": "https://iceberg.apache.org/rest-catalog-spec/"
             }
           ],
           "kind": "openSpecification"
@@ -13546,7 +13546,7 @@
           "notation": "Implementation (software / service)",
           "links": [
             {
-              "url": "https://docs.unitycatalog.io/usage/cli/"
+              "url": "https://docs.unitycatalog.io/how-to/run-local-server#run-the-uc-cli"
             }
           ],
           "kind": "implementation"
@@ -13806,7 +13806,7 @@
           "notation": "Specification / open standard",
           "links": [
             {
-              "url": "https://iceberg.apache.org/concepts/catalog/"
+              "url": "https://iceberg.apache.org/rest-catalog-spec/"
             }
           ],
           "kind": "openSpecification"
@@ -17834,7 +17834,7 @@
           "notation": "Specification / open standard",
           "links": [
             {
-              "url": "https://iceberg.apache.org/concepts/catalog/"
+              "url": "https://iceberg.apache.org/rest-catalog-spec/"
             }
           ],
           "kind": "openSpecification"

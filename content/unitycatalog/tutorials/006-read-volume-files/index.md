@@ -103,7 +103,7 @@ Define a small function that turns the answer into a storage client:
 ```python file=./snippets/volume_files.py start=start:open-store end=end:open-store
 ```
 
-With vended AWS keys, the function passes them to obstore. Otherwise it opens
+With vended AWS keys, the function passes them to obstore. Otherwise, it opens
 the location directly. Your reading code stays the same either way.
 
 ### Read the files

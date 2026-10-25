@@ -34,7 +34,7 @@ those questions has long been the job of the [catalog](model:lakehouse.catalog).
 
 In a traditional database the catalog is built in and you rarely notice it. The
 [lakehouse architecture] took that monolith apart: storage and compute became
-separate systems, and open table formats such as Delta Lake and Apache Iceberg (TM)
+separate systems, and open table formats such as Delta Lake and Apache Iceberg™
 took over responsibilities like schema enforcement and ACID transactions.
 
 As lakehouses spread, many engines, teams, and AI applications came to share the

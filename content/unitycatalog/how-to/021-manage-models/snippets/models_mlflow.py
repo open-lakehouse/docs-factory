@@ -1,7 +1,8 @@
 # /// script
 # requires-python = "==3.12.*"
 # dependencies = [
-#   "mlflow[databricks]==3.17.0",
+#   "mlflow==3.17.0",
+#   "boto3==1.43.114",
 #   "unitycatalog-client==0.7.0",
 #   "scikit-learn==1.9.1",
 # ]

@@ -44,7 +44,7 @@ Set up the client for your interface:
 Start Python with MLflow and scikit-learn, the library the example model uses:
 
 ```bash
-uv run --python 3.12 --with 'mlflow[databricks]==3.17.0' --with scikit-learn==1.9.1 python
+uv run --python 3.12 --with mlflow==3.17.0 --with boto3==1.43.114 --with scikit-learn==1.9.1 python
 ```
 
 Point MLflow at the tracking server and at Unity Catalog's registry. The `uc:`

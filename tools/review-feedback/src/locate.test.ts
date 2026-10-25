@@ -392,6 +392,17 @@ describe("follow comments through edits", () => {
     expect(loc?.note).toContain("1 of their 2 lines");
   });
 
+  test("a passage the server matched as reworded is found by its current text", () => {
+    edit("can read files you place there,", "can read the files you put there,");
+    const loc = locate(repo, {
+      ...comment("share-a-folder-with-the-server", { quote: QUOTE }),
+      anchorCurrentQuote: "mount a host folder so the server can read the files you put there",
+    });
+    expect(loc?.precision).toBe("quote");
+    expect([loc?.startLine, loc?.endLine]).toEqual([13, 14]);
+    expect(loc?.note).toContain("reworded");
+  });
+
   test("an unknown authored commit skips the history", () => {
     edit("## Share a folder with the server\n\nMount a host folder so the server\n", "Mount it\n");
     const loc = locate(

@@ -61,3 +61,24 @@ test("a planned-slot thread reads as an instruction for an unwritten page", () =
     "- anchor: planned slot T06 (no page yet: an instruction for writing it)",
   );
 });
+
+describe("formatThread placement", () => {
+  const placed = (placement: FeedbackThread["anchor"]["placement"]) => {
+    const t = thread(undefined);
+    return formatThread({ ...t, anchor: { ...t.anchor, placement } });
+  };
+
+  test("a moved thread names the heading it was written under", () => {
+    expect(placed({ state: "moved", authoredHeading: "Share a folder" })).toContain(
+      "- review app: the passage moved, written under “Share a folder”",
+    );
+  });
+  test("a rewritten thread shows the text it matches now", () => {
+    expect(placed({ state: "rewritten", currentQuote: "short-lived credentials" })).toContain(
+      "it now reads “short-lived credentials”",
+    );
+  });
+  test("a thread where it was written has no placement line", () => {
+    expect(placed(undefined)).not.toContain("review app:");
+  });
+});

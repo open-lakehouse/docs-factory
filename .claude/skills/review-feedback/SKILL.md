@@ -57,6 +57,10 @@ For each thread, `get_thread` gives the conversation plus a location:
 - `file`, or "not in this checkout": the anchor is gone. Read the page and the
   thread, and decide whether it still applies. A note "were deleted since" means
   the passage was removed after the comment; the thread may already be answered.
+- `review app: …`: where the review server's re-anchoring placed the thread on
+  the latest registered version: moved (and the heading it was written under),
+  reworded (and the text it reads now), or quote gone with the heading kept. It
+  is what the reviewer sees in the app, so say where it went when you reply.
 - `file changed since comment`: line numbers may be stale. Read around them. The
   `changed since comment in N commits` line names those commits; `git show` one
   when you need to know why the passage changed.

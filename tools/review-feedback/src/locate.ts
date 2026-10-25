@@ -636,5 +636,22 @@ export function locate(repoRoot: string, comment: Comment): Location | undefined
   if (!path) return undefined;
   if (comment.scope === CommentScope.DOCUMENT) return withDrift({ path, precision: "file" });
   const raw = readFileSync(join(repoRoot, path), "utf8");
-  return withDrift(followHistory(repoRoot, comment, path, raw, locateProse(comment, path, raw)));
+  let loc = locateProse(comment, path, raw);
+  // The review server matched a reworded passage approximately and kept the
+  // text it matched; that text is in the source when the quote no longer is.
+  const current = comment.anchorCurrentQuote;
+  if (current && comment.selector && (loc.precision === "section" || loc.precision === "file")) {
+    const reworded = locateProse(
+      { ...comment, selector: { ...comment.selector, quote: current } },
+      path,
+      raw,
+    );
+    if (reworded.precision === "quote" || reworded.precision === "moved") {
+      loc = {
+        ...reworded,
+        note: joinNotes(reworded.note, "reworded since the comment; matched the text it reads now"),
+      };
+    }
+  }
+  return withDrift(followHistory(repoRoot, comment, path, raw, loc));
 }

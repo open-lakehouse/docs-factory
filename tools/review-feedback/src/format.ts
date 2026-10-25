@@ -42,7 +42,17 @@ function anchorLine(t: FeedbackThread): string {
   const section = isPreambleAnchor(t.anchor.heading)
     ? "(before first heading)"
     : `#${t.anchor.heading}`;
-  return `- anchor: ${section}${quote}`;
+  const line = `- anchor: ${section}${quote}`;
+  const p = t.anchor.placement;
+  if (!p) return line;
+  const from = p.authoredHeading ? `, written under “${p.authoredHeading}”` : "";
+  const what =
+    p.state === "rewritten"
+      ? `the passage was reworded${from}; it now reads “${p.currentQuote ?? ""}”`
+      : p.state === "moved"
+        ? `the passage moved${from}`
+        : "the quoted text is gone from the page; the heading remains";
+  return `${line}\n- review app: ${what}`;
 }
 
 /** Prefix every line of `text` for a diff fence. */

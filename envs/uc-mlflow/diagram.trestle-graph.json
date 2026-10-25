@@ -59,6 +59,20 @@
               },
               {
                 "module": "mlflow",
+                "endpoint": "tracking_v3",
+                "kind": "api",
+                "prefix": "/api/3.0/mlflow",
+                "gated": false
+              },
+              {
+                "module": "mlflow",
+                "endpoint": "tracking_v4",
+                "kind": "api",
+                "prefix": "/api/4.0/mlflow",
+                "gated": false
+              },
+              {
+                "module": "mlflow",
                 "endpoint": "otel",
                 "kind": "api",
                 "prefix": "/api/2.0/otel",
@@ -290,6 +304,15 @@
         "resources": [
           "mlflow"
         ]
+      },
+      {
+        "kind": "uses",
+        "key": "uses:mlflow→unity-catalog:data_catalog",
+        "from": "mlflow",
+        "to": "unity-catalog",
+        "role": "data_catalog",
+        "protocol": "HTTP",
+        "resources": []
       }
     ]
   },

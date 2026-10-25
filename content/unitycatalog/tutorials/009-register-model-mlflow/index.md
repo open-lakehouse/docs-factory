@@ -59,6 +59,11 @@ MLflow configures tracking and the registry separately. Here both URIs reach
 `AWS_ENDPOINT_URL_S3` is the only storage setting the session needs. MLflow
 reads and writes the version's files in the catalog's storage directly, and
 this variable points it at the local S3-compatible store instead of AWS.
+
+The two `MLFLOW_ENABLE_PROXY_MULTIPART_*` settings keep the logged model's
+files going through the tracking server. Otherwise the server hands out
+download links signed for the store's address inside the environment, which
+your machine can't reach.
 :::
 
 ### Create a schema for the model
@@ -136,7 +141,7 @@ The output has two lines:
 
 ```text
 logged model:  mlflow-artifacts:/<experiment-id>/models/m-<id>/artifacts
-model version: s3://uc-docs/unity/__unitystorage/catalogs/<uuid>/models/<uuid>/versions/<uuid>
+model version: s3://amzn-s3-demo-bucket/unity/__unitystorage/catalogs/<uuid>/models/<uuid>/versions/<uuid>
 ```
 
 The logged model's files go through the tracking server, which stores them.

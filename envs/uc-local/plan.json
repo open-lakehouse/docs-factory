@@ -4,11 +4,11 @@
   "state": "planned",
   "generator": {
     "name": "trestle",
-    "version": "0.0.13",
-    "revision": "2ccc26d7d4d5b3b0b585a108ad6044d6556e2c1e"
+    "version": "0.0.14",
+    "revision": "186c2d65f7f53b8b9bee1ce905d188e7b0df07c0"
   },
   "catalog": {
-    "baseline": "olai-stack-topology@0.0.9",
+    "baseline": "olai-stack-topology@0.0.10",
     "manifests": [],
     "digest": "sha256:ad4c35d2d1b7bd4e2b32d1cd86e83e4caac2dcc6f349629fc4347dfb683e40c6"
   },

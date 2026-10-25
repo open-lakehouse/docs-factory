@@ -194,9 +194,9 @@ async def _check_view(models, versions, v) -> None:
     )
     (model,) = listed.registered_models
     assert model.full_name == MODEL, model
-    assert model.storage_location.startswith("s3://uc-docs/unity/__unitystorage/"), (
-        model
-    )
+    assert model.storage_location.startswith(
+        "s3://amzn-s3-demo-bucket/unity/__unitystorage/"
+    ), model
     listed = await versions.list_model_versions(full_name=MODEL)
     assert sorted(mv.version for mv in listed.model_versions) == [1, 2], listed
     assert v.status == uc.ModelVersionStatus.READY, v

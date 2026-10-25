@@ -60,7 +60,7 @@ uses the schema's managed storage, or the catalog's if the schema has none
 If neither has managed storage, creating the model fails. Each version then
 gets its own folder under the model's location. In the `uc-mlflow`
 environment, a version of a model in the `unity` catalog lands at
-`s3://uc-docs/unity/__unitystorage/catalogs/<id>/models/<id>/versions/<id>`.
+`s3://amzn-s3-demo-bucket/unity/__unitystorage/catalogs/<id>/models/<id>/versions/<id>`.
 
 A registered model is a securable, so the
 [privilege model](../uc-basics/index.md#ownership-and-privileges) applies to it
@@ -76,7 +76,7 @@ In the `uc-mlflow` environment, both services share one PostgreSQL server and
 one object store, but each keeps to its own database and its own bucket:
 
 ```trestle uc-mlflow
-A gateway routes the Unity Catalog API to the server and the MLflow API to the tracking server. Both keep metadata in PostgreSQL (separate `unitycatalog` and `mlflow` databases) and files in RustFS (`uc-docs` and `mlflow` buckets).
+A gateway routes the Unity Catalog API to the server and the MLflow API to the tracking server, which serves its model registry from Unity Catalog. Both keep metadata in PostgreSQL (separate `unitycatalog` and `mlflow` databases) and files in RustFS (`amzn-s3-demo-bucket` and `mlflow` buckets).
 ```
 
 | Object | Owned by | Metadata | Files |
@@ -84,7 +84,7 @@ A gateway routes the Unity Catalog API to the server and the MLflow API to the t
 | Experiment and run, with parameters and metrics | MLflow | `mlflow` database | — |
 | Logged model, `models:/m-<id>` | MLflow | `mlflow` database | `mlflow` bucket, served by the tracking server |
 | Registered model | Unity Catalog | `unitycatalog` database | — |
-| Model version | Unity Catalog | `unitycatalog` database | `uc-docs` bucket, under the model's location |
+| Model version | Unity Catalog | `unitycatalog` database | `amzn-s3-demo-bucket` bucket, under the model's location |
 
 Because each side keeps its own records and files, each survives the other's
 deletes. Deleting a model's versions and then the model in Unity Catalog

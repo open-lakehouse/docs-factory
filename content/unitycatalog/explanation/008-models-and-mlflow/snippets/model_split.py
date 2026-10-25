@@ -45,10 +45,10 @@ MODEL = f"{SCHEMA}.linear"
 UC_URL = "http://localhost:8080/api/2.1/unity-catalog"
 TRACKING_URI = "http://localhost:8080"
 REGISTRY_URI = "uc:http://localhost:8080"
-CATALOG_ROOT = "s3://uc-docs/unity"
+CATALOG_ROOT = "s3://amzn-s3-demo-bucket/unity"
 # A schema with storage of its own, and a catalog with none (step 8).
 ROOTED_SCHEMA = "unity.model_split_rooted"
-SCHEMA_ROOT = "s3://uc-docs/model-split-rooted"
+SCHEMA_ROOT = "s3://amzn-s3-demo-bucket/model-split-rooted"
 BARE_CATALOG = "model_split_bare"
 NO_STORAGE = (
     "None of catalog, schema or storage-root.tables server property has managed "
@@ -61,7 +61,7 @@ VERSION_PATH = rf"/__unitystorage/catalogs/{_UUID}/models/{_UUID}/versions/{_UUI
 def _clear_client_env() -> None:
     """Unset every AWS_* and MLFLOW_* variable the harness exported.
 
-    The script sets the one storage variable it needs itself, so the run proves
+    The script sets the variables it needs itself, so the run proves
     nothing else from the environment's client settings is needed.
     """
     for name in list(os.environ):
@@ -129,6 +129,8 @@ def _verify() -> None:
     from sklearn.linear_model import LinearRegression
 
     os.environ["AWS_ENDPOINT_URL_S3"] = "http://localhost:9000"
+    os.environ["MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD"] = "false"
+    os.environ["MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD"] = "false"
     mlflow.set_tracking_uri(TRACKING_URI)
     mlflow.set_registry_uri(REGISTRY_URI)
     client = MlflowClient()
@@ -318,7 +320,9 @@ def _check_copies(mlflow, client, logged) -> None:
     assert re.fullmatch(
         rf"mlflow-artifacts:/\d+/models/{logged.model_id}/artifacts", location
     ), location
-    assert CATALOG_ROOT not in location and "uc-docs" not in location, location
+    assert CATALOG_ROOT not in location and "amzn-s3-demo-bucket" not in location, (
+        location
+    )
     download = client.get_model_version_download_uri(MODEL, "1")
     assert download.startswith(CATALOG_ROOT + "/__unitystorage/"), download
 

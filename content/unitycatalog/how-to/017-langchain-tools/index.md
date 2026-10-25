@@ -220,9 +220,11 @@ with each function's JSON result, and the model's answer.
 
 ## Trace the agent's tool calls with MLflow
 
-MLflow's LangChain autologging records each agent run as a trace. It needs no
-MLflow server and no key: the traces go to `mlflow.db`, a SQLite file in the
-session's folder. Turn it on, then run the agent again:
+MLflow's LangChain autologging records each agent run as a trace and sends it
+to the environment's MLflow tracking server, in the `langchain-tools`
+experiment. The `MLFLOW_ENABLE_PROXY_MULTIPART_*` settings keep trace data
+going through the tracking server, whose download links name an address only
+the environment can reach. Turn it on, then run the agent again:
 
 ```python file=./snippets/tools.py start=start:autolog end=end:autolog
 ```
@@ -235,7 +237,9 @@ back. Print the spans of the latest trace:
 
 The trace has one span for the agent's graph, one for each model turn, and one
 `TOOL` span for each function call. A tool span records the arguments the model
-sent and the tool message it got back.
+sent and the tool message it got back. To browse the same traces, open the
+`langchain-tools` experiment in the MLflow UI at
+<http://localhost:8080/mlflow/>.
 
 ## Route the model through the MLflow AI Gateway
 

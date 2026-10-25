@@ -49,7 +49,10 @@ uv run --python 3.12 --with 'mlflow[databricks]==3.17.0' --with scikit-learn==1.
 
 Point MLflow at the tracking server and at Unity Catalog's registry. The `uc:`
 prefix on the registry URI selects MLflow's Unity Catalog registry, and
-`AWS_ENDPOINT_URL_S3` points MLflow at the environment's S3-compatible store:
+`AWS_ENDPOINT_URL_S3` points MLflow at the environment's S3-compatible store.
+The `MLFLOW_ENABLE_PROXY_MULTIPART_*` settings keep the logged model's files
+going through the tracking server, whose download links name an address only
+the environment can reach:
 
 ```python file=./snippets/models_mlflow.py start=start:connect end=end:connect
 ```
@@ -183,7 +186,7 @@ The session prints the version's signature, with the input column `x` as a
 `double`, then the prediction `[21.]`, since version 1 fits y = 2x + 1. The
 signature comes from the version's files, not from Unity Catalog's record of
 the version. The location has the form
-`s3://uc-docs/unity/__unitystorage/catalogs/<id>/models/<id>/versions/<id>`.
+`s3://amzn-s3-demo-bucket/unity/__unitystorage/catalogs/<id>/models/<id>/versions/<id>`.
 MLflow reads the files with read-only credentials from Unity Catalog.
 
 Load by number only. Unity Catalog's registry has no aliases and no stages, so

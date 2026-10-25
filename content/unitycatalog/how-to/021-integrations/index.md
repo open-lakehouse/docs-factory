@@ -15,7 +15,8 @@ Many engines and tools outside these docs connect to a
 earlier Unity Catalog docs covered and the ones whose maintainers document a
 connection to an open-source server. It says how each one connects and links
 the docs of the project that maintains it. Where these docs have a tested
-guide, the row links it instead.
+guide, the row links it instead. A separate table lists the tools whose
+maintainers document only Databricks Unity Catalog.
 
 ## How a tool connects
 
@@ -90,6 +91,35 @@ Notes on individual rows:
 - **Kuzu**'s repository was archived on 2025-10-10, so its `unity_catalog`
   extension gets no further releases. Ladybug, listed above, carries a
   `unity_catalog` extension of its own.
+
+### Documented for Databricks Unity Catalog only
+
+These tools' maintainers document a connection to Databricks Unity Catalog,
+not to an open-source server. Nobody has checked them against an OSS server,
+so don't assume they work with one. The interface is the one the provider's
+guide uses.
+
+| Tool | Interface | Maintained by | Docs | Checked |
+| --- | --- | --- | --- | --- |
+| ClickHouse | Unity Catalog REST; Iceberg REST | ClickHouse | [Unity Catalog](https://clickhouse.com/docs/guides/use-cases/data-warehousing/unity-catalog) | 2026-10-25 |
+| Dremio Enterprise | Iceberg REST | Dremio | [Unity Catalog](https://docs.dremio.com/current/data-sources/lakehouse-catalogs/unity/) | 2026-10-25 |
+| Apache Doris | Iceberg REST | Apache Doris | [Integration with Databricks Unity Catalog](https://doris.apache.org/docs/lakehouse/best-practices/doris-unity-catalog) | 2026-10-25 |
+| Snowflake | Iceberg REST | Snowflake | [Configure a catalog integration for Unity Catalog](https://docs.snowflake.com/en/user-guide/tables-iceberg-configure-catalog-integration-rest-unity) | 2026-10-25 |
+| lakeFS Enterprise | Registered by path | lakeFS | [Using lakeFS with Unity Catalog](https://docs.lakefs.io/integrations/unity-catalog/) | 2026-10-25 |
+| Ray | Unity Catalog REST | Ray | [`ray.data.read_unity_catalog`](https://docs.ray.io/en/latest/data/api/doc/ray.data.read_unity_catalog.html) | 2026-10-25 |
+
+- **ClickHouse** reads Delta tables through the Unity Catalog REST API and
+  Iceberg tables through the Iceberg REST endpoint. Its guide marks the
+  integration experimental, behind the `allow_experimental_database_unity_catalog`
+  setting.
+- **Dremio** reads Delta tables through their UniForm Iceberg metadata, in its
+  Enterprise edition.
+- **Snowflake** attaches the catalog as a catalog-linked database after you
+  create the catalog integration.
+- **lakeFS** exports a Delta table from a lakeFS branch and registers it as a
+  read-only external table, in its Enterprise edition.
+- **Ray** loads a table into a Ray Dataset with the storage credentials the
+  catalog vends.
 
 ## Check an integration before you rely on it
 

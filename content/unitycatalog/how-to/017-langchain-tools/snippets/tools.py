@@ -15,8 +15,8 @@
 # ]
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.yaml"
-# services = ["unitycatalog"]
+# compose = "../../../../../envs/uc-mlflow/compose.yaml"
+# services = ["unitycatalog", "mlflow"]
 # base-url-env = "UC_BASE_URL"
 # # The sandbox caps the child process's address space at
 # # EXECUTOR_MAX_MEMORY_LIMIT MB (default 100); see T05's first_function.py.
@@ -33,7 +33,7 @@ The regions are what a reader types into `python -m asyncio`, step by step. The
 stand-in chat model is defined outside the regions, so no API key is needed;
 the page tells the reader to pass their own model.
 
-Start the docs' local server from `uc-docs-env/unitycatalog`:
+Start Unity Catalog and MLflow from `uc-docs-env/uc-mlflow`:
 
     docker compose up -d --wait
 
@@ -45,7 +45,7 @@ Then run this script:
 import asyncio
 import json
 import os
-import tempfile
+import time
 
 from unitycatalog.client.exceptions import NotFoundException
 
@@ -311,16 +311,18 @@ async def _run(api, client, UnitycatalogClient, CatalogsApi) -> None:
     agent_tools = [run_on_this_loop(tool) for tool in tools]
     # --8<-- [end:async-tools]
 
-    # The tracking store below is a file in the working directory; keep the
-    # run's copy out of the script's folder.
-    os.chdir(tempfile.mkdtemp())
-
     # --8<-- [start:autolog]
+    import os
+
     import mlflow
 
-    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    os.environ["MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD"] = "false"
+    os.environ["MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD"] = "false"
+    mlflow.set_tracking_uri("http://localhost:8080")
+    mlflow.set_experiment("langchain-tools")
     mlflow.langchain.autolog()
     # --8<-- [end:autolog]
+    _clear_traces(mlflow)
 
     # --8<-- [start:agent]
     from langchain.agents import create_agent
@@ -370,6 +372,15 @@ async def _run(api, client, UnitycatalogClient, CatalogsApi) -> None:
     await CatalogsApi(api).delete_catalog(name="tools", force=True)
     await api.close()
     # --8<-- [end:clean-up]
+
+
+def _clear_traces(mlflow) -> None:
+    """Delete the experiment's traces from earlier runs on the same stack."""
+    experiment = mlflow.get_experiment_by_name("langchain-tools")
+    mlflow.MlflowClient().delete_traces(
+        experiment_id=experiment.experiment_id,
+        max_timestamp_millis=int(time.time() * 1000),
+    )
 
 
 def _assert_trace(mlflow, trace) -> None:

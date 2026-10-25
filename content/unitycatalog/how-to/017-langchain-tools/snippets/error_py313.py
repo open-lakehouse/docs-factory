@@ -16,8 +16,8 @@
 # ]
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.yaml"
-# services = ["unitycatalog"]
+# compose = "../../../../../envs/uc-mlflow/compose.yaml"
+# services = ["unitycatalog", "mlflow"]
 # base-url-env = "UC_BASE_URL"
 # env = { EXECUTOR_MAX_MEMORY_LIMIT = "4096" }
 # ///

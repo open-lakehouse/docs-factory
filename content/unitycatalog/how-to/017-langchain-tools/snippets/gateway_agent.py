@@ -5,7 +5,7 @@ key; this process only knows the gateway's URL and endpoint name. The tools are
 the same catalog functions and async adapter as in tools.py.
 
 Needs a provider behind the gateway, so it doesn't run unattended. Run it with
-the Unity Catalog server and the gateway started:
+Unity Catalog and the gateway started:
 
     EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 \
       --with unitycatalog-langchain==0.4.0 \

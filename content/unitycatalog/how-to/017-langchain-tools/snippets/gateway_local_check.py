@@ -6,7 +6,7 @@ gateway.yaml with `openai_api_base` pointed at a fake OpenAI-compatible server
 in this process, and a dummy OPENAI_API_KEY. The fake scripts two tool calls,
 then an answer, and records what the gateway forwards.
 
-With the Unity Catalog server up (`docker compose up -d --wait` in the
+With Unity Catalog and MLflow up (`docker compose up -d --wait` in the
 environment folder), run from this folder:
 
     EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 \

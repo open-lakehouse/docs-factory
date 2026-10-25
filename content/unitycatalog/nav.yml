@@ -79,9 +79,8 @@ nav:
             label: Request temporary credentials
           - page: how-to/obstore-credentials
             id: H53
-          # Deferred follow-on to J04 until a compatible storage client is verified.
-          - planned: H49
-            title: Use volumes as marimo remote storage
+          - page: how-to/marimo-remote-storage
+            id: H49
 
       - section: Functions and AI
         items:

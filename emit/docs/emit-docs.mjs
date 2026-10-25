@@ -94,6 +94,7 @@ import { buildEnvBundles, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
 import { loadCompat, loadModel, loadProjection, modelLinkResolver, trestleRefs } from "./model.mjs";
 import { projectNav } from "./nav.mjs";
+import { redirectErrors } from "./redirects.mjs";
 import { searchContext, searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
 import { DOCS_SITES } from "./sites/index.mjs";
@@ -718,6 +719,21 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       ),
     );
     files.set("public/robots.txt", renderRobots(origin));
+
+    const vercelPath = join(REPO_ROOT, "sites", config.name, "vercel.json");
+    if (existsSync(vercelPath)) {
+      const anchors = new Map([
+        ["/", new Set()],
+        ...pages.map((p) => [p.route, new Set(p.headings.map((h) => h.id))]),
+        ...apis.map((a) => [a.route, new Set()]),
+        ...(apiIndex ? [[apiIndex, new Set()]] : []),
+      ]);
+      const errors = redirectErrors(JSON.parse(readFileSync(vercelPath, "utf8")), {
+        anchors,
+        files,
+      });
+      if (errors.length) throw new Error(`redirects:\n  ${errors.join("\n  ")}`);
+    }
 
     return { files, manifestPages };
   } finally {

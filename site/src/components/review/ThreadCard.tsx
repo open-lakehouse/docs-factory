@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { unresolveThread } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { anchorPlacement } from "../../lib/anchor-placement";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { scrollToThreadContext } from "../../lib/scroll-to-context";
 import { useScrollContainer } from "./scroll-container-context";
@@ -72,6 +73,8 @@ export default function ThreadCard({
     : undefined;
 
   const label = sectionLabel || (thread.root?.orphaned ? "Removed section" : "Section");
+  // The label already says an orphan's section was removed.
+  const placement = thread.root?.orphaned ? undefined : anchorPlacement(thread.root);
   const sug = thread.root?.suggestion;
   const suggestionPreview = sug
     ? `${sug.replacement ? "Suggested edit" : "Suggested deletion"}${thread.root?.bodyMd ? ` · ${thread.root.bodyMd}` : ""}`
@@ -121,6 +124,11 @@ export default function ThreadCard({
           <span className="review-thread-section" title={label}>
             {label}
           </span>
+          {placement && (
+            <span className={cn("review-anchor-badge", placement.kind)} title={placement.detail}>
+              {placement.badge}
+            </span>
+          )}
           <span className="review-thread-preview">{preview}</span>
           {replyCount > 0 && <span className="review-count small">{replyCount + 1}</span>}
           {thread.resolved && (

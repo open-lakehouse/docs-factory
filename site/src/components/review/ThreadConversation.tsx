@@ -11,6 +11,7 @@ import {
   setSuggestionState,
   unresolveThread,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { anchorPlacement } from "../../lib/anchor-placement";
 import { copyToClipboard } from "../../lib/clipboard";
 import { refToParam } from "../../lib/content-ref";
 import { useReviewInvalidation } from "../../lib/review-queries";
@@ -148,6 +149,7 @@ export default function ThreadConversation({
   }
 
   const label = sectionLabel || (thread.root?.orphaned ? "Removed section" : "Section");
+  const placement = anchorPlacement(thread.root);
   const busy = resolve.isPending || unresolve.isPending;
   const suggestion = thread.root?.suggestion;
 
@@ -289,6 +291,15 @@ export default function ThreadConversation({
               </Button>
             )}
           </div>
+        </div>
+      )}
+      {showContext && placement && (
+        <div className={cn("review-anchor-drift", placement.kind)}>
+          <p>{placement.detail}</p>
+          {/* The page no longer shows what was quoted, so show it here. */}
+          {thread.root?.selector?.quote && !suggestion && (
+            <blockquote>{thread.root.selector.quote}</blockquote>
+          )}
         </div>
       )}
       {thread.root && (

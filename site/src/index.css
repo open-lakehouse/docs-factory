@@ -3500,6 +3500,37 @@ a.version-diff-label:hover {
   background: color-mix(in oklab, var(--foreground) 12%, transparent);
   color: var(--muted-foreground);
 }
+/* Where re-anchoring moved a thread: a quiet chip on the collapsed card, and
+   in the expanded thread the sentence plus the quote the page no longer shows. */
+.review-anchor-badge {
+  flex: none;
+  padding: 0 0.3rem;
+  border: 1px dashed color-mix(in oklab, var(--muted-foreground) 60%, transparent);
+  border-radius: 0.25rem;
+  font-size: 0.62rem;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.review-anchor-badge.rewritten,
+.review-anchor-badge.section { border-color: color-mix(in oklab, gold 70%, var(--border)); }
+.review-anchor-drift {
+  margin-bottom: 0.5rem;
+  padding: 0.4rem 0.55rem;
+  border-left: 2px dashed color-mix(in oklab, var(--muted-foreground) 60%, transparent);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+.review-anchor-drift.rewritten,
+.review-anchor-drift.section { border-left-color: color-mix(in oklab, gold 70%, var(--border)); }
+.review-anchor-drift p { margin: 0; }
+.review-anchor-drift blockquote {
+  margin: 0.3rem 0 0;
+  padding: 0;
+  border: 0;
+  font-style: italic;
+  color: var(--body);
+  white-space: pre-wrap;
+}
 .review-thread-section-tag {
   font-family: var(--font-mono);
   font-size: 0.62rem;
@@ -3837,6 +3868,14 @@ a.review-author:hover span {
   background: color-mix(in oklab, gold 30%, transparent);
   color: inherit;
   text-decoration: underline dotted color-mix(in oklab, gold 70%, var(--border));
+  text-underline-offset: 2px;
+}
+/* A reworded passage: only the server's closest match to the quote, so a
+   fainter tint and a dashed line say "about here" rather than "exactly this". */
+::highlight(review-quote-approx) {
+  background: color-mix(in oklab, gold 14%, transparent);
+  color: inherit;
+  text-decoration: underline dashed color-mix(in oklab, gold 70%, var(--border));
   text-underline-offset: 2px;
 }
 /* An open suggested edit: a distinct tint so proposed rewrites stand apart from

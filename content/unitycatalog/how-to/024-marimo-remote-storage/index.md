@@ -22,14 +22,17 @@ notebook.
 
 :::prerequisites
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).
-- A volume on S3 storage that you can read. The examples use
+- A volume that you can read. The examples use
   `analytics.ops.files`, which holds `reports/2026-10.csv`.
 :::
 
 ## Open a notebook
 
 Start marimo with the SDK and obstore:
-`uv run --with unitycatalog-client==0.7.0 --with obstore==0.11.1 --with marimo==0.25.1 marimo edit notebook.py`.
+
+```bash
+uv run --with unitycatalog-client==0.7.0 --with obstore==0.11.1 --with marimo==0.25.1 marimo edit notebook.py
+```
 
 In the first cell, import the clients and point the configuration at your
 server:
@@ -44,11 +47,8 @@ downloads them with its async ones, so the store needs a provider that serves
 both. In a cell, define the provider from
 [Use Unity Catalog credentials with obstore](../obstore-credentials/index.md):
 
-```python file=./snippets/notebook.py start=start:nb-provider end=end:nb-provider
+```python file=../023-obstore-credentials/snippets/obstore_credentials.py start=start:provider end=end:provider
 ```
-
-A provider that is only an async function fails in the panel as soon as
-obstore needs a new credential.
 
 ## Open the volume
 
@@ -62,8 +62,11 @@ When the cell runs, `files` appears under **Remote Storage** in the **Files**
 panel. Expand it to browse the volume's files, and download one from its
 menu.
 
-`READ_VOLUME` lets the store list and read, and S3 rejects its writes. To
-write from cells, ask for `WRITE_VOLUME`, which needs ownership of the volume.
+![The Files panel's Remote Storage section lists the files store as Amazon S3, at the volume's storage location, with its reports folder.](./assets/remote-storage-panel.png)
+
+`for_volume` asks for `READ_VOLUME`, which lets the store list and read, and
+storage rejects its writes. To write from cells, pass
+`VolumeOperation.WRITE_VOLUME`, which needs ownership of the volume.
 
 ## Read a file in a cell
 

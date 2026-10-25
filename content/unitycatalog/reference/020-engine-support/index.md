@@ -51,6 +51,7 @@ The other states don't say that a tool can't do something:
 | [PyIceberg](#pyiceberg) | PyIceberg 0.12.0 | 10 of 47 |
 | [uc CLI](#uc-cli) | uc CLI 0.7.0 | 33 of 50 |
 | [Python SDK](#python-sdk) | Python SDK 0.7.0 | 45 of 64 |
+| Unity Catalog Java SDK | Java SDK 0.7.0 | 0 of 0 |
 | MLflow | MLflow 3.17.0 | 6 of 8 |
 | [unitycatalog-ai](#unitycatalog-ai) | unitycatalog-ai 0.4.0 | 8 of 8 |
 | unitycatalog-langchain | unitycatalog-langchain 0.4.0 | 2 of 2 |

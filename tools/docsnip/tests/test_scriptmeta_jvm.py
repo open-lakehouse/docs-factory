@@ -84,6 +84,19 @@ def test_a_python_script_cannot_take_the_jvm_lane(tmp_path) -> None:
         parse_script(path)
 
 
+def test_a_shell_harness_can_take_the_jvm_lane(tmp_path) -> None:
+    path = _write(
+        tmp_path,
+        "run_cli.py",
+        "# /// script\n# dependencies = []\n#\n# [tool.docs-factory]\n"
+        '# lane = "jvm"\n# verifies = "run.sh"\n# ///\n'
+        "from docsnip.shellregions import run\n",
+    )
+    (path.parent / "run.sh").write_text("jbang --version\n")
+    meta = parse_script(path)
+    assert meta is not None and meta.docs_factory.lane == "jvm"
+
+
 def test_discovery_skips_tool_output_in_hidden_folders(tmp_path) -> None:
     _write(tmp_path, "read.sc", BLOCK)
     generated = tmp_path / "delta" / "how-to" / "001-read" / "snippets" / ".scala-build"

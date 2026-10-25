@@ -441,8 +441,14 @@ def parse_script(path: Path) -> ScriptMeta | None:
                 f"lane, not {lane}"
             )
         lane = runner.lane
-    elif lane in _RUNNER_LANES:
-        raise ScriptMetaError(f"{path}: the {lane} lane is for {_RUNNER_LANES[lane]}")
+    # A harness whose shell snippet runs JBang needs the jvm lane's toolchain.
+    elif lane in _RUNNER_LANES and not (
+        lane == "jvm" and verifies is not None and verifies.endswith(".sh")
+    ):
+        raise ScriptMetaError(
+            f"{path}: the {lane} lane is for {_RUNNER_LANES[lane]}"
+            + (" and the harnesses of shell snippets" if lane == "jvm" else "")
+        )
     crate = _crate_for(path) if runner.name == "rust" else None
 
     return ScriptMeta(

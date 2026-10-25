@@ -281,6 +281,15 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
+      # Java scripts that call a server run here, not in scripts-jvm.
+      - uses: jbangdev/setup-jbang@2b1b465a7b75f4222b81426f23a01e013aa7b95c # v0.1.1
+        with:
+          version: "0.132.1"
+          setup-java: "false"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.m2/repository
+          key: services-m2-${{ hashFiles('content/unitycatalog/release.yml') }}
       - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
           enable-cache: true

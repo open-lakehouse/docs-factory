@@ -67,6 +67,23 @@ def test_mismatched_pin_is_an_error(tmp_path: Path) -> None:
     assert "tutorials/t/index.md:2" in error and "should be 0.6.0" in error
 
 
+def test_java_script_maven_pins_follow_the_release(tmp_path: Path) -> None:
+    repo = _repo(
+        tmp_path,
+        {
+            "how-to/h/snippets/Client.java": (
+                "//DEPS io.unitycatalog:unitycatalog-client:0.5.0\n"
+                "//DEPS io.unitycatalog:unitycatalog-server:0.6.0\n"
+            )
+        },
+    )
+    [error] = versions.check(repo)
+    assert "Client.java:1" in error and "should be 0.6.0" in error
+    versions.bump(repo, "0.7.0")
+    script = (repo / "content/unitycatalog/how-to/h/snippets/Client.java").read_text()
+    assert script.count(":0.7.0") == 2, script
+
+
 def test_ranged_install_in_a_page_is_an_error(tmp_path: Path) -> None:
     repo = _repo(
         tmp_path,

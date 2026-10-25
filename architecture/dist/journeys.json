@@ -99,6 +99,10 @@
             "via": []
           },
           {
+            "id": "unityCatalogJavaSdk",
+            "via": []
+          },
+          {
             "id": "unityCatalogLangChain",
             "via": []
           },
@@ -570,6 +574,17 @@
       "label": "Python SDK",
       "package": "unitycatalog-client",
       "model": "unityCatalogPythonSdk",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "0.7.0"
+      }
+    },
+    "java-sdk": {
+      "label": "Java SDK",
+      "package": null,
+      "model": "unityCatalogJavaSdk",
       "via": null,
       "integrations": [],
       "rollup": [],

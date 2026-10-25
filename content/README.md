@@ -380,8 +380,9 @@ served copy drops (in Java, the dependency line reads
 // ///
 ```
 
-They always run in the `jvm` lane (`just test-jvm`, which needs Java 17,
-scala-cli, and jbang), mark regions with `// --8<-- [start:name]`, and assert
+They run in the `jvm` lane (`just test-jvm`, which needs Java 17,
+scala-cli, and jbang), or in the service lane when they declare a `compose`
+(so `just test-services` needs jbang too), mark regions with `// --8<-- [start:name]`, and assert
 at the end of the file (Scala's `assert`; Java needs an explicit check, since
 `assert` is off without `-ea`). A Scala tutorial step is what the reader types
 into `spark-shell`, where `spark` already exists, so build the session outside

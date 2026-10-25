@@ -17,13 +17,13 @@ uc credential delete --name lake_storage --force true || true
 # --8<-- [start:create-credential]
 uc credential create --name lake_storage \
   --aws_iam_role_arn arn:aws:iam::123456789012:role/uc-storage-lake \
-  --comment "Read/write on s3://uc-docs/lake" \
+  --comment "Read/write on s3://amzn-s3-demo-bucket/lake" \
   --output jsonPretty
 # --8<-- [end:create-credential]
 
 # --8<-- [start:create-location]
 uc external_location create --name lake \
-  --url s3://uc-docs/lake \
+  --url s3://amzn-s3-demo-bucket/lake \
   --credential_name lake_storage \
   --output jsonPretty
 # --8<-- [end:create-location]
@@ -31,7 +31,7 @@ uc external_location create --name lake \
 # --8<-- [start:verify]
 curl -s -X POST "$UC/temporary-path-credentials" \
   -H 'Content-Type: application/json' \
-  -d '{"url": "s3://uc-docs/lake/landing", "operation": "PATH_READ"}'
+  -d '{"url": "s3://amzn-s3-demo-bucket/lake/landing", "operation": "PATH_READ"}'
 # --8<-- [end:verify]
 
 # --8<-- [start:view]

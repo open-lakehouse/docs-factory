@@ -74,15 +74,18 @@ import remarkSourceLinks from "../../site/src/plugins/remark-source-links.mjs";
 import { defaultModelDir, emitOne, generateLikeC4WebComponent } from "../emit.mjs";
 import remarkAbsoluteLinks from "../plugins/remark-absolute-links.mjs";
 import remarkModelLinks from "../plugins/remark-model-links.mjs";
+import remarkPromoteJourneySteps from "../plugins/remark-promote-journey-steps.mjs";
 import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget, trestleSnapshotUrl } from "../targets/docs-site.mjs";
 import mdTwin, { TRESTLE_ASSET_BASE } from "../targets/md-twin.mjs";
-import { apiEntries, apiIndexRoute } from "./api.mjs";
+import { apiEntries, apiIndexRoute, vendoredSpecs } from "./api.mjs";
+import { apiOperations, renderApiTwin } from "./api-reference.mjs";
 import {
   conceptEnvironments,
   renderConcepts,
+  renderHomeTwin,
   renderLlmsFull,
   renderLlmsIndex,
   renderRobots,
@@ -94,6 +97,7 @@ import { buildEnvBundles, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
 import { loadCompat, loadModel, loadProjection, modelLinkResolver, trestleRefs } from "./model.mjs";
 import { projectNav } from "./nav.mjs";
+import { redirectErrors } from "./redirects.mjs";
 import { searchContext, searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
 import { DOCS_SITES } from "./sites/index.mjs";
@@ -109,6 +113,7 @@ import {
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const ENVS_DIR = join(REPO_ROOT, "envs");
+const DOCS_DIR = join(REPO_ROOT, "emit", "docs");
 const PLUGIN_DIR = join(REPO_ROOT, "site", "src", "plugins");
 
 // The site page's engine reports become directives the shell renders; the twin
@@ -259,6 +264,17 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
     // The shell's topbar links these, not the sidebar.
     const apis = apiEntries(site);
     const apiIndex = apis.length ? apiIndexRoute(site) : null;
+    const operations = {};
+    for (const { slug, path } of vendoredSpecs(site)) {
+      const abs = join(DOCS_DIR, path);
+      if (!existsSync(abs)) throw new Error(`${path} is not vendored: run \`just api-specs\``);
+      const api = apis.find((a) => a.slug === slug);
+      operations[slug] = apiOperations(readFileSync(abs, "utf8"));
+      files.set(
+        `public${api.route}.md`,
+        renderApiTwin(api, operations[slug], { canonical: `${origin}${api.route}` }),
+      );
+    }
     const byRoute = new Map(selected.map((p) => [hrefFor(p.identity), p]));
     const guidePage = (bucket, slug) => {
       const page = byRoute.get(routeFor(bucket, slug));
@@ -338,6 +354,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
 
     // 3. Pages.
     const links = linkErrors();
+    const outline = new Set();
     const model = loadModel();
     const compat = loadCompat(site);
     const explainers = new Map(
@@ -441,6 +458,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
             remarkPrerequisitesEnv,
             { environment, guide: guideAt(""), diataxis, resolve, envsDir: ENVS_DIR },
           ],
+          [remarkPromoteJourneySteps],
         ],
       });
       likec4Exported ||= rendered.likec4Dir !== null;
@@ -504,6 +522,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
               envsDir: ENVS_DIR,
             },
           ],
+          [remarkPromoteJourneySteps],
         ],
       });
       let twinOut = injectCanonical(twin.output, canonicalOf(identity));
@@ -524,6 +543,16 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       files.set(`public${route}.md`, twinOut);
 
       const renderedBody = splitFrontmatter(rendered.output).body;
+      // The shell renders the title as the h1, so the body's outline starts at h2.
+      let level = 1;
+      for (const h of extractHeadings(renderedBody)) {
+        if (h.level > level + 1) {
+          outline.add(
+            `${relative(REPO_ROOT, absPath)}: "${h.text}" is an h${h.level} after an h${level}`,
+          );
+        }
+        level = h.level;
+      }
       const pageHeadings = extractHeadings(renderedBody).map(({ id, text, level }) => ({
         id,
         text,
@@ -583,6 +612,11 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       if (!drafts) throw new Error(`unresolved links:\n  ${list}`);
       console.warn(`emit-docs: unresolved links (unwrapped to text):\n  ${list}`);
     }
+    if (outline.size) {
+      const list = [...outline].join("\n  ");
+      if (!drafts) throw new Error(`skipped heading levels:\n  ${list}`);
+      console.warn(`emit-docs: skipped heading levels:\n  ${list}`);
+    }
 
     pages.forEach((p, i) => {
       const link = (q) => (q ? { route: q.route, title: q.title } : null);
@@ -610,6 +644,20 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
 
     // 4. Site data + GEO surfaces.
     files.set(
+      "public/index.md",
+      renderHomeTwin({
+        title: site.title,
+        tagline: site.tagline,
+        origin,
+        nav,
+        pages,
+        apis,
+        start: pages.find((p) => p.environment && p.diataxis === "tutorial") ?? null,
+      }),
+    );
+    // Only the API page reads it, so it stays out of the bundle every page loads.
+    files.set("src/generated/api-operations.json", `${JSON.stringify(operations, null, 2)}\n`);
+    files.set(
       "src/generated/site.json",
       `${JSON.stringify({ title: site.title, tagline: site.tagline, nav, pages, apis, apiIndex }, null, 2)}\n`,
     );
@@ -623,7 +671,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
           siteName: site.title,
           type: "website",
         }),
-        twin: null,
+        twin: `${origin}/index.md`,
       },
     };
     for (const p of ordered) {
@@ -642,7 +690,6 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
           hrefFor,
           siteName: site.title,
         }),
-        twin: null,
         alternates: [{ type: "application/yaml", href: a.specUrl, title: "OpenAPI" }],
       };
       search.push({
@@ -678,7 +725,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       "public/llms.txt",
       renderLlmsIndex(entries, {
         title: `${site.title} documentation`,
-        summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`.`,
+        summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`, and the home page at \`/index.md\`.`,
+        home: true,
         origin,
         apis,
         environments: envBundle && {
@@ -718,6 +766,21 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       ),
     );
     files.set("public/robots.txt", renderRobots(origin));
+
+    const vercelPath = join(REPO_ROOT, "sites", config.name, "vercel.json");
+    if (existsSync(vercelPath)) {
+      const anchors = new Map([
+        ["/", new Set()],
+        ...pages.map((p) => [p.route, new Set(p.headings.map((h) => h.id))]),
+        ...apis.map((a) => [a.route, new Set()]),
+        ...(apiIndex ? [[apiIndex, new Set()]] : []),
+      ]);
+      const errors = redirectErrors(JSON.parse(readFileSync(vercelPath, "utf8")), {
+        anchors,
+        files,
+      });
+      if (errors.length) throw new Error(`redirects:\n  ${errors.join("\n  ")}`);
+    }
 
     return { files, manifestPages };
   } finally {

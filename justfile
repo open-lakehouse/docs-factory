@@ -242,6 +242,12 @@ compat:
 bump-uc VERSION:
     uv run docsnip bump-uc {{VERSION}}
     just env-render
+    just api-specs
+
+# Vendor the OpenAPI specs the docs sites pin into emit/docs/specs/ (the API
+# pages' operation lists and .md twins), dropping copies no site pins.
+api-specs: _emit-deps
+    cd emit && bun docs/api-specs.mjs
 
 # Move the Delta docs to a new Delta Spark release: rewrite content/delta/release.yml
 # and every pin matching it. deltalake and DuckDB pins: edit release.yml, then
@@ -250,9 +256,15 @@ bump-delta VERSION:
     uv run docsnip bump-delta {{VERSION}}
 
 # Validate frontmatter, snippets, and nav.yml manifests (CI gate).
-check: _site-deps
+check: _site-deps _emit-deps
     uv run docsnip check
     cd site && node scripts/check-nav.mjs
+    cd emit && bun docs/api-specs.mjs --check
+
+# Needs lychee (`brew install lychee`). Emits both sites with drafts first, as CI does.
+# Check every external link the docs sites publish (rules in lychee.toml).
+check-links: (emit-docs "unitycatalog-docs" "--drafts") (emit-docs "delta-docs" "--drafts")
+    lychee --config lychee.toml --no-progress 'sites/*/public/**/*.md' 'architecture/model/**/*.likec4'
 
 # Lint + type-check the Python workspace.
 lint:

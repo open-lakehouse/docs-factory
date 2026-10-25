@@ -47,7 +47,7 @@ uv run --with unitycatalog-client==0.7.0 --with obstore==0.11.1 python -m asynci
 ```
 :::
 
-The examples use an external location `lake` on `s3://uc-docs/lake`:
+The examples use an external location `lake` on `s3://amzn-s3-demo-bucket/lake`:
 
 :::tab[Python SDK]
 ```python file=./snippets/managed_storage.py start=start:location end=end:location

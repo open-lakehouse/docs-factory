@@ -117,6 +117,8 @@ nav:
         id: H47
       - planned: H19
         title: Read UniForm tables from Trino through Iceberg REST
+      - page: how-to/integrations
+        id: H21
       - planned: H16
         title: Use the Java client in an application
       - planned: H43

@@ -1,0 +1,55 @@
+name: External links
+
+# Checks every external link the docs sites publish: each site's .md twins
+# (absolute URLs, model links resolved) and the architecture model's `link`s,
+# which the sites' concepts.json repeats. Upstream files get renamed and pages
+# move without our pages changing, so it also runs weekly on main. Links between
+# our own pages are the emitter's check; lychee.toml leaves them out.
+on:
+  pull_request:
+    paths:
+      - "content/**"
+      - "architecture/model/**"
+      - "emit/**"
+      - "lychee.toml"
+      - ".github/workflows/links.yml"
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: links-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lychee:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/bun-setup
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      - uses: ./.github/actions/pypi-public
+      # The emitter exports runnable scripts via `uv run docsnip scripts --json`,
+      # and generates LikeC4 views' Mermaid with site/'s likec4.
+      - run: uv sync --package docsnip
+      - run: cd site && bun install --frozen-lockfile
+      # --drafts: a draft's links are worth fixing before it's approved.
+      - name: Emit the docs sites
+        run: |
+          cd emit && bun install --frozen-lockfile
+          bun docs/emit-docs.mjs --site unitycatalog-docs --drafts
+          bun docs/emit-docs.mjs --site delta-docs --drafts
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        with:
+          args: >-
+            --config lychee.toml --no-progress
+            'sites/*/public/**/*.md'
+            'architecture/model/**/*.likec4'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail: true

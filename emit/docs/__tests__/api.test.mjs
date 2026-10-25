@@ -1,7 +1,8 @@
 // REST API references: routes and spec URLs from a site's `api` block, and
 // their llms.txt section.
 import { expect, test } from "bun:test";
-import { apiEntries, apiIndexRoute } from "../api.mjs";
+import { apiEntries, apiIndexRoute, vendoredSpecs } from "../api.mjs";
+import { apiOperations, renderApiTwin } from "../api-reference.mjs";
 import { renderLlmsIndex } from "../discovery.mjs";
 import uc from "../sites/unitycatalog-docs.mjs";
 
@@ -97,11 +98,69 @@ test("the UC site routes every declared spec", () => {
 
 const apis = apiEntries(site);
 
-test("llms.txt links each API's route and OpenAPI spec", () => {
+test("llms.txt links each API's route, twin, and OpenAPI spec", () => {
   const out = renderLlmsIndex([], { title: "T", summary: "S", origin: "https://x.test", apis });
   expect(out).toContain("## API reference");
   expect(out).toContain(
-    "- [Core API](https://x.test/reference/api/core) ([OpenAPI](https://raw.githubusercontent.com/acme/widgets/v1.2.0/api/core.yaml)): The core.",
+    "- [Core API](https://x.test/reference/api/core) ([md](https://x.test/reference/api/core.md), [OpenAPI](https://raw.githubusercontent.com/acme/widgets/v1.2.0/api/core.yaml)): The core.",
   );
   expect(renderLlmsIndex([], { title: "T", summary: "S" })).not.toContain("## API reference");
+});
+
+test("vendoredSpecs keys each copy by repo and ref, including a spec's own pin", () => {
+  expect(vendoredSpecs(site)).toEqual([
+    {
+      slug: "core",
+      path: "specs/acme/widgets/v1.2.0/api/core.yaml",
+      url: "https://raw.githubusercontent.com/acme/widgets/v1.2.0/api/core.yaml",
+    },
+  ]);
+  expect(vendoredSpecs(uc).find((s) => s.slug === "iceberg")?.path).toStartWith(
+    "specs/apache/iceberg/apache-iceberg-",
+  );
+});
+
+const SPEC = `
+openapi: 3.0.3
+servers:
+  - url: "{scheme}://{host}/api"
+  - url: http://localhost:8080/api
+tags:
+  - name: Widgets
+  - name: Unused
+paths:
+  /widgets:
+    get: { tags: [Widgets], summary: List widgets }
+    post: { tags: [Widgets], summary: " Create a widget " }
+  /health:
+    get: { operationId: health }
+`;
+
+test("apiOperations groups by first tag in declared order, untagged last", () => {
+  expect(apiOperations(SPEC)).toEqual({
+    server: "http://localhost:8080/api",
+    groups: [
+      {
+        tag: "Widgets",
+        operations: [
+          { method: "GET", path: "/widgets", summary: "List widgets" },
+          { method: "POST", path: "/widgets", summary: "Create a widget" },
+        ],
+      },
+      { tag: "Other", operations: [{ method: "GET", path: "/health", summary: "health" }] },
+    ],
+  });
+});
+
+test("the API twin lists every operation under its tag", () => {
+  const md = renderApiTwin(apis[0], apiOperations(SPEC), {
+    canonical: "https://x.test/reference/api/core",
+  });
+  expect(md).toStartWith('---\ntitle: "Core API"\n');
+  expect(md).toContain("canonical: https://x.test/reference/api/core\n");
+  expect(md).toContain("# Core API\n\nThe core.\n");
+  expect(md).toContain("Paths are relative to `http://localhost:8080/api`.");
+  expect(md).toContain(
+    "## Widgets\n\n- `GET /widgets`: List widgets\n- `POST /widgets`: Create a widget\n",
+  );
 });

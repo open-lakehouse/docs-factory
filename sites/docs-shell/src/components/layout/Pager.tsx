@@ -4,7 +4,7 @@ import type { PageLink } from "../../site";
 export default function Pager({ prev, next }: { prev: PageLink | null; next: PageLink | null }) {
   if (!prev && !next) return null;
   return (
-    <nav className="pager" aria-label="Pagination">
+    <nav className="pager" aria-label="Pagination" data-nosnippet="">
       {prev ? (
         <Link to={prev.route} className="pager-link" data-dir="prev">
           <span className="pager-label">← prev</span>

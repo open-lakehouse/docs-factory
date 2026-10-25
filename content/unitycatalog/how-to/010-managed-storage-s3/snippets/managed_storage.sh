@@ -18,19 +18,19 @@ uc credential delete --name lake_storage --force true || true
 uc credential create --name lake_storage \
   --aws_iam_role_arn arn:aws:iam::123456789012:role/uc-storage-lake
 uc external_location create --name lake \
-  --url s3://uc-docs/lake --credential_name lake_storage
+  --url s3://amzn-s3-demo-bucket/lake --credential_name lake_storage
 # --8<-- [end:location]
 
 # --8<-- [start:catalog-root]
 uc catalog create --name sales \
-  --storage_root s3://uc-docs/lake/sales \
+  --storage_root s3://amzn-s3-demo-bucket/lake/sales \
   --output jsonPretty
 # --8<-- [end:catalog-root]
 
 # --8<-- [start:schema-root]
 uc schema create --catalog sales --name raw
 uc schema create --catalog sales --name curated \
-  --storage_root s3://uc-docs/lake/curated \
+  --storage_root s3://amzn-s3-demo-bucket/lake/curated \
   --output jsonPretty
 # --8<-- [end:schema-root]
 
@@ -41,7 +41,7 @@ uc volume create --full_name sales.curated.reports --volume_type MANAGED --outpu
 
 # --8<-- [start:reserved-prefix]
 uc volume create --full_name sales.raw.sneaky --volume_type EXTERNAL \
-  --storage_location s3://uc-docs/lake/sales/__unitystorage/sneaky
+  --storage_location s3://amzn-s3-demo-bucket/lake/sales/__unitystorage/sneaky
 # --8<-- [end:reserved-prefix]
 
 # --8<-- [start:clean-up]

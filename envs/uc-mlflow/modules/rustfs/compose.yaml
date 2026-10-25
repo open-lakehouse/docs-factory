@@ -66,7 +66,7 @@ services:
       - "sh"
       - "-c"
       - |
-        aws --endpoint-url http://rustfs:9000 s3 mb s3://uc-docs 2>&1 || aws --endpoint-url http://rustfs:9000 s3 ls s3://uc-docs;
+        aws --endpoint-url http://rustfs:9000 s3 mb s3://amzn-s3-demo-bucket 2>&1 || aws --endpoint-url http://rustfs:9000 s3 ls s3://amzn-s3-demo-bucket;
         aws --endpoint-url http://rustfs:9000 s3 mb s3://mlflow 2>&1 || aws --endpoint-url http://rustfs:9000 s3 ls s3://mlflow;
         echo "Buckets ready.";
 

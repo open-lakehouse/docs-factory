@@ -77,7 +77,7 @@ async def main() -> None:
                 aws_iam_role=AwsIamRoleRequest(
                     role_arn="arn:aws:iam::123456789012:role/uc-storage-lake"
                 ),
-                comment="Read/write on s3://uc-docs/lake",
+                comment="Read/write on s3://amzn-s3-demo-bucket/lake",
             )
         )
         # Put both values in the storage role's trust policy.
@@ -90,7 +90,7 @@ async def main() -> None:
         location = await locations.create_external_location(
             CreateExternalLocation(
                 name="lake",
-                url="s3://uc-docs/lake",
+                url="s3://amzn-s3-demo-bucket/lake",
                 credential_name="lake_storage",
             )
         )
@@ -101,7 +101,7 @@ async def main() -> None:
         # --8<-- [start:verify]
         vended = await TemporaryCredentialsApi(api).generate_temporary_path_credentials(
             GenerateTemporaryPathCredential(
-                url="s3://uc-docs/lake/landing",
+                url="s3://amzn-s3-demo-bucket/lake/landing",
                 operation=PathOperation.PATH_READ_WRITE,
             )
         )
@@ -157,7 +157,7 @@ async def main() -> None:
 
 async def _check_no_overlap(locations: ExternalLocationsApi) -> None:
     """The page says external locations can't nest or duplicate each other."""
-    for url in ("s3://uc-docs", "s3://uc-docs/lake/curated"):
+    for url in ("s3://amzn-s3-demo-bucket", "s3://amzn-s3-demo-bucket/lake/curated"):
         try:
             await locations.create_external_location(
                 CreateExternalLocation(
@@ -174,7 +174,7 @@ async def _check_scoped(vended) -> None:
     """The vended keys reach only the requested prefix."""
     aws = vended.aws_temp_credentials
     bucket = from_url(
-        "s3://uc-docs",
+        "s3://amzn-s3-demo-bucket",
         access_key_id=aws.access_key_id,
         secret_access_key=aws.secret_access_key,
         session_token=aws.session_token,
@@ -207,7 +207,9 @@ async def _check_force_delete_dangles(
     )
     await locations.create_external_location(
         CreateExternalLocation(
-            name="lake", url="s3://uc-docs/lake", credential_name="lake_storage"
+            name="lake",
+            url="s3://amzn-s3-demo-bucket/lake",
+            credential_name="lake_storage",
         )
     )
     await credentials.delete_credential(name="lake_storage", force=True)

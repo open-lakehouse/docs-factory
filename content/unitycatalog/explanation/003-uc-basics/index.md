@@ -76,7 +76,7 @@ decide which storage the server can reach, and on whose behalf.
   credential service implements AWS IAM roles. Azure and Google Cloud access
   are configured on the server rather than as credential objects.
 - An **external location** pairs a storage path, such as
-  `s3://acme-lake/retail/`, with a storage credential. It doesn't have to be a
+  `s3://amzn-s3-demo-bucket/retail/`, with a storage credential. It doesn't have to be a
   bucket root. A location can cover any path prefix, and narrower locations
   give narrower control. External locations decide who may create external
   tables and volumes under a path, use it as managed storage, or read and write

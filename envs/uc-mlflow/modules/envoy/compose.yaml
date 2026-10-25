@@ -22,14 +22,14 @@ services:
         # in-network callers address the shared listener by. Compose DNS has no wildcards:
         # each host is listed.
         aliases:
+          - amzn-s3-demo-bucket.s3.amazonaws.com
+          - amzn-s3-demo-bucket.s3.us-east-1.amazonaws.com
           - mlflow.s3.amazonaws.com
           - mlflow.s3.us-east-1.amazonaws.com
           - s3.amazonaws.com
           - s3.us-east-1.amazonaws.com
           - sts.amazonaws.com
           - sts.us-east-1.amazonaws.com
-          - uc-docs.s3.amazonaws.com
-          - uc-docs.s3.us-east-1.amazonaws.com
 
   # One-shot: mints the local CA and the gateway's certificate for its TLS hostnames.
   gateway-certs:
@@ -37,7 +37,7 @@ services:
     entrypoint: ["bash", "/certs.sh"]
     environment:
       CERT_DIR: /certs
-      CERT_HOSTS: "mlflow.s3.amazonaws.com mlflow.s3.us-east-1.amazonaws.com s3.amazonaws.com s3.us-east-1.amazonaws.com sts.amazonaws.com sts.us-east-1.amazonaws.com uc-docs.s3.amazonaws.com uc-docs.s3.us-east-1.amazonaws.com"
+      CERT_HOSTS: "amzn-s3-demo-bucket.s3.amazonaws.com amzn-s3-demo-bucket.s3.us-east-1.amazonaws.com mlflow.s3.amazonaws.com mlflow.s3.us-east-1.amazonaws.com s3.amazonaws.com s3.us-east-1.amazonaws.com sts.amazonaws.com sts.us-east-1.amazonaws.com"
     configs:
       - source: gateway_certs_script
         target: /certs.sh

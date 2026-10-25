@@ -167,7 +167,7 @@ def _check_s3_mapping() -> None:
 
     store = open_store(
         TemporaryCredentials(
-            url="s3://bucket/support/policies",
+            url="s3://amzn-s3-demo-bucket/support/policies",
             aws_temp_credentials=AwsCredentials(
                 access_key_id="AKIA", secret_access_key="secret", session_token="token"
             ),

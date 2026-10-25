@@ -115,19 +115,24 @@ spec's `raw.githubusercontent.com` URL at the pinned `ref`. A spec can pin its
 own `repo`/`ref` (UC's Iceberg page uses the upstream Apache Iceberg spec at the
 version UC builds against) and a `serverUrl` when its `servers` don't point at
 UC. The section route (`/reference/api`) shows the `default` API and shares its
-head and canonical. The emitter never
-fetches a spec. It publishes where each one lives: the route's head (with an
+head and canonical; production 308-redirects it to the default API's route.
+
+The emitter never fetches a spec. `just api-specs` vendors each pinned spec into
+`emit/docs/specs/<repo>/<ref>/`, `just bump-uc` runs it, and CI fails when a pin
+has no copy. From that copy the emitter renders the operation list (method,
+path, and summary per tag) that the prerendered page carries, and the route's
+`.md` twin. It also publishes where the spec lives: the route's head (with an
 `application/yaml` alternate link), a `⌘K` record, a sitemap entry, and an
-`llms.txt` line linking the YAML, since agents read OpenAPI directly. The specs
+`llms.txt` line linking the twin and the YAML. The specs
 stay out of the docs sidebar. The shell's topbar switches sections (Docs | API
 tabs and a `/ docs ▾` breadcrumb menu) and, on an API page, APIs (a second
 `/ catalog ▾` breadcrumb level); an API page renders without the docs sidebar,
 since Scalar has its own. Endpoint pages and endpoint search stay
-inside Scalar. They aren't emitted as twins or search records.
+inside Scalar. They aren't emitted as search records.
 
 Scalar renders client-side only, so the prerendered HTML carries the title,
-summary, and spec links, and the explorer mounts after hydration in its own lazy
-chunk. It is a reference, not a client: the request client and "Test Request"
+summary, spec links, and operation list, and the explorer mounts after hydration
+in its own lazy chunk. It is a reference, not a client: the request client and "Test Request"
 are off (a docs site isn't next to a server), so code samples are the way to
 call an endpoint. Telemetry, agent chat, and MCP are off too.
 

@@ -384,7 +384,7 @@ architecture to fit an article.
 | H18 | Read and write supported UC tables from DuckDB | P1 / J09 | Current extension install/name, secrets/attach, platform support, tested OSS read/write operations; label unverified managed-commit support explicitly. |
 | H19 | Read UniForm tables from Trino through Iceberg REST | P1 / J09 | Correct protocol, warehouse/catalog mapping, materialized Iceberg metadata, credential handling, endpoint privilege limits; read scope only unless separately proven. |
 | H20 | Query UC tables from Python DataFrame libraries (Polars, Daft, pandas) | P1 / J09 | Current provider APIs/dependencies, discovery, vended storage credentials, read and append results per library; managed tables and other per-library gaps stated with their errors. |
-| H21 | Find and evaluate ecosystem integrations | P2 / J09 | Directory of maintained provider docs for SpiceAI, CelerData, PuppyGraph, XTable and others; protocol, ownership, support label, last verification. No untested recipe collection. |
+| H21 | Find and evaluate ecosystem integrations | Drafted (`how-to/integrations`) / J09 | Directory of maintained provider docs for SpiceAI, CelerData, PuppyGraph, XTable and others; protocol, ownership, support label, last verification. No untested recipe collection. |
 | H47 | Use Iceberg REST clients with Unity Catalog | Written (`how-to/iceberg-rest`) / J09 | Spark, DuckDB, and PyIceberg against the Iceberg REST API with vended S3 credentials. Was listed in `nav.yml` as H21, which collides with the ecosystem directory above. |
 | H49 | Use volumes as marimo remote storage | P2 / J04, deferred | Follow-on to J04, deferred until a compatible storage client is verified; an estate-only bridge belongs in open-lakehouse scope. Replaces the removed `status: idea` stub. |
 
@@ -491,8 +491,12 @@ publication still requires the DB review/release lifecycle.
 
 ### Legacy docs migration map
 
-Paths are legacy routes, not a promise of current reachability. Generate the
-complete URL inventory and redirect manifest during the migration work.
+Paths are legacy routes, not a promise of current reachability. The redirect
+manifest is the `redirects` list in `sites/unitycatalog-docs/vercel.json`: every
+legacy path redirects permanently to the nearest published page, and the
+emitter fails a publish if a destination isn't a route or heading it serves.
+Until a family's new home is released, its redirect lands on an interim page.
+When the home is released, repoint the redirect in the same PR.
 
 | Legacy page family | New home | Treatment |
 | --- | --- | --- |
@@ -508,6 +512,21 @@ complete URL inventory and redirect manifest during the migration work.
 | Other `/integrations/*` | H21/provider docs | Keep a working legacy page until a verified replacement or a clearly labeled provider-owned link exists. |
 | `/ai/quickstart/`, `/ai/usage/`, `/ai/client/` | T05/T06, H11-H14, R11 | Default to OSS; explicitly route Databricks client readers to the managed-product documentation. |
 | `/ai/integrations/*` | H13/H14, H51 (Anthropic), H52 (LiteLLM) | AutoGen, CrewAI, DSPy, Gemini, and LlamaIndex are not planned; see H14. Consolidate shared setup, not framework semantics. |
+
+Interim targets that a planned page should replace (as of 2026-10-25):
+
+| Legacy path | Interim target | Replace with |
+| --- | --- | --- |
+| `/usage/cli` | `how-to/run-local-server#run-the-uc-cli` | R12 |
+| `/usage/ui`, `/server/configuration` | `how-to/run-local-server` | UI guidance in a task page; R06/R07 |
+| `/usage/models` | `explanation/uc-basics` | T07, H15 |
+| `/server/{auth,google-auth,users-privileges}` | `explanation/uc-basics` | E06, H32 |
+| `/ai/integrations/*` | `how-to/langchain-tools` | H14, H51, H52 (AutoGen, CrewAI, Gemini, and LlamaIndex aren't planned; see H14) |
+| `/integrations/unity-catalog-{celerdata,kuzu,puppygraph,spiceai}` | `explanation/what-is-unity-catalog` | H21 (drafted) |
+| `/integrations/unity-catalog-trino` | `how-to/iceberg-rest` | H19 |
+
+E06 and R12 come first: both are P0, and the interim pages for `/server/auth`
+and `/usage/cli` answer those readers' questions only loosely.
 
 There should be no silent deletion of a user journey. For every old URL record:
 retain, replace/redirect, split with a primary destination, or archive with a

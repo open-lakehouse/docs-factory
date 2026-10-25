@@ -9,7 +9,7 @@ model {
     #client #public
 
     description "Command-line client for managing Unity Catalog objects and storage access."
-    link https://docs.unitycatalog.io/usage/cli/
+    link https://docs.unitycatalog.io/how-to/run-local-server#run-the-uc-cli
 
     metadata {
       sourceRepo "unitycatalog/unitycatalog"

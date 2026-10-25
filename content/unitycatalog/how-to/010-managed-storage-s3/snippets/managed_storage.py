@@ -77,17 +77,21 @@ async def main() -> None:
         )
         await ExternalLocationsApi(api).create_external_location(
             CreateExternalLocation(
-                name="lake", url="s3://uc-docs/lake", credential_name="lake_storage"
+                name="lake",
+                url="s3://amzn-s3-demo-bucket/lake",
+                credential_name="lake_storage",
             )
         )
         # --8<-- [end:location]
 
         # --8<-- [start:catalog-root]
         sales = await CatalogsApi(api).create_catalog(
-            CreateCatalog(name="sales", storage_root="s3://uc-docs/lake/sales")
+            CreateCatalog(
+                name="sales", storage_root="s3://amzn-s3-demo-bucket/lake/sales"
+            )
         )
         print(sales.storage_location)
-        # s3://uc-docs/lake/sales/__unitystorage/catalogs/<catalog id>
+        # s3://amzn-s3-demo-bucket/lake/sales/__unitystorage/catalogs/<catalog id>
         # --8<-- [end:catalog-root]
 
         # --8<-- [start:schema-root]
@@ -97,11 +101,11 @@ async def main() -> None:
             CreateSchema(
                 name="curated",
                 catalog_name="sales",
-                storage_root="s3://uc-docs/lake/curated",
+                storage_root="s3://amzn-s3-demo-bucket/lake/curated",
             )
         )
         print(curated.storage_location)
-        # s3://uc-docs/lake/curated/__unitystorage/schemas/<schema id>
+        # s3://amzn-s3-demo-bucket/lake/curated/__unitystorage/schemas/<schema id>
         # --8<-- [end:schema-root]
 
         # --8<-- [start:managed-volume]
@@ -170,7 +174,7 @@ async def _check_reserved_prefix(volumes: VolumesApi) -> None:
                 schema_name="raw",
                 name="sneaky",
                 volume_type=VolumeType.EXTERNAL,
-                storage_location="s3://uc-docs/lake/sales/__unitystorage/sneaky",
+                storage_location="s3://amzn-s3-demo-bucket/lake/sales/__unitystorage/sneaky",
             )
         )
     except BadRequestException as exc:
@@ -183,7 +187,7 @@ async def _check_uncovered_root(api: ApiClient) -> None:
     """Pins the page's warning: with authorization disabled, a root outside every
     external location is accepted, and vending under it fails later."""
     await CatalogsApi(api).create_catalog(
-        CreateCatalog(name="stray", storage_root="s3://uc-docs/elsewhere")
+        CreateCatalog(name="stray", storage_root="s3://amzn-s3-demo-bucket/elsewhere")
     )
     await SchemasApi(api).create_schema(
         CreateSchema(name="files", catalog_name="stray")

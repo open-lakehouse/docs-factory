@@ -1,0 +1,29 @@
+# External link check over the emitted docs (just check-links, .github/workflows/links.yml).
+# Links between our own pages are the emitter's job: it fails a publish on a
+# cross-page link or redirect it doesn't serve. So the docs hosts are excluded
+# here, and a PR's new pages aren't checked against a production that lacks them.
+
+scheme = ["https", "http"]
+max_concurrency = 16
+max_retries = 3
+timeout = 30
+# Some hosts answer a crawler's HEAD with 405 or 403 but serve the page to a GET.
+method = "get"
+accept = ["100..=103", "200..=299", "429"]
+
+exclude = [
+  # Our own sites: checked by the emitter.
+  '^https://docs\.unitycatalog\.io',
+  '^https://docs-new\.unitycatalog\.io',
+  '^https://docs\.delta\.io',
+  # Local stacks the examples start, and placeholders.
+  '^https?://localhost',
+  '^https?://127\.0\.0\.1',
+  '^https?://[a-z0-9.-]+\.example',
+  '\{',
+  # Bot-blocked: these answer an automated client 403/999 whatever the page's state.
+  '^https://go\.unitycatalog\.io/slack',
+  '^https://join\.slack\.com',
+  '^https://(www\.)?linkedin\.com',
+  '^https://(www\.)?(x|twitter)\.com',
+]

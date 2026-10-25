@@ -44,7 +44,8 @@ export default function DocPage({ page }: { page: PageMeta }) {
   return (
     <Shell aside={<OnThisPage headings={page.headings} />}>
       <article className="prose">
-        <div className="page-head">
+        {/* Chrome, not content: crawlers that read the HTML keep it out of snippets. */}
+        <div className="page-head" data-nosnippet="">
           <p className="eyebrow">
             {kind && (
               <span className="kind" data-kind={page.diataxis}>

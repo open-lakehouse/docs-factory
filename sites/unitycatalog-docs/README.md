@@ -30,6 +30,11 @@ The site ships from its own upstream repo, which is a mirror of this directory
 builds it from `vercel.json`. `upstream/` holds the files that replace this
 README and the repo-level `.gitignore` there.
 
+`vercel.json` also carries the permanent redirects from the legacy docs URLs
+(`/usage/*`, `/server/*`, `/integrations/*`, `/ai/*`). Each points at the
+nearest published page, and the emitter fails if a destination isn't a route or
+heading it serves. Repoint one when a closer page is released.
+
 The vendored plugins import their components from `@/components/{callout,tldr,content-tabs,journey,LikeC4View}`
 (`@` is the shell), so those module paths and export names are part of the
 contract with the emitter.

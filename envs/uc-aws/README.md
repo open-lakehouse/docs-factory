@@ -18,7 +18,7 @@ flowchart LR
     n1 -->|"/api/2.1/unity-catalog, /unity-catalog"| n4
     n1 -->|"S3 + STS"| n3
     n4 -->|"PostgreSQL: unitycatalog"| n2
-    n4 -->|"S3: uc-docs"| n3
+    n4 -->|"S3: amzn-s3-demo-bucket"| n3
     classDef clients fill:#f1f5f9,stroke:#64748b
     classDef gateway fill:#ede9fe,stroke:#7c3aed
     classDef component fill:#eff6ff,stroke:#2563eb

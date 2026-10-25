@@ -6,18 +6,140 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/quickstart",
+      "destination": "/tutorials/getting-started",
+      "permanent": true
+    },
+    {
+      "source": "/docker_compose",
+      "destination": "/how-to/run-local-server",
+      "permanent": true
+    },
+    {
+      "source": "/server/configuration",
+      "destination": "/how-to/run-local-server",
+      "permanent": true
+    },
+    {
+      "source": "/usage/ui",
+      "destination": "/how-to/run-local-server",
+      "permanent": true
+    },
+    {
+      "source": "/usage/cli",
+      "destination": "/how-to/run-local-server#run-the-uc-cli",
+      "permanent": true
+    },
+    {
+      "source": "/usage/tables/formats",
+      "destination": "/how-to/table-storage-formats",
+      "permanent": true
+    },
+    {
+      "source": "/usage/tables/deltalake",
+      "destination": "/how-to/python-dataframes",
+      "permanent": true
+    },
+    {
+      "source": "/usage/tables/uniform",
+      "destination": "/how-to/iceberg-rest",
+      "permanent": true
+    },
+    {
+      "source": "/usage/volumes",
+      "destination": "/how-to/manage-volumes",
+      "permanent": true
+    },
+    {
+      "source": "/usage/functions",
+      "destination": "/tutorials/first-python-function",
+      "permanent": true
+    },
+    {
+      "source": "/usage/models",
+      "destination": "/explanation/uc-basics",
+      "permanent": true
+    },
+    {
+      "source": "/server/:page(auth|google-auth|users-privileges)",
+      "destination": "/explanation/uc-basics",
+      "permanent": true
+    },
+    {
+      "source": "/ai/:page(client|quickstart|usage)",
+      "destination": "/tutorials/first-python-function",
+      "permanent": true
+    },
+    {
+      "source": "/ai/integrations/:framework",
+      "destination": "/how-to/langchain-tools",
+      "permanent": true
+    },
+    {
+      "source": "/integrations/unity-catalog-spark",
+      "destination": "/how-to/configure-spark",
+      "permanent": true
+    },
+    {
+      "source": "/integrations/unity-catalog-duckdb",
+      "destination": "/how-to/duckdb",
+      "permanent": true
+    },
+    {
+      "source": "/integrations/unity-catalog-daft",
+      "destination": "/how-to/python-dataframes",
+      "permanent": true
+    },
+    {
+      "source": "/integrations/unity-catalog-:engine(trino|xtable)",
+      "destination": "/how-to/iceberg-rest",
+      "permanent": true
+    },
+    {
+      "source": "/integrations/unity-catalog-:engine(celerdata|kuzu|puppygraph|spiceai)",
+      "destination": "/explanation/what-is-unity-catalog",
+      "permanent": true
+    },
+    {
+      "source": "/reference/api",
+      "destination": "/reference/api/catalog",
+      "permanent": true
+    },
+    {
+      "source": "/env/uc-docs-env.tar.gz",
+      "destination": "/env/unitycatalog.tar.gz",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     },
     {
       "source": "/(.*)\\.md",
-      "headers": [{ "key": "Content-Type", "value": "text/markdown; charset=utf-8" }]
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/markdown; charset=utf-8"
+        }
+      ]
     },
     {
       "source": "/(llms|llms-full)\\.txt",
-      "headers": [{ "key": "Content-Type", "value": "text/plain; charset=utf-8" }]
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
     }
   ]
 }

@@ -11,7 +11,7 @@ status: ready
 
 A [Unity Catalog](model:unityCatalogServer) server stores catalogs,
 schemas, tables, volumes, functions, models, and credentials in a relational
-database. By default this is an H2 file inside the server, so the metadata is
+database. By default, this is an H2 file inside the server, so the metadata is
 lost with the container. To keep it in PostgreSQL, mount one
 `hibernate.properties` file into the server. The official image already
 includes the PostgreSQL JDBC driver, and the server creates its tables on first

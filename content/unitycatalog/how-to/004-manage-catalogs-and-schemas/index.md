@@ -61,7 +61,7 @@ Give the catalog a name, plus an optional comment and key-value properties.
 
 To give the catalog its own managed storage for managed tables and volumes, also
 pass `storage_root` (`--storage_root` in the CLI), for example
-`file:///srv/uc/retail` or `s3://bucket/retail`. Without it, managed objects in
+`file:///srv/uc/retail` or `s3://amzn-s3-demo-bucket/retail`. Without it, managed objects in
 this catalog need a storage root on their schema or a server-wide default.
 
 **Required privileges:** `CREATE_CATALOG` on the metastore, or metastore

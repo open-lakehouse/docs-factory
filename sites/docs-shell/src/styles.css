@@ -1120,7 +1120,7 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   border-left: 1px dashed var(--border);
 }
 .prose .jr-step[data-last]::before { bottom: 0; }
-/* The component renders 1, 2, …; a counter shows them zero-padded instead. */
+/* The number is a counter, zero-padded, so it stays out of the page text. */
 .prose .jr-bubble {
   position: absolute;
   top: 0;
@@ -1132,7 +1132,6 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   border-radius: var(--radius-sm);
   background: var(--panel);
   border: 1px solid var(--border);
-  font-size: 0;
 }
 .prose .jr-bubble::before {
   content: counter(jr, decimal-leading-zero);
@@ -1287,11 +1286,8 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 .shell[data-no-sidebar] .main { padding: 0; }
 .api-placeholder { max-width: 60rem; padding: 2.25rem clamp(1.25rem, 4vw, 3.5rem); }
 .api-reference { min-height: 60vh; }
-.api-loading {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--muted-foreground);
-}
+.api-operations { list-style: none; padding-left: 0; }
+.api-operations li { margin: 0.25rem 0; }
 
 /* --- Narrow screens --- */
 @media (max-width: 1200px) {

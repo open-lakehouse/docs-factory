@@ -7,7 +7,7 @@ references:
   - unityCatalogServer
   - mlflow
   - lakehouse.mlModel
-status: draft
+status: ready
 ---
 
 A [registered model](model:lakehouse.mlModel) in

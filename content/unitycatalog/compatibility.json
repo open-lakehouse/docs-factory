@@ -11221,7 +11221,7 @@
       "cells": {
         "mlflow": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
@@ -11231,7 +11231,7 @@
                 "slug": "manage-models"
               },
               "anchor": "register-a-model-version",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "3.17.0",
@@ -11282,7 +11282,7 @@
       "cells": {
         "cli": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
@@ -11292,7 +11292,7 @@
                 "slug": "manage-models"
               },
               "anchor": "view-models-and-versions",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -11304,7 +11304,7 @@
         },
         "python-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
@@ -11314,7 +11314,7 @@
                 "slug": "manage-models"
               },
               "anchor": "view-models-and-versions",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.7.0",
@@ -11326,7 +11326,7 @@
         },
         "mlflow": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
@@ -11336,7 +11336,7 @@
                 "slug": "manage-models"
               },
               "anchor": "view-models-and-versions",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "3.17.0",
@@ -11372,7 +11372,7 @@
       "cells": {
         "mlflow": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
@@ -11382,7 +11382,7 @@
                 "slug": "manage-models"
               },
               "anchor": "load-a-model-version",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "3.17.0",
@@ -11433,7 +11433,7 @@
       "cells": {
         "cli": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
@@ -11443,7 +11443,7 @@
                 "slug": "manage-models"
               },
               "anchor": "update-comments",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -11455,7 +11455,7 @@
         },
         "python-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
@@ -11465,7 +11465,7 @@
                 "slug": "manage-models"
               },
               "anchor": "update-comments",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.7.0",
@@ -11477,7 +11477,7 @@
         },
         "mlflow": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
@@ -11487,7 +11487,7 @@
                 "slug": "manage-models"
               },
               "anchor": "update-comments",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "3.17.0",
@@ -11523,7 +11523,7 @@
       "cells": {
         "cli": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
@@ -11533,7 +11533,7 @@
                 "slug": "manage-models"
               },
               "anchor": "rename-a-model",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -11545,7 +11545,7 @@
         },
         "python-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
@@ -11555,7 +11555,7 @@
                 "slug": "manage-models"
               },
               "anchor": "rename-a-model",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.7.0",
@@ -11567,7 +11567,7 @@
         },
         "mlflow": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
@@ -11577,7 +11577,7 @@
                 "slug": "manage-models"
               },
               "anchor": "rename-a-model",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "Method not implemented",
               "version": "3.17.0",
@@ -11613,7 +11613,7 @@
       "cells": {
         "cli": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
@@ -11623,7 +11623,7 @@
                 "slug": "manage-models"
               },
               "anchor": "delete-a-version",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -11635,7 +11635,7 @@
         },
         "python-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
@@ -11645,7 +11645,7 @@
                 "slug": "manage-models"
               },
               "anchor": "delete-a-version",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.7.0",
@@ -11657,7 +11657,7 @@
         },
         "mlflow": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
@@ -11667,7 +11667,7 @@
                 "slug": "manage-models"
               },
               "anchor": "delete-a-version",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "3.17.0",
@@ -11703,7 +11703,7 @@
       "cells": {
         "cli": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_cli.py",
@@ -11713,7 +11713,7 @@
                 "slug": "manage-models"
               },
               "anchor": "delete-a-model",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -11725,7 +11725,7 @@
         },
         "python-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_sdk.py",
@@ -11735,7 +11735,7 @@
                 "slug": "manage-models"
               },
               "anchor": "delete-a-model",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.7.0",
@@ -11747,7 +11747,7 @@
         },
         "mlflow": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
@@ -11757,7 +11757,7 @@
                 "slug": "manage-models"
               },
               "anchor": "delete-a-model",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "3.17.0",
@@ -11793,7 +11793,7 @@
       "cells": {
         "mlflow": {
           "status": "fails",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/021-manage-models/snippets/models_mlflow.py",
@@ -11803,7 +11803,7 @@
                 "slug": "manage-models"
               },
               "anchor": "load-a-model-version",
-              "ready": false,
+              "ready": true,
               "works": false,
               "fails": "Method not implemented",
               "version": "3.17.0",
@@ -13415,6 +13415,38 @@
       ]
     },
     {
+      "source": "mlflow",
+      "kind": "consumes",
+      "target": "unityCatalogSpec",
+      "interfaces": [
+        "mlflow"
+      ],
+      "journeys": [
+        "model.delete",
+        "model.delete-version",
+        "model.load",
+        "model.register",
+        "model.update",
+        "model.view"
+      ]
+    },
+    {
+      "source": "mlflow",
+      "kind": "operatesOn",
+      "target": "lakehouse.mlModel",
+      "interfaces": [
+        "mlflow"
+      ],
+      "journeys": [
+        "model.delete",
+        "model.delete-version",
+        "model.load",
+        "model.register",
+        "model.update",
+        "model.view"
+      ]
+    },
+    {
       "source": "polars",
       "kind": "consumes",
       "target": "unityCatalogSpec",
@@ -13563,6 +13595,11 @@
         "credential.update",
         "location.create",
         "location.update",
+        "model.delete",
+        "model.delete-version",
+        "model.rename",
+        "model.update",
+        "model.view",
         "schema.create",
         "schema.delete",
         "schema.list",
@@ -13609,6 +13646,21 @@
         "location.update",
         "storage.delete",
         "storage.view"
+      ]
+    },
+    {
+      "source": "unityCatalogCli",
+      "kind": "operatesOn",
+      "target": "lakehouse.mlModel",
+      "interfaces": [
+        "cli"
+      ],
+      "journeys": [
+        "model.delete",
+        "model.delete-version",
+        "model.rename",
+        "model.update",
+        "model.view"
       ]
     },
     {
@@ -13709,6 +13761,11 @@
         "metricview.describe",
         "metricview.drop",
         "metricview.list",
+        "model.delete",
+        "model.delete-version",
+        "model.rename",
+        "model.update",
+        "model.view",
         "schema.create",
         "schema.delete",
         "schema.list",
@@ -13775,6 +13832,21 @@
         "metricview.describe",
         "metricview.drop",
         "metricview.list"
+      ]
+    },
+    {
+      "source": "unityCatalogPythonSdk",
+      "kind": "operatesOn",
+      "target": "lakehouse.mlModel",
+      "interfaces": [
+        "python-sdk"
+      ],
+      "journeys": [
+        "model.delete",
+        "model.delete-version",
+        "model.rename",
+        "model.update",
+        "model.view"
       ]
     },
     {
@@ -17598,25 +17670,6 @@
     {
       "kind": "unverified-asset",
       "asset": "lakehouse.agentSkill"
-    },
-    {
-      "kind": "unverified-asset",
-      "asset": "lakehouse.mlModel"
-    },
-    {
-      "kind": "unverified-asset-edge",
-      "source": "mlflow",
-      "asset": "lakehouse.mlModel"
-    },
-    {
-      "kind": "unverified-asset-edge",
-      "source": "unityCatalogCli",
-      "asset": "lakehouse.mlModel"
-    },
-    {
-      "kind": "unverified-asset-edge",
-      "source": "unityCatalogPythonSdk",
-      "asset": "lakehouse.mlModel"
     }
   ]
 }

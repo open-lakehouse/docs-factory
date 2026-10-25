@@ -64,7 +64,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(seed_orders("s3://uc-docs/retail/orders", S3_ROOT_KEYS))
+    asyncio.run(seed_orders("s3://amzn-s3-demo-bucket/retail/orders", S3_ROOT_KEYS))
     main()
     # pyarrow's thread pool can deadlock in interpreter shutdown on macOS; every
     # assert has passed by now, so skip the native teardown.

@@ -32,7 +32,7 @@ if __name__ == "__main__":
     run(SCRIPT, "catalog-root")
     sales = get(BASE_URL, "catalogs/sales")
     assert sales["storage_location"] == (
-        f"s3://uc-docs/lake/sales/__unitystorage/catalogs/{sales['id']}"
+        f"s3://amzn-s3-demo-bucket/lake/sales/__unitystorage/catalogs/{sales['id']}"
     ), sales
 
     run(SCRIPT, "schema-root")
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     reports = get(BASE_URL, "volumes/sales.curated.reports")["storage_location"]
     assert drops.startswith(f"{sales['storage_location']}/volumes/"), drops
     assert reports.startswith(
-        f"s3://uc-docs/lake/curated/__unitystorage/schemas/{curated['schema_id']}/volumes/"
+        f"s3://amzn-s3-demo-bucket/lake/curated/__unitystorage/schemas/{curated['schema_id']}/volumes/"
     ), reports
 
     out = run(SCRIPT, "reserved-prefix", expect_failure=True)

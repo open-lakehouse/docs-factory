@@ -90,7 +90,7 @@ pandas DataFrames.
 ```
 
 ```text
-orders EXTERNAL s3://uc-docs/retail/orders
+orders EXTERNAL s3://amzn-s3-demo-bucket/retail/orders
 ```
 
 `list_catalogs()` and `list_namespaces(catalog)` list the levels above.

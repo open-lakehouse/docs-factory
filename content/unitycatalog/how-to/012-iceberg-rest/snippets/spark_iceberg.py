@@ -84,7 +84,9 @@ spark.sql("""
 # --8<-- [end:create]
 info = table_info("retail.sales.orders")
 assert (info["data_source_format"], info["table_type"]) == ("ICEBERG", "MANAGED"), info
-assert info["storage_location"].startswith("s3://uc-docs/retail/managed/"), info
+assert info["storage_location"].startswith(
+    "s3://amzn-s3-demo-bucket/retail/managed/"
+), info
 
 # --8<-- [start:write]
 spark.sql("""

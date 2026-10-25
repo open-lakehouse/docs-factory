@@ -2,7 +2,7 @@
 
 Each script imports this module, so save it beside the script you run. It calls
 the Unity Catalog REST API with the standard library only, as an admin would
-once: a storage credential, an external location over `s3://uc-docs/retail`,
+once: a storage credential, an external location over `s3://amzn-s3-demo-bucket/retail`,
 and a fresh `retail` catalog whose managed storage is under it, with a `sales`
 schema.
 """
@@ -57,7 +57,7 @@ def setup_retail() -> None:
         "/external-locations",
         {
             "name": "retail_data",
-            "url": "s3://uc-docs/retail",
+            "url": "s3://amzn-s3-demo-bucket/retail",
             "credential_name": "retail_storage",
         },
     )
@@ -69,7 +69,7 @@ def setup_retail() -> None:
     _call(
         "POST",
         "/catalogs",
-        {"name": "retail", "storage_root": "s3://uc-docs/retail/managed"},
+        {"name": "retail", "storage_root": "s3://amzn-s3-demo-bucket/retail/managed"},
     )
     _call("POST", "/schemas", {"name": "sales", "catalog_name": "retail"})
 

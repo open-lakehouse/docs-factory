@@ -13,7 +13,7 @@
     "digest": "sha256:ad4c35d2d1b7bd4e2b32d1cd86e83e4caac2dcc6f349629fc4347dfb683e40c6"
   },
   "recipe": {
-    "digest": "sha256:0f24e177ec2924588816f13285b8e13f8ab116affc70efbc04d42844d8bd12dd"
+    "digest": "sha256:46345375b31b53d2b19f9ad2f2e891d318040e0450fde8c1917b06e1869107ef"
   },
   "context": {
     "env_name": "uc-docs",
@@ -183,7 +183,7 @@
         "provisions": [
           {
             "resource": "object_store",
-            "name": "uc-docs",
+            "name": "amzn-s3-demo-bucket",
             "consumers": [
               "unity-catalog"
             ]
@@ -293,7 +293,7 @@
         "role": "object_store",
         "protocol": "S3",
         "resources": [
-          "uc-docs"
+          "amzn-s3-demo-bucket"
         ]
       },
       {
@@ -616,14 +616,14 @@
     "tls": {
       "port": 443,
       "hosts": [
+        "amzn-s3-demo-bucket.s3.amazonaws.com",
+        "amzn-s3-demo-bucket.s3.us-east-1.amazonaws.com",
         "mlflow.s3.amazonaws.com",
         "mlflow.s3.us-east-1.amazonaws.com",
         "s3.amazonaws.com",
         "s3.us-east-1.amazonaws.com",
         "sts.amazonaws.com",
-        "sts.us-east-1.amazonaws.com",
-        "uc-docs.s3.amazonaws.com",
-        "uc-docs.s3.us-east-1.amazonaws.com"
+        "sts.us-east-1.amazonaws.com"
       ],
       "virtual_hosts": [
         {
@@ -638,9 +638,9 @@
           "hosts": [
             "s3.amazonaws.com",
             "s3.us-east-1.amazonaws.com",
-            "uc-docs.s3.amazonaws.com",
+            "amzn-s3-demo-bucket.s3.amazonaws.com",
             "mlflow.s3.amazonaws.com",
-            "uc-docs.s3.us-east-1.amazonaws.com",
+            "amzn-s3-demo-bucket.s3.us-east-1.amazonaws.com",
             "mlflow.s3.us-east-1.amazonaws.com"
           ]
         }

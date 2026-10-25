@@ -45,7 +45,7 @@ call(
     "/external-locations",
     {
         "name": "retail_data",
-        "url": "s3://uc-docs/retail",
+        "url": "s3://amzn-s3-demo-bucket/retail",
         "credential_name": "retail_storage",
     },
 )
@@ -53,8 +53,10 @@ call("DELETE", "/catalogs/retail?force=true")
 call(
     "POST",
     "/catalogs",
-    {"name": "retail", "storage_root": "s3://uc-docs/retail/managed"},
+    {"name": "retail", "storage_root": "s3://amzn-s3-demo-bucket/retail/managed"},
 )
 call("POST", "/schemas", {"name": "sales", "catalog_name": "retail"})
 # --8<-- [end:setup]
-print("catalog retail ready, managed storage under s3://uc-docs/retail/managed")
+print(
+    "catalog retail ready, managed storage under s3://amzn-s3-demo-bucket/retail/managed"
+)

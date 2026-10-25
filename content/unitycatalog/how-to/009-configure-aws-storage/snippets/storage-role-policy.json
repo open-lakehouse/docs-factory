@@ -12,7 +12,7 @@
         "s3:AbortMultipartUpload",
         "s3:ListMultipartUploadParts"
       ],
-      "Resource": "arn:aws:s3:::uc-docs/lake/*"
+      "Resource": "arn:aws:s3:::amzn-s3-demo-bucket/lake/*"
     },
     {
       "Sid": "ListBucket",
@@ -22,7 +22,7 @@
         "s3:ListBucketMultipartUploads",
         "s3:GetBucketLocation"
       ],
-      "Resource": "arn:aws:s3:::uc-docs"
+      "Resource": "arn:aws:s3:::amzn-s3-demo-bucket"
     }
   ]
 }

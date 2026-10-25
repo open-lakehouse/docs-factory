@@ -20,7 +20,7 @@ flowchart LR
     n1 -->|"/api/2.0/mlflow, /api/2.0/otel, /ai-gateway, /mlflow"| n5
     n1 -->|"S3 + STS"| n3
     n4 -->|"PostgreSQL: unitycatalog"| n2
-    n4 -->|"S3: uc-docs"| n3
+    n4 -->|"S3: amzn-s3-demo-bucket"| n3
     n5 -->|"PostgreSQL: mlflow"| n2
     n5 -->|"S3: mlflow"| n3
     classDef clients fill:#f1f5f9,stroke:#64748b

@@ -25,9 +25,9 @@ Three IAM principals and two catalog objects are involved:
 | Master role `uc-master` | The identity the server runs as. It may only assume storage roles. | IAM, attached to the server's host |
 | Storage role `uc-storage-lake` | Reads and writes one bucket or prefix. It trusts the master role. | IAM |
 | Storage credential `lake_storage` | Records the storage role's ARN, plus an external ID that the server generates. | Unity Catalog |
-| External location `lake` | Binds `s3://uc-docs/lake` to the storage credential. | Unity Catalog |
+| External location `lake` | Binds `s3://amzn-s3-demo-bucket/lake` to the storage credential. | Unity Catalog |
 
-When a client requests access to a path under `s3://uc-docs/lake`, the server
+When a client requests access to a path under `s3://amzn-s3-demo-bucket/lake`, the server
 finds the matching external location, assumes its credential's storage role
 as the master role with the credential's external ID, and attaches a session
 policy that narrows access to the requested path and operation.
@@ -210,7 +210,7 @@ and `session_token` as `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, and
 :::
 
 The credentials reach only the requested path. A write to
-`s3://uc-docs/lake/curated` with keys vended for `s3://uc-docs/lake/landing` is
+`s3://amzn-s3-demo-bucket/lake/curated` with keys vended for `s3://amzn-s3-demo-bucket/lake/landing` is
 denied. If the request fails with `AccessDenied` from STS, check the trust policy
 and the external ID first. Tables and volumes use the same mechanism. Their
 credential endpoints resolve the object's storage location to its external

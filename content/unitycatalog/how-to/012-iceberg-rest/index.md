@@ -165,7 +165,7 @@ other clients see it at once.
 
 The server creates the table as `MANAGED`, with data source format `ICEBERG`,
 at a location under the catalog's storage root:
-`s3://uc-docs/retail/managed/__unitystorage/catalogs/<catalog id>/tables/<table id>`.
+`s3://amzn-s3-demo-bucket/retail/managed/__unitystorage/catalogs/<catalog id>/tables/<table id>`.
 
 ## Write and read rows
 

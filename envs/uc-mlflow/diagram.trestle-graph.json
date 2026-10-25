@@ -156,7 +156,7 @@
         "provisions": [
           {
             "resource": "object_store",
-            "name": "uc-docs",
+            "name": "amzn-s3-demo-bucket",
             "consumers": [
               "unity-catalog"
             ]
@@ -266,7 +266,7 @@
         "role": "object_store",
         "protocol": "S3",
         "resources": [
-          "uc-docs"
+          "amzn-s3-demo-bucket"
         ]
       },
       {

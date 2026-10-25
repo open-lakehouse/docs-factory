@@ -10956,7 +10956,7 @@
                 "slug": "run-functions"
               },
               "anchor": "call-a-function-from-synchronous-code",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",

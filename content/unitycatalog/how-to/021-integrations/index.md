@@ -53,6 +53,8 @@ confirmed, and *archived* means the project no longer ships.
 | PyIceberg | Iceberg REST | Apache Iceberg | [Use Iceberg REST clients with Unity Catalog](../iceberg-rest/index.md) | Tested here | 2026-10-25 |
 | MLflow | Unity Catalog REST | MLflow | [Manage registered models](../manage-models/index.md) | Tested here | 2026-10-25 |
 | LangChain | Unity Catalog REST | Unity Catalog | [Use catalog functions as LangChain tools](../langchain-tools/index.md) | Tested here | 2026-10-25 |
+| obstore | Unity Catalog REST | Development Seed | [Use Unity Catalog credentials with obstore](../obstore-credentials/index.md) | Tested here | 2026-10-25 |
+| marimo | Unity Catalog REST, through obstore | marimo | [Use volumes as marimo remote storage](../marimo-remote-storage/index.md) | Tested here | 2026-10-25 |
 | Trino | Iceberg REST | Trino | [Trino Iceberg connector, REST catalog](https://trino.io/docs/current/object-storage/metastores.html) | Maintained | 2026-10-25 |
 | Spice | Unity Catalog REST | Spice AI | [Unity Catalog catalog connector](https://spiceai.org/docs/components/catalogs/unity-catalog) | Maintained | 2026-10-25 |
 | PuppyGraph | Unity Catalog REST | PuppyGraph | [Querying Unity Catalog data as a graph](https://docs.puppygraph.com/getting-started/querying-unity-catalog-data-as-a-graph/) | Maintained | 2026-10-25 |
@@ -72,6 +74,13 @@ Notes on individual rows:
   URL. pandas reads Unity Catalog tables through it.
 - **LangChain** gets catalog functions as tools from the
   `unitycatalog-langchain` package, which the Unity Catalog project maintains.
+- **obstore** reads and writes storage, not tables, and never calls the server
+  itself. Your code asks the server for temporary credentials and hands them to
+  obstore through a credential provider, which obstore calls again before they
+  expire.
+- **marimo** shows any obstore store a notebook defines in its Remote Storage
+  panel, so a store over a volume lets you browse and download the volume's
+  files there.
 - **Spice** queries Delta tables. Set its `unity_catalog_credential_vending`
   parameter to `enabled` to use the credentials the server vends instead of
   object store keys of its own.

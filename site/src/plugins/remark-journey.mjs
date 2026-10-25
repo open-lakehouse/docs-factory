@@ -5,11 +5,14 @@ import { injectImport, jsxFlow, walkTree } from "./lib/mdx-helpers.mjs";
 
 const IMPORT_SOURCE = "@/components/journey";
 
+// Steps are authored `###`; the docs-site emit promotes a journey with no `##`
+// above it to `##`, so the first heading sets the step depth.
 function splitSteps(children) {
+  const depth = children.find((n) => n.type === "heading")?.depth ?? 3;
   const steps = [];
   let current = null;
   for (const node of children) {
-    if (node.type === "heading" && node.depth === 3) {
+    if (node.type === "heading" && node.depth === depth) {
       current = { heading: node, body: [] };
       steps.push(current);
     } else if (current) {
@@ -19,7 +22,7 @@ function splitSteps(children) {
   return steps;
 }
 
-// The step title stays a real <h3> (not a JSX prop) so rehype-slug gives it an
+// The step title stays a real heading (not a JSX prop) so rehype-slug gives it an
 // id and the "On this page" TOC can list and scroll-spy it.
 function journeyStepNode(step) {
   const heading = {

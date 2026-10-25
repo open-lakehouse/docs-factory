@@ -74,6 +74,7 @@ import remarkSourceLinks from "../../site/src/plugins/remark-source-links.mjs";
 import { defaultModelDir, emitOne, generateLikeC4WebComponent } from "../emit.mjs";
 import remarkAbsoluteLinks from "../plugins/remark-absolute-links.mjs";
 import remarkModelLinks from "../plugins/remark-model-links.mjs";
+import remarkPromoteJourneySteps from "../plugins/remark-promote-journey-steps.mjs";
 import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
@@ -353,6 +354,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
 
     // 3. Pages.
     const links = linkErrors();
+    const outline = new Set();
     const model = loadModel();
     const compat = loadCompat(site);
     const explainers = new Map(
@@ -456,6 +458,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
             remarkPrerequisitesEnv,
             { environment, guide: guideAt(""), diataxis, resolve, envsDir: ENVS_DIR },
           ],
+          [remarkPromoteJourneySteps],
         ],
       });
       likec4Exported ||= rendered.likec4Dir !== null;
@@ -519,6 +522,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
               envsDir: ENVS_DIR,
             },
           ],
+          [remarkPromoteJourneySteps],
         ],
       });
       let twinOut = injectCanonical(twin.output, canonicalOf(identity));
@@ -539,6 +543,16 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       files.set(`public${route}.md`, twinOut);
 
       const renderedBody = splitFrontmatter(rendered.output).body;
+      // The shell renders the title as the h1, so the body's outline starts at h2.
+      let level = 1;
+      for (const h of extractHeadings(renderedBody)) {
+        if (h.level > level + 1) {
+          outline.add(
+            `${relative(REPO_ROOT, absPath)}: "${h.text}" is an h${h.level} after an h${level}`,
+          );
+        }
+        level = h.level;
+      }
       const pageHeadings = extractHeadings(renderedBody).map(({ id, text, level }) => ({
         id,
         text,
@@ -597,6 +611,11 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       const list = [...links.errors].join("\n  ");
       if (!drafts) throw new Error(`unresolved links:\n  ${list}`);
       console.warn(`emit-docs: unresolved links (unwrapped to text):\n  ${list}`);
+    }
+    if (outline.size) {
+      const list = [...outline].join("\n  ");
+      if (!drafts) throw new Error(`skipped heading levels:\n  ${list}`);
+      console.warn(`emit-docs: skipped heading levels:\n  ${list}`);
     }
 
     pages.forEach((p, i) => {

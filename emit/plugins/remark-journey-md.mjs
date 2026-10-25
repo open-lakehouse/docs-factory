@@ -16,9 +16,10 @@
  *   …body…
  *
  * The step number carries the ordering the timeline used to convey. Steps are the
- * depth-3 (`###`) headings inside the container, exactly as remark-journey.mjs
- * splits them; the number resets per journey. The heading level is preserved
- * (`###`) so steps stay nested under the enclosing `##` section in the Doc outline.
+ * headings at the depth of the container's first heading (`###` as authored),
+ * exactly as remark-journey.mjs splits them; the number resets per journey. The
+ * heading level is preserved so steps stay nested under the enclosing `##`
+ * section in the Doc outline.
  * Body nodes (prose, code fences, already-flattened callouts) are lifted to the
  * container's parent in place of the container.
  *
@@ -42,9 +43,11 @@ export default function remarkJourneyMd() {
         const child = node.children[i];
         if (child.type === "containerDirective" && child.name === "journey") {
           const body = child.children ?? [];
+          // remark-promote-journey-steps may have lifted the authored `###` steps.
+          const depth = body.find((n) => n.type === "heading")?.depth ?? 3;
           let step = 0;
           for (const n of body) {
-            if (n.type === "heading" && n.depth === 3) numberHeading(n, ++step);
+            if (n.type === "heading" && n.depth === depth) numberHeading(n, ++step);
           }
           // Splice the journey's children into the parent in place of the
           // container. Content before the first `###` (if any) is kept as-is —

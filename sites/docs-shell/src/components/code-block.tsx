@@ -63,7 +63,12 @@ export function Pre({
             <FileCode className="cb-file-icon" aria-hidden="true" />
             <span className="cb-file">{filename}</span>
             {script && (
-              <a className="cb-script" href={script} title="Open the whole runnable script">
+              <a
+                className="cb-script"
+                href={script}
+                title="Open the whole runnable script"
+                data-nosnippet=""
+              >
                 Full script
                 <ExternalLink aria-hidden="true" />
               </a>

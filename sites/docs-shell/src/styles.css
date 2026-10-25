@@ -1120,7 +1120,7 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   border-left: 1px dashed var(--border);
 }
 .prose .jr-step[data-last]::before { bottom: 0; }
-/* The component renders 1, 2, …; a counter shows them zero-padded instead. */
+/* The number is a counter, zero-padded, so it stays out of the page text. */
 .prose .jr-bubble {
   position: absolute;
   top: 0;
@@ -1132,7 +1132,6 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   border-radius: var(--radius-sm);
   background: var(--panel);
   border: 1px solid var(--border);
-  font-size: 0;
 }
 .prose .jr-bubble::before {
   content: counter(jr, decimal-leading-zero);

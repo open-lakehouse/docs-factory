@@ -10587,7 +10587,7 @@
         },
         "python-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/022-temporary-credentials/snippets/temporary_credentials.py",
@@ -10597,7 +10597,7 @@
                 "slug": "temporary-credentials"
               },
               "anchor": "get-credentials-for-a-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.7.0",
@@ -10679,7 +10679,7 @@
                 "slug": "temporary-credentials"
               },
               "anchor": "get-credentials-for-a-volume",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.7.0",
@@ -10751,7 +10751,7 @@
         },
         "python-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/022-temporary-credentials/snippets/temporary_credentials.py",
@@ -10761,7 +10761,7 @@
                 "slug": "temporary-credentials"
               },
               "anchor": "get-credentials-for-a-model-version",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.7.0",
@@ -10843,7 +10843,7 @@
                 "slug": "temporary-credentials"
               },
               "anchor": "get-credentials-for-a-path",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.7.0",
@@ -13946,7 +13946,9 @@
         "catalog.update",
         "credential.create",
         "credential.update",
+        "credentials.vend-model-version",
         "credentials.vend-path",
+        "credentials.vend-table",
         "credentials.vend-volume",
         "location.create",
         "location.update",
@@ -13995,7 +13997,9 @@
       "journeys": [
         "credential.create",
         "credential.update",
+        "credentials.vend-model-version",
         "credentials.vend-path",
+        "credentials.vend-table",
         "credentials.vend-volume"
       ]
     },

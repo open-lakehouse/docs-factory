@@ -36,11 +36,16 @@ def _():
     from datetime import UTC, datetime
 
     import obstore
-    from obstore.store import S3Store
+    from obstore.store import from_url
     from unitycatalog.client import (
         ApiClient,
         Configuration,
+        GenerateTemporaryPathCredential,
+        GenerateTemporaryTableCredential,
         GenerateTemporaryVolumeCredential,
+        PathOperation,
+        TableOperation,
+        TablesApi,
         TemporaryCredentialsApi,
         VolumeOperation,
         VolumesApi,
@@ -54,8 +59,12 @@ def _():
         config.host = _url
     return (
         ApiClient,
+        GenerateTemporaryPathCredential,
+        GenerateTemporaryTableCredential,
         GenerateTemporaryVolumeCredential,
-        S3Store,
+        PathOperation,
+        TableOperation,
+        TablesApi,
         TemporaryCredentialsApi,
         UTC,
         VolumeOperation,
@@ -63,21 +72,39 @@ def _():
         asyncio,
         config,
         datetime,
+        from_url,
         obstore,
         threading,
     )
 
 
 @app.cell
-def _(ApiClient, UTC, asyncio, datetime, threading):
+def _(
+    ApiClient,
+    GenerateTemporaryPathCredential,
+    GenerateTemporaryTableCredential,
+    GenerateTemporaryVolumeCredential,
+    PathOperation,
+    TableOperation,
+    TablesApi,
+    TemporaryCredentialsApi,
+    UTC,
+    VolumeOperation,
+    VolumesApi,
+    asyncio,
+    datetime,
+    threading,
+):
     # --8<-- [start:nb-provider]
     class UnityCatalogCredentials:
-        """An obstore credential provider that asks Unity Catalog for S3 credentials.
+        """An obstore credential provider that asks Unity Catalog for storage credentials.
 
-        `request` is an async function that takes an `ApiClient` and returns
-        the server's `TemporaryCredentials`. It runs on an event loop of its
-        own, in a background thread, so obstore can call the provider from
-        sync methods, async methods, and threads without a loop alike.
+        It returns whichever credential the server vends: S3 keys, an Azure SAS
+        token, or a Google Cloud OAuth token. `request` is an async function that
+        takes an `ApiClient` and returns the server's `TemporaryCredentials`. It
+        runs on an event loop of its own, in a background thread, so obstore can
+        call the provider from sync methods, async methods, and threads without a
+        loop alike.
         """
 
         def __init__(self, config, request):
@@ -89,6 +116,45 @@ def _(ApiClient, UTC, asyncio, datetime, threading):
             self._first = self._run(request(self._api))
             self.url = self._first.url
 
+        @classmethod
+        def for_volume(cls, config, name, operation=VolumeOperation.READ_VOLUME):
+            async def request(api):
+                volume = await VolumesApi(api).get_volume(name=name)
+                return await TemporaryCredentialsApi(
+                    api
+                ).generate_temporary_volume_credentials(
+                    GenerateTemporaryVolumeCredential(
+                        volume_id=volume.volume_id, operation=operation
+                    )
+                )
+
+            return cls(config, request)
+
+        @classmethod
+        def for_table(cls, config, full_name, operation=TableOperation.READ):
+            async def request(api):
+                table = await TablesApi(api).get_table(full_name=full_name)
+                return await TemporaryCredentialsApi(
+                    api
+                ).generate_temporary_table_credentials(
+                    GenerateTemporaryTableCredential(
+                        table_id=table.table_id, operation=operation
+                    )
+                )
+
+            return cls(config, request)
+
+        @classmethod
+        def for_path(cls, config, url, operation=PathOperation.PATH_READ):
+            async def request(api):
+                return await TemporaryCredentialsApi(
+                    api
+                ).generate_temporary_path_credentials(
+                    GenerateTemporaryPathCredential(url=url, operation=operation)
+                )
+
+            return cls(config, request)
+
         @staticmethod
         async def _connect(config):
             return ApiClient(config)
@@ -99,16 +165,20 @@ def _(ApiClient, UTC, asyncio, datetime, threading):
         def __call__(self):
             creds = self._first or self._run(self._request(self._api))
             self._first = None
-            aws = creds.aws_temp_credentials
-            return {
-                "access_key_id": aws.access_key_id,
-                "secret_access_key": aws.secret_access_key,
-                "token": aws.session_token,
-                # expiration_time is in epoch milliseconds.
-                "expires_at": datetime.fromtimestamp(
-                    creds.expiration_time / 1000, tz=UTC
-                ),
-            }
+            # expiration_time is in epoch milliseconds.
+            expires_at = datetime.fromtimestamp(creds.expiration_time / 1000, tz=UTC)
+            if aws := creds.aws_temp_credentials:
+                return {
+                    "access_key_id": aws.access_key_id,
+                    "secret_access_key": aws.secret_access_key,
+                    "token": aws.session_token,
+                    "expires_at": expires_at,
+                }
+            if azure := creds.azure_user_delegation_sas:
+                return {"sas_token": azure.sas_token, "expires_at": expires_at}
+            if gcp := creds.gcp_oauth_token:
+                return {"token": gcp.oauth_token, "expires_at": expires_at}
+            raise ValueError(f"the server vended no credential for {creds.url}")
 
         def close(self):
             self._run(self._api.close())
@@ -119,26 +189,10 @@ def _(ApiClient, UTC, asyncio, datetime, threading):
 
 
 @app.cell
-def _(
-    GenerateTemporaryVolumeCredential,
-    S3Store,
-    TemporaryCredentialsApi,
-    UnityCatalogCredentials,
-    VolumeOperation,
-    VolumesApi,
-    config,
-):
+def _(UnityCatalogCredentials, config, from_url):
     # --8<-- [start:nb-store]
-    async def read_files(api):
-        volume = await VolumesApi(api).get_volume(name="analytics.ops.files")
-        return await TemporaryCredentialsApi(api).generate_temporary_volume_credentials(
-            GenerateTemporaryVolumeCredential(
-                volume_id=volume.volume_id, operation=VolumeOperation.READ_VOLUME
-            )
-        )
-
-    credentials = UnityCatalogCredentials(config, read_files)
-    files = S3Store.from_url(
+    credentials = UnityCatalogCredentials.for_volume(config, "analytics.ops.files")
+    files = from_url(
         credentials.url, region="us-east-1", credential_provider=credentials
     )
     # --8<-- [end:nb-store]

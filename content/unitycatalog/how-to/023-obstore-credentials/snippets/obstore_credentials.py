@@ -7,7 +7,7 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # ///
-"""Give obstore a credential provider that asks Unity Catalog for S3 credentials.
+"""Give obstore a credential provider that asks Unity Catalog for storage credentials.
 
 Start the docs' local server from `uc-docs-env/uc-aws`:
 
@@ -24,12 +24,14 @@ import threading
 from datetime import UTC, datetime
 
 import obstore
-from obstore.store import S3Store
+from obstore.store import from_url
 from unitycatalog.client import (
     ApiClient,
     Configuration,
+    GenerateTemporaryPathCredential,
     GenerateTemporaryTableCredential,
     GenerateTemporaryVolumeCredential,
+    PathOperation,
     TableOperation,
     TablesApi,
     TemporaryCredentialsApi,
@@ -43,12 +45,14 @@ config = Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
 
 # --8<-- [start:provider]
 class UnityCatalogCredentials:
-    """An obstore credential provider that asks Unity Catalog for S3 credentials.
+    """An obstore credential provider that asks Unity Catalog for storage credentials.
 
-    `request` is an async function that takes an `ApiClient` and returns the
-    server's `TemporaryCredentials`. It runs on an event loop of its own, in a
-    background thread, so obstore can call the provider from sync methods,
-    async methods, and threads without a loop alike.
+    It returns whichever credential the server vends: S3 keys, an Azure SAS
+    token, or a Google Cloud OAuth token. `request` is an async function that
+    takes an `ApiClient` and returns the server's `TemporaryCredentials`. It
+    runs on an event loop of its own, in a background thread, so obstore can
+    call the provider from sync methods, async methods, and threads without a
+    loop alike.
     """
 
     def __init__(self, config, request):
@@ -60,6 +64,45 @@ class UnityCatalogCredentials:
         self._first = self._run(request(self._api))
         self.url = self._first.url
 
+    @classmethod
+    def for_volume(cls, config, name, operation=VolumeOperation.READ_VOLUME):
+        async def request(api):
+            volume = await VolumesApi(api).get_volume(name=name)
+            return await TemporaryCredentialsApi(
+                api
+            ).generate_temporary_volume_credentials(
+                GenerateTemporaryVolumeCredential(
+                    volume_id=volume.volume_id, operation=operation
+                )
+            )
+
+        return cls(config, request)
+
+    @classmethod
+    def for_table(cls, config, full_name, operation=TableOperation.READ):
+        async def request(api):
+            table = await TablesApi(api).get_table(full_name=full_name)
+            return await TemporaryCredentialsApi(
+                api
+            ).generate_temporary_table_credentials(
+                GenerateTemporaryTableCredential(
+                    table_id=table.table_id, operation=operation
+                )
+            )
+
+        return cls(config, request)
+
+    @classmethod
+    def for_path(cls, config, url, operation=PathOperation.PATH_READ):
+        async def request(api):
+            return await TemporaryCredentialsApi(
+                api
+            ).generate_temporary_path_credentials(
+                GenerateTemporaryPathCredential(url=url, operation=operation)
+            )
+
+        return cls(config, request)
+
     @staticmethod
     async def _connect(config):
         return ApiClient(config)
@@ -70,14 +113,20 @@ class UnityCatalogCredentials:
     def __call__(self):
         creds = self._first or self._run(self._request(self._api))
         self._first = None
-        aws = creds.aws_temp_credentials
-        return {
-            "access_key_id": aws.access_key_id,
-            "secret_access_key": aws.secret_access_key,
-            "token": aws.session_token,
-            # expiration_time is in epoch milliseconds.
-            "expires_at": datetime.fromtimestamp(creds.expiration_time / 1000, tz=UTC),
-        }
+        # expiration_time is in epoch milliseconds.
+        expires_at = datetime.fromtimestamp(creds.expiration_time / 1000, tz=UTC)
+        if aws := creds.aws_temp_credentials:
+            return {
+                "access_key_id": aws.access_key_id,
+                "secret_access_key": aws.secret_access_key,
+                "token": aws.session_token,
+                "expires_at": expires_at,
+            }
+        if azure := creds.azure_user_delegation_sas:
+            return {"sas_token": azure.sas_token, "expires_at": expires_at}
+        if gcp := creds.gcp_oauth_token:
+            return {"token": gcp.oauth_token, "expires_at": expires_at}
+        raise ValueError(f"the server vended no credential for {creds.url}")
 
     def close(self):
         self._run(self._api.close())
@@ -87,6 +136,7 @@ class UnityCatalogCredentials:
 # --8<-- [end:provider]
 
 
+import http.server  # noqa: E402
 import os  # noqa: E402
 import subprocess  # noqa: E402
 import sys  # noqa: E402
@@ -95,6 +145,7 @@ import time  # noqa: E402
 from obstore.exceptions import PermissionDeniedError  # noqa: E402
 from unitycatalog.client import (  # noqa: E402
     AwsIamRoleRequest,
+    AzureUserDelegationSAS,
     CatalogsApi,
     ColumnInfo,
     ColumnTypeName,
@@ -108,8 +159,10 @@ from unitycatalog.client import (  # noqa: E402
     CredentialsApi,
     DataSourceFormat,
     ExternalLocationsApi,
+    GcpOauthToken,
     SchemasApi,
     TableType,
+    TemporaryCredentials,
     VolumeType,
 )
 from unitycatalog.client.exceptions import NotFoundException  # noqa: E402
@@ -122,16 +175,10 @@ def main() -> None:
     _count_vends()
 
     # --8<-- [start:volume]
-    async def write_files(api):
-        volume = await VolumesApi(api).get_volume(name="analytics.ops.files")
-        return await TemporaryCredentialsApi(api).generate_temporary_volume_credentials(
-            GenerateTemporaryVolumeCredential(
-                volume_id=volume.volume_id, operation=VolumeOperation.WRITE_VOLUME
-            )
-        )
-
-    credentials = UnityCatalogCredentials(config, write_files)
-    files = S3Store.from_url(
+    credentials = UnityCatalogCredentials.for_volume(
+        config, "analytics.ops.files", VolumeOperation.WRITE_VOLUME
+    )
+    files = from_url(
         credentials.url, region="us-east-1", credential_provider=credentials
     )
     # --8<-- [end:volume]
@@ -150,16 +197,8 @@ def main() -> None:
     asyncio.run(asyncio.to_thread(obstore.head, files, "reports/2026-10.csv"))
 
     # --8<-- [start:table]
-    async def read_trips(api):
-        table = await TablesApi(api).get_table(full_name="analytics.ops.trips")
-        return await TemporaryCredentialsApi(api).generate_temporary_table_credentials(
-            GenerateTemporaryTableCredential(
-                table_id=table.table_id, operation=TableOperation.READ
-            )
-        )
-
-    reader = UnityCatalogCredentials(config, read_trips)
-    trips = S3Store.from_url(reader.url, region="us-east-1", credential_provider=reader)
+    reader = UnityCatalogCredentials.for_table(config, "analytics.ops.trips")
+    trips = from_url(reader.url, region="us-east-1", credential_provider=reader)
     # --8<-- [end:table]
     obstore.list(trips).collect()
     try:
@@ -170,7 +209,18 @@ def main() -> None:
         raise AssertionError("a READ table credential wrote")
     reader.close()
 
+    # --8<-- [start:path]
+    landing = UnityCatalogCredentials.for_path(
+        config, f"{BUCKET}/lake/landing", PathOperation.PATH_READ_WRITE
+    )
+    staging = from_url(landing.url, region="us-east-1", credential_provider=landing)
+    # --8<-- [end:path]
+    obstore.put(staging, "events.json", b'{"event": "signup"}\n')
+    assert [m["path"] for m in obstore.list(staging).collect()] == ["events.json"]
+    landing.close()
+
     _check_renewal()
+    _check_other_clouds()
     _check_async_provider_under_sync_calls(credentials.url)
 
     # --8<-- [start:close]
@@ -178,7 +228,7 @@ def main() -> None:
     # --8<-- [end:close]
 
 
-async def _read_async(files: S3Store) -> None:
+async def _read_async(files) -> None:
     # --8<-- [start:async]
     result = await obstore.get_async(files, "reports/2026-10.csv")
     data = bytes(await result.bytes_async())
@@ -214,9 +264,7 @@ def _check_renewal() -> None:
         return creds
 
     provider = UnityCatalogCredentials(config, short_lived)
-    store = S3Store.from_url(
-        provider.url, region="us-east-1", credential_provider=provider
-    )
+    store = from_url(provider.url, region="us-east-1", credential_provider=provider)
     # The constructor's answer serves the first call.
     vends.clear()
     obstore.head(store, "reports/2026-10.csv")
@@ -227,6 +275,77 @@ def _check_renewal() -> None:
     obstore.head(store, "reports/2026-10.csv")
     assert len(vends) == 1, f"not renewed inside five minutes: {vends}"
     provider.close()
+
+
+def _check_other_clouds() -> None:
+    """Azure SAS and Google Cloud OAuth answers reach obstore's stores intact.
+
+    The local server vends only S3 credentials, so a fake answer stands in for
+    the server's, and a local HTTP endpoint records what obstore sends.
+    """
+    seen = []
+
+    class Recorder(http.server.BaseHTTPRequestHandler):
+        def do_HEAD(self):
+            seen.append((self.path, self.headers.get("Authorization")))
+            self.send_response(404)
+            self.end_headers()
+
+        do_GET = do_HEAD
+
+        def log_message(self, *args):
+            pass
+
+    server = http.server.HTTPServer(("127.0.0.1", 0), Recorder)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    endpoint = f"http://127.0.0.1:{server.server_port}"
+    expires = int((time.time() + 3600) * 1000)
+    account = "account"
+
+    def answer(creds):
+        async def request(api):
+            return creds
+
+        return UnityCatalogCredentials(config, request)
+
+    azure = answer(
+        TemporaryCredentials(
+            url=f"abfss://files@{account}.dfs.core.windows.net/vol",
+            azure_user_delegation_sas=AzureUserDelegationSAS(
+                sas_token="sv=2024&sig=a%2Fb"
+            ),
+            expiration_time=expires,
+        )
+    )
+    gcp = answer(
+        TemporaryCredentials(
+            url="gs://bucket/vol",
+            gcp_oauth_token=GcpOauthToken(oauth_token="ya29.token"),
+            expiration_time=expires,
+        )
+    )
+    options = {"allow_http": True}
+    stores = [
+        from_url(
+            azure.url,
+            endpoint=endpoint,
+            client_options=options,
+            credential_provider=azure,
+        ),
+        from_url(
+            gcp.url, base_url=endpoint, client_options=options, credential_provider=gcp
+        ),
+    ]
+    for store in stores:
+        try:
+            obstore.head(store, "a.csv")
+        except FileNotFoundError:
+            pass
+    server.shutdown()
+    azure.close()
+    gcp.close()
+    assert seen[0][0].endswith("?sv=2024&sig=a%2Fb"), seen
+    assert seen[1][1] == "Bearer ya29.token", seen
 
 
 _ASYNC_PROVIDER = """

@@ -6,7 +6,7 @@
       "name": "unitycatalog-docs",
       "dependencies": {
         "@mdx-js/react": "^3.1.1",
-        "@open-lakehouse/trestle-diagram": "0.4.0",
+        "@open-lakehouse/trestle-diagram": "0.5.1",
         "@scalar/api-reference-react": "0.9.74",
         "@vercel/analytics": "^2.0.1",
         "lucide-react": "^1.23.0",
@@ -144,7 +144,7 @@
 
     "@napi-rs/lzma-linux-x64-gnu": ["@napi-rs/lzma-linux-x64-gnu@1.5.1", "", { "os": "linux", "cpu": "x64" }, "sha512-oTXEIha4SsuXdTA4Iyskj0kpdx2yVXdhd75c2v3xGrHFfVMsbhTPZU/nMPL4sWKo4pBHm3aucLaqGlF696dTyQ=="],
 
-    "@open-lakehouse/trestle-diagram": ["@open-lakehouse/trestle-diagram@0.4.0", "", { "dependencies": { "@radix-ui/react-tooltip": "^1.2.8", "@xyflow/react": "^12.4.0", "clsx": "^2.1.1", "elkjs": "^0.11.0", "html-to-image": "^1.11.13", "lucide-react": "^0.475.0", "shiki": "^3.23.0", "tailwind-merge": "^3.6.0" }, "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0" } }, "sha512-f9aT6W9lvlhx0HntZPt4MiGXF0FkrUTGvq1OlYJRcpuMl3AIsfGkatgajO0moQAfyMZQuTfG17jN+DK4nGOg0Q=="],
+    "@open-lakehouse/trestle-diagram": ["@open-lakehouse/trestle-diagram@0.5.1", "", { "dependencies": { "@radix-ui/react-tooltip": "^1.2.8", "@xyflow/react": "^12.4.0", "clsx": "^2.1.1", "elkjs": "^0.11.0", "html-to-image": "^1.11.13", "lucide-react": "^0.475.0", "shiki": "^3.23.0", "tailwind-merge": "^3.6.0" }, "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0" } }, "sha512-hayAuHlTX1mbP4rprESHky9KxKBa2LukjCiV7m56ItYB6jGM7cti6hwErDTkjmxnOS59NviPXkJQ0ikrFOBK2w=="],
 
     "@opentelemetry/api": ["@opentelemetry/api@1.9.0", "", {}, "sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg=="],
 

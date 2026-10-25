@@ -22,6 +22,7 @@ model {
   deltaRs -[realizes]-> lakehouse.tableFormat
   deltaRs -[consumes]-> unityCatalogSpec "resolves tables via"
   deltaRs -[consumes]-> s3Spec "reads/writes data files via"
+  deltaRs -[builtOn]-> objectStore
   deltaRs -[operatesOn]-> lakehouse.table "reads and changes"
 
   pyIceberg = implementation "PyIceberg" {

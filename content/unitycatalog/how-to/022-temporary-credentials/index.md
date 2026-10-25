@@ -193,6 +193,10 @@ cached one expires:
 The three writes share one credential. `expiration_time` is in milliseconds,
 so divide it by 1000 before converting it to a time.
 
+obstore calls an async provider only from its async methods. For a provider
+that also serves sync calls, and how obstore times renewals, see
+[Use Unity Catalog credentials with obstore](../obstore-credentials/index.md).
+
 ## Credentials for local storage
 
 A table, volume, or path on `file://` storage needs no keys. The server still

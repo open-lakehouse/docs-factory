@@ -137,6 +137,12 @@ model {
   }
   azureBlobSpec -[specifies]-> lakehouse.objectStorage
 
+  gcsSpec = openSpecification "Google Cloud Storage API" {
+    description "The JSON and XML REST interfaces to Google Cloud Storage buckets and objects."
+    link https://cloud.google.com/storage/docs/apis
+  }
+  gcsSpec -[specifies]-> lakehouse.objectStorage
+
   openLineageSpec = openSpecification "OpenLineage" {
     description "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
     link https://openlineage.io

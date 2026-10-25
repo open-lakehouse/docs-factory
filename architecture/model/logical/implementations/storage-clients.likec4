@@ -1,0 +1,38 @@
+// LOGICAL LAYER (concrete technology) — Libraries that read and write object
+// storage directly, below any table format or catalog.
+
+model {
+
+  objectStore = implementation "object_store" {
+    #library
+
+    description "Rust crate with one async interface to S3, Azure Blob Storage, Google Cloud Storage, and local files. The storage layer of DataFusion and delta-rs."
+    link https://docs.rs/object_store
+
+    metadata {
+      sourceRepo "apache/arrow-rs-object-store"
+      crate "object_store"
+      license "MIT/Apache-2.0"
+      language "Rust"
+    }
+  }
+  objectStore -[consumes]-> s3Spec "reads/writes objects via"
+  objectStore -[consumes]-> azureBlobSpec "reads/writes objects via"
+  objectStore -[consumes]-> gcsSpec "reads/writes objects via"
+
+  obstore = implementation "obstore" {
+    #library
+
+    description "Python bindings to object_store, with sync and async APIs and pluggable credential providers."
+    link https://developmentseed.org/obstore/
+
+    metadata {
+      sourceRepo "developmentseed/obstore"
+      pypi "obstore"
+      license "MIT"
+      language "Python"
+    }
+  }
+  obstore -[builtOn]-> objectStore
+
+}

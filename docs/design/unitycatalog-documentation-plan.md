@@ -238,7 +238,7 @@ Use Unity Catalog
   Catalogs and schemas                      -> H01
   Tables                                    -> H02, H08, H03-H05, TPC-H seed
   Views and metric views                    -> H06, H07
-  Volumes and files                         -> H09, H10, H49
+  Volumes and files                         -> H09, H10, H53, H49
   Functions and AI                          -> H11-H14, H51, H52
   Models                                    -> H15
 Connect engines and clients                 -> R15, H17, H18, H20, H47, H19, H16, H43
@@ -386,7 +386,8 @@ architecture to fit an article.
 | H20 | Query UC tables from Python DataFrame libraries (Polars, Daft, pandas) | P1 / J09 | Current provider APIs/dependencies, discovery, vended storage credentials, read and append results per library; managed tables and other per-library gaps stated with their errors. |
 | H21 | Find and evaluate ecosystem integrations | Drafted (`how-to/integrations`) / J09 | Directory of maintained provider docs for SpiceAI, CelerData, PuppyGraph, XTable and others; protocol, ownership, support label, last verification. No untested recipe collection. |
 | H47 | Use Iceberg REST clients with Unity Catalog | Written (`how-to/iceberg-rest`) / J09 | Spark, DuckDB, and PyIceberg against the Iceberg REST API with vended S3 credentials. Was listed in `nav.yml` as H21, which collides with the ecosystem directory above. |
-| H49 | Use volumes as marimo remote storage | P2 / J04, deferred | Follow-on to J04, deferred until a compatible storage client is verified; an estate-only bridge belongs in open-lakehouse scope. Replaces the removed `status: idea` stub. |
+| H49 | Use volumes as marimo remote storage | Drafted (`how-to/marimo-remote-storage`) / J04 | Follow-on to J04. The storage client is obstore through H53's provider: marimo's Remote Storage panel lists with obstore's sync methods and downloads with its async ones, both verified against `uc-aws`. Replaces the removed `status: idea` stub. |
+| H53 | Use Unity Catalog credentials with obstore | Drafted (`how-to/obstore-credentials`) / J04, J10 | A credential provider over the async SDK that serves obstore's sync and async methods; renewal once under five minutes are left; volume and table credentials. An async-only provider fails sync calls (`no running event loop`, or blocks inside a running loop). |
 
 SQL operations such as MERGE, time travel, streaming, vacuum, clustering, and
 schema evolution are primarily engine/Delta topics. UC docs should document the
@@ -479,7 +480,7 @@ These are authoring inputs, not finished pages. Preserve in-progress user edits.
 | `tutorials/004-manage-models-mlflow.md` | Expand into a tested lifecycle and separate ongoing tasks. | T07, H15, E08. Stub removed → planned T07. |
 | `tutorials/005-configure-backend-db/` → `how-to/002-configure-backend-db/` | Split selection rationale from procedure and learning. | E10, T12, H25/H26, R07. |
 | `tutorials/006-seed-tpch-data/` → `how-to/003-seed-tpch-data/` | Keep as an optional data-preparation how-to/advanced fixture, not core onboarding. | Supporting article for T08 and advanced examples; preserve the tested seeder. |
-| `tutorials/100-marimo-remote-storage/` | Defer until an upstream-compatible storage client is verified; an estate-only bridge belongs in open-lakehouse scope. | Optional follow-on to J04, not P0. Stub removed → planned H49. |
+| `tutorials/100-marimo-remote-storage/` | Written as H49 on obstore, an upstream-compatible storage client. | Optional follow-on to J04, not P0. Stub removed → H49. |
 | `how-to/001-uc-basics/` → `explanation/003-uc-basics/` | Reclassify conceptual material. Recheck bucket-root assumptions rather than treating every external location as a whole bucket. | E03, R02/R05. |
 | `how-to/101-envoy-authentication/` | Defer the specialized Envoy recipe. First document supported UC auth and generic protected exposure. | H32/H37; optional later recipe if principal forwarding is validated. Stub removed → planned H50. |
 | `explanation/001-what-is-unity-catalog.md` | Retain motivation; make OSS boundaries concrete and remove unsupported blanket claims. | E01. |

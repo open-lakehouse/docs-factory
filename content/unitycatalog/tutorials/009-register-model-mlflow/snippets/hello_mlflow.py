@@ -48,7 +48,7 @@ _UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 def _clear_client_env() -> dict[str, str]:
     """Unset every AWS_* and MLFLOW_* variable, and return what was set.
 
-    The session below sets the one variable it needs itself, so this run
+    The session below sets the variables it needs itself, so this run
     proves that nothing else from the environment's client settings is needed.
     """
     return {
@@ -77,6 +77,8 @@ async def _tutorial(exported: dict[str, str]) -> None:
     import mlflow
 
     os.environ["AWS_ENDPOINT_URL_S3"] = "http://localhost:9000"
+    os.environ["MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD"] = "false"
+    os.environ["MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD"] = "false"
     mlflow.set_tracking_uri("http://localhost:8080")
     mlflow.set_registry_uri("uc:http://localhost:8080")
     # --8<-- [end:connect]
@@ -159,14 +161,19 @@ async def _tutorial(exported: dict[str, str]) -> None:
 
 
 def _check_connect(mlflow, exported: dict[str, str]) -> None:
-    """The addresses the session sets match the environment's client settings.
+    """The settings the session sets match the environment's client settings.
 
     Compared only where those settings were exported before the run.
     """
+    proxied = (
+        "MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD",
+        "MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD",
+    )
     expected = {
         "MLFLOW_TRACKING_URI": mlflow.get_tracking_uri(),
         "MLFLOW_REGISTRY_URI": mlflow.get_registry_uri(),
         "AWS_ENDPOINT_URL_S3": os.environ["AWS_ENDPOINT_URL_S3"],
+        **{name: os.environ[name] for name in proxied},
     }
     for name, value in expected.items():
         if name in exported:
@@ -176,7 +183,7 @@ def _check_connect(mlflow, exported: dict[str, str]) -> None:
     aws = sorted(n for n in os.environ if n.startswith("AWS_"))
     assert aws == ["AWS_ENDPOINT_URL_S3"], aws
     flow = {n for n in os.environ if n.startswith("MLFLOW_")}
-    assert flow <= {"MLFLOW_TRACKING_URI", "MLFLOW_REGISTRY_URI"}, flow
+    assert flow <= {"MLFLOW_TRACKING_URI", "MLFLOW_REGISTRY_URI", *proxied}, flow
 
 
 async def _check_inspect(api, client, info, logged_location: str) -> None:

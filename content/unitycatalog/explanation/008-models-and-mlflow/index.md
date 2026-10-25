@@ -76,7 +76,7 @@ In the `uc-mlflow` environment, both services share one PostgreSQL server and
 one object store, but each keeps to its own database and its own bucket:
 
 ```trestle uc-mlflow
-A gateway routes the Unity Catalog API to the server and the MLflow API to the tracking server. Both keep metadata in PostgreSQL (separate `unitycatalog` and `mlflow` databases) and files in RustFS (`amzn-s3-demo-bucket` and `mlflow` buckets).
+A gateway routes the Unity Catalog API to the server and the MLflow API to the tracking server, which serves its model registry from Unity Catalog. Both keep metadata in PostgreSQL (separate `unitycatalog` and `mlflow` databases) and files in RustFS (`amzn-s3-demo-bucket` and `mlflow` buckets).
 ```
 
 | Object | Owned by | Metadata | Files |

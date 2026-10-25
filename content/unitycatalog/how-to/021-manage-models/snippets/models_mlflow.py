@@ -64,7 +64,7 @@ _UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 def _clear_client_env() -> None:
     """Unset every AWS_* and MLFLOW_* variable the harness exported.
 
-    The `connect` region sets the one variable it needs itself, so this run
+    The `connect` region sets the variables it needs itself, so this run
     proves that nothing else from the environment's client settings is needed.
     """
     for name in list(os.environ):
@@ -145,6 +145,8 @@ def _how_to() -> None:
     from mlflow import MlflowClient
 
     os.environ["AWS_ENDPOINT_URL_S3"] = "http://localhost:9000"
+    os.environ["MLFLOW_ENABLE_PROXY_MULTIPART_DOWNLOAD"] = "false"
+    os.environ["MLFLOW_ENABLE_PROXY_MULTIPART_UPLOAD"] = "false"
     mlflow.set_tracking_uri("http://localhost:8080")
     mlflow.set_registry_uri("uc:http://localhost:8080")
     client = MlflowClient()

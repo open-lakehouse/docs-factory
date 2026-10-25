@@ -175,6 +175,7 @@ model {
     }
 
     modelTracking = capability "Model tracking" {
+      #public
       summary "Tracks experiments, versions models, and governs their promotion to production."
       description "
         Model tracking manages machine-learning artifacts over time: experiment

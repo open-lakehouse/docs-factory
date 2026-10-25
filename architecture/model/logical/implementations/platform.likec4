@@ -4,7 +4,7 @@
 model {
 
   mlflow = implementation "MLflow" {
-    #service
+    #service #public
 
     description "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
 

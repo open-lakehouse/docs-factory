@@ -604,6 +604,9 @@
       "style": {
         "color": "primary"
       },
+      "tags": [
+        "public"
+      ],
       "summary": {
         "txt": "Tracks experiments, versions models, and governs their promotion to production."
       },
@@ -1571,7 +1574,8 @@
         }
       ],
       "tags": [
-        "service"
+        "service",
+        "public"
       ],
       "description": {
         "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
@@ -6874,7 +6878,8 @@
             "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
           },
           "tags": [
-            "service"
+            "service",
+            "public"
           ],
           "metadata": {
             "sourceRepo": "mlflow/mlflow",
@@ -10348,7 +10353,9 @@
           "description": {
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
-          "tags": [],
+          "tags": [
+            "public"
+          ],
           "kind": "capability"
         },
         {
@@ -10873,7 +10880,9 @@
           "description": {
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
-          "tags": [],
+          "tags": [
+            "public"
+          ],
           "kind": "capability"
         },
         {
@@ -16043,7 +16052,8 @@
             "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
           },
           "tags": [
-            "service"
+            "service",
+            "public"
           ],
           "metadata": {
             "sourceRepo": "mlflow/mlflow",
@@ -16212,7 +16222,9 @@
           "description": {
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
-          "tags": [],
+          "tags": [
+            "public"
+          ],
           "kind": "capability"
         },
         {
@@ -18973,7 +18985,9 @@
           "description": {
             "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
-          "tags": [],
+          "tags": [
+            "public"
+          ],
           "kind": "capability"
         },
         {

@@ -34,6 +34,7 @@ blogs/
 | One catalog, both formats, any engine | [`uc-iceberg-rest/`](./uc-iceberg-rest/) | — | unity-catalog, iceberg, apache-spark, table-formats | draft | unitycatalog |
 | The true Unity Catalog docs | [`true-unity-catalog-docs/`](./true-unity-catalog-docs/) | — | unity-catalog, delta-lake, devrel, lakehouse | draft | unitycatalog |
 | Whose agent is it anyway? | [`omnigent-agent-scoping/`](./omnigent-agent-scoping/) | — | agents, governance, devrel | draft | openlakehouse |
+| Parquet is engine territory, and Delta Kernel knows it | [`parquet-is-engine-territory/`](./parquet-is-engine-territory/) | Kernel Inside (3) | file-formats, delta-kernel, datafusion, delta-lake, rust | draft | delta |
 
 ## Workflow
 

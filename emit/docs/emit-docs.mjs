@@ -79,7 +79,8 @@ import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget, trestleSnapshotUrl } from "../targets/docs-site.mjs";
 import mdTwin, { TRESTLE_ASSET_BASE } from "../targets/md-twin.mjs";
-import { apiEntries, apiIndexRoute } from "./api.mjs";
+import { apiEntries, apiIndexRoute, vendoredSpecs } from "./api.mjs";
+import { apiOperations, renderApiTwin } from "./api-reference.mjs";
 import {
   conceptEnvironments,
   renderConcepts,
@@ -110,6 +111,7 @@ import {
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const ENVS_DIR = join(REPO_ROOT, "envs");
+const DOCS_DIR = join(REPO_ROOT, "emit", "docs");
 const PLUGIN_DIR = join(REPO_ROOT, "site", "src", "plugins");
 
 // The site page's engine reports become directives the shell renders; the twin
@@ -260,6 +262,17 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
     // The shell's topbar links these, not the sidebar.
     const apis = apiEntries(site);
     const apiIndex = apis.length ? apiIndexRoute(site) : null;
+    const operations = {};
+    for (const { slug, path } of vendoredSpecs(site)) {
+      const abs = join(DOCS_DIR, path);
+      if (!existsSync(abs)) throw new Error(`${path} is not vendored: run \`just api-specs\``);
+      const api = apis.find((a) => a.slug === slug);
+      operations[slug] = apiOperations(readFileSync(abs, "utf8"));
+      files.set(
+        `public${api.route}.md`,
+        renderApiTwin(api, operations[slug], { canonical: `${origin}${api.route}` }),
+      );
+    }
     const byRoute = new Map(selected.map((p) => [hrefFor(p.identity), p]));
     const guidePage = (bucket, slug) => {
       const page = byRoute.get(routeFor(bucket, slug));
@@ -610,6 +623,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
     }
 
     // 4. Site data + GEO surfaces.
+    // Only the API page reads it, so it stays out of the bundle every page loads.
+    files.set("src/generated/api-operations.json", `${JSON.stringify(operations, null, 2)}\n`);
     files.set(
       "src/generated/site.json",
       `${JSON.stringify({ title: site.title, tagline: site.tagline, nav, pages, apis, apiIndex }, null, 2)}\n`,
@@ -643,7 +658,6 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
           hrefFor,
           siteName: site.title,
         }),
-        twin: null,
         alternates: [{ type: "application/yaml", href: a.specUrl, title: "OpenAPI" }],
       };
       search.push({

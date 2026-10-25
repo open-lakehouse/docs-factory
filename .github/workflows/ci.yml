@@ -327,6 +327,9 @@ jobs:
       # The docs-site emitter's sync/diff, nav projection, and page rendering.
       - name: docs-site emitter tests
         run: cd emit && bun test docs
+      # A moved API pin needs its spec vendored (`just api-specs`), or emit fails.
+      - name: Vendored API specs match the pins
+        run: cd emit && bun docs/api-specs.mjs --check
 
   preview-build:
     runs-on: ubuntu-latest

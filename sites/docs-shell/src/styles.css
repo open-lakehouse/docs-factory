@@ -1287,11 +1287,8 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 .shell[data-no-sidebar] .main { padding: 0; }
 .api-placeholder { max-width: 60rem; padding: 2.25rem clamp(1.25rem, 4vw, 3.5rem); }
 .api-reference { min-height: 60vh; }
-.api-loading {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  color: var(--muted-foreground);
-}
+.api-operations { list-style: none; padding-left: 0; }
+.api-operations li { margin: 0.25rem 0; }
 
 /* --- Narrow screens --- */
 @media (max-width: 1200px) {

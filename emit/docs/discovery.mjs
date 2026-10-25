@@ -134,7 +134,7 @@ export function toEntry(
  * Render /llms.txt (pure, for testing). `entries` are toEntry() records. Docs group
  * by Diátaxis quadrant (from their identity/meta); blogs go under a Blog section.
  * Each line links the canonical route and its `.md` twin. `apis` (api.mjs
- * apiEntries) link their OpenAPI spec instead of a twin. `environments`
+ * apiEntries) link their OpenAPI spec beside the twin. `environments`
  * (`{ index, guide }`) adds the env index the runnable scripts need, and
  * `concepts` the site's concepts.json.
  */
@@ -162,7 +162,8 @@ export function renderLlmsIndex(
       "## API reference",
       "",
       ...apis.map(
-        (a) => `- [${a.title}](${origin}${a.route}) ([OpenAPI](${a.specUrl})): ${a.summary}`,
+        (a) =>
+          `- [${a.title}](${origin}${a.route}) ([md](${origin}${a.route}.md), [OpenAPI](${a.specUrl})): ${a.summary}`,
       ),
       "",
     );

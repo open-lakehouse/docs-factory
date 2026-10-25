@@ -1,7 +1,8 @@
 /**
  * The REST API references a site declares (`site.api`): one route per OpenAPI
- * spec, rendered in the browser from the spec's raw GitHub URL. The emitter
- * never fetches a spec; it only publishes where each one lives. Pure.
+ * spec, which the browser renders from the spec's raw GitHub URL. The emitter
+ * reads the same spec from its vendored copy (api-specs.mjs) for the static
+ * operation list and `.md` twin. Pure.
  */
 
 /**
@@ -49,4 +50,20 @@ export function apiEntries(site) {
 /** The API section's own route (it shows the default API), or null. */
 export function apiIndexRoute(site) {
   return site.api ? site.hrefFor({ area: "api" }) : null;
+}
+
+/**
+ * Where each declared spec is vendored, relative to emit/docs/: keyed by repo
+ * and ref, so a pin that moves without `just api-specs` has no file to read.
+ */
+export function vendoredSpecs(site) {
+  return (site.api?.specs ?? []).map((spec) => {
+    const repo = spec.repo ?? site.api.repo;
+    const ref = spec.ref ?? site.api.ref;
+    return {
+      slug: spec.slug,
+      path: `specs/${repo}/${ref}/${spec.file}`,
+      url: `https://raw.githubusercontent.com/${repo}/${ref}/${spec.file}`,
+    };
+  });
 }

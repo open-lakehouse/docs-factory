@@ -7,7 +7,7 @@ references:
   - lakehouse.function
   - unityCatalogAi
   - unityCatalogServer
-status: draft
+status: ready
 ---
 
 When you call a [registered function](model:lakehouse.function) with

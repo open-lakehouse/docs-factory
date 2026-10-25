@@ -322,7 +322,7 @@ adapters remain upstream-only until this matrix gains journeys for them.
 | Register a Python function (`function.create`) | — | — | [✓](../../how-to/manage-python-functions/index.md#register-a-function) `create_python_function_async` |
 | Register a function with its helpers (`function.create-wrapped`) | — | — | [✓](../../how-to/manage-python-functions/index.md#register-a-function-that-calls-helpers) `create_wrapped_function_async` |
 | View a function (`function.describe`) | — | — | [✓](../../how-to/manage-python-functions/index.md#view-a-function-and-get-its-source-back) `get_function_async` |
-| Run a function by name (`function.execute`) | — | — | [✓](../../tutorials/first-python-function/index.md#run-the-function-by-name) `execute_function_async` |
+| Run a function by name (`function.execute`) | — | — | [✓](../../how-to/run-functions/index.md#call-a-function-from-synchronous-code) `execute_function` |
 | List functions (`function.list`) | — | — | [✓](../../how-to/manage-python-functions/index.md#view-a-function-and-get-its-source-back) `list_functions_async` |
 | Get a function's source back (`function.get-source`) | — | — | [✓](../../how-to/manage-python-functions/index.md#view-a-function-and-get-its-source-back) `get_function_source` |
 | Replace a function (`function.replace`) | — | — | [✓](../../how-to/manage-python-functions/index.md#replace-a-function) `create_python_function_async(replace=True)` |

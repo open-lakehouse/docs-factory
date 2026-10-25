@@ -383,8 +383,10 @@
         "storage.view",
         "storage.delete",
         "storage.managed-root",
-        "credentials.vend-path",
+        "credentials.vend-table",
         "credentials.vend-volume",
+        "credentials.vend-model-version",
+        "credentials.vend-path",
         "volume.read-files",
         "volume.write-files"
       ]
@@ -606,8 +608,10 @@
         "iceberg.vended-credentials",
         "credential.create",
         "credential.update",
-        "credentials.vend-path",
-        "credentials.vend-volume"
+        "credentials.vend-table",
+        "credentials.vend-volume",
+        "credentials.vend-model-version",
+        "credentials.vend-path"
       ]
     },
     {
@@ -1457,8 +1461,10 @@
             "storage.view",
             "storage.delete",
             "storage.managed-root",
-            "credentials.vend-path",
+            "credentials.vend-table",
             "credentials.vend-volume",
+            "credentials.vend-model-version",
+            "credentials.vend-path",
             "volume.read-files",
             "volume.write-files"
           ]
@@ -1553,8 +1559,10 @@
             "storage.view",
             "storage.delete",
             "storage.managed-root",
-            "credentials.vend-path",
+            "credentials.vend-table",
             "credentials.vend-volume",
+            "credentials.vend-model-version",
+            "credentials.vend-path",
             "volume.read-files",
             "volume.write-files"
           ]
@@ -10535,6 +10543,237 @@
       }
     },
     {
+      "id": "credentials.vend-table",
+      "title": "Get credentials for a table",
+      "summary": "Ask the server for short-lived credentials to read or write one table's files.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.credential",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {
+        "cli": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "why": "The `uc` CLI has no command for temporary credentials; the pages call the REST API.",
+              "source": "unitycatalog:how-to/configure-aws-storage#check-that-the-server-vends-credentials",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": null
+            }
+          ]
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/022-temporary-credentials/snippets/temporary_credentials.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "temporary-credentials"
+              },
+              "anchor": "get-credentials-for-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "generate_temporary_table_credentials",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "credentials.vend-volume",
+      "title": "Get credentials for a volume",
+      "summary": "Ask the server for short-lived credentials to read or write one volume's files.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.credential",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {
+        "cli": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "why": "The `uc` CLI has no command for temporary credentials; the pages call the REST API.",
+              "source": "unitycatalog:how-to/configure-aws-storage#check-that-the-server-vends-credentials",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": null
+            }
+          ]
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-storage-s3"
+              },
+              "anchor": "create-managed-objects",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "generate_temporary_volume_credentials",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/022-temporary-credentials/snippets/temporary_credentials.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "temporary-credentials"
+              },
+              "anchor": "get-credentials-for-a-volume",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "generate_temporary_volume_credentials",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/006-read-volume-files/snippets/volume_files.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "read-volume-files"
+              },
+              "anchor": "ask-for-access",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "generate_temporary_volume_credentials",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "credentials.vend-model-version",
+      "title": "Get credentials for a model version",
+      "summary": "Ask the server for short-lived credentials to read a model version's files, or write them before it's finalized.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.credential",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {
+        "cli": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "why": "The `uc` CLI has no command for temporary credentials; the pages call the REST API.",
+              "source": "unitycatalog:how-to/configure-aws-storage#check-that-the-server-vends-credentials",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": null
+            }
+          ]
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/022-temporary-credentials/snippets/temporary_credentials.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "temporary-credentials"
+              },
+              "anchor": "get-credentials-for-a-model-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "generate_temporary_model_version_credentials",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
       "id": "credentials.vend-path",
       "title": "Get credentials for a storage path",
       "summary": "Ask the server for short-lived credentials scoped to a path under an external location.",
@@ -10568,7 +10807,7 @@
                 "bucket": "how-to",
                 "slug": "configure-aws-storage"
               },
-              "why": "The `uc` CLI has no command for temporary path credentials; the page calls the REST API.",
+              "why": "The `uc` CLI has no command for temporary credentials; the pages call the REST API.",
               "source": "unitycatalog:how-to/configure-aws-storage#check-that-the-server-vends-credentials",
               "api": null,
               "verified": null,
@@ -10595,66 +10834,20 @@
               "version": "0.7.0",
               "api": "generate_temporary_path_credentials",
               "note": null
-            }
-          ],
-          "evidence": []
-        }
-      }
-    },
-    {
-      "id": "credentials.vend-volume",
-      "title": "Get credentials for a volume",
-      "summary": "Ask the server for short-lived credentials to read or write one volume's files.",
-      "request": null,
-      "path": "uc-api",
-      "asset": "lakehouse.credential",
-      "feature": null,
-      "covers": [],
-      "requires": {
-        "client": {
-          "consumes": [
-            "unityCatalogSpec"
-          ]
-        },
-        "catalog": {
-          "implements": [
-            "unityCatalogSpec"
-          ]
-        }
-      },
-      "cells": {
-        "python-sdk": {
-          "status": "tested",
-          "draft": false,
-          "proofs": [
+            },
             {
-              "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage.py",
+              "script": "content/unitycatalog/how-to/022-temporary-credentials/snippets/temporary_credentials.py",
               "page": {
                 "project": "unitycatalog",
                 "bucket": "how-to",
-                "slug": "managed-storage-s3"
+                "slug": "temporary-credentials"
               },
-              "anchor": "create-managed-objects",
-              "ready": true,
+              "anchor": "get-credentials-for-a-path",
+              "ready": false,
               "works": true,
               "fails": null,
               "version": "0.7.0",
-              "api": "generate_temporary_volume_credentials",
-              "note": null
-            },
-            {
-              "script": "content/unitycatalog/tutorials/006-read-volume-files/snippets/volume_files.py",
-              "page": {
-                "project": "unitycatalog",
-                "bucket": "tutorials",
-                "slug": "read-volume-files"
-              },
-              "anchor": "ask-for-access",
-              "ready": true,
-              "works": true,
-              "fails": null,
-              "version": "0.7.0",
-              "api": "generate_temporary_volume_credentials",
+              "api": "generate_temporary_path_credentials",
               "note": null
             }
           ],

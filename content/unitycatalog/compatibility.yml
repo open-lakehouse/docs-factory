@@ -159,8 +159,10 @@ tables:
       - storage.view
       - storage.delete
       - storage.managed-root
-      - credentials.vend-path
+      - credentials.vend-table
       - credentials.vend-volume
+      - credentials.vend-model-version
+      - credentials.vend-path
       - volume.read-files
       - volume.write-files
   functions:

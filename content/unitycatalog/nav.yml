@@ -74,8 +74,9 @@ nav:
         items:
           - page: how-to/manage-volumes
             id: H09
-          - planned: H10
-            title: Request temporary credentials for tables, volumes, paths, and models
+          - page: how-to/temporary-credentials
+            id: H10
+            label: Request temporary credentials
           # Deferred follow-on to J04 until a compatible storage client is verified.
           - planned: H49
             title: Use volumes as marimo remote storage

@@ -3008,6 +3008,54 @@
       ],
       "aliases": []
     },
+    "credentials.vend-table": {
+      "title": "Get credentials for a table",
+      "summary": "Ask the server for short-lived credentials to read or write one table's files.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.credential",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "credentials.vend-model-version": {
+      "title": "Get credentials for a model version",
+      "summary": "Ask the server for short-lived credentials to read a model version's files, or write them before it's finalized.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.credential",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
     "append-only.write": {
       "title": "Write to an append-only table",
       "summary": "Append to a table that rejects updates and deletes, and have row changes refused.",

@@ -75,7 +75,7 @@ UNITYCATALOG = Project(
     name="unitycatalog",
     product=r"Unity Catalog\s+(?:OSS\s+)?",
     scan=(
-        ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml")),
+        ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml", "*.java")),
         ("envs", ("*.yaml", "*.yml", "*.md", "*.py", "*.toml", "Dockerfile")),
         ("emit/docs/sites", ("unitycatalog-docs.mjs",)),
     ),
@@ -87,7 +87,7 @@ UNITYCATALOG = Project(
         Rule(
             "release",
             re.compile(
-                rf"io\.unitycatalog:unitycatalog-(?:spark_[\d.]+_[\d.]+|client):{_V}"
+                rf"io\.unitycatalog:unitycatalog-(?:spark_[\d.]+_[\d.]+|client|server):{_V}"
             ),
         ),
         Rule(

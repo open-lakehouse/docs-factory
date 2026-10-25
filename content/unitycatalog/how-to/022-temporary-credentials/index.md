@@ -1,6 +1,6 @@
 ---
 title: Request temporary storage credentials
-summary: Ask Unity Catalog for S3 credentials scoped to one table, volume, model version, or path, open storage with them, and renew them before they expire.
+summary: Ask Unity Catalog for storage credentials scoped to one table, volume, model version, or path, open storage with them, and renew them before they expire.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -14,9 +14,9 @@ status: draft
 A client that reads or writes data under [Unity Catalog](model:unityCatalogServer)
 asks the server for storage credentials, then talks to
 [object storage](model:lakehouse.objectStorage) itself. Each request names one
-table, volume, model version, or path, and one operation. On S3, the server
-answers with an access key, secret key, and session token that reach only that
-object's location, allow only that operation, and expire after an hour. Engines
+table, volume, model version, or path, and one operation. The server answers
+with a short-lived credential for the object's storage that reaches only that
+object's location and allows only that operation. Engines
 such as Spark make these requests for you. Make them yourself when you build a
 client, or open storage from an application. For how the server decides and
 mints a credential, see
@@ -60,8 +60,11 @@ The `uc` CLI has no command for temporary credentials, so call the REST API:
 :::
 
 Every response has the same shape: `url`, the location the credential covers;
-`aws_temp_credentials`, with `access_key_id`, `secret_access_key`, and
-`session_token`; and `expiration_time`, in epoch milliseconds.
+`expiration_time`, in epoch milliseconds; and one credential for the storage
+behind `url`. For S3 that is `aws_temp_credentials`, with `access_key_id`,
+`secret_access_key`, and `session_token`. Azure storage gets
+`azure_user_delegation_sas`, with a `sas_token`, and Google Cloud Storage
+gets `gcp_oauth_token`, with an `oauth_token`.
 
 ## Get credentials for a table
 

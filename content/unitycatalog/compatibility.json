@@ -168,6 +168,17 @@
       "viaVersion": null
     },
     {
+      "key": "java-sdk",
+      "label": "Java SDK",
+      "version": "0.7.0",
+      "package": null,
+      "model": "unityCatalogJavaSdk",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "viaVersion": null
+    },
+    {
       "key": "mlflow",
       "label": "MLflow",
       "version": "3.17.0",
@@ -1630,6 +1641,17 @@
           ]
         }
       ]
+    },
+    {
+      "id": "unityCatalogJavaSdk",
+      "title": "Unity Catalog Java SDK",
+      "interfaces": [
+        "java-sdk"
+      ],
+      "page": null,
+      "anchor": null,
+      "heading": null,
+      "groups": []
     },
     {
       "id": "mlflow",
@@ -17867,6 +17889,16 @@
     {
       "kind": "unverified-asset",
       "asset": "lakehouse.agentSkill"
+    },
+    {
+      "kind": "unverified-asset-edge",
+      "source": "unityCatalogJavaSdk",
+      "asset": "lakehouse.namespace"
+    },
+    {
+      "kind": "unverified-asset-edge",
+      "source": "unityCatalogJavaSdk",
+      "asset": "lakehouse.table"
     }
   ]
 }

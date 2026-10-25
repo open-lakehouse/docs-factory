@@ -47,6 +47,23 @@ model {
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.credential "manages"
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.externalLocation "manages"
 
+  unityCatalogJavaSdk = implementation "Unity Catalog Java SDK" {
+    #client #public
+
+    description "Generated synchronous Java client for Unity Catalog REST APIs."
+    link https://central.sonatype.com/artifact/io.unitycatalog/unitycatalog-client
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      maven "io.unitycatalog:unitycatalog-client"
+      license "Apache-2.0"
+      language "Java"
+    }
+  }
+  unityCatalogJavaSdk -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogJavaSdk -[operatesOn]-> lakehouse.namespace "manages"
+  unityCatalogJavaSdk -[operatesOn]-> lakehouse.table "manages"
+
   unityCatalogAi = implementation "unitycatalog-ai" {
     #client #public
 

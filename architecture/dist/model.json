@@ -878,6 +878,34 @@
       "kind": "implementation",
       "id": "unityCatalogPythonSdk"
     },
+    "unityCatalogJavaSdk": {
+      "metadata": {
+        "sourceRepo": "unitycatalog/unitycatalog",
+        "maven": "io.unitycatalog:unitycatalog-client",
+        "license": "Apache-2.0",
+        "language": "Java"
+      },
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://central.sonatype.com/artifact/io.unitycatalog/unitycatalog-client"
+        }
+      ],
+      "tags": [
+        "client",
+        "public"
+      ],
+      "description": {
+        "txt": "Generated synchronous Java client for Unity Catalog REST APIs."
+      },
+      "title": "Unity Catalog Java SDK",
+      "kind": "implementation",
+      "id": "unityCatalogJavaSdk"
+    },
     "unityCatalogAi": {
       "metadata": {
         "sourceRepo": "unitycatalog/unitycatalog",
@@ -2719,10 +2747,10 @@
     },
     "eeb270cf99": {
       "line": "dotted",
-      "title": "validates OIDC tokens",
       "tags": [
         "partial"
       ],
+      "title": "validates OIDC tokens",
       "source": {
         "model": "lakekeeper"
       },
@@ -2794,10 +2822,10 @@
     },
     "13179e531e": {
       "line": "dotted",
-      "title": "validates access tokens",
       "tags": [
         "partial"
       ],
+      "title": "validates access tokens",
       "source": {
         "model": "unityCatalogServer"
       },
@@ -3022,6 +3050,42 @@
       },
       "kind": "operatesOn",
       "id": "70653cf14b"
+    },
+    "31c088b877": {
+      "line": "dashed",
+      "title": "calls",
+      "source": {
+        "model": "unityCatalogJavaSdk"
+      },
+      "target": {
+        "model": "unityCatalogSpec"
+      },
+      "kind": "consumes",
+      "id": "31c088b877"
+    },
+    "b3db8cd0e4": {
+      "line": "dashed",
+      "title": "manages",
+      "source": {
+        "model": "unityCatalogJavaSdk"
+      },
+      "target": {
+        "model": "lakehouse.namespace"
+      },
+      "kind": "operatesOn",
+      "id": "b3db8cd0e4"
+    },
+    "7c7b49ddcd": {
+      "line": "dashed",
+      "title": "manages",
+      "source": {
+        "model": "unityCatalogJavaSdk"
+      },
+      "target": {
+        "model": "lakehouse.table"
+      },
+      "kind": "operatesOn",
+      "id": "7c7b49ddcd"
     },
     "d38228d1d7": {
       "line": "dashed",
@@ -3624,10 +3688,10 @@
     },
     "d845fbe26e": {
       "line": "dotted",
-      "title": "coarse allow/deny gate before planning",
       "tags": [
         "partial"
       ],
+      "title": "coarse allow/deny gate before planning",
       "source": {
         "model": "hydrofoil"
       },
@@ -3639,10 +3703,10 @@
     },
     "735e0bc066": {
       "line": "dotted",
-      "title": "rewrites plans with row filters + column masks",
       "tags": [
         "partial"
       ],
+      "title": "rewrites plans with row filters + column masks",
       "source": {
         "model": "hydrofoil"
       },
@@ -3714,10 +3778,10 @@
     },
     "1c86176a4f": {
       "line": "dotted",
-      "title": "access rules at the gateway",
       "tags": [
         "partial"
       ],
+      "title": "access rules at the gateway",
       "source": {
         "model": "authelia"
       },
@@ -3729,10 +3793,10 @@
     },
     "79a1507c10": {
       "line": "dotted",
-      "title": "decides access policy",
       "tags": [
         "partial"
       ],
+      "title": "decides access policy",
       "source": {
         "model": "openPolicyAgent"
       },
@@ -4775,6 +4839,21 @@
           "kind": "operatesOn"
         },
         {
+          "id": "mqk6sh",
+          "parent": null,
+          "source": "unityCatalogJavaSdk",
+          "target": "lakehouse",
+          "label": "manages",
+          "relations": [
+            "b3db8cd0e4",
+            "7c7b49ddcd"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "operatesOn"
+        },
+        {
           "id": "3a9x8p",
           "parent": null,
           "source": "unityCatalogAi",
@@ -5495,6 +5574,20 @@
           "label": "calls",
           "relations": [
             "e32dc82e40"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1s1iaj3",
+          "parent": null,
+          "source": "unityCatalogJavaSdk",
+          "target": "unityCatalogSpec",
+          "label": "calls",
+          "relations": [
+            "31c088b877"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6451,6 +6544,45 @@
           "links": [
             {
               "url": "https://pypi.org/project/unitycatalog-client/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "unityCatalogJavaSdk",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "mqk6sh",
+            "1s1iaj3"
+          ],
+          "title": "Unity Catalog Java SDK",
+          "modelRef": "unityCatalogJavaSdk",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Generated synchronous Java client for Unity Catalog REST APIs."
+          },
+          "tags": [
+            "client",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "maven": "io.unitycatalog:unitycatalog-client",
+            "license": "Apache-2.0",
+            "language": "Java"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://central.sonatype.com/artifact/io.unitycatalog/unitycatalog-client"
             }
           ],
           "kind": "implementation"
@@ -8001,6 +8133,7 @@
             "k5bifc",
             "1xhri21",
             "1nrbqw7",
+            "1s1iaj3",
             "ralwkn",
             "8evphi",
             "8o013o",
@@ -8269,6 +8402,7 @@
             "8koh3a",
             "vej1af",
             "kxkjwp",
+            "mqk6sh",
             "3a9x8p",
             "gj9sso",
             "byeu7p",
@@ -8353,7 +8487,7 @@
           }
         ]
       },
-      "hash": "mOLM58W1eXNV29mmcTtfO_cKR0NPThsMHf5rkJtDTWk"
+      "hash": "MdmrVOgJLeKfCqtA4PmMcc-noo3rsuiwg0M1Jl5K3tc"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -9213,6 +9347,19 @@
       },
       "title": "UC Delta API",
       "id": "ucDeltaApi_managedTableFlow",
+      "flow": [
+        "step-01",
+        "step-02",
+        "step-03",
+        "step-04",
+        "step-05",
+        "step-06",
+        "step-07",
+        "step-08",
+        "step-09",
+        "step-10",
+        "step-11"
+      ],
       "autoLayout": {
         "direction": "LR"
       },
@@ -9546,6 +9693,17 @@
       },
       "title": "UC credential vending",
       "id": "ucCredentialVending_tableRead",
+      "flow": [
+        "step-01",
+        "step-02",
+        "step-03",
+        "step-04",
+        "step-05",
+        "step-06",
+        "step-07",
+        "step-08",
+        "step-09"
+      ],
       "autoLayout": {
         "direction": "LR"
       },
@@ -13817,6 +13975,20 @@
           "kind": "consumes"
         },
         {
+          "id": "1s1iaj3",
+          "parent": null,
+          "source": "unityCatalogJavaSdk",
+          "target": "unityCatalogSpec",
+          "label": "calls",
+          "relations": [
+            "31c088b877"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
           "id": "ralwkn",
           "parent": null,
           "source": "unityCatalogAi",
@@ -14093,6 +14265,44 @@
           "kind": "implementation"
         },
         {
+          "id": "unityCatalogJavaSdk",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1s1iaj3"
+          ],
+          "title": "Unity Catalog Java SDK",
+          "modelRef": "unityCatalogJavaSdk",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Generated synchronous Java client for Unity Catalog REST APIs."
+          },
+          "tags": [
+            "client",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "maven": "io.unitycatalog:unitycatalog-client",
+            "license": "Apache-2.0",
+            "language": "Java"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://central.sonatype.com/artifact/io.unitycatalog/unitycatalog-client"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "unityCatalogAi",
           "parent": null,
           "level": 0,
@@ -14250,6 +14460,7 @@
             "k5bifc",
             "1xhri21",
             "1nrbqw7",
+            "1s1iaj3",
             "ralwkn",
             "8evphi"
           ],
@@ -14442,7 +14653,7 @@
           }
         ]
       },
-      "hash": "b5uR8IKPpOJ_MjGBG5-ZxXQsGlTpnjQyfyuMvVby6HI"
+      "hash": "9WQwyr-HSBGs8rnA1h6AnKxPEMrUCaMDxdrz632qnJw"
     },
     "techFormatsStorage": {
       "_type": "element",

@@ -21,6 +21,7 @@ interfaces:
   - pyiceberg
   - cli
   - python-sdk
+  - java-sdk
   - mlflow
   - unitycatalog-ai
   - unitycatalog-langchain

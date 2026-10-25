@@ -112,6 +112,10 @@ python-sdk:
   pin: unitycatalog-client
   package: unitycatalog-client
   model: unityCatalogPythonSdk
+java-sdk:
+  label: Java SDK
+  pin: release
+  model: unityCatalogJavaSdk
 # MLflow's client reaches the model registry through the Unity Catalog API
 # (a `uc:` registry URI); one pin covers the client and the tracking server.
 mlflow:

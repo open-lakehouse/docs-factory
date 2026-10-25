@@ -6,6 +6,7 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { parsePlannedSlug } from "../../../site/src/content-core/identity.mjs";
 import type { ReviewClient } from "./client.js";
 import {
+  AnchorState,
   type Comment,
   CommentScope,
   ContentArea,
@@ -70,6 +71,14 @@ export interface FeedbackThread {
     fingerprint: string;
     quote?: string;
     code?: { path: string; region: string; line: number; endLine: number };
+    /** Where the review server's re-anchoring placed the thread on the latest version. */
+    placement?: {
+      state: "moved" | "rewritten" | "section";
+      /** The heading the comment was written under, when it has moved since. */
+      authoredHeading?: string;
+      /** For `rewritten`: the text the quote approximately matches now (normalized). */
+      currentQuote?: string;
+    };
   };
   /** Commit the thread was written against. */
   authoredGitSha?: string;
@@ -138,6 +147,23 @@ function slotLocation(slot: PlannedSlot): Location {
   };
 }
 
+const PLACEMENT: Partial<Record<AnchorState, "moved" | "rewritten" | "section">> = {
+  [AnchorState.MOVED]: "moved",
+  [AnchorState.REWRITTEN]: "rewritten",
+  [AnchorState.SECTION]: "section",
+};
+
+/** The server's re-anchoring outcome, when it isn't simply "where it was written". */
+function placementOf(root: Comment): FeedbackThread["anchor"]["placement"] {
+  const state = PLACEMENT[root.anchorState];
+  if (!state) return undefined;
+  const authoredHeading =
+    state !== "section" && root.authoredAnchorSlug !== root.anchorSlug
+      ? root.authoredHeading || root.authoredAnchorSlug || undefined
+      : undefined;
+  return { state, authoredHeading, currentQuote: root.anchorCurrentQuote || undefined };
+}
+
 function toFeedback(
   thread: Thread,
   draft: Page,
@@ -169,6 +195,7 @@ function toFeedback(
       heading: root.anchorSlug,
       fingerprint: root.anchorFingerprint,
       quote: root.selector?.quote || undefined,
+      placement: placementOf(root),
       code: code?.path
         ? { path: code.path, region: code.region, line: code.line, endLine: code.endLine }
         : undefined,

@@ -31,14 +31,34 @@ const SUGGEST_DECL =
   " text-decoration: underline wavy color-mix(in oklab, mediumseagreen 70%, var(--border));" +
   " text-underline-offset: 2px;";
 
+const APPROX_DECL =
+  "background: color-mix(in oklab, gold 14%, transparent);" +
+  " color: inherit;" +
+  " text-decoration: underline dashed color-mix(in oklab, gold 70%, var(--border));" +
+  " text-underline-offset: 2px;";
+
+export interface HighlightNames {
+  all: string;
+  focus: string;
+  suggest: string;
+  /** A reworded passage: only the server's closest match to the quote. */
+  approx: string;
+}
+
 /** Highlight-registry names for a given tab key (or the shared static names). */
-export function highlightNames(key?: string): { all: string; focus: string; suggest: string } {
+export function highlightNames(key?: string): HighlightNames {
   if (!key)
-    return { all: "review-quote", focus: "review-quote-focus", suggest: "review-quote-suggest" };
+    return {
+      all: "review-quote",
+      focus: "review-quote-focus",
+      suggest: "review-quote-suggest",
+      approx: "review-quote-approx",
+    };
   return {
     all: `review-quote-${key}`,
     focus: `review-quote-focus-${key}`,
     suggest: `review-quote-suggest-${key}`,
+    approx: `review-quote-approx-${key}`,
   };
 }
 
@@ -58,11 +78,11 @@ export function ensureHighlightStyle(key?: string) {
     el.id = STYLE_EL_ID;
     document.head.appendChild(el);
   }
-  const { all, focus, suggest } = highlightNames(key);
+  const { all, focus, suggest, approx } = highlightNames(key);
   el.appendChild(
     document.createTextNode(
-      `::highlight(${all}) { ${ALL_DECL} } ::highlight(${suggest}) { ${SUGGEST_DECL} }` +
-        ` ::highlight(${focus}) { ${FOCUS_DECL} }\n`,
+      `::highlight(${all}) { ${ALL_DECL} } ::highlight(${approx}) { ${APPROX_DECL} }` +
+        ` ::highlight(${suggest}) { ${SUGGEST_DECL} } ::highlight(${focus}) { ${FOCUS_DECL} }\n`,
     ),
   );
 }

@@ -96,14 +96,26 @@ server anchor with, so ids and hashes agree by construction.
      renamed). Its section runs to the next heading of the same or higher level.
    - Find the quote in that section by normalized, markdown-stripped,
      line-joined text, so it matches across soft breaks and through
-     emphasis/links. Fall back to the first 60 characters.
-   - Precision is `quote`, then `section`, then `file`.
+     emphasis/links. Fall back to the first 60 characters, with a note that
+     the end is a guess. A repeated quote takes the occurrence its stored
+     `prefix`, then `suffix`, frames, as the site's `locateSelector` does.
+   - Not in the section, or the heading is gone: search the whole page. A hit
+     elsewhere is precision `moved`.
+   - Still not found: resolve the comment in `git show <authored_git_sha>:<path>`,
+     where it matched when written, and follow those lines to the working tree.
+     Lines edited in place map through the `git diff -U0` hunks; lines the diff
+     shows deleted are looked for verbatim elsewhere (a moved paragraph keeps
+     most of its soft-wrapped lines). Either way the result is `moved` with a
+     note naming the old lines. No fuzzy text matching: the note can always say
+     why these lines were chosen. Skipped when the sha isn't fetched locally.
+   - Precision is `quote`, then `moved`, then `section`, then `file`.
 3. Page-level (`document` scope) threads are about the whole page and map to the
    file with precision `file`.
 4. Code: `code_path` plus `line_hash`. Stay on the original line if its hash
    still matches, otherwise take the nearest line with that hash.
 5. Drift: `git diff --quiet <authored_git_sha> -- <path>`. When it reports a
-   change, the agent is told to read around rather than trust the numbers.
+   change, the agent is told to read around rather than trust the numbers, and
+   is given the commits since (`git log <sha>..HEAD -- <path>`, the newest five).
 
 ## Approvals and releasing
 

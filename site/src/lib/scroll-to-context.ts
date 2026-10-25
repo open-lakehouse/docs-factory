@@ -10,13 +10,14 @@
 // Always scrolls that container explicitly (never Element.scrollIntoView): the
 // latter walks every scrollable ancestor and fights the workspace panes.
 import type { Thread } from "../gen/docs_factory/review/v1/messages_pb";
+import { currentSelector } from "./anchor-placement";
 import { locateSelector, sectionRootForAnchor } from "./content-ref";
 
 /** Where scrolling happens: the window (single-page routes) or a scroll pane. */
 export type ScrollContainer = Window | HTMLElement;
 
 /** Resolve a heading by id within the article root (never document-wide). */
-function headingById(article: HTMLElement, slug: string): HTMLElement | null {
+export function headingById(article: HTMLElement, slug: string): HTMLElement | null {
   return article.querySelector<HTMLElement>(`#${CSS.escape(slug)}`);
 }
 
@@ -80,8 +81,8 @@ export function scrollToThreadContext(
   const root = thread.root;
   if (!root) return false;
 
-  const sel = root.selector;
-  if (sel?.quote) {
+  const sel = currentSelector(root);
+  if (sel) {
     const section = sectionRootForAnchor(article, root.anchorSlug);
     const range = locateSelector(sel, section);
     if (range) {

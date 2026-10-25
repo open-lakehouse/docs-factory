@@ -15,7 +15,12 @@ function locationLine(loc: Location | undefined): string {
         : `${loc.path}:${loc.startLine}-${loc.endLine}`;
   const flags = [loc.precision, loc.drifted ? "file changed since comment" : ""].filter(Boolean);
   const note = loc.note ? ` — ${loc.note}` : "";
-  return `- location: \`${range}\` (${flags.join(", ")})${note}`;
+  const out = `- location: \`${range}\` (${flags.join(", ")})${note}`;
+  if (!loc.history) return out;
+  const { commits, total } = loc.history;
+  const more = total > commits.length ? `, and ${total - commits.length} more` : "";
+  const list = commits.map((c) => `${c.sha} ${c.subject}`).join("; ");
+  return `${out}\n- changed since comment in ${total} commit${total === 1 ? "" : "s"}: ${list}${more}`;
 }
 
 function anchorLine(t: FeedbackThread): string {
@@ -37,7 +42,17 @@ function anchorLine(t: FeedbackThread): string {
   const section = isPreambleAnchor(t.anchor.heading)
     ? "(before first heading)"
     : `#${t.anchor.heading}`;
-  return `- anchor: ${section}${quote}`;
+  const line = `- anchor: ${section}${quote}`;
+  const p = t.anchor.placement;
+  if (!p) return line;
+  const from = p.authoredHeading ? `, written under “${p.authoredHeading}”` : "";
+  const what =
+    p.state === "rewritten"
+      ? `the passage was reworded${from}; it now reads “${p.currentQuote ?? ""}”`
+      : p.state === "moved"
+        ? `the passage moved${from}`
+        : "the quoted text is gone from the page; the heading remains";
+  return `${line}\n- review app: ${what}`;
 }
 
 /** Prefix every line of `text` for a diff fence. */

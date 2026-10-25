@@ -9,6 +9,7 @@ import { create } from "@bufbuild/protobuf";
 // re-export so the browser comment client uses the exact same normalization.
 import { PLANNED_BUCKET, parsePlannedSlug, plannedSlug } from "../content-core/identity.mjs";
 import { fingerprint, normalizeText } from "../content-core/normalize.mjs";
+import { isPreambleAnchor } from "../content-core/slug.mjs";
 import {
   ContentArea,
   type ContentRef,
@@ -74,6 +75,7 @@ export function modelHref(target: ModelTarget): string {
  * The in-app route for a ContentRef, matching App.tsx: `/blog/<slug>` for blogs
  * and `/docs/<project>/<bucket>/<slug>` for docs. Pass `anchorSlug` to deep-link
  * to a section (the reviewer dashboard links comments back to their heading).
+ * The preamble has no heading to land on, so it links to the page itself.
  */
 export function refHref(ref: ContentRef, anchorSlug?: string): string {
   const model = modelOf(ref);
@@ -82,7 +84,7 @@ export function refHref(ref: ContentRef, anchorSlug?: string): string {
     ref.area === ContentArea.BLOGS
       ? `/blog/${ref.slug}`
       : `/docs/${ref.project ?? ""}/${ref.bucket ?? ""}/${ref.slug}`;
-  return anchorSlug ? `${base}#${anchorSlug}` : base;
+  return anchorSlug && !isPreambleAnchor(anchorSlug) ? `${base}#${anchorSlug}` : base;
 }
 
 /**

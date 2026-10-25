@@ -25,3 +25,10 @@ test("a model ref routes to the Model explorer", () => {
 test("a malformed model token is rejected", () => {
   expect(refFromParam("model:elements/x::")).toBeNull();
 });
+
+test("a preamble anchor links to the page, not a heading", () => {
+  const ref = { area: ContentArea.BLOGS, slug: "p" } as Parameters<typeof refHref>[0];
+  expect(refHref(ref, "__preamble__")).toBe("/blog/p");
+  expect(refHref(ref, "")).toBe("/blog/p");
+  expect(refHref(ref, "intro")).toBe("/blog/p#intro");
+});

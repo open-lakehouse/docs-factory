@@ -169,8 +169,10 @@ describe("reanchorThreads (prose)", () => {
     const edited = [{ ...sections[0], text: "The broker vends to the engine." }, sections[1]];
     const orphaned = await reanchorThreads(sql, "blogs", "x", edited);
     expect(orphaned).toBe(0);
-    expect(updates).toHaveLength(1);
+    expect(updates).toHaveLength(2);
     expect(updates[0].sql).toContain("suggestion_state = 'applied'");
+    // The quoted text itself is gone, so the thread now sits at section level.
+    expect(updates[1].values).toContain("section");
   });
 
   test("tier 3: heading-level comment on a surviving slug → kept", async () => {
@@ -250,6 +252,122 @@ describe("reanchorThreads (prose)", () => {
     expect(orphaned).toBe(0);
     expect(updates).toHaveLength(1);
     expect(updates[0].sql).toContain("orphaned = false");
+  });
+});
+
+describe("reanchorThreads records the anchor state", () => {
+  const sections: NewSection[] = [
+    { anchorSlug: "__preamble__", fingerprint: "", text: "An intro about the broker." },
+    {
+      anchorSlug: "credential-vending",
+      fingerprint: "credential vending",
+      text: "The broker vends short-lived tokens to the engine.",
+    },
+    {
+      anchorSlug: "governance",
+      fingerprint: "governance",
+      text: "Policies are enforced centrally by the catalog.",
+    },
+  ];
+  const root = (row: Record<string, unknown>) => ({
+    id: "r",
+    anchor_fingerprint: "",
+    orphaned: false,
+    selector_quote: null,
+    ...row,
+  });
+  const run = async (row: Record<string, unknown>) => {
+    const { sql, updates } = fakeSql([root(row)]);
+    await reanchorThreads(sql, "blogs", "x", sections);
+    return updates;
+  };
+
+  test("exact where it was written", async () => {
+    const updates = await run({
+      anchor_slug: "credential-vending",
+      authored_anchor_slug: "credential-vending",
+      selector_quote: "vends short-lived tokens",
+    });
+    expect(updates[0].values).toContain("exact");
+  });
+
+  test("moved when found under another heading than the authored one", async () => {
+    const updates = await run({
+      anchor_slug: "governance",
+      authored_anchor_slug: "governance",
+      selector_quote: "vends short-lived tokens",
+    });
+    expect(updates[0].values).toContain("credential-vending");
+    expect(updates[0].values).toContain("moved");
+  });
+
+  test("stays moved on later versions, keyed on the authored heading", async () => {
+    const updates = await run({
+      anchor_slug: "credential-vending",
+      authored_anchor_slug: "old-heading",
+      selector_quote: "vends short-lived tokens",
+    });
+    expect(updates[0].values).toContain("moved");
+  });
+
+  test("rewritten on a fuzzy match, keeping the text it matched", async () => {
+    const updates = await run({
+      anchor_slug: "credential-vending",
+      authored_anchor_slug: "credential-vending",
+      selector_quote: "the broker vends short-lived credentials to the engine",
+    });
+    expect(updates[0].values).toContain("rewritten");
+    expect(updates[0].values).toContain("the broker vends short-lived tokens to the engine.");
+  });
+
+  test("section when the heading survives but the quote is gone", async () => {
+    const updates = await run({
+      anchor_slug: "governance",
+      authored_anchor_slug: "governance",
+      selector_quote: "text that is nowhere on the page",
+    });
+    expect(updates).toHaveLength(1);
+    expect(updates[0].values).toContain("section");
+  });
+
+  test("an unchanged state is not rewritten", async () => {
+    const updates = await run({
+      anchor_slug: "governance",
+      authored_anchor_slug: "governance",
+      anchor_state: "section",
+      selector_quote: "text that is nowhere on the page",
+    });
+    expect(updates).toHaveLength(0);
+  });
+
+  test("moved when a heading-level comment follows its renamed heading", async () => {
+    const updates = await run({
+      anchor_slug: "policy",
+      authored_anchor_slug: "policy",
+      anchor_fingerprint: "governance",
+    });
+    expect(updates[0].values).toContain("governance");
+    expect(updates[0].values).toContain("moved");
+  });
+
+  test("an empty authored slug and the preamble key are the same place", async () => {
+    const updates = await run({
+      anchor_slug: "",
+      authored_anchor_slug: "",
+      selector_quote: "an intro about the broker",
+    });
+    expect(updates[0].values).toContain("__preamble__");
+    expect(updates[0].values).toContain("exact");
+  });
+
+  test("orphaned when nothing matches", async () => {
+    const updates = await run({
+      anchor_slug: "gone",
+      authored_anchor_slug: "gone",
+      anchor_fingerprint: "gone",
+      selector_quote: "text that is nowhere on the page",
+    });
+    expect(updates[0].sql).toContain("anchor_state = 'orphaned'");
   });
 });
 

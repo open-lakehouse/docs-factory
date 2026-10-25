@@ -7,17 +7,34 @@
 // painted highlights are not hit-testable, a click listener on the article
 // hit-tests the pointer against the resolved ranges and selects the matching
 // thread. Ranges are resolved with locateSelector (exact, then
-// prefix-disambiguated). If a quote no longer resolves, it's simply skipped
-// here — the thread still lives in the sidebar.
+// prefix-disambiguated); a reworded passage resolves the server's closest match
+// instead, painted lighter. If a quote no longer resolves, it isn't painted, but
+// a focused thread still marks its heading so the reader sees where it lives.
 import { type RefObject, useEffect } from "react";
-import { SuggestionState, type Thread } from "../../gen/docs_factory/review/v1/messages_pb";
+import {
+  AnchorState,
+  SuggestionState,
+  type Thread,
+} from "../../gen/docs_factory/review/v1/messages_pb";
+import { currentSelector } from "../../lib/anchor-placement";
 import { locateSelector, sectionRootForAnchor } from "../../lib/content-ref";
+import { headingById } from "../../lib/scroll-to-context";
 import { ensureHighlightStyle, highlightNames } from "./highlight-style";
 
 function resolveRange(thread: Thread, article: HTMLElement): Range | null {
-  const sel = thread.root?.selector;
-  if (!sel?.quote) return null;
+  const sel = currentSelector(thread.root);
+  if (!sel) return null;
   return locateSelector(sel, sectionRootForAnchor(article, thread.root?.anchorSlug));
+}
+
+/** The thread's heading text, for a focused thread whose quote can't be painted. */
+function headingRange(thread: Thread, article: HTMLElement): Range | null {
+  const slug = thread.root?.anchorSlug;
+  const heading = slug ? headingById(article, slug) : null;
+  if (!heading) return null;
+  const range = document.createRange();
+  range.selectNodeContents(heading);
+  return range;
 }
 
 function pointInRange(range: Range, x: number, y: number): boolean {
@@ -50,39 +67,39 @@ export default function QuoteHighlights({
 
     // Keyed tabs need a matching ::highlight() rule injected for their names.
     ensureHighlightStyle(highlightKey);
-    const {
-      all: HIGHLIGHT_ALL,
-      focus: HIGHLIGHT_FOCUS,
-      suggest: HIGHLIGHT_SUGGEST,
-    } = highlightNames(highlightKey);
-
-    const allRanges: Range[] = [];
-    const focusRanges: Range[] = [];
-    const suggestRanges: Range[] = [];
+    const names = highlightNames(highlightKey);
+    const ranges: Record<keyof typeof names, Range[]> = {
+      all: [],
+      focus: [],
+      suggest: [],
+      approx: [],
+    };
     // id -> range, for click hit-testing back to the thread.
     const byThread: { id: string; range: Range }[] = [];
 
     for (const t of threads) {
-      const range = resolveRange(t, article);
-      if (!range) continue;
       const focused = t.root?.id === focusedThreadId;
+      const range = resolveRange(t, article);
+      if (!range) {
+        const heading = focused && t.root?.selector?.quote ? headingRange(t, article) : null;
+        if (heading) ranges.focus.push(heading);
+        continue;
+      }
       // Resolved threads stay quiet in the article until hovered/selected —
       // then they get the focus highlight so you can still find the target.
       if (t.resolved && !focused) continue;
       if (t.root?.id) byThread.push({ id: t.root.id, range });
-      if (focused) focusRanges.push(range);
-      else if (t.root?.suggestion?.state === SuggestionState.OPEN) suggestRanges.push(range);
-      else allRanges.push(range);
+      if (focused) ranges.focus.push(range);
+      else if (t.root?.suggestion?.state === SuggestionState.OPEN) ranges.suggest.push(range);
+      else if (t.root?.anchorState === AnchorState.REWRITTEN) ranges.approx.push(range);
+      else ranges.all.push(range);
     }
 
-    if (allRanges.length === 0) CSS.highlights.delete(HIGHLIGHT_ALL);
-    else CSS.highlights.set(HIGHLIGHT_ALL, new Highlight(...allRanges));
-
-    if (suggestRanges.length === 0) CSS.highlights.delete(HIGHLIGHT_SUGGEST);
-    else CSS.highlights.set(HIGHLIGHT_SUGGEST, new Highlight(...suggestRanges));
-
-    if (focusRanges.length === 0) CSS.highlights.delete(HIGHLIGHT_FOCUS);
-    else CSS.highlights.set(HIGHLIGHT_FOCUS, new Highlight(...focusRanges));
+    // Registered in paint order, so a focused thread's range wins an overlap.
+    for (const key of ["all", "approx", "suggest", "focus"] as const) {
+      if (ranges[key].length === 0) CSS.highlights.delete(names[key]);
+      else CSS.highlights.set(names[key], new Highlight(...ranges[key]));
+    }
 
     // Clicking commented text selects its thread (a backlink into the sidebar).
     function onClick(e: MouseEvent) {
@@ -100,9 +117,7 @@ export default function QuoteHighlights({
 
     return () => {
       article.removeEventListener("click", onClick);
-      CSS.highlights.delete(HIGHLIGHT_ALL);
-      CSS.highlights.delete(HIGHLIGHT_FOCUS);
-      CSS.highlights.delete(HIGHLIGHT_SUGGEST);
+      for (const name of Object.values(names)) CSS.highlights.delete(name);
     };
   }, [articleRef, threads, focusedThreadId, onSelectThread, highlightKey]);
 

@@ -95,8 +95,10 @@ server.registerTool(
     title: "Get a review thread",
     description:
       "One review thread with its full conversation, its anchor, and the located source " +
-      "lines in this checkout. If `drifted` is shown, the file changed since the comment was " +
-      "written, so read the surrounding section instead of trusting the line numbers.",
+      "lines in this checkout. Precision `moved` means the passage was found away from where " +
+      "the comment was written (the note says how); read around it before editing. If the " +
+      "file changed since the comment, the commits since are listed, so read the surrounding " +
+      "section instead of trusting the line numbers.",
     inputSchema: { thread_id: z.string().describe("Thread id from list_feedback.") },
     annotations: { readOnlyHint: true },
   },

@@ -1,13 +1,13 @@
 ---
 title: Register and reload a model with MLflow
-summary: Train a small model, log it to an MLflow tracking server, register it as a version in Unity Catalog, and load it back by name to predict.
+summary: Train a model, log it to an MLflow tracking server, register it as a version in Unity Catalog, and load it back by name to predict.
 diataxis: tutorial
 project: unitycatalog
 references:
   - unityCatalogServer
   - mlflow
   - lakehouse.mlModel
-status: draft
+status: ready
 ---
 
 Two services share the work in this tutorial. MLflow keeps the run and the
@@ -26,17 +26,15 @@ three-part name like a table.
 Open a Python session with MLflow, the Unity Catalog client, and scikit-learn:
 
 ```bash
-uv run --python 3.12 --with 'mlflow[databricks]==3.17.0' --with unitycatalog-client==0.7.0 --with scikit-learn==1.9.1 python -m asyncio
+uv run --python 3.12 --with mlflow==3.17.0 --with boto3==1.43.114 --with unitycatalog-client==0.7.0 --with scikit-learn==1.9.1 python -m asyncio
 ```
 
-Keep the quotes around `mlflow[databricks]==3.17.0`. Without them, zsh reads
-the brackets as a file pattern. Enter each of the following snippets in the
-session, in order.
+Enter each of the following snippets in the session, in order.
 
 :::note
-The `databricks` extra installs boto3. MLflow's Unity Catalog registry needs
-it to copy a version's files into the catalog's storage, and without it
-registering fails.
+MLflow's Unity Catalog registry is part of the `mlflow` package. It reads and
+writes a version's files in the catalog's S3 storage with boto3, which `mlflow`
+doesn't install on its own.
 :::
 
 :::note
@@ -60,10 +58,10 @@ MLflow configures tracking and the registry separately. Here both URIs reach
 reads and writes the version's files in the catalog's storage directly, and
 this variable points it at the local S3-compatible store instead of AWS.
 
-The two `MLFLOW_ENABLE_PROXY_MULTIPART_*` settings keep the logged model's
-files going through the tracking server. Otherwise the server hands out
-download links signed for the store's address inside the environment, which
-your machine can't reach.
+The two `MLFLOW_ENABLE_PROXY_MULTIPART_*` settings are only for the Docker
+Compose environment: without them, the tracking server hands out download links
+for an address inside it that your machine can't reach. A real deployment
+doesn't need them.
 :::
 
 ### Create a schema for the model
@@ -75,7 +73,8 @@ A registered model lives in a schema, like a table. Create the schema
 ```
 
 The session prints `unity.hello`. The `unity` catalog has managed storage,
-which [registering a model version needs](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/docs/usage/models.md).
+which
+[creating a registered model needs](../../explanation/models-and-mlflow/index.md#what-unity-catalog-registers).
 
 ### Train a small model
 
@@ -92,14 +91,16 @@ MLflow run:
 ```python file=./snippets/hello_mlflow.py start=start:log end=end:log
 ```
 
-Enter the snippet as shown. The empty line after the `with` block ends it, and
-the session runs it before the `print`. MLflow prints links to the run and the
-experiment, then the logged model's id, which starts with `m-`.
+Enter the snippet as shown. MLflow prints links to the run and the experiment,
+then the logged model's id, which starts with `m-`.
 
 `pip_requirements` lists the model's dependencies explicitly, so MLflow
-doesn't record the packages of whatever project the session runs in. A
-`Failed to resolve installed pip version` warning is harmless: the uv
+doesn't record the packages of whatever project the session runs in.
+
+:::note
+A `Failed to resolve installed pip version` warning is harmless: the uv
 environment has no pip.
+:::
 
 :::tip
 The signature records the model's input and output schema: here one `double`

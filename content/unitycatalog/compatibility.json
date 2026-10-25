@@ -11246,7 +11246,7 @@
                 "slug": "register-model-mlflow"
               },
               "anchor": "register-it-in-unity-catalog",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "3.17.0",
@@ -11397,7 +11397,7 @@
                 "slug": "register-model-mlflow"
               },
               "anchor": "load-the-version-and-predict",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "3.17.0",

@@ -54,7 +54,7 @@ from unitycatalog.client.exceptions import NotFoundException
 SCHEMA = "unity.manage_models"
 MODEL = f"{SCHEMA}.linear"
 UC_URL = "http://localhost:8080/api/2.1/unity-catalog"
-CATALOG_ROOT = "s3://uc-docs/unity"
+CATALOG_ROOT = "s3://amzn-s3-demo-bucket/unity"
 UNSUPPORTED = "Method not implemented"
 HAS_VERSIONS = "Unable to delete a registered model with existing model versions"
 PAGE = 100  # the server's page size for listing model versions

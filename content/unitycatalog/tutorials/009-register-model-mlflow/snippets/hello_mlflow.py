@@ -41,7 +41,7 @@ from unitycatalog.client.exceptions import NotFoundException
 SCHEMA = "unity.hello"
 MODEL = f"{SCHEMA}.linear"
 UC_URL = "http://localhost:8080/api/2.1/unity-catalog"
-CATALOG_ROOT = "s3://uc-docs/unity"
+CATALOG_ROOT = "s3://amzn-s3-demo-bucket/unity"
 _UUID = r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
 
 

@@ -183,7 +183,7 @@ The session prints the version's signature, with the input column `x` as a
 `double`, then the prediction `[21.]`, since version 1 fits y = 2x + 1. The
 signature comes from the version's files, not from Unity Catalog's record of
 the version. The location has the form
-`s3://uc-docs/unity/__unitystorage/catalogs/<id>/models/<id>/versions/<id>`.
+`s3://amzn-s3-demo-bucket/unity/__unitystorage/catalogs/<id>/models/<id>/versions/<id>`.
 MLflow reads the files with read-only credentials from Unity Catalog.
 
 Load by number only. Unity Catalog's registry has no aliases and no stages, so

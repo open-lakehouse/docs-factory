@@ -136,7 +136,7 @@ The output has two lines:
 
 ```text
 logged model:  mlflow-artifacts:/<experiment-id>/models/m-<id>/artifacts
-model version: s3://uc-docs/unity/__unitystorage/catalogs/<uuid>/models/<uuid>/versions/<uuid>
+model version: s3://amzn-s3-demo-bucket/unity/__unitystorage/catalogs/<uuid>/models/<uuid>/versions/<uuid>
 ```
 
 The logged model's files go through the tracking server, which stores them.

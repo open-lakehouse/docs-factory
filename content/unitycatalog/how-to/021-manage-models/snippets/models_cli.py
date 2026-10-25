@@ -94,7 +94,7 @@ if __name__ == "__main__":
     try:
         out = run(SCRIPT, "view")
         assert out.count('"status" : "READY"') == 3, out  # two listed, one fetched
-        assert "s3://uc-docs/unity/__unitystorage/" in out, out
+        assert "s3://amzn-s3-demo-bucket/unity/__unitystorage/" in out, out
         listed = get(BASE_URL, "models?catalog_name=unity&schema_name=manage_models")
         assert [m["full_name"] for m in listed["registered_models"]] == [MODEL], listed
 

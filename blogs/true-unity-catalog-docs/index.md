@@ -1,20 +1,14 @@
 ---
-title: The true Unity Catalog docs
+title: The `true` Unity Catalog docs
 slug: true-unity-catalog-docs
 status: draft
 tags: [unity-catalog, delta-lake, devrel, lakehouse]
 author: Robert Pack
-target: unitycatalog
+target: [unitycatalog, openlakehouse]
 post_type: deep-dive
 audience: Data and platform engineers evaluating Unity Catalog OSS who have read conflicting claims about what works with it
 summary: Every claim in the Unity Catalog docs is a script CI runs against the pinned release, so what works, and what doesn't, is proven rather than asserted.
 ---
-
-The Unity Catalog docs state only what a script has proven. Every code block
-on a page is a region of a script that CI runs against the pinned release,
-Unity Catalog 0.7.0 today. Every cell in a compatibility table, ✓ or ✗, comes
-from one of those scripts. When we say DuckDB can append to a managed table
-but can't create one, two tests say so.
 
 :::tldr
 - Code blocks are never pasted into a page. Each one is a marked region of a
@@ -26,8 +20,17 @@ but can't create one, two tests say so.
   PostgreSQL) are generated environments, and the scripts run against them.
 - One release manifest pins every version. A bump means a full CI run plus a
   review of every claim the new release can change.
-- Known issues live on one page, each with the exact error a reader sees.
 :::
+
+There is much discussion and even contention in the larger Lakehouse community
+around what works and what doesn't with which services, especially around catalog
+implementations. At the same time the open source implementation of Unity Catalog
+is evolving very quickly and so are client implementations. So the answers to these
+questions in continuously evolving.
+
+The Unity Catalog docs state only what a script has proven. Every code block
+on a page is a region of a script that CI runs against the pinned release,
+Unity Catalog 0.7.0 today.
 
 ## The true Unity Catalog docs
 

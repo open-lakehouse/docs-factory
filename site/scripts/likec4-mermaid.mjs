@@ -7,7 +7,7 @@
 // declares `variant sequence` loses its step order (likec4/likec4#3359). Those
 // views get a `sequenceDiagram` built here from the computed view instead.
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, readdirSync, renameSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -89,6 +89,7 @@ function likec4Bin() {
 export async function writeLikeC4Mermaid(modelDir, outDir) {
   mkdirSync(outDir, { recursive: true });
   // gen mermaid nests each file under its view's source folder; flatten them.
+  // Copied, not renamed: on CI runners the tmpdir is another filesystem (EXDEV).
   const raw = mkdtempSync(join(tmpdir(), "likec4-mmd-"));
   try {
     execFileSync(likec4Bin(), ["gen", "mermaid", "-o", raw, modelDir], { stdio: "pipe" });
@@ -96,7 +97,7 @@ export async function writeLikeC4Mermaid(modelDir, outDir) {
       for (const entry of readdirSync(dir, { withFileTypes: true })) {
         const path = join(dir, entry.name);
         if (entry.isDirectory()) walk(path);
-        else if (entry.name.endsWith(".mmd")) renameSync(path, join(outDir, entry.name));
+        else if (entry.name.endsWith(".mmd")) copyFileSync(path, join(outDir, entry.name));
       }
     };
     walk(raw);

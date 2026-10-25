@@ -16,9 +16,9 @@
   source: unitycatalog:reference/features-and-limitations#clients-and-engines
   verified: {polars: 1.44.2, daft: 0.7.25, pandas: 2.3.3}
 - interfaces: [cli]
-  journeys: [credentials.vend-path]
+  journeys: [credentials.vend-path, credentials.vend-table, credentials.vend-volume, credentials.vend-model-version]
   outcome: missing
-  why: "The `uc` CLI has no command for temporary path credentials; the page calls the REST API."
+  why: "The `uc` CLI has no command for temporary credentials; the pages call the REST API."
   source: unitycatalog:how-to/configure-aws-storage#check-that-the-server-vends-credentials
 - interfaces: [spark-4.2]
   journeys: [metricview.replace]

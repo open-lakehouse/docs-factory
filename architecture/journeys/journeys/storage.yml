@@ -42,3 +42,13 @@ credentials.vend-volume:
   summary: "Ask the server for short-lived credentials to read or write one volume's files."
   asset: lakehouse.credential
   path: uc-api
+credentials.vend-table:
+  title: Get credentials for a table
+  summary: "Ask the server for short-lived credentials to read or write one table's files."
+  asset: lakehouse.credential
+  path: uc-api
+credentials.vend-model-version:
+  title: Get credentials for a model version
+  summary: "Ask the server for short-lived credentials to read a model version's files, or write them before it's finalized."
+  asset: lakehouse.credential
+  path: uc-api

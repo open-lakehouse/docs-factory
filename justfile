@@ -213,9 +213,10 @@ test-spark:
     uv run pytest -m "needs_spark and not needs_uc_server"
 
 # Run the Scala and Java scripts (opt-in): needs Java 17, scala-cli, and jbang.
-# Behind a proxy, DOCS_FACTORY_MAVEN_MIRROR reaches them too.
+# Behind a proxy, DOCS_FACTORY_MAVEN_MIRROR reaches them too. Those that call a
+# server run with test-services.
 test-jvm:
-    uv run pytest content -m needs_jvm
+    uv run pytest content -m "needs_jvm and not needs_uc_server"
 
 # Run the Rust scripts (opt-in): builds the snippets crate (content/_rust), whose
 # examples they are, then runs each.

@@ -122,13 +122,16 @@ and examples that leverage the different UC surfaces to create enhanced experien
 
 ## Kernel Inside
 
-**Register:** practical integrations with Unity Catalog
-**Through-line:** THe kernel architecture is simplifying how
+**Register:** practical integrations with Unity Catalog and query engines
+**Through-line:** The kernel architecture is simplifying how
 Engines integrate with open table formats. Showcase how.
 
 **Posts (in order):**
 1. Bytes Proxy and the in-browser wasm query engine
 2. Volumes + Files API.
+3. Parquet is engine territory, and Delta Kernel knows it —
+   `blogs/parquet-is-engine-territory/` — draft — engines own Parquet; kernel
+   keeps it that way
 
 ## Chef Casper's Ghost Kitchen
 

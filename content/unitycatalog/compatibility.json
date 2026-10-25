@@ -1911,6 +1911,28 @@
             }
           ],
           "evidence": []
+        },
+        "java-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "java-client"
+              },
+              "anchor": "look-up-objects-by-name",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "TablesApi.listTables",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -8620,6 +8642,28 @@
             }
           ],
           "evidence": []
+        },
+        "java-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "java-client"
+              },
+              "anchor": "create-a-catalog-and-a-schema",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "CatalogsApi.createCatalog",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -8684,6 +8728,28 @@
               "fails": null,
               "version": "0.7.0",
               "api": "CatalogsApi.list_catalogs",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "java-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "java-client"
+              },
+              "anchor": "page-through-a-list",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "CatalogsApi.listCatalogs",
               "note": null
             }
           ],
@@ -8824,6 +8890,28 @@
             }
           ],
           "evidence": []
+        },
+        "java-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "java-client"
+              },
+              "anchor": "clean-up",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "CatalogsApi.deleteCatalog(force)",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -8888,6 +8976,28 @@
               "fails": null,
               "version": "0.7.0",
               "api": "SchemasApi.create_schema",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "java-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "java-client"
+              },
+              "anchor": "create-a-catalog-and-a-schema",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "SchemasApi.createSchema",
               "note": null
             }
           ],
@@ -9194,6 +9304,28 @@
             }
           ],
           "evidence": []
+        },
+        "java-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "java-client"
+              },
+              "anchor": "register-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "TablesApi.createTable",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -9371,6 +9503,28 @@
               "fails": null,
               "version": "0.7.0",
               "api": "TablesApi.get_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "java-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "java-client"
+              },
+              "anchor": "look-up-objects-by-name",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "TablesApi.getTable",
               "note": null
             }
           ],

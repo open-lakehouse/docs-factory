@@ -753,7 +753,11 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.code_line_hash, c.code_file_hash, c.via_agent,
                  c.suggestion_original, c.suggestion_replacement, c.suggestion_state,
                  c.suggestion_state_by, c.suggestion_state_at, c.scope,
-                 c.authored_version_id, cv.git_sha as authored_git_sha
+                 c.authored_version_id, cv.git_sha as authored_git_sha,
+                 c.anchor_state, c.anchor_current_quote, c.authored_anchor_slug,
+                 (select s.heading_text from content_section s
+                   where s.version_id = c.authored_version_id
+                     and s.anchor_slug = c.authored_anchor_slug) as authored_heading
           from comment c
           left join content_version cv on cv.id = c.authored_version_id
           where c.area = ${area} and c.slug = ${req.ref.slug}
@@ -833,6 +837,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.suggestion_original, c.suggestion_replacement, c.suggestion_state,
                  c.suggestion_state_by, c.suggestion_state_at, c.scope,
                  c.authored_version_id, cv.git_sha as authored_git_sha,
+                 c.anchor_state, c.anchor_current_quote, c.authored_anchor_slug,
+                 (select s.heading_text from content_section s
+                   where s.version_id = c.authored_version_id
+                     and s.anchor_slug = c.authored_anchor_slug) as authored_heading,
                  l.title as content_title,
                  sec.heading_text as heading_text,
                  coalesce(cr.resolved, false) as resolved,
@@ -933,7 +941,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
              author_user_id, author_login, author_name, body_md, orphaned,
              selector_quote, selector_prefix, selector_suffix, selector_start,
              code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
-             via_agent, suggestion_original, suggestion_replacement, suggestion_state, scope)
+             via_agent, suggestion_original, suggestion_replacement, suggestion_state, scope,
+             authored_anchor_slug)
           values
             (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${latest?.id ?? null}, ${req.anchorSlug},
              ${req.anchorFingerprint}, ${parentId},
@@ -944,7 +953,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
              ${code?.path ?? null}, ${code?.region ?? null}, ${code ? code.line : null},
              ${code ? code.endLine : null}, ${code?.lineHash ?? null}, ${code?.fileHash ?? null},
              ${getTokenGrant(ctx) !== undefined}, ${sug?.original ?? null},
-             ${sug?.replacement ?? null}, ${sug ? "open" : null}, ${scope})
+             ${sug?.replacement ?? null}, ${sug ? "open" : null}, ${scope},
+             ${parentId ? null : req.anchorSlug})
           returning id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
                     author_login, author_name, body_md, created_at, edited_at, orphaned,
                     selector_quote, selector_prefix, selector_suffix, selector_start,
@@ -952,6 +962,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                     via_agent, authored_version_id,
                     suggestion_original, suggestion_replacement, suggestion_state,
                     suggestion_state_by, suggestion_state_at, scope,
+                    anchor_state, anchor_current_quote, authored_anchor_slug,
                     (select git_sha from content_version where id = comment.authored_version_id)
                       as authored_git_sha
         `;
@@ -2350,7 +2361,11 @@ async function loadThread(sql: Queryable, threadRootId: string) {
            c.code_line_hash, c.code_file_hash, c.via_agent,
            c.suggestion_original, c.suggestion_replacement, c.suggestion_state,
            c.suggestion_state_by, c.suggestion_state_at, c.scope,
-           c.authored_version_id, cv.git_sha as authored_git_sha
+           c.authored_version_id, cv.git_sha as authored_git_sha,
+           c.anchor_state, c.anchor_current_quote, c.authored_anchor_slug,
+           (select s.heading_text from content_section s
+             where s.version_id = c.authored_version_id
+               and s.anchor_slug = c.authored_anchor_slug) as authored_heading
     from comment c
     left join content_version cv on cv.id = c.authored_version_id
     where c.id = ${threadRootId} and c.parent_id is null

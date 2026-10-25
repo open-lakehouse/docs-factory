@@ -9,6 +9,7 @@ import { Code, ConnectError, createClient, createRouterTransport } from "@connec
 import { viewer } from "../auth/provider.js";
 import { closeDb, db } from "../db.js";
 import {
+  AnchorState,
   CommentScope,
   ContentArea,
   ContentRequestStatus,
@@ -178,6 +179,68 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
     const { threads, orphanedThreads } = await reviewer.listComments({ ref });
     expect(threads.map((t) => t.root?.id)).toContain(comment?.id);
     expect(orphanedThreads.map((t) => t.root?.id)).not.toContain(comment?.id);
+  });
+
+  test("a moved quote says where it was written, a rewritten one what it matches now", async () => {
+    const pageRef = { area: ContentArea.BLOGS, slug: `${slug}-anchors` };
+    const version = (sha: string, sections: { slug: string; heading: string; text: string }[]) =>
+      reviewer.registerVersion(
+        create(RegisterVersionRequestSchema, {
+          ref: pageRef,
+          contentHash: sha,
+          gitSha: sha,
+          title: "Anchor test",
+          frontmatterStatus: "draft",
+          sections: sections.map((s) => ({
+            anchorSlug: s.slug,
+            fingerprint: s.heading.toLowerCase(),
+            headingText: s.heading,
+            text: s.text,
+          })),
+        }),
+      );
+    try {
+      await version("anchors-v1", [
+        { slug: "share", heading: "Share a folder", text: "Mount a host folder for the server." },
+        { slug: "download", heading: "Download", text: "Fetch the archive and unpack it." },
+      ]);
+      const comment = async (anchorSlug: string, quote: string) =>
+        (
+          await reviewer.createComment({
+            ref: pageRef,
+            anchorSlug,
+            anchorFingerprint: anchorSlug,
+            bodyMd: "x",
+            selector: { quote, prefix: "", suffix: "", start: 0 },
+          })
+        ).comment?.id;
+      const moved = await comment("share", "mount a host folder for the server.");
+      const rewritten = await comment("download", "fetch the archive and unpack it.");
+
+      await version("anchors-v2", [
+        {
+          slug: "download",
+          heading: "Download",
+          text: "Fetch the zip archive and unpack it. Mount a host folder for the server.",
+        },
+      ]);
+      const { threads } = await reviewer.listComments({ ref: pageRef });
+      const root = (id?: string) => threads.find((t) => t.root?.id === id)?.root;
+      expect(root(moved)).toMatchObject({
+        anchorSlug: "download",
+        anchorState: AnchorState.MOVED,
+        authoredAnchorSlug: "share",
+        authoredHeading: "Share a folder",
+      });
+      expect(root(rewritten)).toMatchObject({
+        anchorState: AnchorState.REWRITTEN,
+        anchorCurrentQuote: "fetch the zip archive and unpack",
+      });
+    } finally {
+      await db()`delete from comment where area = 'blogs' and slug = ${pageRef.slug}`;
+      await db()`delete from content_event where area = 'blogs' and slug = ${pageRef.slug}`;
+      await db()`delete from content_version where area = 'blogs' and slug = ${pageRef.slug}`;
+    }
   });
 
   test("a planned slot takes threads with no version, unread for others until seen", async () => {

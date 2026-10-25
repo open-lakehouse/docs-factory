@@ -13,6 +13,12 @@
 //   4. fingerprint match (heading renamed but same normalized text) → relink.
 //   5. no match → mark the thread orphaned (retained, shown separately).
 //
+// Each tier records the thread's `anchor_state` so the UI and agents can say
+// where it went: `exact` (as authored), `moved` (under another heading than
+// the one it was written under), `rewritten` (only a fuzzy match; the matched
+// text is kept as `anchor_current_quote`), `section` (heading kept, quote
+// gone), `orphaned`. A null state reads as `exact`: never re-anchored.
+//
 // An open suggestion whose quote misses its own section (tier 1) is marked
 // applied when that section now reads like the edit landed: the replacement
 // (or, for a deletion, the bare join) framed by the quote's own context.
@@ -57,22 +63,33 @@ export interface NewSection {
   text: string;
 }
 
+export type AnchorState = "exact" | "moved" | "rewritten" | "section" | "orphaned";
+
+export interface QuoteMatch {
+  /** Char offset in the normalized text. */
+  at: number;
+  exact: boolean;
+  /** The matched window of the normalized text: the quote itself when exact. */
+  text: string;
+}
+
 /**
- * Locate `quote` within `text` (both already normalized). Returns the char
- * offset of an exact match, else the best fuzzy window offset if its similarity
- * clears `threshold`, else -1. Fuzzy is a bounded token-overlap ratio — cheap,
- * dependency-free, good enough for "the sentence moved and was lightly edited".
+ * Locate `quote` within `text` (both already normalized): an exact match, else
+ * the best fuzzy window if its similarity clears `threshold`, else null. Fuzzy
+ * is a bounded token-overlap ratio — cheap, dependency-free, good enough for
+ * "the sentence moved and was lightly edited".
  */
-export function findQuote(text: string, quote: string, threshold = 0.8): number {
-  if (!quote) return -1;
+export function locateQuote(text: string, quote: string, threshold = 0.8): QuoteMatch | null {
+  if (!quote) return null;
   const exact = text.indexOf(quote);
-  if (exact !== -1) return exact;
+  if (exact !== -1) return { at: exact, exact: true, text: quote };
   // Fuzzy: slide a window the size of the quote and score token overlap.
   const qTokens = new Set(quote.split(" ").filter(Boolean));
-  if (qTokens.size === 0) return -1;
+  if (qTokens.size === 0) return null;
   const words = text.split(" ");
   const win = quote.split(" ").length;
   let best = -1;
+  let bestWord = 0;
   let bestScore = 0;
   let offset = 0;
   for (let i = 0; i + win <= words.length; i++) {
@@ -83,10 +100,25 @@ export function findQuote(text: string, quote: string, threshold = 0.8): number 
     if (score > bestScore) {
       bestScore = score;
       best = offset;
+      bestWord = i;
     }
     offset += words[i].length + 1; // +1 for the joining space
   }
-  return bestScore >= threshold ? best : -1;
+  if (bestScore < threshold) return null;
+  return { at: best, exact: false, text: words.slice(bestWord, bestWord + win).join(" ") };
+}
+
+/** Offset of `quote` in `text` per {@link locateQuote}, or -1. */
+export function findQuote(text: string, quote: string, threshold = 0.8): number {
+  return locateQuote(text, quote, threshold)?.at ?? -1;
+}
+
+// Same contract as content-core's PREAMBLE_KEY / isPreambleAnchor: the browser
+// sends "" for a selection above every heading, and re-anchoring relinks it to
+// the preamble section's key. Both mean the same place.
+const PREAMBLE_KEY = "__preamble__";
+function sameAnchor(a: string, b: string): boolean {
+  return a === b || ((!a || a === PREAMBLE_KEY) && (!b || b === PREAMBLE_KEY));
 }
 
 /**
@@ -149,10 +181,13 @@ export async function reanchorThreads(
       selector_suffix: string | null;
       suggestion_replacement: string | null;
       suggestion_state: string | null;
+      anchor_state?: AnchorState | null;
+      authored_anchor_slug?: string | null;
     }[]
   >`
     select id, anchor_slug, anchor_fingerprint, orphaned, selector_quote,
-           selector_prefix, selector_suffix, suggestion_replacement, suggestion_state
+           selector_prefix, selector_suffix, suggestion_replacement, suggestion_state,
+           anchor_state, authored_anchor_slug
     from comment
     where area = ${area} and slug = ${slug} and parent_id is null
       and code_path is null and scope = 'section'
@@ -160,13 +195,24 @@ export async function reanchorThreads(
 
   let orphaned = 0;
   for (const root of roots) {
+    const authored = root.authored_anchor_slug ?? root.anchor_slug;
+    const placedAt = (slug: string): AnchorState =>
+      sameAnchor(slug, authored) ? "exact" : "moved";
+    // Write only what changed, so re-registering an unchanged page is a no-op.
+    const keep = async (state: AnchorState) => {
+      if (!root.orphaned && (root.anchor_state ?? "exact") === state) return;
+      await sql`
+        update comment
+        set orphaned = false, anchor_state = ${state}, anchor_current_quote = null
+        where id = ${root.id}
+      `;
+    };
+
     // Fast path: the section this thread anchors to is byte-identical to the
-    // prior version (its subtree hash matched). Keep it as-is, skipping the
-    // quote scan. Only applies when the slug still exists in the new section set.
-    if (unchangedSlugs.has(root.anchor_slug) && bySlug.has(root.anchor_slug)) {
-      if (root.orphaned) {
-        await sql`update comment set orphaned = false where id = ${root.id}`;
-      }
+    // prior version (its subtree hash matched), so its state from that version
+    // stands; skip the quote scan. Only applies when the slug still exists in
+    // the new section set, and not to an orphan, whose state needs recomputing.
+    if (unchangedSlugs.has(root.anchor_slug) && bySlug.has(root.anchor_slug) && !root.orphaned) {
       continue;
     }
 
@@ -176,9 +222,13 @@ export async function reanchorThreads(
     if (quote) {
       const ownNorm = normBySlug.get(root.anchor_slug);
       if (ownNorm !== undefined) {
-        const at = findQuote(ownNorm, quote);
-        if (at !== -1) {
-          await refreshStart(sql, root, at);
+        const hit = locateQuote(ownNorm, quote);
+        if (hit) {
+          await place(sql, root.id, {
+            start: hit.at,
+            state: hit.exact ? placedAt(root.anchor_slug) : "rewritten",
+            currentQuote: hit.exact ? null : hit.text,
+          });
           continue;
         }
         if (
@@ -198,37 +248,48 @@ export async function reanchorThreads(
         }
       }
       // Tier 2: quote found in some other section → relink slug + start.
-      let matched: { slug: string; start: number } | null = null;
+      let matched: { slug: string; hit: QuoteMatch } | null = null;
       for (const s of sections) {
         if (s.anchorSlug === root.anchor_slug) continue;
-        const at = findQuote(normBySlug.get(s.anchorSlug) ?? normalize(s.text), quote);
-        if (at !== -1) {
-          matched = { slug: s.anchorSlug, start: at };
+        const hit = locateQuote(normBySlug.get(s.anchorSlug) ?? normalize(s.text), quote);
+        if (hit) {
+          matched = { slug: s.anchorSlug, hit };
           break;
         }
       }
       if (matched) {
-        await relink(sql, root.id, matched.slug, matched.start);
+        const { slug, hit } = matched;
+        await place(sql, root.id, {
+          slug,
+          start: hit.at,
+          state: hit.exact ? placedAt(slug) : "rewritten",
+          currentQuote: hit.exact ? null : hit.text,
+        });
         continue;
       }
     }
 
     // Tier 3: heading-level comment (or quote drifted) but slug still present.
     if (bySlug.has(root.anchor_slug)) {
-      if (root.orphaned) {
-        await sql`update comment set orphaned = false where id = ${root.id}`;
-      }
+      await keep(quote ? "section" : placedAt(root.anchor_slug));
       continue;
     }
     // Tier 4: fingerprint match (heading renamed, same normalized text).
     const viaFingerprint = byFingerprint.get(root.anchor_fingerprint);
     if (viaFingerprint) {
-      await relink(sql, root.id, viaFingerprint.anchorSlug, null);
+      await place(sql, root.id, {
+        slug: viaFingerprint.anchorSlug,
+        state: quote ? "section" : placedAt(viaFingerprint.anchorSlug),
+      });
       continue;
     }
     // Tier 5: no match → orphan.
     if (!root.orphaned) {
-      await sql`update comment set orphaned = true where id = ${root.id}`;
+      await sql`
+        update comment
+        set orphaned = true, anchor_state = 'orphaned', anchor_current_quote = null
+        where id = ${root.id}
+      `;
     }
     orphaned++;
   }
@@ -290,7 +351,9 @@ export async function reanchorCodeThreads(
     // Tier 1: the referenced region still exists in this file.
     if (root.code_region && regionsByPath.get(root.code_path)?.has(root.code_region)) {
       if (root.orphaned) {
-        await sql`update comment set orphaned = false where id = ${root.id}`;
+        await sql`
+          update comment set orphaned = false, anchor_state = 'exact' where id = ${root.id}
+        `;
       }
       continue;
     }
@@ -304,7 +367,7 @@ export async function reanchorCodeThreads(
         await sql`
           update comment
           set code_line = ${line}, code_end_line = ${line},
-              code_file_hash = ${src.fileHash}, orphaned = false
+              code_file_hash = ${src.fileHash}, orphaned = false, anchor_state = 'moved'
           where id = ${root.id}
         `;
         continue;
@@ -313,7 +376,9 @@ export async function reanchorCodeThreads(
 
     // Tier 3: gone → orphan.
     if (!root.orphaned) {
-      await sql`update comment set orphaned = true where id = ${root.id}`;
+      await sql`
+        update comment set orphaned = true, anchor_state = 'orphaned' where id = ${root.id}
+      `;
     }
     orphaned++;
   }
@@ -321,31 +386,32 @@ export async function reanchorCodeThreads(
 }
 
 /** Un-orphan a prose root and refresh its quote start offset. */
-async function refreshStart(sql: Queryable, root: { id: string }, start: number): Promise<void> {
-  await sql`
-    update comment
-    set orphaned = false, selector_start = ${start}
-    where id = ${root.id}
-  `;
-}
-
-/** Relink a prose root to a new anchor slug, optionally setting the quote start. */
-async function relink(
+/** Re-place a thread root: un-orphan it with its new state, slug, and quote offset. */
+async function place(
   sql: Queryable,
   id: string,
-  anchorSlug: string,
-  start: number | null,
+  p: { slug?: string; start?: number; state: AnchorState; currentQuote?: string | null },
 ): Promise<void> {
-  if (start !== null) {
+  const currentQuote = p.currentQuote ?? null;
+  if (p.slug !== undefined && p.start !== undefined) {
     await sql`
       update comment
-      set anchor_slug = ${anchorSlug}, selector_start = ${start}, orphaned = false
+      set anchor_slug = ${p.slug}, selector_start = ${p.start}, orphaned = false,
+          anchor_state = ${p.state}, anchor_current_quote = ${currentQuote}
+      where id = ${id}
+    `;
+  } else if (p.slug !== undefined) {
+    await sql`
+      update comment
+      set anchor_slug = ${p.slug}, orphaned = false,
+          anchor_state = ${p.state}, anchor_current_quote = ${currentQuote}
       where id = ${id}
     `;
   } else {
     await sql`
       update comment
-      set anchor_slug = ${anchorSlug}, orphaned = false
+      set orphaned = false, selector_start = ${p.start ?? null},
+          anchor_state = ${p.state}, anchor_current_quote = ${currentQuote}
       where id = ${id}
     `;
   }

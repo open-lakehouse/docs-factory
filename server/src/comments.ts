@@ -4,6 +4,7 @@ import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { hashLine, normalize } from "./anchor.js";
 import { areaFromDb } from "./db-map.js";
 import {
+  AnchorState,
   type CodeSelector,
   CodeSelectorSchema,
   type Comment,
@@ -67,6 +68,12 @@ export interface CommentRow {
   suggestion_state?: string | null;
   suggestion_state_by?: string | null;
   suggestion_state_at?: Date | null;
+  // Where re-anchoring placed a root (see anchor.ts). Optional like via_agent.
+  anchor_state?: string | null;
+  anchor_current_quote?: string | null;
+  authored_anchor_slug?: string | null;
+  // heading_text of authored_anchor_slug in the authored version (joined).
+  authored_heading?: string | null;
 }
 
 export interface ResolutionRow {
@@ -75,6 +82,14 @@ export interface ResolutionRow {
   resolved_by: string | null;
   resolved_at: Date | null;
 }
+
+const ANCHOR_STATE_FROM_DB: Record<string, AnchorState> = {
+  exact: AnchorState.EXACT,
+  moved: AnchorState.MOVED,
+  rewritten: AnchorState.REWRITTEN,
+  section: AnchorState.SECTION,
+  orphaned: AnchorState.ORPHANED,
+};
 
 const SUGGESTION_STATE_FROM_DB: Record<string, SuggestionState> = {
   open: SuggestionState.OPEN,
@@ -179,6 +194,10 @@ export function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
     authoredGitSha: row.authored_git_sha ?? undefined,
     viaAgent: row.via_agent ?? false,
     scope: row.scope === "document" ? CommentScope.DOCUMENT : CommentScope.SECTION,
+    anchorState: ANCHOR_STATE_FROM_DB[row.anchor_state ?? ""] ?? AnchorState.UNSPECIFIED,
+    authoredAnchorSlug: row.authored_anchor_slug ?? undefined,
+    authoredHeading: row.authored_heading ?? undefined,
+    anchorCurrentQuote: row.anchor_current_quote ?? undefined,
     // At most one fine-grained selector; prose takes precedence if both were
     // somehow set (they never are — create writes exactly one branch).
     selector:

@@ -295,6 +295,25 @@ enum CommentScope {
   COMMENT_SCOPE_DOCUMENT = 2;
 }
 
+// How re-anchoring last placed a thread root against the latest version.
+// UNSPECIFIED: never re-anchored (a reply, or a root written on the latest
+// version), which reads as EXACT.
+enum AnchorState {
+  ANCHOR_STATE_UNSPECIFIED = 0;
+  // The quote (or heading) is where the comment was written.
+  ANCHOR_STATE_EXACT = 1;
+  // Found verbatim, under another heading than the one it was written under
+  // (`authored_anchor_slug`), or its heading was renamed.
+  ANCHOR_STATE_MOVED = 2;
+  // Only an approximate match: the passage was edited. `anchor_current_quote`
+  // holds the text it now matches.
+  ANCHOR_STATE_REWRITTEN = 3;
+  // The heading survives but the quoted text is gone from the page.
+  ANCHOR_STATE_SECTION = 4;
+  // Nothing matches; `orphaned` is set too.
+  ANCHOR_STATE_ORPHANED = 5;
+}
+
 // One comment. Thread roots have no `parent_id`. When the section a comment was
 // written against disappears from a later version, `orphaned` is set true and
 // the comment is retained (never deleted).
@@ -332,6 +351,16 @@ message Comment {
   // SECTION (anchored by anchor_slug, optionally a selector) or DOCUMENT
   // (anchor_slug empty). Replies carry their root's scope.
   CommentScope scope = 18;
+  // Where re-anchoring placed this thread root (see AnchorState). `anchor_slug`
+  // is the current heading; these say where it started and what it matches now.
+  AnchorState anchor_state = 19;
+  // The heading slug the comment was written under, and that heading's text in
+  // the authored version (absent when that version has no such section).
+  optional string authored_anchor_slug = 20;
+  optional string authored_heading = 21;
+  // For ANCHOR_STATE_REWRITTEN: the normalized (lowercased, whitespace-folded)
+  // text in the latest version that the quote approximately matches.
+  optional string anchor_current_quote = 22;
 }
 
 // A thread root plus its replies and resolution state.

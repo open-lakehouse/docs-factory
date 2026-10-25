@@ -23,6 +23,7 @@ model {
   }
   datafusion -[realizes]-> lakehouse.queryEngine
   datafusion -[consumes]-> s3Spec "reads data files via"
+  datafusion -[builtOn]-> objectStore
 
   apacheSpark = implementation "Apache Spark" {
     #service #public
@@ -200,6 +201,7 @@ model {
   polars -[realizes]-> lakehouse.queryEngine
   polars -[integrates]-> deltaRs "reads and writes Delta tables through"
   polars -[integrates]-> pyIceberg "reads Iceberg tables through"
+  polars -[integrates]-> objectStore "reads cloud storage through"
   polars -[consumes]-> unityCatalogSpec "resolves tables via"
   polars -[operatesOn]-> lakehouse.table "reads and appends"
 

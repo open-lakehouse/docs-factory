@@ -1664,6 +1664,60 @@
       "kind": "implementation",
       "id": "omnigent"
     },
+    "objectStore": {
+      "metadata": {
+        "sourceRepo": "apache/arrow-rs-object-store",
+        "crate": "object_store",
+        "license": "MIT/Apache-2.0",
+        "language": "Rust"
+      },
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://docs.rs/object_store"
+        }
+      ],
+      "tags": [
+        "library"
+      ],
+      "description": {
+        "txt": "Rust crate with one async interface to S3, Azure Blob Storage, Google Cloud Storage, and local files. The storage layer of DataFusion and delta-rs."
+      },
+      "title": "object_store",
+      "kind": "implementation",
+      "id": "objectStore"
+    },
+    "obstore": {
+      "metadata": {
+        "sourceRepo": "developmentseed/obstore",
+        "pypi": "obstore",
+        "license": "MIT",
+        "language": "Python"
+      },
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://developmentseed.org/obstore/"
+        }
+      ],
+      "tags": [
+        "library"
+      ],
+      "description": {
+        "txt": "Python bindings to object_store, with sync and async APIs and pluggable credential providers."
+      },
+      "title": "obstore",
+      "kind": "implementation",
+      "id": "obstore"
+    },
     "deltaRs": {
       "metadata": {
         "sourceRepo": "delta-io/delta-rs",
@@ -1960,6 +2014,24 @@
       "title": "Azure Blob Storage API",
       "kind": "openSpecification",
       "id": "azureBlobSpec"
+    },
+    "gcsSpec": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle"
+      },
+      "links": [
+        {
+          "url": "https://cloud.google.com/storage/docs/apis"
+        }
+      ],
+      "description": {
+        "txt": "The JSON and XML REST interfaces to Google Cloud Storage buckets and objects."
+      },
+      "title": "Google Cloud Storage API",
+      "kind": "openSpecification",
+      "id": "gcsSpec"
     },
     "openLineageSpec": {
       "notation": "Specification / open standard",
@@ -2647,10 +2719,10 @@
     },
     "eeb270cf99": {
       "line": "dotted",
+      "title": "validates OIDC tokens",
       "tags": [
         "partial"
       ],
-      "title": "validates OIDC tokens",
       "source": {
         "model": "lakekeeper"
       },
@@ -2722,10 +2794,10 @@
     },
     "13179e531e": {
       "line": "dotted",
+      "title": "validates access tokens",
       "tags": [
         "partial"
       ],
-      "title": "validates access tokens",
       "source": {
         "model": "unityCatalogServer"
       },
@@ -3022,6 +3094,17 @@
       },
       "kind": "consumes",
       "id": "862872e7f8"
+    },
+    "56b1955f70": {
+      "title": "",
+      "source": {
+        "model": "datafusion"
+      },
+      "target": {
+        "model": "objectStore"
+      },
+      "kind": "builtOn",
+      "id": "56b1955f70"
     },
     "1bba5f18a3": {
       "line": "dotted",
@@ -3399,6 +3482,17 @@
       "kind": "integrates",
       "id": "9a7e839861"
     },
+    "803378938d": {
+      "title": "reads cloud storage through",
+      "source": {
+        "model": "polars"
+      },
+      "target": {
+        "model": "objectStore"
+      },
+      "kind": "integrates",
+      "id": "803378938d"
+    },
     "faba7fba26": {
       "line": "dashed",
       "title": "resolves tables via",
@@ -3530,10 +3624,10 @@
     },
     "d845fbe26e": {
       "line": "dotted",
+      "title": "coarse allow/deny gate before planning",
       "tags": [
         "partial"
       ],
-      "title": "coarse allow/deny gate before planning",
       "source": {
         "model": "hydrofoil"
       },
@@ -3545,10 +3639,10 @@
     },
     "735e0bc066": {
       "line": "dotted",
+      "title": "rewrites plans with row filters + column masks",
       "tags": [
         "partial"
       ],
-      "title": "rewrites plans with row filters + column masks",
       "source": {
         "model": "hydrofoil"
       },
@@ -3620,10 +3714,10 @@
     },
     "1c86176a4f": {
       "line": "dotted",
+      "title": "access rules at the gateway",
       "tags": [
         "partial"
       ],
-      "title": "access rules at the gateway",
       "source": {
         "model": "authelia"
       },
@@ -3635,10 +3729,10 @@
     },
     "79a1507c10": {
       "line": "dotted",
+      "title": "decides access policy",
       "tags": [
         "partial"
       ],
-      "title": "decides access policy",
       "source": {
         "model": "openPolicyAgent"
       },
@@ -3840,6 +3934,53 @@
       "kind": "realizes",
       "id": "5fe3ecdd4e"
     },
+    "7293ede3e9": {
+      "line": "dashed",
+      "title": "reads/writes objects via",
+      "source": {
+        "model": "objectStore"
+      },
+      "target": {
+        "model": "s3Spec"
+      },
+      "kind": "consumes",
+      "id": "7293ede3e9"
+    },
+    "110f57bcba": {
+      "line": "dashed",
+      "title": "reads/writes objects via",
+      "source": {
+        "model": "objectStore"
+      },
+      "target": {
+        "model": "azureBlobSpec"
+      },
+      "kind": "consumes",
+      "id": "110f57bcba"
+    },
+    "333c6ea90b": {
+      "line": "dashed",
+      "title": "reads/writes objects via",
+      "source": {
+        "model": "objectStore"
+      },
+      "target": {
+        "model": "gcsSpec"
+      },
+      "kind": "consumes",
+      "id": "333c6ea90b"
+    },
+    "21a44bd280": {
+      "title": "",
+      "source": {
+        "model": "obstore"
+      },
+      "target": {
+        "model": "objectStore"
+      },
+      "kind": "builtOn",
+      "id": "21a44bd280"
+    },
     "2a66649f95": {
       "line": "dotted",
       "title": "",
@@ -3887,6 +4028,17 @@
       },
       "kind": "consumes",
       "id": "b8767873a3"
+    },
+    "cba32634ba": {
+      "title": "",
+      "source": {
+        "model": "deltaRs"
+      },
+      "target": {
+        "model": "objectStore"
+      },
+      "kind": "builtOn",
+      "id": "cba32634ba"
     },
     "de28d73521": {
       "line": "dashed",
@@ -4418,6 +4570,17 @@
       },
       "kind": "specifies",
       "id": "4e0ab978d8"
+    },
+    "4a1e13a7a5": {
+      "title": "",
+      "source": {
+        "model": "gcsSpec"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "specifies",
+      "id": "4a1e13a7a5"
     },
     "e5acdaa0b0": {
       "title": "specifies the lineage event model",
@@ -5185,6 +5348,20 @@
           "kind": "specifies"
         },
         {
+          "id": "95du1r",
+          "parent": null,
+          "source": "gcsSpec",
+          "target": "lakehouse",
+          "label": null,
+          "relations": [
+            "4a1e13a7a5"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
           "id": "stivld",
           "parent": null,
           "source": "openLineageSpec",
@@ -5351,6 +5528,20 @@
           "line": "dashed",
           "head": "normal",
           "kind": "consumes"
+        },
+        {
+          "id": "15qymuw",
+          "parent": null,
+          "source": "datafusion",
+          "target": "objectStore",
+          "label": null,
+          "relations": [
+            "56b1955f70"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "builtOn"
         },
         {
           "id": "1nipxsn",
@@ -5619,6 +5810,20 @@
           "kind": "consumes"
         },
         {
+          "id": "nmgofn",
+          "parent": null,
+          "source": "polars",
+          "target": "objectStore",
+          "label": "reads cloud storage through",
+          "relations": [
+            "803378938d"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "integrates"
+        },
+        {
           "id": "viecbk",
           "parent": null,
           "source": "polars",
@@ -5841,6 +6046,76 @@
           "line": "dashed",
           "head": "normal",
           "kind": "consumes"
+        },
+        {
+          "id": "1nj8xph",
+          "parent": null,
+          "source": "objectStore",
+          "target": "s3Spec",
+          "label": "reads/writes objects via",
+          "relations": [
+            "7293ede3e9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1ag6d1b",
+          "parent": null,
+          "source": "objectStore",
+          "target": "azureBlobSpec",
+          "label": "reads/writes objects via",
+          "relations": [
+            "110f57bcba"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1aq17wy",
+          "parent": null,
+          "source": "objectStore",
+          "target": "gcsSpec",
+          "label": "reads/writes objects via",
+          "relations": [
+            "333c6ea90b"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "19cxv9u",
+          "parent": null,
+          "source": "obstore",
+          "target": "objectStore",
+          "label": null,
+          "relations": [
+            "21a44bd280"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "builtOn"
+        },
+        {
+          "id": "160hwm1",
+          "parent": null,
+          "source": "deltaRs",
+          "target": "objectStore",
+          "label": null,
+          "relations": [
+            "cba32634ba"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "builtOn"
         },
         {
           "id": "1ym8qa6",
@@ -6351,6 +6626,7 @@
           "inEdges": [],
           "outEdges": [
             "sr2fr2",
+            "nmgofn",
             "viecbk",
             "1x1gcwd",
             "myn69c"
@@ -7064,6 +7340,43 @@
           "kind": "openSpecification"
         },
         {
+          "id": "obstore",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "19cxv9u"
+          ],
+          "title": "obstore",
+          "modelRef": "obstore",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Python bindings to object_store, with sync and async APIs and pluggable credential providers."
+          },
+          "tags": [
+            "library"
+          ],
+          "metadata": {
+            "sourceRepo": "developmentseed/obstore",
+            "pypi": "obstore",
+            "license": "MIT",
+            "language": "Python"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://developmentseed.org/obstore/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "unityCatalogSpark",
           "parent": null,
           "level": 0,
@@ -7361,6 +7674,7 @@
           ],
           "outEdges": [
             "1h9jz10",
+            "160hwm1",
             "1ym8qa6",
             "im6amy",
             "1vxufpy"
@@ -7448,6 +7762,7 @@
           ],
           "outEdges": [
             "byeu7p",
+            "15qymuw",
             "1nipxsn"
           ],
           "title": "Apache DataFusion",
@@ -7600,38 +7915,6 @@
           "links": [
             {
               "url": "https://opentelemetry.io/docs/specs/otlp/"
-            }
-          ],
-          "kind": "openSpecification"
-        },
-        {
-          "id": "azureBlobSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "mxwq29",
-            "nh25li"
-          ],
-          "outEdges": [
-            "f41o8i"
-          ],
-          "title": "Azure Blob Storage API",
-          "modelRef": "azureBlobSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The REST interface to Azure Blob Storage, also served by local emulators."
-          },
-          "tags": [],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api"
             }
           ],
           "kind": "openSpecification"
@@ -7828,6 +8111,50 @@
           "kind": "openSpecification"
         },
         {
+          "id": "objectStore",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "15qymuw",
+            "nmgofn",
+            "19cxv9u",
+            "160hwm1"
+          ],
+          "outEdges": [
+            "1nj8xph",
+            "1ag6d1b",
+            "1aq17wy"
+          ],
+          "title": "object_store",
+          "modelRef": "objectStore",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Rust crate with one async interface to S3, Azure Blob Storage, Google Cloud Storage, and local files. The storage layer of DataFusion and delta-rs."
+          },
+          "tags": [
+            "library"
+          ],
+          "metadata": {
+            "sourceRepo": "apache/arrow-rs-object-store",
+            "crate": "object_store",
+            "license": "MIT/Apache-2.0",
+            "language": "Rust"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://docs.rs/object_store"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "s3Spec",
           "parent": null,
           "level": 0,
@@ -7836,6 +8163,7 @@
             "1nipxsn",
             "pkqp96",
             "1g9xi2h",
+            "1nj8xph",
             "1vxufpy"
           ],
           "outEdges": [
@@ -7859,6 +8187,70 @@
           "links": [
             {
               "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "azureBlobSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "mxwq29",
+            "nh25li",
+            "1ag6d1b"
+          ],
+          "outEdges": [
+            "f41o8i"
+          ],
+          "title": "Azure Blob Storage API",
+          "modelRef": "azureBlobSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The REST interface to Azure Blob Storage, also served by local emulators."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "gcsSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1aq17wy"
+          ],
+          "outEdges": [
+            "95du1r"
+          ],
+          "title": "Google Cloud Storage API",
+          "modelRef": "gcsSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The JSON and XML REST interfaces to Google Cloud Storage buckets and objects."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://cloud.google.com/storage/docs/apis"
             }
           ],
           "kind": "openSpecification"
@@ -7916,6 +8308,7 @@
             "1ffgkda",
             "fu4xbd",
             "f41o8i",
+            "95du1r",
             "stivld",
             "1pqigbz"
           ],
@@ -7960,7 +8353,7 @@
           }
         ]
       },
-      "hash": "Doyf1UgHLr2KFklxmICGbo4kLRXfXxYyxez0aayBz8w"
+      "hash": "mOLM58W1eXNV29mmcTtfO_cKR0NPThsMHf5rkJtDTWk"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -8820,19 +9213,6 @@
       },
       "title": "UC Delta API",
       "id": "ucDeltaApi_managedTableFlow",
-      "flow": [
-        "step-01",
-        "step-02",
-        "step-03",
-        "step-04",
-        "step-05",
-        "step-06",
-        "step-07",
-        "step-08",
-        "step-09",
-        "step-10",
-        "step-11"
-      ],
       "autoLayout": {
         "direction": "LR"
       },
@@ -9166,17 +9546,6 @@
       },
       "title": "UC credential vending",
       "id": "ucCredentialVending_tableRead",
-      "flow": [
-        "step-01",
-        "step-02",
-        "step-03",
-        "step-04",
-        "step-05",
-        "step-06",
-        "step-07",
-        "step-08",
-        "step-09"
-      ],
       "autoLayout": {
         "direction": "LR"
       },
@@ -10776,6 +11145,20 @@
           "kind": "specifies"
         },
         {
+          "id": "1sx0c59",
+          "parent": null,
+          "source": "gcsSpec",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "4a1e13a7a5"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
           "id": "15tgtjm",
           "parent": null,
           "source": "openLineageSpec",
@@ -10838,6 +11221,7 @@
             "1d5mogk",
             "2u2en7",
             "zbgc40",
+            "1sx0c59",
             "15tgtjm",
             "1g7d124"
           ],
@@ -11251,6 +11635,35 @@
           "kind": "openSpecification"
         },
         {
+          "id": "gcsSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1sx0c59"
+          ],
+          "title": "Google Cloud Storage API",
+          "modelRef": "gcsSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The JSON and XML REST interfaces to Google Cloud Storage buckets and objects."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://cloud.google.com/storage/docs/apis"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
           "id": "openLineageSpec",
           "parent": null,
           "level": 0,
@@ -11631,7 +12044,8 @@
           "inEdges": [
             "1u0v1f",
             "12hek22",
-            "zbgc40"
+            "zbgc40",
+            "1sx0c59"
           ],
           "outEdges": [
             "gcom4m"
@@ -11694,7 +12108,7 @@
           }
         ]
       },
-      "hash": "Po5iuYVXQ9Cf1G7_IyxezNXqlWU2QVRaqTbawybNwwQ"
+      "hash": "ruQLwKsZlQvTm0QmnOxI9lL6k4b__fSaGFzIQuxFQVI"
     },
     "techQueryEngines": {
       "_type": "element",
@@ -14037,7 +14451,7 @@
       "_stage": "computed",
       "sourcePath": "views/logical-views.likec4",
       "description": {
-        "txt": "The format and storage specifications, the libraries that read and write each format, and the stores that implement the storage APIs."
+        "txt": "The format and storage specifications, the libraries that read and write each format or talk to storage directly, and the stores that implement the storage APIs."
       },
       "title": "Technology — table formats, file formats, and object storage",
       "id": "techFormatsStorage",
@@ -14137,6 +14551,20 @@
           "label": null,
           "relations": [
             "4e0ab978d8"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "1sx0c59",
+          "parent": null,
+          "source": "gcsSpec",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "4a1e13a7a5"
           ],
           "color": "gray",
           "line": "dashed",
@@ -14326,6 +14754,76 @@
           "kind": "implements"
         },
         {
+          "id": "160hwm1",
+          "parent": null,
+          "source": "deltaRs",
+          "target": "objectStore",
+          "label": null,
+          "relations": [
+            "cba32634ba"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "builtOn"
+        },
+        {
+          "id": "1nj8xph",
+          "parent": null,
+          "source": "objectStore",
+          "target": "s3Spec",
+          "label": "reads/writes objects via",
+          "relations": [
+            "7293ede3e9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1ag6d1b",
+          "parent": null,
+          "source": "objectStore",
+          "target": "azureBlobSpec",
+          "label": "reads/writes objects via",
+          "relations": [
+            "110f57bcba"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1aq17wy",
+          "parent": null,
+          "source": "objectStore",
+          "target": "gcsSpec",
+          "label": "reads/writes objects via",
+          "relations": [
+            "333c6ea90b"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "19cxv9u",
+          "parent": null,
+          "source": "obstore",
+          "target": "objectStore",
+          "label": null,
+          "relations": [
+            "21a44bd280"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "builtOn"
+        },
+        {
           "id": "170rwje",
           "parent": null,
           "source": "rustfs",
@@ -14479,7 +14977,8 @@
           "outEdges": [
             "1cchpk7",
             "1ym8qa6",
-            "1vxufpy"
+            "1vxufpy",
+            "160hwm1"
           ],
           "title": "delta-rs",
           "modelRef": "deltaRs",
@@ -14712,6 +15211,43 @@
           "kind": "implementation"
         },
         {
+          "id": "obstore",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "19cxv9u"
+          ],
+          "title": "obstore",
+          "modelRef": "obstore",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Python bindings to object_store, with sync and async APIs and pluggable credential providers."
+          },
+          "tags": [
+            "library"
+          ],
+          "metadata": {
+            "sourceRepo": "developmentseed/obstore",
+            "pypi": "obstore",
+            "license": "MIT",
+            "language": "Python"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://developmentseed.org/obstore/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "rustfs",
           "parent": null,
           "level": 0,
@@ -14923,12 +15459,55 @@
           "kind": "openSpecification"
         },
         {
+          "id": "objectStore",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "160hwm1",
+            "19cxv9u"
+          ],
+          "outEdges": [
+            "1nj8xph",
+            "1ag6d1b",
+            "1aq17wy"
+          ],
+          "title": "object_store",
+          "modelRef": "objectStore",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Rust crate with one async interface to S3, Azure Blob Storage, Google Cloud Storage, and local files. The storage layer of DataFusion and delta-rs."
+          },
+          "tags": [
+            "library"
+          ],
+          "metadata": {
+            "sourceRepo": "apache/arrow-rs-object-store",
+            "crate": "object_store",
+            "license": "MIT/Apache-2.0",
+            "language": "Rust"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://docs.rs/object_store"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "s3Spec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
             "1vxufpy",
+            "1nj8xph",
             "pkqp96",
             "1g9xi2h"
           ],
@@ -14963,6 +15542,7 @@
           "level": 0,
           "children": [],
           "inEdges": [
+            "1ag6d1b",
             "mxwq29",
             "nh25li"
           ],
@@ -14990,6 +15570,37 @@
           "kind": "openSpecification"
         },
         {
+          "id": "gcsSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1aq17wy"
+          ],
+          "outEdges": [
+            "1sx0c59"
+          ],
+          "title": "Google Cloud Storage API",
+          "modelRef": "gcsSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The JSON and XML REST interfaces to Google Cloud Storage buckets and objects."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://cloud.google.com/storage/docs/apis"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
           "id": "lakehouse",
           "parent": null,
           "level": 0,
@@ -15004,6 +15615,7 @@
             "1p0amr9",
             "12hek22",
             "zbgc40",
+            "1sx0c59",
             "1cchpk7",
             "1snzgy2",
             "1x0w5p9",
@@ -15107,6 +15719,7 @@
             "1u0v1f",
             "12hek22",
             "zbgc40",
+            "1sx0c59",
             "170rwje",
             "kwgd2x",
             "1qxey3v",
@@ -15150,7 +15763,7 @@
           }
         ]
       },
-      "hash": "Llge7wMAXExhjgdTy6-3ccvazJ2MIUnwVzzBWRt6GrE"
+      "hash": "RRZqi6Prmhzp4HIoDAcKTMu9Lxb46LgFvJlXXyDfFNU"
     },
     "techConcerns": {
       "_type": "element",

@@ -72,12 +72,13 @@ views {
 
   view techFormatsStorage {
     title "Technology — table formats, file formats, and object storage"
-    description "The format and storage specifications, the libraries that read and write each format, and the stores that implement the storage APIs."
+    description "The format and storage specifications, the libraries that read and write each format or talk to storage directly, and the stores that implement the storage APIs."
 
     include
       lakehouse.tableFormat, lakehouse.fileFormat, lakehouse.objectStorage,
-      deltaSpec, icebergSpec, parquetSpec, s3Spec, azureBlobSpec,
+      deltaSpec, icebergSpec, parquetSpec, s3Spec, azureBlobSpec, gcsSpec,
       deltaRs, pyIceberg, deltaSpark, icebergSparkRuntime, duckdbDelta, duckdbIceberg,
+      objectStore, obstore,
       rustfs, amazonS3, azurite, azureBlobStorage
     autoLayout LeftRight
   }

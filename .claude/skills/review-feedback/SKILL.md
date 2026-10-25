@@ -45,12 +45,21 @@ with the user when there are more than a handful of threads or any are ambiguous
 
 For each thread, `get_thread` gives the conversation plus a location:
 
-- `quote` / `code-line`: the exact lines.
+- `quote` / `code-line`: the exact lines. A note "only the start of the quote
+  matched" means the end line is a guess.
+- `moved`: the passage was found away from where the comment was written. The
+  note says how: the quote now sits under another heading, or the lines were
+  followed from the authored commit through the diff or by the lines that
+  survived a move. Read around the lines before editing, and check that they
+  are still the passage the reviewer meant.
 - `section`: the comment's heading section. The quoted text has since changed, so
   find the passage by meaning.
 - `file`, or "not in this checkout": the anchor is gone. Read the page and the
-  thread, and decide whether it still applies.
-- `file changed since comment`: line numbers may be stale. Read around them.
+  thread, and decide whether it still applies. A note "were deleted since" means
+  the passage was removed after the comment; the thread may already be answered.
+- `file changed since comment`: line numbers may be stale. Read around them. The
+  `changed since comment in N commits` line names those commits; `git show` one
+  when you need to know why the passage changed.
 - anchor `the whole page`: a page-level thread about the page as a whole (its
   scope, structure, or angle). It maps to the file; read the page end to end.
 - anchor `model element <id>` / `model view <id>` / `model the model as a

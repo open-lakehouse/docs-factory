@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { create } from "@bufbuild/protobuf";
@@ -13,7 +13,14 @@ import {
   ContentRefSchema,
   TextSelectorSchema,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
-import { findQuote, locate, matchSuggestion, sourcePathForRef } from "./locate.js";
+import {
+  findQuote,
+  locate,
+  mapLines,
+  matchSuggestion,
+  parseHunks,
+  sourcePathForRef,
+} from "./locate.js";
 
 const PAGE = "content/unitycatalog/how-to/002-create-tables/index.md";
 const SNIPPET = "content/unitycatalog/how-to/002-create-tables/snippets/create.py";
@@ -60,8 +67,32 @@ and where their data lives.
 More.
 `;
 
+const HIST_PAGE = "content/unitycatalog/how-to/003-share-folders/index.md";
+const HIST_V1 = `---
+title: Share folders
+diataxis: how-to
+project: unitycatalog
+---
+
+## Download the environment
+
+Fetch the archive and unpack it.
+
+## Share a folder with the server
+
+Mount a host folder so the server
+can read files you place there,
+then restart the container.
+
+## Check the server
+
+The same sentence twice.
+Other words first. The same sentence twice.
+`;
+
 let repo: string;
 let sha1: string;
+const readHist = () => readFileSync(join(repo, HIST_PAGE), "utf8");
 const git = (...args: string[]) =>
   execFileSync("git", args, { cwd: repo, encoding: "utf8" }).trim();
 function write(path: string, text: string) {
@@ -75,6 +106,7 @@ beforeAll(() => {
   write(PAGE, PAGE_V1);
   write(SNIPPET, SNIPPET_V1);
   write(INTRO_PAGE, INTRO_V1);
+  write(HIST_PAGE, HIST_V1);
   git("add", ".");
   git("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--no-gpg-sign", "-m", "v1");
   sha1 = git("rev-parse", "HEAD");
@@ -273,5 +305,158 @@ describe("matchSuggestion", () => {
 
   test("no location, no match", () => {
     expect(matchSuggestion(raw, {}, "Intro.", false)).toBeUndefined();
+  });
+});
+
+describe("follow comments through edits", () => {
+  const histRef = create(ContentRefSchema, {
+    area: ContentArea.DOCS,
+    project: "unitycatalog",
+    bucket: "how-to",
+    slug: "share-folders",
+  });
+  const comment = (
+    anchorSlug: string,
+    selector?: { quote: string; prefix?: string; suffix?: string },
+    authoredGitSha = sha1,
+  ) =>
+    create(CommentSchema, {
+      id: "c4",
+      ref: histRef,
+      anchorSlug,
+      authoredGitSha,
+      selector: selector ? create(TextSelectorSchema, selector) : undefined,
+    });
+  const QUOTE = "mount a host folder so the server can read files you place there";
+  const edit = (from: string, to: string) => write(HIST_PAGE, HIST_V1.replace(from, to));
+
+  afterAll(() => write(HIST_PAGE, HIST_V1));
+
+  test("a quote under a removed heading is found elsewhere on the page", () => {
+    edit("## Share a folder with the server\n\n", "");
+    const loc = locate(repo, comment("share-a-folder-with-the-server", { quote: QUOTE }));
+    expect(loc?.precision).toBe("moved");
+    expect([loc?.startLine, loc?.endLine]).toEqual([11, 12]);
+    expect(loc?.note).toContain("#download-the-environment");
+  });
+
+  test("a quote moved out of a surviving section", () => {
+    edit(
+      "Mount a host folder so the server\ncan read files you place there,\nthen restart the container.",
+      "Then restart the container.",
+    );
+    write(
+      HIST_PAGE,
+      `${readHist()}\nMount a host folder so the server\ncan read files you place there.\n`,
+    );
+    const loc = locate(repo, comment("share-a-folder-with-the-server", { quote: QUOTE }));
+    expect(loc?.precision).toBe("moved");
+    expect(loc?.note).toContain("#check-the-server");
+  });
+
+  test("a repeated quote picks the occurrence its prefix frames", () => {
+    write(HIST_PAGE, HIST_V1);
+    const quote = "the same sentence twice";
+    expect(locate(repo, comment("check-the-server", { quote }))?.startLine).toBe(19);
+    const framed = locate(
+      repo,
+      comment("check-the-server", { quote, prefix: "other words first." }),
+    );
+    expect(framed?.startLine).toBe(20);
+  });
+
+  test("an edited passage is followed through the diff from the authored commit", () => {
+    edit("can read files you place there,", "can read the files you put there,");
+    const loc = locate(repo, comment("share-a-folder-with-the-server", { quote: QUOTE }));
+    expect(loc?.precision).toBe("moved");
+    expect([loc?.startLine, loc?.endLine]).toEqual([13, 14]);
+    expect(loc?.note).toContain("through the diff");
+    expect(loc?.note).toContain("edited since");
+  });
+
+  test("a passage moved and edited is followed by its unchanged lines", () => {
+    write(
+      HIST_PAGE,
+      HIST_V1.replace(
+        "## Share a folder with the server\n\nMount a host folder so the server\ncan read files you place there,\nthen restart the container.\n\n",
+        "",
+      ).replace(
+        "The same sentence twice.\n",
+        "The same sentence twice.\nMount the host folder so the server\ncan read files you place there,\nthen restart it.\n",
+      ),
+    );
+    const loc = locate(repo, comment("share-a-folder-with-the-server", { quote: QUOTE }));
+    expect(loc?.precision).toBe("moved");
+    expect([loc?.startLine, loc?.endLine]).toEqual([15, 15]);
+    expect(loc?.note).toContain("lines 13-14 at");
+    expect(loc?.note).toContain("1 of their 2 lines");
+  });
+
+  test("an unknown authored commit skips the history", () => {
+    edit("## Share a folder with the server\n\nMount a host folder so the server\n", "Mount it\n");
+    const loc = locate(
+      repo,
+      comment("share-a-folder-with-the-server", { quote: QUOTE }, "0".repeat(40)),
+    );
+    expect(loc?.precision).toBe("file");
+    expect(loc?.drifted).toBe(false);
+  });
+
+  test("a quote whose start alone still matches says so", () => {
+    write(HIST_PAGE, HIST_V1);
+    const quote = `${QUOTE}, then restart the container and wait for it to come back up again`;
+    const loc = locate(repo, comment("share-a-folder-with-the-server", { quote }));
+    expect(loc?.precision).toBe("quote");
+    expect(loc?.note).toContain("only the start");
+  });
+
+  test("lists the commits that touched the page since the comment", () => {
+    edit("Fetch the archive", "Download the archive");
+    git(
+      "-c",
+      "user.name=t",
+      "-c",
+      "user.email=t@t",
+      "commit",
+      "-qam",
+      "reword download",
+      "--no-gpg-sign",
+    );
+    const loc = locate(repo, comment("share-a-folder-with-the-server", { quote: QUOTE }));
+    expect(loc?.precision).toBe("quote");
+    expect(loc?.drifted).toBe(true);
+    expect(loc?.history?.total).toBe(1);
+    expect(loc?.history?.commits[0].subject).toBe("reword download");
+    git("reset", "-q", "--hard", sha1);
+  });
+});
+
+describe("mapLines", () => {
+  const hunks = parseHunks(
+    [
+      "@@ -2 +1,0 @@",
+      "-gone",
+      "@@ -5,2 +4,3 @@",
+      "-a",
+      "-b",
+      "+x",
+      "+y",
+      "+z",
+      "@@ -9,0 +9,2 @@",
+    ].join("\n"),
+  );
+
+  test("parses counts, defaulting to one", () => {
+    expect(hunks[0]).toEqual({ oldStart: 2, oldCount: 1, newStart: 1, newCount: 0 });
+  });
+  test("an untouched range shifts by the hunks before it", () => {
+    expect(mapLines(hunks, 7, 8)).toEqual({ start: 7, end: 8, edited: false });
+    expect(mapLines(hunks, 10, 10)).toEqual({ start: 12, end: 12, edited: false });
+  });
+  test("a range inside a hunk maps to its replacement", () => {
+    expect(mapLines(hunks, 5, 6)).toEqual({ start: 4, end: 6, edited: true });
+  });
+  test("a range deleted outright maps to nothing", () => {
+    expect(mapLines(hunks, 2, 2)).toBeUndefined();
   });
 });

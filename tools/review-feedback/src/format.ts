@@ -15,7 +15,12 @@ function locationLine(loc: Location | undefined): string {
         : `${loc.path}:${loc.startLine}-${loc.endLine}`;
   const flags = [loc.precision, loc.drifted ? "file changed since comment" : ""].filter(Boolean);
   const note = loc.note ? ` — ${loc.note}` : "";
-  return `- location: \`${range}\` (${flags.join(", ")})${note}`;
+  const out = `- location: \`${range}\` (${flags.join(", ")})${note}`;
+  if (!loc.history) return out;
+  const { commits, total } = loc.history;
+  const more = total > commits.length ? `, and ${total - commits.length} more` : "";
+  const list = commits.map((c) => `${c.sha} ${c.subject}`).join("; ");
+  return `${out}\n- changed since comment in ${total} commit${total === 1 ? "" : "s"}: ${list}${more}`;
 }
 
 function anchorLine(t: FeedbackThread): string {

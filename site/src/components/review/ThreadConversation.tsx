@@ -3,6 +3,7 @@ import { Check, Link2, RotateCcw, Undo2, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { isPreambleAnchor } from "../../content-core/slug.mjs";
 import { SuggestionState, type Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import {
   createComment,
@@ -41,7 +42,7 @@ function threadDeepLink(thread: Thread): string | null {
   url.searchParams.set("tabs", token);
   url.searchParams.set("active", token);
   url.searchParams.set("thread", root.id);
-  if (root.anchorSlug) url.searchParams.set("anchor", root.anchorSlug);
+  if (!isPreambleAnchor(root.anchorSlug)) url.searchParams.set("anchor", root.anchorSlug);
   return url.toString();
 }
 

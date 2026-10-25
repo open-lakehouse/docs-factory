@@ -7,10 +7,10 @@
 // blocks; that raw form must never be served. This driver runs the shared emitter
 // core (emit/emit.mjs `emitOne`) with the `md-twin` target over each public page,
 // producing clean markdown with snippets inlined, constructs flattened, and
-// diagrams resolved to their Mermaid. The twin is written at the page's canonical
+// diagrams resolved to their Mermaid. The twin is written at the page's review-app
 // route + `.md` (e.g. /docs/<project>/<bucket>/<slug>.md, /blog/<slug>.md), which
 // is exactly what `twinUrl()` advertises and the gen-vercel-config `.md` rules
-// serve.
+// serve. Its `canonical:` names the page's home site instead (homeCanonical).
 //
 // Every page gets one, whatever its status: the review app is login-gated, and
 // a draft's twin is as much under review as its rendered page. A docs page's
@@ -22,8 +22,11 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { defaultModelDir, emitOne } from "../../emit/emit.mjs";
+import { DOCS_SITES } from "../../emit/docs/sites/index.mjs";
+import { blogTargets, defaultModelDir, emitOne } from "../../emit/emit.mjs";
+import deltaBlog from "../../emit/targets/delta.mjs";
 import mdTwin from "../../emit/targets/md-twin.mjs";
+import unitycatalogBlog from "../../emit/targets/unitycatalog.mjs";
 import { splitFrontmatter } from "../src/content-core/frontmatter.mjs";
 import { canonicalUrl, siteOrigin } from "../src/content-core/head.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
@@ -45,6 +48,40 @@ const origin = siteOrigin();
  *  "/docs/a/b/c" → dist/docs/a/b/c.md; "/blog/slug" → dist/blog/slug.md. */
 export function twinPathForHref(href) {
   return resolve(distDir, `${href.replace(/^\//, "")}.md`);
+}
+
+const BLOG_TARGETS = [unitycatalogBlog, deltaBlog];
+
+/**
+ * The URL a twin names as canonical: the page on the site that hosts it, not
+ * this review app. A docs page's home is its project's docs site; a blog post's
+ * is its primary target's delivered post (`.emitted.json`, since the post dir
+ * is only known after delivery). A project or primary without a site of its
+ * own, or a post not yet delivered, falls back to `origin`.
+ */
+export function homeCanonical(
+  identity,
+  { meta = {}, emitted = {}, sites = DOCS_SITES, blogTargets: targets = BLOG_TARGETS } = {},
+) {
+  if (identity?.area === "docs") {
+    const home = sites.find((s) => s.project === identity.project);
+    if (home) return canonicalUrl(identity, home.origin, home.hrefFor);
+  }
+  if (identity?.area === "blogs") {
+    const primary = targets.find((t) => t.name === blogTargets(meta)[0]);
+    const postDir = primary && emitted[primary.name]?.post_dir;
+    if (postDir) return primary.postUrl(postDir);
+  }
+  return canonicalUrl(identity, origin);
+}
+
+/** A blog post's delivery sidecar, or `{}` when it has none. */
+function readEmitted(draftDir) {
+  try {
+    return JSON.parse(readFileSync(resolve(draftDir, ".emitted.json"), "utf8"));
+  } catch {
+    return {};
+  }
 }
 
 /**
@@ -324,7 +361,11 @@ async function buildTwin(absPath, scriptsByRoute, environmentFor) {
   }
 
   const isTutorial = identity.bucket === "tutorials";
-  const withCanonical = injectCanonical(output, canonicalUrl(identity, origin));
+  const canonical = homeCanonical(identity, {
+    meta,
+    emitted: identity.area === "blogs" ? readEmitted(dirname(absPath)) : {},
+  });
+  const withCanonical = injectCanonical(output, canonical);
   const withSections = scaffoldSections(withCanonical, {
     isTutorial,
     examples: isTutorial ? runnableExamplesSection(scriptsByRoute.get(href)) : "",

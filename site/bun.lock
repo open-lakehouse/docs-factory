@@ -15,7 +15,7 @@
         "@mdx-js/react": "^3.1.1",
         "@mdx-js/rollup": "^3.1.1",
         "@neondatabase/neon-js": "0.6.2-beta",
-        "@open-lakehouse/trestle-diagram": "0.5.1",
+        "@open-lakehouse/trestle-diagram": "0.5.2",
         "@radix-ui/react-use-controllable-state": "^1.2.3",
         "@tailwindcss/vite": "^4.3.2",
         "@tanstack/react-query": "^5.101.2",
@@ -262,7 +262,7 @@
 
     "@noble/hashes": ["@noble/hashes@2.2.0", "", {}, "sha512-IYqDGiTXab6FniAgnSdZwgWbomxpy9FtYvLKs7wCUs2a8RkITG+DFGO1DM9cr+E3/RgADRpFjrKVaJ1z6sjtEg=="],
 
-    "@open-lakehouse/trestle-diagram": ["@open-lakehouse/trestle-diagram@0.5.1", "", { "dependencies": { "@radix-ui/react-tooltip": "^1.2.8", "@xyflow/react": "^12.4.0", "clsx": "^2.1.1", "elkjs": "^0.11.0", "html-to-image": "^1.11.13", "lucide-react": "^0.475.0", "shiki": "^3.23.0", "tailwind-merge": "^3.6.0" }, "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0" } }, "sha512-hayAuHlTX1mbP4rprESHky9KxKBa2LukjCiV7m56ItYB6jGM7cti6hwErDTkjmxnOS59NviPXkJQ0ikrFOBK2w=="],
+    "@open-lakehouse/trestle-diagram": ["@open-lakehouse/trestle-diagram@0.5.2", "", { "dependencies": { "@radix-ui/react-tooltip": "^1.2.8", "@xyflow/react": "^12.4.0", "clsx": "^2.1.1", "elkjs": "^0.11.0", "html-to-image": "^1.11.13", "lucide-react": "^0.475.0", "shiki": "^3.23.0", "tailwind-merge": "^3.6.0" }, "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0" } }, "sha512-QriPU4PSjTCLckR7sE6mON3KXDNpy3s1J8jZvyPmXlbC5buLD4t3A+iJtF83mBdQ/z3LQwEIlcHAZP1smAK/hw=="],
 
     "@oxc-project/types": ["@oxc-project/types@0.138.0", "", {}, "sha512-1a7ZKmrRTCoN1XMZ4L0PyyqrMnrNlLyPuOkdSX2MZg7IiIGRUyurNhAm73ptDOraoBcIordsIGKNPKUzy3ZmfA=="],
 

@@ -8,6 +8,7 @@ import {
   companionsFrontmatter,
   companionsSection,
   environmentFrontmatter,
+  homeCanonical,
   injectCanonical,
   injectFrontmatter,
   prependSection,
@@ -53,6 +54,35 @@ test("twinPathForHref maps a route to canonical-route + .md under dist/", () => 
     /\/dist\/docs\/delta\/how-to\/read\.md$/,
   );
   expect(twinPathForHref("/blog/my-post")).toMatch(/\/dist\/blog\/my-post\.md$/);
+});
+
+test("homeCanonical names the page on its project's docs site", () => {
+  const sites = [
+    {
+      project: "unitycatalog",
+      origin: "https://uc.test",
+      hrefFor: (i) => `/${i.bucket}/${i.slug}`,
+    },
+    { project: "delta", origin: "https://delta.test", hrefFor: (i) => `/${i.bucket}/${i.slug}` },
+  ];
+  const page = (project) => ({ area: "docs", project, bucket: "how-to", slug: "a" });
+  expect(homeCanonical(page("unitycatalog"), { sites })).toBe("https://uc.test/how-to/a");
+  expect(homeCanonical(page("delta"), { sites })).toBe("https://delta.test/how-to/a");
+  // No docs site of its own: the open-lakehouse origin.
+  expect(homeCanonical(page("open-lakehouse"), { sites })).toMatch(
+    /\/docs\/open-lakehouse\/how-to\/a$/,
+  );
+});
+
+test("homeCanonical names a blog post's delivered primary, else the fallback", () => {
+  const post = { area: "blogs", slug: "p" };
+  const meta = { target: ["unitycatalog", "delta"] };
+  const emitted = { unitycatalog: { post_dir: "2026-07-03-p" } };
+  expect(homeCanonical(post, { meta, emitted })).toBe(
+    "https://www.unitycatalog.io/blogs/2026-07-03-p/",
+  );
+  expect(homeCanonical(post, { meta, emitted: {} })).toMatch(/\/blog\/p$/);
+  expect(homeCanonical(post, { meta: { target: "openlakehouse" }, emitted })).toMatch(/\/blog\/p$/);
 });
 
 test("injectCanonical adds canonical into an existing frontmatter block", () => {

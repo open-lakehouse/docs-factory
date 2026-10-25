@@ -12,9 +12,10 @@ status: draft
 
 Many engines and tools outside these docs connect to a
 [Unity Catalog](model:unityCatalogServer) server. This page lists the ones the
-earlier Unity Catalog docs covered, says how each one connects, and links the
-docs of the project that maintains it. Where these docs have a tested guide, the
-row links it instead.
+earlier Unity Catalog docs covered and the ones whose maintainers document a
+connection to an open-source server. It says how each one connects and links
+the docs of the project that maintains it. Where these docs have a tested
+guide, the row links it instead.
 
 ## How a tool connects
 
@@ -46,10 +47,18 @@ confirmed, and *archived* means the project no longer ships.
 | Apache Spark | Unity Catalog REST | Unity Catalog | [Use Spark with Unity Catalog](../configure-spark/index.md) | Tested here | 2026-10-25 |
 | DuckDB | Unity Catalog REST | DuckDB | [Use DuckDB with Unity Catalog](../duckdb/index.md) | Tested here | 2026-10-25 |
 | Daft | Unity Catalog REST | Eventual | [Python DataFrame libraries](../python-dataframes/index.md); [Daft's guide](https://docs.daft.ai/en/stable/connectors/unity_catalog/) | Tested here | 2026-10-25 |
+| Polars | Unity Catalog REST | Polars | [Python DataFrame libraries](../python-dataframes/index.md); [`polars.Catalog`](https://docs.pola.rs/api/python/stable/reference/catalog/api/polars.Catalog.html) | Tested here | 2026-10-25 |
+| delta-rs (`deltalake`) | Unity Catalog REST | Delta Lake | [Python DataFrame libraries](../python-dataframes/index.md); [Load table from Unity Catalog](https://delta-io.github.io/delta-rs/latest/usage/loading-table/) | Tested here | 2026-10-25 |
+| PyIceberg | Iceberg REST | Apache Iceberg | [Use Iceberg REST clients with Unity Catalog](../iceberg-rest/index.md) | Tested here | 2026-10-25 |
+| MLflow | Unity Catalog REST | MLflow | [Manage registered models](../manage-models/index.md) | Tested here | 2026-10-25 |
+| LangChain | Unity Catalog REST | Unity Catalog | [Use catalog functions as LangChain tools](../langchain-tools/index.md) | Tested here | 2026-10-25 |
 | Trino | Iceberg REST | Trino | [Trino Iceberg connector, REST catalog](https://trino.io/docs/current/object-storage/metastores.html) | Maintained | 2026-10-25 |
 | Spice | Unity Catalog REST | Spice AI | [Unity Catalog catalog connector](https://spiceai.org/docs/components/catalogs/unity-catalog) | Maintained | 2026-10-25 |
 | PuppyGraph | Unity Catalog REST | PuppyGraph | [Querying Unity Catalog data as a graph](https://docs.puppygraph.com/getting-started/querying-unity-catalog-data-as-a-graph/) | Maintained | 2026-10-25 |
 | Apache XTable | Registered by path | Apache XTable | [Unity Catalog](https://xtable.apache.org/docs/unity-catalog/) | Maintained | 2026-10-25 |
+| Sail | Unity Catalog REST | LakeSail | [Unity Catalog](https://docs.lakesail.com/sail/latest/guide/catalog/unity.html) | Maintained | 2026-10-25 |
+| Ladybug | Unity Catalog REST | LadybugDB | [Unity Catalog extension](https://docs.ladybugdb.com/extensions/attach/unity/) | Maintained | 2026-10-25 |
+| Lance Namespace | Unity Catalog REST | Lance | [Unity Catalog](https://lance.org/format/namespace/supported-catalogs/unity/) | Maintained | 2026-10-25 |
 | CelerData | Unity Catalog REST | CelerData | [Earlier Unity Catalog guide](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/docs/integrations/unity-catalog-celerdata.md) | Unverified | 2026-10-25 |
 | Kuzu | Unity Catalog REST | None | [Archived repository](https://github.com/kuzudb/kuzu) | Archived | 2026-10-25 |
 
@@ -58,19 +67,29 @@ Notes on individual rows:
 - **Trino** reads through the Iceberg REST catalog only, so it sees only the
   tables with Iceberg metadata. Set `iceberg.rest-catalog.uri` to the server's
   `/api/2.1/unity-catalog/iceberg` endpoint.
+- **delta-rs** opens a table by name from a `uc://<catalog>.<schema>.<table>`
+  URL. pandas reads Unity Catalog tables through it.
+- **LangChain** gets catalog functions as tools from the
+  `unitycatalog-langchain` package, which the Unity Catalog project maintains.
 - **Spice** queries Delta tables. Set its `unity_catalog_credential_vending`
   parameter to `enabled` to use the credentials the server vends instead of
   object store keys of its own.
 - **Apache XTable**'s Unity Catalog guide registers a synced table in
   Databricks Unity Catalog. For an OSS server, register the Delta table XTable
   writes as in [Register an external Delta table](../register-external-table/index.md).
+- **Sail** connects to `http://localhost:8080/api/2.1/unity-catalog` unless
+  you set its `uri` option.
+- **Ladybug** scans and copies Delta tables from one catalog's default schema.
+- **Lance Namespace** stores Lance tables in Unity Catalog as external tables
+  with the table property `table_type` set to `lance`.
 - **CelerData**'s documentation site now redirects to a PhoenixData-branded
   site, which documents a `unity` metastore type for its Delta Lake catalog.
   Whether that is the same product, and whether it still connects to an OSS
   server, couldn't be confirmed. Open-source StarRocks doesn't document a
   Unity Catalog metastore.
 - **Kuzu**'s repository was archived on 2025-10-10, so its `unity_catalog`
-  extension gets no further releases.
+  extension gets no further releases. Ladybug, listed above, carries a
+  `unity_catalog` extension of its own.
 
 ## Check an integration before you rely on it
 

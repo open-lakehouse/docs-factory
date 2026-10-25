@@ -135,12 +135,12 @@ export function toEntry(
  * by Diátaxis quadrant (from their identity/meta); blogs go under a Blog section.
  * Each line links the canonical route and its `.md` twin. `apis` (api.mjs
  * apiEntries) link their OpenAPI spec beside the twin. `environments`
- * (`{ index, guide }`) adds the env index the runnable scripts need, and
- * `concepts` the site's concepts.json.
+ * (`{ index, guide }`) adds the env index the runnable scripts need,
+ * `concepts` the site's concepts.json, and `home` the home page's twin.
  */
 export function renderLlmsIndex(
   entries,
-  { title, summary, origin = "", apis = [], environments = null, concepts = false },
+  { title, summary, origin = "", apis = [], environments = null, concepts = false, home = false },
 ) {
   const lines = [`# ${title}`, "", `> ${summary}`, ""];
   const bySection = Object.fromEntries(DIATAXIS.map((k) => [k, []]));
@@ -172,6 +172,7 @@ export function renderLlmsIndex(
   lines.push(
     "## Resources",
     "",
+    ...(home ? [`- [Home](${origin}/index.md): a map of every page, with summaries.`] : []),
     `- [Full-text corpus](${origin}/llms-full.txt): every page's Markdown twin concatenated.`,
     `- [Runnable scripts index](${origin}/scripts.json): CI-verified PEP 723 tutorial scripts + their runtime contracts.`,
   );
@@ -189,6 +190,58 @@ export function renderLlmsIndex(
   lines.push("");
 
   return `${lines.join("\n").replace(/\s+$/, "")}\n`;
+}
+
+/**
+ * Render the home page's `.md` twin (/index.md, pure). The home page is curated
+ * in the site's brand TSX, out of the emitter's reach, so the twin is the site
+ * map an agent needs instead: the tagline, the commands that start the local
+ * server (`start`: a page with an environment), and every nav page with its
+ * summary. `nav` is the projected nav (site.json); `pages` its page records.
+ */
+export function renderHomeTwin({ title, tagline, origin, nav, pages, apis = [], start = null }) {
+  const summaries = new Map(pages.map((p) => [p.route, p.summary]));
+  const lines = [
+    "---",
+    `title: ${JSON.stringify(title)}`,
+    `description: ${JSON.stringify(tagline)}`,
+    `canonical: ${origin}/`,
+    "---",
+    "",
+    `# ${title}`,
+    "",
+    tagline,
+  ];
+  if (start?.environment?.commands.length) {
+    lines.push(
+      "",
+      "## Run it locally",
+      "",
+      `These commands need only Docker. [${start.title}](${origin}${start.route}.md) walks through them.`,
+      "",
+      "```bash",
+      ...start.environment.commands,
+      "```",
+    );
+  }
+  const walk = (items, depth) => {
+    for (const item of items) {
+      if (item.kind === "section") {
+        lines.push("", `${"#".repeat(Math.min(depth, 4))} ${item.label}`, "");
+        walk(item.items, depth + 1);
+      } else {
+        const summary = summaries.get(item.route);
+        lines.push(`- [${item.label}](${origin}${item.route}.md)${summary ? `: ${summary}` : ""}`);
+      }
+    }
+  };
+  walk(nav, 2);
+  if (apis.length) {
+    lines.push("", "## API reference", "");
+    for (const a of apis) lines.push(`- [${a.title}](${origin}${a.route}.md): ${a.summary}`);
+  }
+  // A section that opens with a subsection leaves two blank lines; keep one.
+  return `${lines.join("\n").replace(/\n{3,}/g, "\n\n")}\n`;
 }
 
 /**

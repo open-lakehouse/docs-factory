@@ -84,6 +84,7 @@ import { apiOperations, renderApiTwin } from "./api-reference.mjs";
 import {
   conceptEnvironments,
   renderConcepts,
+  renderHomeTwin,
   renderLlmsFull,
   renderLlmsIndex,
   renderRobots,
@@ -623,6 +624,18 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
     }
 
     // 4. Site data + GEO surfaces.
+    files.set(
+      "public/index.md",
+      renderHomeTwin({
+        title: site.title,
+        tagline: site.tagline,
+        origin,
+        nav,
+        pages,
+        apis,
+        start: pages.find((p) => p.environment && p.diataxis === "tutorial") ?? null,
+      }),
+    );
     // Only the API page reads it, so it stays out of the bundle every page loads.
     files.set("src/generated/api-operations.json", `${JSON.stringify(operations, null, 2)}\n`);
     files.set(
@@ -639,7 +652,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
           siteName: site.title,
           type: "website",
         }),
-        twin: null,
+        twin: `${origin}/index.md`,
       },
     };
     for (const p of ordered) {
@@ -693,7 +706,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       "public/llms.txt",
       renderLlmsIndex(entries, {
         title: `${site.title} documentation`,
-        summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`.`,
+        summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`, and the home page at \`/index.md\`.`,
+        home: true,
         origin,
         apis,
         environments: envBundle && {

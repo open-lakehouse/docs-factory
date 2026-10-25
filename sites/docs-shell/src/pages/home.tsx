@@ -105,13 +105,15 @@ export function QuickStart({
           <span>~</span>
         </div>
         <pre className="terminal-body">
-          {commands.map((line) => (
-            <span key={line} className="terminal-line">
-              {line.startsWith(" ") ? "  " : <span className="prompt">$ </span>}
-              {line.trimStart()}
-              {"\n"}
-            </span>
-          ))}
+          <code className="language-bash">
+            {commands.map((line) => (
+              <span key={line} className="terminal-line">
+                {line.startsWith(" ") ? "  " : <span className="prompt">$ </span>}
+                {line.trimStart()}
+                {"\n"}
+              </span>
+            ))}
+          </code>
         </pre>
         <CodeCopyButton code={commands.join("\n")} />
       </div>

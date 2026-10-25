@@ -261,6 +261,11 @@ check: _site-deps _emit-deps
     cd site && node scripts/check-nav.mjs
     cd emit && bun docs/api-specs.mjs --check
 
+# Needs lychee (`brew install lychee`). Emits both sites with drafts first, as CI does.
+# Check every external link the docs sites publish (rules in lychee.toml).
+check-links: (emit-docs "unitycatalog-docs" "--drafts") (emit-docs "delta-docs" "--drafts")
+    lychee --config lychee.toml --no-progress 'sites/*/public/**/*.md' 'architecture/model/**/*.likec4'
+
 # Lint + type-check the Python workspace.
 lint:
     uv run ruff check .

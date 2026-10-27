@@ -104,6 +104,9 @@ Interoperable ↔
    + experiment tracking; AI asset kinds.
 9. The Agentic Lakehouse — `blogs/agentic-lakehouse/` — idea — the finale: agent
    platform + everything above, deployed A to Z.
+10. The Luminescent Lakehouse — `blogs/luminescent-lakehouse/` — idea — spin-off
+    of 7: a basic lakehouse on one serverless platform (Neon Postgres + object
+    storage + Functions running Rust services as a Node addon).
 
 Adjectives for 6–8 are still open; reorder or replace freely, but keep 1–5 and
 the agentic finale as the spine.

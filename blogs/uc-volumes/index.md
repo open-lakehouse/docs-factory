@@ -47,8 +47,11 @@ for credentials, and you can open a volume as a store. This is the cell that doe
 ```python file=../../content/unitycatalog/how-to/024-marimo-remote-storage/snippets/notebook.py start=start:nb-store end=end:nb-store title="notebook.py"
 ```
 
-Once the cell runs, the volume shows up under **Remote Storage** in the **Files** panel, and other
-cells read through the same store with plain obstore calls. There are no storage keys anywhere
+Once the cell runs, the volume shows up under **Remote Storage** in the **Files** panel:
+
+![Screenshot: marimo's Files panel, where the Remote Storage section lists the files store as Amazon S3 at the volume's storage location, with the volume's reports folder underneath.](./assets/remote-storage-panel.png)
+
+Other cells read through the same store with plain obstore calls. There are no storage keys anywhere
 in the notebook. The store knows the volume's name, and Unity Catalog
 answers with the volume's storage location and a credential scoped to it.
 

@@ -10,19 +10,19 @@ audience: Platform engineers and data practitioners who know Unity Catalog table
 summary: Volumes govern unstructured data in Unity Catalog. Open one in a marimo notebook, build platform experiences on it, and keep agent context in it.
 ---
 :::tldr
-- UC Volumes provide a powerful abstraction for governing and processing unstructured data.
+- Unity Catalog Volumes provide a powerful abstraction for governing and processing unstructured data.
 - A volume opens as an obstore store in a marimo notebook, with credentials Unity Catalog vends for that one volume.
 - Volumes are a fundamental building block for rich user experiences and storage-based services.
 - Much of an agent's context, such as instruction files and LLM wikis, is files by convention, and a volume gives those files a governed home.
 :::
 
-The usage of object stores as the storage layer particularly for composable data systems
+The usage of object stores as the storage layer for all kinds of data systems
 has been on a continuous rise for several years. For analytical workloads, separated
 storage and compute - a key concept of the Lakehouse Architecture - is the de-facto
 standard, and even some transactional workloads are following suit.
 
 And while we as a community made great strides managing and governing tabular assets
-in object storage via catalogs in recent years, we always kept an escape hatch around.
+in object storage via catalogs, we always kept an escape hatch around.
 This escape hatch is plain storage; data pipelines read configuration files, data scientists
 develop ideas as scratch files in some personal storage location, and many more examples
 where folks need to quickly park something for later use or reference.
@@ -71,7 +71,7 @@ credentials.
 
 ## What makes a volume
 
-So what is it that we just opened? Let's take a more formal look at what Volumes are and what
+So what is it that we just opened? Let's take a more formal look at what Volumes in Unity Catalog are and what
 metadata we associate with them.
 
 ```json file=volume.json

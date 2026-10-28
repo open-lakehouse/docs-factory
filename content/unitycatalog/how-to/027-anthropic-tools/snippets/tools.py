@@ -97,7 +97,13 @@ class StubMessagesApi:
         class Handler(BaseHTTPRequestHandler):
             def do_POST(self):
                 body = json.loads(self.rfile.read(int(self.headers["content-length"])))
-                stub.requests.append({"path": self.path, "headers": {k.lower(): v for k, v in self.headers.items()}, "body": body})
+                stub.requests.append(
+                    {
+                        "path": self.path,
+                        "headers": {k.lower(): v for k, v in self.headers.items()},
+                        "body": body,
+                    }
+                )
                 try:
                     check, reply = stub.turns.pop(0)
                     check(body)
@@ -105,7 +111,13 @@ class StubMessagesApi:
                 except Exception as exc:  # surfaced by stub.verify()
                     stub.errors.append(exc)
                     status = 400
-                    data = {"type": "error", "error": {"type": "invalid_request_error", "message": repr(exc)}}
+                    data = {
+                        "type": "error",
+                        "error": {
+                            "type": "invalid_request_error",
+                            "message": repr(exc),
+                        },
+                    }
                 raw = json.dumps(data).encode()
                 self.send_response(status)
                 self.send_header("content-type", "application/json")
@@ -141,7 +153,9 @@ def _check_round_trip(expected_ids, history_length):
         uses = [b for b in assistant["content"] if b["type"] == "tool_use"]
         assert [b["id"] for b in uses] == expected_ids, assistant
         assert results["role"] == "user", results
-        assert [b["type"] for b in results["content"]] == ["tool_result"] * len(expected_ids)
+        assert [b["type"] for b in results["content"]] == ["tool_result"] * len(
+            expected_ids
+        )
         assert [b["tool_use_id"] for b in results["content"]] == expected_ids, results
         # A successful result carries no is_error key at all.
         assert not any("is_error" in b for b in results["content"]), results
@@ -271,7 +285,8 @@ async def _run(stub, api, client, claude, UnitycatalogClient, CatalogsApi) -> No
 
     # The SDK also serializes the toolkit's pydantic objects as they are.
     stub.expect(
-        lambda body: _assert_equal(body["tools"], tools), _message([_text("ok")], "end_turn")
+        lambda body: _assert_equal(body["tools"], tools),
+        _message([_text("ok")], "end_turn"),
     )
     await claude.messages.create(
         model=MODEL,
@@ -284,17 +299,21 @@ async def _run(stub, api, client, claude, UnitycatalogClient, CatalogsApi) -> No
     def check_first(body):
         assert body["model"] == MODEL, body["model"]
         assert body["tools"] == tools, body["tools"]
-        assert body["messages"] == [{"role": "user", "content": QUESTION}], body["messages"]
+        assert body["messages"] == [{"role": "user", "content": QUESTION}], body[
+            "messages"
+        ]
 
-    QUESTION = (
-        "What do 3 units at 19.99 with 10% off cost, shipped express at 2 kg?"
-    )
+    QUESTION = "What do 3 units at 19.99 with 10% off cost, shipped express at 2 kg?"
     stub.expect(
         check_first,
         _message(
             [
                 _text("I'll price the order and the shipping."),
-                _tool_use("toolu_01", ORDER, {"quantity": 3, "unit_price": 19.99, "discount_pct": 10.0}),
+                _tool_use(
+                    "toolu_01",
+                    ORDER,
+                    {"quantity": 3, "unit_price": 19.99, "discount_pct": 10.0},
+                ),
                 _tool_use("toolu_02", SHIPPING, {"weight_kg": 2.0, "express": True}),
             ],
             "tool_use",
@@ -346,11 +365,16 @@ async def _run(stub, api, client, claude, UnitycatalogClient, CatalogsApi) -> No
             else:
                 failed = output.error is not None
                 content = output.error if failed else str(output.value)
-            result = {"type": "tool_result", "tool_use_id": block.id, "content": content}
+            result = {
+                "type": "tool_result",
+                "tool_use_id": block.id,
+                "content": content,
+            }
             if failed:
                 result["is_error"] = True
             results.append(result)
         return results
+
     # --8<-- [end:tool-results]
 
     # --8<-- [start:run-tools]
@@ -367,7 +391,9 @@ async def _run(stub, api, client, claude, UnitycatalogClient, CatalogsApi) -> No
     # Round 2: the assistant turn and the results go back; Claude answers.
     stub.expect(
         _check_round_trip(["toolu_01", "toolu_02"], history_length=3),
-        _message([_text("The order costs 53.97 and express shipping 14.00.")], "end_turn"),
+        _message(
+            [_text("The order costs 53.97 and express shipping 14.00.")], "end_turn"
+        ),
     )
 
     # --8<-- [start:send-results]
@@ -389,7 +415,10 @@ async def _run(stub, api, client, claude, UnitycatalogClient, CatalogsApi) -> No
     assert response.content[-1].text.startswith("The order costs 53.97")
     # The assistant turn goes back block for block, text included.
     assistant_sent = stub.requests[-1]["body"]["messages"][1]["content"]
-    assert assistant_sent[0] == {"type": "text", "text": "I'll price the order and the shipping."}, assistant_sent
+    assert assistant_sent[0] == {
+        "type": "text",
+        "text": "I'll price the order and the shipping.",
+    }, assistant_sent
 
     await _assert_errors(run_tool_calls)
 
@@ -398,7 +427,11 @@ async def _run(stub, api, client, claude, UnitycatalogClient, CatalogsApi) -> No
         lambda body: _assert_equal(len(body["messages"]), 1),
         _message(
             [
-                _tool_use("toolu_11", ORDER, {"quantity": 3, "unit_price": 19.99, "discount_pct": 10.0}),
+                _tool_use(
+                    "toolu_11",
+                    ORDER,
+                    {"quantity": 3, "unit_price": 19.99, "discount_pct": 10.0},
+                ),
                 _tool_use("toolu_12", SHIPPING, {"weight_kg": 2.0, "express": True}),
             ],
             "tool_use",
@@ -406,7 +439,10 @@ async def _run(stub, api, client, claude, UnitycatalogClient, CatalogsApi) -> No
     )
     stub.expect(
         _check_round_trip(["toolu_11", "toolu_12"], history_length=3),
-        _message([_tool_use("toolu_13", SHIPPING, {"weight_kg": 2.0, "express": False})], "tool_use"),
+        _message(
+            [_tool_use("toolu_13", SHIPPING, {"weight_kg": 2.0, "express": False})],
+            "tool_use",
+        ),
     )
     stub.expect(
         _check_round_trip(["toolu_13"], history_length=5),
@@ -431,19 +467,35 @@ async def _run(stub, api, client, claude, UnitycatalogClient, CatalogsApi) -> No
             messages.append({"role": "user", "content": await run_tool_calls(response)})
         raise RuntimeError(f"No answer after {max_rounds} rounds")
 
-    response = await ask(claude, "Price 3 units at 19.99 with 10% off. Compare express and standard shipping at 2 kg.")
+    response = await ask(
+        claude,
+        "Price 3 units at 19.99 with 10% off. Compare express and standard shipping at 2 kg.",
+    )
     print(response.content[-1].text)
     # --8<-- [end:multi-round]
     assert response.content[-1].text == "Express costs 14.00, standard shipping 9.00."
     third = stub.requests[-1]["body"]["messages"]
-    assert [m["role"] for m in third] == ["user", "assistant", "user", "assistant", "user"]
+    assert [m["role"] for m in third] == [
+        "user",
+        "assistant",
+        "user",
+        "assistant",
+        "user",
+    ]
     assert third[4]["content"][0]["content"] == "9.0", third[4]
 
     # The bound: a model that keeps asking for tools stops the loop.
     for i in range(2):
         stub.expect(
             lambda body: None,
-            _message([_tool_use(f"toolu_2{i}", SHIPPING, {"weight_kg": 1.0, "express": False})], "tool_use"),
+            _message(
+                [
+                    _tool_use(
+                        f"toolu_2{i}", SHIPPING, {"weight_kg": 1.0, "express": False}
+                    )
+                ],
+                "tool_use",
+            ),
         )
     try:
         await ask(claude, "Keep going.", max_rounds=2)
@@ -458,7 +510,10 @@ async def _run(stub, api, client, claude, UnitycatalogClient, CatalogsApi) -> No
     stub.expect(
         lambda body: None,
         _message(
-            [_text("Let me check."), _tool_use("toolu_30", SHIPPING, {"weight_kg": 2.0})],
+            [
+                _text("Let me check."),
+                _tool_use("toolu_30", SHIPPING, {"weight_kg": 2.0}),
+            ],
             "max_tokens",
         ),
     )
@@ -495,17 +550,32 @@ async def _test_without_claude(ask) -> None:
 
     def reply(content, stop_reason):
         return {
-            "id": "msg_test", "type": "message", "role": "assistant",
-            "model": "claude-opus-5-5", "content": content,
-            "stop_reason": stop_reason, "stop_sequence": None,
+            "id": "msg_test",
+            "type": "message",
+            "role": "assistant",
+            "model": "claude-opus-5-5",
+            "content": content,
+            "stop_reason": stop_reason,
+            "stop_sequence": None,
             "usage": {"input_tokens": 1, "output_tokens": 1},
         }
 
-    replies = iter([
-        reply([{"type": "tool_use", "id": "toolu_t1", "name": "tools__pricing__shipping_cost",
-                "input": {"weight_kg": 2.0, "express": True}}], "tool_use"),
-        reply([{"type": "text", "text": "Shipping costs 14.00."}], "end_turn"),
-    ])
+    replies = iter(
+        [
+            reply(
+                [
+                    {
+                        "type": "tool_use",
+                        "id": "toolu_t1",
+                        "name": "tools__pricing__shipping_cost",
+                        "input": {"weight_kg": 2.0, "express": True},
+                    }
+                ],
+                "tool_use",
+            ),
+            reply([{"type": "text", "text": "Shipping costs 14.00."}], "end_turn"),
+        ]
+    )
     requests = []
 
     def handler(request):
@@ -590,7 +660,9 @@ async def _assert_errors(run_tool_calls) -> None:
                 # A parameter without a default left out.
                 _tool_use("e4", ORDER, {"unit_price": 19.99}),
                 # An argument the function doesn't declare.
-                _tool_use("e5", ORDER, {"quantity": 1, "unit_price": 1.0, "coupon": "X"}),
+                _tool_use(
+                    "e5", ORDER, {"quantity": 1, "unit_price": 1.0, "coupon": "X"}
+                ),
                 # A falsy return value.
                 _tool_use("e6", ORDER, {"quantity": 0, "unit_price": 19.99}),
             ],
@@ -598,13 +670,22 @@ async def _assert_errors(run_tool_calls) -> None:
         )
     )
     raised, unknown, int_double, missing, extra, falsy = await run_tool_calls(response)
-    assert [r["tool_use_id"] for r in (raised, unknown, int_double, missing, extra, falsy)] == [
-        "e1", "e2", "e3", "e4", "e5", "e6",
+    assert [
+        r["tool_use_id"] for r in (raised, unknown, int_double, missing, extra, falsy)
+    ] == [
+        "e1",
+        "e2",
+        "e3",
+        "e4",
+        "e5",
+        "e6",
     ]
     assert raised["is_error"] is True, raised
     assert raised["content"].startswith("Traceback (most recent call last):"), raised
-    assert raised["content"].rstrip().endswith(
-        "ValueError: weight_kg must be greater than zero"
+    assert (
+        raised["content"]
+        .rstrip()
+        .endswith("ValueError: weight_kg must be greater than zero")
     ), raised
     assert unknown == {
         "type": "tool_result",
@@ -613,10 +694,15 @@ async def _assert_errors(run_tool_calls) -> None:
         "content": "Unknown tool: tools__pricing__gift_wrap_fee",
     }, unknown
     assert int_double["is_error"] is True, int_double
-    assert "Parameter unit_price should be of type ColumnTypeName.DOUBLE" in int_double["content"], int_double
+    assert (
+        "Parameter unit_price should be of type ColumnTypeName.DOUBLE"
+        in int_double["content"]
+    ), int_double
     assert "but got <class 'int'>" in int_double["content"], int_double
     assert missing["is_error"] is True, missing
-    assert missing["content"] == "Parameter quantity is required but not provided.", missing
+    assert missing["content"] == "Parameter quantity is required but not provided.", (
+        missing
+    )
     assert extra["is_error"] is True, extra
     assert extra["content"].startswith(
         "Extra parameters provided that are not defined in the function's input parameters"
@@ -647,9 +733,17 @@ async def _assert_helper(client, toolkit, claude, stub, run_tool_calls) -> None:
     )
     results = messages[-1]["content"]
     # It runs a function the toolkit doesn't list...
-    assert results[0] == {"type": "tool_result", "tool_use_id": "h1", "content": "3.0"}, results
+    assert results[0] == {
+        "type": "tool_result",
+        "tool_use_id": "h1",
+        "content": "3.0",
+    }, results
     # ...and turns a function's error into the text "None", without is_error.
-    assert results[1] == {"type": "tool_result", "tool_use_id": "h2", "content": "None"}, results
+    assert results[1] == {
+        "type": "tool_result",
+        "tool_use_id": "h2",
+        "content": "None",
+    }, results
 
     # Arguments that don't fit raise out of the helper: no result for any block.
     bad = Message.model_validate(
@@ -662,16 +756,22 @@ async def _assert_helper(client, toolkit, claude, stub, run_tool_calls) -> None:
         )
     )
     try:
-        generate_tool_call_messages(response=bad, conversation_history=history, client=client)
+        generate_tool_call_messages(
+            response=bad, conversation_history=history, client=client
+        )
     except ValueError as exc:
-        assert "Parameter unit_price should be of type ColumnTypeName.DOUBLE" in str(exc), exc
+        assert "Parameter unit_price should be of type ColumnTypeName.DOUBLE" in str(
+            exc
+        ), exc
     else:
         raise AssertionError("an int for a DOUBLE should raise out of the helper")
 
     # Its output can't be passed back in on the next round: the tool_result
     # user message fails its own history validation.
     good = Message.model_validate(
-        _message([_tool_use("h5", SHIPPING, {"weight_kg": 2.0, "express": True})], "tool_use")
+        _message(
+            [_tool_use("h5", SHIPPING, {"weight_kg": 2.0, "express": True})], "tool_use"
+        )
     )
     round_one = generate_tool_call_messages(
         response=good, conversation_history=history, client=client
@@ -680,7 +780,9 @@ async def _assert_helper(client, toolkit, claude, stub, run_tool_calls) -> None:
         {"type": "tool_result", "tool_use_id": "h5", "content": "14.0"}
     ], round_one
     try:
-        generate_tool_call_messages(response=good, conversation_history=round_one, client=client)
+        generate_tool_call_messages(
+            response=good, conversation_history=round_one, client=client
+        )
     except ValueError as exc:
         assert str(exc) == "Invalid conversation history format", exc
     else:
@@ -714,7 +816,9 @@ async def _assert_long_names(client, run_tool_calls) -> None:
 
     long_name = "tools.pricing.apply_volume_discount_to_every_line_item_of_orders"
     await client.create_python_function_async(
-        func=apply_volume_discount_to_every_line_item_of_orders, catalog="tools", schema="pricing"
+        func=apply_volume_discount_to_every_line_item_of_orders,
+        catalog="tools",
+        schema="pricing",
     )
     toolkit = UCFunctionToolkit(function_names=[long_name], client=client)
     (tool,) = toolkit.tools
@@ -727,8 +831,11 @@ async def _assert_long_names(client, run_tool_calls) -> None:
         _message([_tool_use("l1", tool.name, {"quantity": 12})], "tool_use")
     )
     try:
-        generate_tool_call_messages(response=response, conversation_history=[], client=client)
-    except AttributeError as exc:  # it looks up `ols.pricing.apply_...`, which doesn't exist
+        generate_tool_call_messages(
+            response=response, conversation_history=[], client=client
+        )
+    # It looks up `ols.pricing.apply_...`, which doesn't exist.
+    except AttributeError as exc:
         assert str(exc) == "'NoneType' object has no attribute 'input_params'", exc
     else:
         raise AssertionError("the helper should fail to map a truncated name back")

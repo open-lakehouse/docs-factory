@@ -32,7 +32,7 @@ arising from such patterns: missing discoverability and fragmented governance. Y
 recognize these as challenges we already encountered and solved for tabular assets,
 particularly those based on open table formats.
 
-In the following sections we will explore how UC leverages well-established abstractions
+In the following sections we will explore how Unity Catalog leverages well-established abstractions
 and capabilities to define a Volume securable, and see how Volumes can be leveraged to
 govern and process unstructured data.
 
@@ -86,7 +86,7 @@ a previously registered external location or automatically created when the loca
 by Unity Catalog. Using the same [credential vending](../../content/unitycatalog/explanation/002-credential-vending/index.md)
 mechanics we already employ for tables via the
 [temporary credential APIs](../../content/unitycatalog/how-to/022-temporary-credentials/index.md)
-and of course the UC Delta API and IRC protocol implementation in UC, we have battle-tested
+and of course the Unity Catalog Delta API and IRC protocol implementation in UC, we have battle-tested
 abstractions to negotiate access to volumes. That is exactly the API the marimo store calls.
 
 ## From one notebook to a platform

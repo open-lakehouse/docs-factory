@@ -13,7 +13,7 @@ export default {
   title: "Unity Catalog",
   tagline:
     "Documentation for Unity Catalog OSS: the open catalog for tables, volumes, functions, and models across engines.",
-  // Placeholder until the site has a home; canonical URLs and the sitemap use it.
+  // The live site. Canonical URLs, the sitemap, and blog links to its pages use it.
   origin: (process.env.UC_DOCS_ORIGIN || "https://docs.unitycatalog.io").replace(/\/+$/, ""),
   // The envs/ folders a reader downloads, each as /env/<dir>.tar.gz extracting
   // into <bundle>/<dir>/, and the page that explains them.

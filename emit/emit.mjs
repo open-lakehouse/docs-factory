@@ -36,6 +36,7 @@ import { isPublic, splitFrontmatter } from "../site/src/content-core/frontmatter
 import { generateLikeC4Mermaid, hasLikeC4Marker } from "../site/src/plugins/lib/likec4-ref.mjs";
 import remarkCodeSnippets from "../site/src/plugins/remark-code-snippets.mjs";
 import remarkDirectiveProseGuard from "../site/src/plugins/remark-directive-prose-guard.mjs";
+import { blogLinkPlugins } from "./blog-links.mjs";
 // The construct renderers (journey / callout / images / code-caption) and the
 // prose-unwrap are now TARGET-PROVIDED (each target module declares which plugins
 // it uses via its `constructs` map + flags), so the core imports none of them
@@ -515,6 +516,8 @@ async function emitTarget({
     assetsDir: draftDir,
     webComponentPath: join(targetDistDir, "likec4-webcomponent.mjs"),
     frontmatterContext: { canonical },
+    // Docs links become the page's URL on its docs site (blog-links.mjs).
+    plugins: blogLinkPlugins({ repoRoot: REPO_ROOT }),
   });
 
   const outName = target.outputFile ?? `${slug}.md`;

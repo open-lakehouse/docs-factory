@@ -126,6 +126,17 @@ on create, writes the target's entry back into the sidecar. The sidecar is track
 (a dotfile so it reads as tooling metadata, not content; only `dist/` is
 gitignored).
 
+## Links to docs pages
+
+A post links a docs page by its source path
+(`../../content/unitycatalog/how-to/024-marimo-remote-storage/index.md`), so the
+draft still renders on GitHub. The emit rewrites each such link to the page's
+absolute URL on its project's docs site (`docs/sites/`, e.g.
+`https://docs.unitycatalog.io/how-to/marimo-remote-storage`), keeping any
+`#anchor`. Only a page that site publishes (`status: ready`) resolves. A link to
+a draft page, another post, or any other `.md` source is emitted as plain text,
+with a warning. See `blog-links.mjs`.
+
 ## What it does NOT do
 
 - **Never edits `index.md`.** It reads the draft in place and writes only to

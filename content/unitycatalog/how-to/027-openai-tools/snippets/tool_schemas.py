@@ -80,7 +80,10 @@ def slow_double(value: int) -> int:
 
 
 async def main() -> None:
-    from unitycatalog.ai.core.client import UnitycatalogClient, UnitycatalogFunctionClient
+    from unitycatalog.ai.core.client import (
+        UnitycatalogClient,
+        UnitycatalogFunctionClient,
+    )
     from unitycatalog.client import ApiClient, CatalogsApi, Configuration
 
     config = Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
@@ -97,7 +100,9 @@ async def main() -> None:
         await uc.create_catalog_async(name=CATALOG)
         await uc.create_schema_async(name="days", catalog_name=CATALOG)
         for func in (tag_day, label_day, answer, slow_double):
-            await client.create_python_function_async(func=func, catalog=CATALOG, schema="days")
+            await client.create_python_function_async(
+                func=func, catalog=CATALOG, schema="days"
+            )
         await _strict(client)
         await _types(client)
         _names()
@@ -111,7 +116,9 @@ async def main() -> None:
 def _definition(client, name):
     from unitycatalog.ai.openai.toolkit import UCFunctionToolkit
 
-    return UCFunctionToolkit(function_names=[f"{CATALOG}.days.{name}"], client=client).tools[0]
+    return UCFunctionToolkit(
+        function_names=[f"{CATALOG}.days.{name}"], client=client
+    ).tools[0]
 
 
 async def _strict(client) -> None:
@@ -127,7 +134,10 @@ async def _strict(client) -> None:
     assert first["strict"] is True, first
     assert last["strict"] is False, last
     # Same parameters, same schema for the DATE parameter either way.
-    assert first["parameters"]["properties"]["day"] == last["parameters"]["properties"]["day"]
+    assert (
+        first["parameters"]["properties"]["day"]
+        == last["parameters"]["properties"]["day"]
+    )
     assert first["parameters"]["properties"]["day"]["anyOf"] == [
         {"format": "date", "type": "string"},
         {"type": "string"},
@@ -138,7 +148,9 @@ async def _strict(client) -> None:
     # A function with no parameters is strict, with an empty object schema.
     none = _definition(client, "answer")["function"]
     assert none["strict"] is True, none
-    assert none["parameters"]["properties"] == {} and none["parameters"]["required"] == [], none
+    assert (
+        none["parameters"]["properties"] == {} and none["parameters"]["required"] == []
+    ), none
 
 
 async def _types(client) -> None:
@@ -150,7 +162,9 @@ async def _types(client) -> None:
     """
     name = f"{CATALOG}.days.tag_day"
     try:
-        await client.execute_function_async(name, parameters={"day": "2026-10-28", "label": "x"})
+        await client.execute_function_async(
+            name, parameters={"day": "2026-10-28", "label": "x"}
+        )
     except ValueError as exc:
         assert "Parameter day should be of type ColumnTypeName.DATE" in str(exc), exc
         assert "but got <class 'str'>" in str(exc), exc
@@ -203,7 +217,9 @@ async def _permissions(client) -> None:
     """
     from unitycatalog.client.exceptions import ForbiddenException
 
-    assert not issubclass(ForbiddenException, PermissionError), ForbiddenException.__mro__
+    assert not issubclass(ForbiddenException, PermissionError), (
+        ForbiddenException.__mro__
+    )
     # A function the catalog doesn't have isn't skipped either: the client's
     # get_function returns None for a 404, and building the schema raises.
     from unitycatalog.ai.openai.toolkit import UCFunctionToolkit
@@ -299,13 +315,19 @@ async def _event_loop(client) -> None:
     assert ticks >= 20, ticks
 
     for label, call in (
-        ("helper", lambda: generate_tool_call_messages(response=response, client=client)),
+        (
+            "helper",
+            lambda: generate_tool_call_messages(response=response, client=client),
+        ),
         ("execute_function", lambda: client.execute_function(name, {"value": 21})),
     ):
         try:
             await asyncio.to_thread(call)
         except RuntimeError as exc:
-            assert str(exc) == "Timeout context manager should be used inside a task", (label, exc)
+            assert str(exc) == "Timeout context manager should be used inside a task", (
+                label,
+                exc,
+            )
         else:
             raise AssertionError(f"{label} in a worker thread should fail")
 

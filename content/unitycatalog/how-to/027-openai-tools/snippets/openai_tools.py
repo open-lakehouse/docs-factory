@@ -121,7 +121,10 @@ class ScriptedModel:
         )
 
 
-ORDER = ("tools__pricing__order_total", {"quantity": 3, "unit_price": 19.99, "discount_pct": 10.0})
+ORDER = (
+    "tools__pricing__order_total",
+    {"quantity": 3, "unit_price": 19.99, "discount_pct": 10.0},
+)
 SHIPPING = ("tools__pricing__shipping_cost", {"weight_kg": 2.0, "express": True})
 
 
@@ -241,8 +244,12 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     ), fn
     assert fn["strict"] is True, fn
     params = fn["parameters"]
-    assert params["type"] == "object" and params["additionalProperties"] is False, params
-    assert list(params["properties"]) == ["quantity", "unit_price", "discount_pct"], params
+    assert params["type"] == "object" and params["additionalProperties"] is False, (
+        params
+    )
+    assert list(params["properties"]) == ["quantity", "unit_price", "discount_pct"], (
+        params
+    )
     assert params["properties"]["quantity"]["type"] == "integer"
     assert params["properties"]["unit_price"]["type"] == "number"
     # Under strict, a parameter with a default is still required: the model
@@ -274,12 +281,16 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     await client.create_python_function_async(
         func=ship_date, catalog="tools", schema="pricing"
     )
-    assert [t["function"]["name"] for t in toolkit_all.tools] == before, toolkit_all.tools
+    assert [t["function"]["name"] for t in toolkit_all.tools] == before, (
+        toolkit_all.tools
+    )
     assert "tools.pricing.ship_date" not in toolkit_all.tools_dict
     rebuilt = UCFunctionToolkit(function_names=["tools.pricing.*"], client=client)
     assert "tools__pricing__ship_date" in [t["function"]["name"] for t in rebuilt.tools]
 
-    from openai.types.chat import ChatCompletion
+    # Imported as a module so the test region's own ChatCompletion import
+    # stays self-contained without redefining a name.
+    from openai.types import chat as chat_types
 
     def scripted_response(calls, choices=1):
         message = {
@@ -294,7 +305,7 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
                 for i, (name, args) in enumerate(calls)
             ],
         }
-        return ChatCompletion.model_validate(
+        return chat_types.ChatCompletion.model_validate(
             {
                 "id": "chatcmpl-scripted",
                 "object": "chat.completion",
@@ -330,8 +341,10 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # tool {"content": 14.0}
     # --8<-- [end:helper]
     assert prompt == PROMPT
-    assert isinstance(response, ChatCompletion), type(response)
-    assert len(helper_model.requests) == 1 and helper_model.requests[0]["tools"] == tools
+    assert isinstance(response, chat_types.ChatCompletion), type(response)
+    assert (
+        len(helper_model.requests) == 1 and helper_model.requests[0]["tools"] == tools
+    )
     assert tool_messages[0]["role"] == "assistant"
     assert [m["role"] for m in tool_messages[1:]] == ["tool", "tool"], tool_messages
     assert [json.loads(m["content"]) for m in tool_messages[1:]] == [
@@ -345,7 +358,9 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # The helper keeps only `result.value`: a function that raises comes back
     # as {"content": null}, and the traceback is lost.
     bad = ("tools__pricing__shipping_cost", {"weight_kg": -1.0, "express": False})
-    dropped = generate_tool_call_messages(response=scripted_response([bad]), client=client)
+    dropped = generate_tool_call_messages(
+        response=scripted_response([bad]), client=client
+    )
     assert json.loads(dropped[1]["content"]) == {"content": None}, dropped
     direct = await client.execute_function_async(
         "tools.pricing.shipping_cost", parameters={"weight_kg": -1.0, "express": False}
@@ -360,11 +375,15 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # The helper runs any catalog__schema__function name the model returns,
     # including a function that is not in the toolkit.
     outside = ("tools__pricing__gift_wrap_fee", {"items": 2})
-    ran = generate_tool_call_messages(response=scripted_response([outside]), client=client)
+    ran = generate_tool_call_messages(
+        response=scripted_response([outside]), client=client
+    )
     assert json.loads(ran[1]["content"]) == {"content": 3.0}, ran
 
     # The helper reads one choice (choice_index, default 0).
-    two = generate_tool_call_messages(response=scripted_response([ORDER], choices=2), client=client)
+    two = generate_tool_call_messages(
+        response=scripted_response([ORDER], choices=2), client=client
+    )
     assert len(two) == 2, two
 
     # A name that doesn't split into three parts raises, as does a function the
@@ -380,11 +399,18 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
 
     # A JSON integer for a DOUBLE parameter fails the client's type check; the
     # schema's "number" allows it, so a model may send one. The helper raises.
-    int_price = ("tools__pricing__order_total", {"quantity": 3, "unit_price": 20, "discount_pct": 0.0})
+    int_price = (
+        "tools__pricing__order_total",
+        {"quantity": 3, "unit_price": 20, "discount_pct": 0.0},
+    )
     try:
-        generate_tool_call_messages(response=scripted_response([int_price]), client=client)
+        generate_tool_call_messages(
+            response=scripted_response([int_price]), client=client
+        )
     except ValueError as exc:
-        assert "Parameter unit_price should be of type ColumnTypeName.DOUBLE" in str(exc), exc
+        assert "Parameter unit_price should be of type ColumnTypeName.DOUBLE" in str(
+            exc
+        ), exc
     else:
         raise AssertionError("an int for a DOUBLE parameter should be rejected")
 
@@ -413,9 +439,12 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
                     content = result.to_json()
                 except (ValueError, TypeError) as exc:
                     content = json.dumps({"error": str(exc)})
-            replies.append({"role": "tool", "tool_call_id": call.id, "content": content})
+            replies.append(
+                {"role": "tool", "tool_call_id": call.id, "content": content}
+            )
         return replies
-    # --8<-- [end:dispatch]
+        # --8<-- [end:dispatch]
+
     assert allowed == {
         "tools__pricing__order_total": "tools.pricing.order_total",
         "tools__pricing__shipping_cost": "tools.pricing.shipping_cost",
@@ -456,7 +485,13 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # tool {"format": "SCALAR", "value": 14.0}
     # assistant The order total is 53.97 and shipping is 14.0.
     # --8<-- [end:loop]
-    assert [m["role"] for m in messages] == ["user", "assistant", "tool", "tool", "assistant"], messages
+    assert [m["role"] for m in messages] == [
+        "user",
+        "assistant",
+        "tool",
+        "tool",
+        "assistant",
+    ], messages
     assert [json.loads(m["content"]) for m in messages[2:4]] == [
         {"format": "SCALAR", "value": 53.97},
         {"format": "SCALAR", "value": 14.0},
@@ -467,11 +502,15 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # The model gets the definitions, never the function's source code.
     assert first["tools"] == tools, first["tools"]
     request_text = json.dumps(scripted.requests)
-    assert "round(quantity" not in request_text and "def order_total" not in request_text
+    assert (
+        "round(quantity" not in request_text and "def order_total" not in request_text
+    )
     # The second request carries the assistant turn and both tool results.
     second = scripted.requests[1]["messages"]
     assert [m["role"] for m in second] == ["user", "assistant", "tool", "tool"], second
-    assert [m["tool_call_id"] for m in second[2:]] == [c["id"] for c in second[1]["tool_calls"]]
+    assert [m["tool_call_id"] for m in second[2:]] == [
+        c["id"] for c in second[1]["tool_calls"]
+    ]
 
     # A model that never stops asking for tools: MAX_ROUNDS tool rounds, then
     # one call with tool_choice="none", which ends with text.
@@ -494,8 +533,13 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
         )
         messages.append(response.choices[0].message.to_dict())
     assert len(endless.requests) == MAX_ROUNDS + 1, len(endless.requests)
-    assert [r.get("tool_choice") for r in endless.requests] == [None] * MAX_ROUNDS + ["none"]
-    assert messages[-1] == {"role": "assistant", "content": "Stopped after the round limit."}, messages[-1]
+    assert [r.get("tool_choice") for r in endless.requests] == [None] * MAX_ROUNDS + [
+        "none"
+    ]
+    assert messages[-1] == {
+        "role": "assistant",
+        "content": "Stopped after the round limit.",
+    }, messages[-1]
     assert sum(m["role"] == "tool" for m in messages) == MAX_ROUNDS
 
     # --8<-- [start:test]
@@ -557,10 +601,14 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     assert by_id["call-ok"] == {"format": "SCALAR", "value": 53.97}, by_id
     assert set(by_id["call-error"]) == {"error"}, by_id
     assert by_id["call-error"]["error"].startswith("Traceback (most recent call last):")
-    assert by_id["call-error"]["error"].rstrip().endswith(
-        "ValueError: weight_kg must be greater than zero"
+    assert (
+        by_id["call-error"]["error"]
+        .rstrip()
+        .endswith("ValueError: weight_kg must be greater than zero")
     ), by_id
-    assert by_id["call-unknown"] == {"error": "Unknown tool: tools__pricing__gift_wrap_fee"}, by_id
+    assert by_id["call-unknown"] == {
+        "error": "Unknown tool: tools__pricing__gift_wrap_fee"
+    }, by_id
 
     # The dispatcher turns a type-check failure into a tool error the model
     # can read, where the helper raised.
@@ -573,7 +621,9 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # (R01, as in H13's tool_types.py RETURNS), and the dispatcher returns it
     # as a tool error instead of ending the loop.
     allowed["tools__pricing__ship_date"] = "tools.pricing.ship_date"
-    dated = await client.execute_function_async("tools.pricing.ship_date", parameters={"days": 2})
+    dated = await client.execute_function_async(
+        "tools.pricing.ship_date", parameters={"days": 2}
+    )
     assert dated.value == datetime.date(2026, 10, 30), dated
     try:
         dated.to_json()
@@ -582,7 +632,9 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     else:
         raise AssertionError("a date result should not serialize")
     ship = await run_tool_calls(
-        scripted_response([("tools__pricing__ship_date", {"days": 2})]).choices[0].message
+        scripted_response([("tools__pricing__ship_date", {"days": 2})])
+        .choices[0]
+        .message
     )
     assert json.loads(ship[0]["content"]) == {
         "error": "Object of type date is not JSON serializable"
@@ -593,8 +645,15 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # notice, not the value (R01).
     free = await run_tool_calls(
         scripted_response(
-            [("tools__pricing__order_total", {"quantity": 3, "unit_price": 19.99, "discount_pct": 100.0})]
-        ).choices[0].message
+            [
+                (
+                    "tools__pricing__order_total",
+                    {"quantity": 3, "unit_price": 19.99, "discount_pct": 100.0},
+                )
+            ]
+        )
+        .choices[0]
+        .message
     )
     falsy = json.loads(free[0]["content"])
     assert set(falsy) == {"format", "value"}, falsy

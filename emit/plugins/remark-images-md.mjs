@@ -29,6 +29,14 @@ function inlineImage(entry) {
 /** The image node inside what `renderImage` returns (a paragraph or an image). */
 const imageOf = (node) => (node.type === "paragraph" ? node.children[0] : node);
 
+/**
+ * A standalone image stays a block. A bare inline node (a target's `image`) left
+ * as a flow child makes mdast-util-to-markdown serialize its whole container as
+ * phrasing, which drops the blank line between every block in the document.
+ */
+const INLINE = new Set(["image", "imageReference", "link", "linkReference", "text"]);
+const asBlock = (node) => (INLINE.has(node.type) ? { type: "paragraph", children: [node] } : node);
+
 /** An image whose URL is a path beside the draft, not a URL or data URI. */
 export const isLocalImage = (n) =>
   n?.type === "image" &&
@@ -65,7 +73,7 @@ export default function remarkImagesMd(options = {}) {
           child.children?.length === 1 &&
           isLocalImage(child.children[0])
         ) {
-          node.children[i] = renderImage(record(child.children[0]));
+          node.children[i] = asBlock(renderImage(record(child.children[0])));
           continue;
         }
         // Mid-prose, a block would break the sentence.

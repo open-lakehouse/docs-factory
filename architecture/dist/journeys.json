@@ -111,6 +111,10 @@
             "via": []
           },
           {
+            "id": "unityCatalogOpenAi",
+            "via": []
+          },
+          {
             "id": "unityCatalogPythonSdk",
             "via": []
           }
@@ -622,6 +626,17 @@
       "label": "unitycatalog-langchain",
       "package": "unitycatalog-langchain",
       "model": "unityCatalogLangChain",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "0.4.0"
+      }
+    },
+    "unitycatalog-openai": {
+      "label": "unitycatalog-openai",
+      "package": "unitycatalog-openai",
+      "model": "unityCatalogOpenAi",
       "via": null,
       "integrations": [],
       "rollup": [],

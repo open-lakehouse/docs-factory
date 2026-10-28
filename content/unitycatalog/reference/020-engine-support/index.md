@@ -55,6 +55,7 @@ The other states don't say that a tool can't do something:
 | MLflow | MLflow 3.17.0 | 6 of 8 |
 | [unitycatalog-ai](#unitycatalog-ai) | unitycatalog-ai 0.4.0 | 8 of 8 |
 | unitycatalog-langchain | unitycatalog-langchain 0.4.0 | 2 of 2 |
+| unitycatalog-openai | unitycatalog-openai 0.4.0 | 0 of 2 |
 | unitycatalog-anthropic | unitycatalog-anthropic 0.2.0 | 0 of 2 |
 <!-- /compat:engines -->
 

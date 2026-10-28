@@ -962,6 +962,34 @@
       "kind": "implementation",
       "id": "unityCatalogLangChain"
     },
+    "unityCatalogOpenAi": {
+      "metadata": {
+        "sourceRepo": "unitycatalog/unitycatalog",
+        "pypi": "unitycatalog-openai",
+        "license": "Apache-2.0",
+        "language": "Python"
+      },
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://pypi.org/project/unitycatalog-openai/"
+        }
+      ],
+      "tags": [
+        "client",
+        "public"
+      ],
+      "description": {
+        "txt": "OpenAI integration that turns Unity Catalog functions into Chat Completions tool definitions."
+      },
+      "title": "unitycatalog-openai",
+      "kind": "implementation",
+      "id": "unityCatalogOpenAi"
+    },
     "unityCatalogAnthropic": {
       "metadata": {
         "sourceRepo": "unitycatalog/unitycatalog",
@@ -3163,6 +3191,30 @@
       "kind": "operatesOn",
       "id": "3aaba89ff0"
     },
+    "8e7575e0e6": {
+      "line": "dashed",
+      "title": "calls",
+      "source": {
+        "model": "unityCatalogOpenAi"
+      },
+      "target": {
+        "model": "unityCatalogSpec"
+      },
+      "kind": "consumes",
+      "id": "8e7575e0e6"
+    },
+    "e46f5a7aa3": {
+      "line": "dashed",
+      "title": "exposes as tool definitions",
+      "source": {
+        "model": "unityCatalogOpenAi"
+      },
+      "target": {
+        "model": "lakehouse.function"
+      },
+      "kind": "operatesOn",
+      "id": "e46f5a7aa3"
+    },
     "7321f04b4b": {
       "line": "dashed",
       "title": "calls",
@@ -4934,6 +4986,20 @@
           "kind": "operatesOn"
         },
         {
+          "id": "b5farh",
+          "parent": null,
+          "source": "unityCatalogOpenAi",
+          "target": "lakehouse",
+          "label": "exposes as tool definitions",
+          "relations": [
+            "e46f5a7aa3"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "operatesOn"
+        },
+        {
           "id": "1ko0cwl",
           "parent": null,
           "source": "unityCatalogAnthropic",
@@ -5682,6 +5748,20 @@
           "label": "calls",
           "relations": [
             "ee6baf1d83"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "s21bwz",
+          "parent": null,
+          "source": "unityCatalogOpenAi",
+          "target": "unityCatalogSpec",
+          "label": "calls",
+          "relations": [
+            "8e7575e0e6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6741,6 +6821,45 @@
           "links": [
             {
               "url": "https://pypi.org/project/unitycatalog-langchain/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "unityCatalogOpenAi",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "b5farh",
+            "s21bwz"
+          ],
+          "title": "unitycatalog-openai",
+          "modelRef": "unityCatalogOpenAi",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "OpenAI integration that turns Unity Catalog functions into Chat Completions tool definitions."
+          },
+          "tags": [
+            "client",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "pypi": "unitycatalog-openai",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://pypi.org/project/unitycatalog-openai/"
             }
           ],
           "kind": "implementation"
@@ -8255,6 +8374,7 @@
             "1s1iaj3",
             "ralwkn",
             "8evphi",
+            "s21bwz",
             "5yw8vv",
             "8o013o",
             "1est51s",
@@ -8525,6 +8645,7 @@
             "mqk6sh",
             "3a9x8p",
             "gj9sso",
+            "b5farh",
             "1ko0cwl",
             "byeu7p",
             "bd1jqg",
@@ -8608,7 +8729,7 @@
           }
         ]
       },
-      "hash": "VBfJdE1RGm8OyOv773_Rw_NasFuFfiEXCa5CHqGKhUc"
+      "hash": "Ko7gwAQZMJuys7nASICYj6_IG0KYvVwb30LpfC8oPlk"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -14138,6 +14259,20 @@
           "kind": "consumes"
         },
         {
+          "id": "s21bwz",
+          "parent": null,
+          "source": "unityCatalogOpenAi",
+          "target": "unityCatalogSpec",
+          "label": "calls",
+          "relations": [
+            "8e7575e0e6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
           "id": "5yw8vv",
           "parent": null,
           "source": "unityCatalogAnthropic",
@@ -14514,6 +14649,44 @@
           "kind": "implementation"
         },
         {
+          "id": "unityCatalogOpenAi",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "s21bwz"
+          ],
+          "title": "unitycatalog-openai",
+          "modelRef": "unityCatalogOpenAi",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "OpenAI integration that turns Unity Catalog functions into Chat Completions tool definitions."
+          },
+          "tags": [
+            "client",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "pypi": "unitycatalog-openai",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://pypi.org/project/unitycatalog-openai/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "unityCatalogAnthropic",
           "parent": null,
           "level": 0,
@@ -14636,6 +14809,7 @@
             "1s1iaj3",
             "ralwkn",
             "8evphi",
+            "s21bwz",
             "5yw8vv"
           ],
           "outEdges": [
@@ -14827,7 +15001,7 @@
           }
         ]
       },
-      "hash": "s_izKUHJw5FN_G_YesxIXeRFmfgb461OPBiTCtW28Uo"
+      "hash": "ZfjQXgR2-tmNFsberBYpYkSx4CYsyBCzYzp69ULaBbs"
     },
     "techFormatsStorage": {
       "_type": "element",

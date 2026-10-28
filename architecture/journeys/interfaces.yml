@@ -133,6 +133,11 @@ unitycatalog-langchain:
   pin: unitycatalog-langchain
   package: unitycatalog-langchain
   model: unityCatalogLangChain
+unitycatalog-openai:
+  label: unitycatalog-openai
+  pin: unitycatalog-openai
+  package: unitycatalog-openai
+  model: unityCatalogOpenAi
 unitycatalog-anthropic:
   label: unitycatalog-anthropic
   pin: unitycatalog-anthropic

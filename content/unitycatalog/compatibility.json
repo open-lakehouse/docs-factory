@@ -212,6 +212,17 @@
       "viaVersion": null
     },
     {
+      "key": "unitycatalog-openai",
+      "label": "unitycatalog-openai",
+      "version": "0.4.0",
+      "package": "unitycatalog-openai",
+      "model": "unityCatalogOpenAi",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "viaVersion": null
+    },
+    {
       "key": "unitycatalog-anthropic",
       "label": "unitycatalog-anthropic",
       "version": "0.2.0",
@@ -456,6 +467,7 @@
       "title": "Agent tools",
       "columns": [
         "unitycatalog-langchain",
+        "unitycatalog-openai",
         "unitycatalog-anthropic"
       ],
       "rows": [
@@ -677,6 +689,7 @@
         "python-sdk",
         "unitycatalog-ai",
         "unitycatalog-langchain",
+        "unitycatalog-openai",
         "unitycatalog-anthropic"
       ],
       "rows": [
@@ -1740,6 +1753,28 @@
           "table": "agent-tools",
           "columns": [
             "unitycatalog-langchain"
+          ],
+          "rows": [
+            "function.tool",
+            "function.tool-call"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unityCatalogOpenAi",
+      "title": "unitycatalog-openai",
+      "interfaces": [
+        "unitycatalog-openai"
+      ],
+      "page": null,
+      "anchor": null,
+      "heading": null,
+      "groups": [
+        {
+          "table": "agent-tools",
+          "columns": [
+            "unitycatalog-openai"
           ],
           "rows": [
             "function.tool",
@@ -12263,6 +12298,28 @@
           ],
           "evidence": []
         },
+        "unitycatalog-openai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/027-openai-tools/snippets/openai_tools.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "openai-tools"
+              },
+              "anchor": "build-the-tool-definitions",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "UCFunctionToolkit",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "unitycatalog-anthropic": {
           "status": "tested",
           "draft": true,
@@ -12327,6 +12384,28 @@
               "version": "0.4.0",
               "api": "create_agent",
               "note": "through an async adapter; `toolkit.tools` as-is fails in LangGraph's tool threads"
+            }
+          ],
+          "evidence": []
+        },
+        "unitycatalog-openai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/027-openai-tools/snippets/openai_tools.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "openai-tools"
+              },
+              "anchor": "bound-the-tool-calling-loop",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "chat.completions.create",
+              "note": "no agent framework; the caller runs each tool call"
             }
           ],
           "evidence": []
@@ -18137,6 +18216,11 @@
       "kind": "unverified-asset-edge",
       "source": "unityCatalogJavaSdk",
       "asset": "lakehouse.table"
+    },
+    {
+      "kind": "unverified-asset-edge",
+      "source": "unityCatalogOpenAi",
+      "asset": "lakehouse.function"
     }
   ]
 }

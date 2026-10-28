@@ -24,7 +24,8 @@ import { ensureHighlightStyle, highlightNames } from "./highlight-style";
 function resolveRange(thread: Thread, article: HTMLElement): Range | null {
   const sel = currentSelector(thread.root);
   if (!sel) return null;
-  return locateSelector(sel, sectionRootForAnchor(article, thread.root?.anchorSlug));
+  const slug = thread.root?.anchorSlug;
+  return locateSelector(sel, sectionRootForAnchor(article, slug), slug);
 }
 
 /** The thread's heading text, for a focused thread whose quote can't be painted. */

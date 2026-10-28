@@ -84,7 +84,7 @@ export function scrollToThreadContext(
   const sel = currentSelector(root);
   if (sel) {
     const section = sectionRootForAnchor(article, root.anchorSlug);
-    const range = locateSelector(sel, section);
+    const range = locateSelector(sel, section, root.anchorSlug);
     if (range) {
       const rect = rectForTarget(range);
       if (rect) {

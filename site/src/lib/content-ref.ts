@@ -199,12 +199,14 @@ export function sectionRootForAnchor(article: HTMLElement, anchorSlug?: string):
  * Locate a stored text-quote selector within `sectionEl` and return a DOM Range
  * covering it, or null if not found. Walks text nodes, builds the concatenated
  * raw text, finds the quote (normalized comparison via a folded index map), and
- * maps the match back to node offsets. Prefers a match near prefix/suffix when
- * the quote occurs more than once.
+ * maps the match back to node offsets. A repeated quote resolves through
+ * {@link pickOccurrence}, falling back to the first occurrence at or after the
+ * `anchorSlug` heading, since `sectionEl` is often the whole article.
  */
 export function locateSelector(
   selector: { quote: string; prefix?: string; suffix?: string },
   sectionEl: HTMLElement,
+  anchorSlug?: string,
 ): Range | null {
   const quote = normalizeText(selector.quote);
   if (!quote) return null;
@@ -215,10 +217,22 @@ export function locateSelector(
   const walker = document.createTreeWalker(sectionEl, NodeFilter.SHOW_TEXT);
   for (let n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n as Text);
 
+  const heading = anchorSlug
+    ? sectionEl.querySelector<HTMLElement>(`#${CSS.escape(anchorSlug)}`)
+    : null;
+  let headingAt: number | undefined;
+
   let norm = "";
   const map: { node: Text; offset: number }[] = []; // norm index -> source pos
   let lastWasSpace = true; // collapse leading space like normalizeText
   for (const node of nodes) {
+    if (
+      heading &&
+      headingAt === undefined &&
+      (heading.contains(node) ||
+        heading.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING)
+    )
+      headingAt = norm.length;
     const raw = node.textContent ?? "";
     for (let i = 0; i < raw.length; i++) {
       const ch = raw[i];
@@ -247,20 +261,7 @@ export function locateSelector(
   }
   if (candidates.length === 0) return null;
 
-  // Disambiguate by prefix/suffix proximity when repeated.
-  let idx = candidates[0];
-  if (candidates.length > 1 && (selector.prefix || selector.suffix)) {
-    const pfx = normalizeText(selector.prefix ?? "");
-    let best = -1;
-    for (const c of candidates) {
-      const before = trimmed.slice(Math.max(0, c - pfx.length), c);
-      if (pfx && before.endsWith(pfx)) {
-        best = c;
-        break;
-      }
-    }
-    if (best !== -1) idx = best;
-  }
+  const idx = pickOccurrence(trimmed, quote.length, candidates, selector, headingAt);
 
   const startPos = map[idx];
   const endPos = map[idx + quote.length - 1];
@@ -269,4 +270,36 @@ export function locateSelector(
   range.setStart(startPos.node, startPos.offset);
   range.setEnd(endPos.node, endPos.offset + 1);
   return range;
+}
+
+const compact = (s: string) => s.replace(/\s+/g, "");
+
+/**
+ * Which of `candidates` (offsets of a quote of `quoteLen` in normalized `text`)
+ * the selection meant: the one its prefix frames, then its suffix, then the
+ * first at or after `preferFrom`, else the first. Context is compared without
+ * whitespace: normalizeText trims the stored prefix and suffix, so the space
+ * between them and the quote is gone, and textContent runs blocks together.
+ */
+export function pickOccurrence(
+  text: string,
+  quoteLen: number,
+  candidates: number[],
+  { prefix, suffix }: { prefix?: string; suffix?: string },
+  preferFrom?: number,
+): number {
+  if (candidates.length < 2) return candidates[0] ?? -1;
+  const pfx = compact(prefix ?? "");
+  const sfx = compact(suffix ?? "");
+  // Normalized text has single spaces, so twice the context length covers it.
+  const byPrefix = pfx
+    ? candidates.find((c) => compact(text.slice(Math.max(0, c - 2 * pfx.length), c)).endsWith(pfx))
+    : undefined;
+  const bySuffix = sfx
+    ? candidates.find((c) =>
+        compact(text.slice(c + quoteLen, c + quoteLen + 2 * sfx.length)).startsWith(sfx),
+      )
+    : undefined;
+  const byHeading = preferFrom === undefined ? undefined : candidates.find((c) => c >= preferFrom);
+  return byPrefix ?? bySuffix ?? byHeading ?? candidates[0];
 }

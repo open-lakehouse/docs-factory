@@ -98,7 +98,7 @@ export default function InlineReviewSurface({
         return;
       }
       if (showProsePending && pending?.kind === "prose") {
-        range = locateSelector(pending.selector, article!);
+        range = locateSelector(pending.selector, article!, pending.anchorSlug);
       } else if (showProseThread && selected) {
         const sel = selected.root?.selector;
         if (!sel?.quote) {
@@ -109,7 +109,7 @@ export default function InlineReviewSurface({
         // mounts several tabs sharing heading ids, so a document-wide lookup
         // could resolve the wrong tab's heading.
         const section = sectionRootForAnchor(article!, selected.root?.anchorSlug);
-        range = locateSelector(sel, section);
+        range = locateSelector(sel, section, selected.root?.anchorSlug);
       } else {
         setPlacement(null);
         return;

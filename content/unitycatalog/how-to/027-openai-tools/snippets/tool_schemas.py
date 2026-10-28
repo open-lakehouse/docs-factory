@@ -15,7 +15,8 @@
 # ///
 """What the OpenAI toolkit does to a function's schema and name, beyond the
 page's walkthrough: the `strict` flag, how UC types reach the function, how
-tool names map back, and what `filter_accessible_functions` sees.
+tool names map back, what `filter_accessible_functions` sees, and how the
+function calls share the event loop with an async OpenAI client.
 
 No regions: this script is evidence for the page's notes and R01 rows.
 
@@ -65,6 +66,19 @@ def answer() -> int:
     return 42
 
 
+def slow_double(value: int) -> int:
+    """
+    Double a value after half a second.
+
+    Args:
+        value: The value to double.
+    """
+    import time
+
+    time.sleep(0.5)
+    return value * 2
+
+
 async def main() -> None:
     from unitycatalog.ai.core.client import UnitycatalogClient, UnitycatalogFunctionClient
     from unitycatalog.client import ApiClient, CatalogsApi, Configuration
@@ -82,12 +96,13 @@ async def main() -> None:
         uc = UnitycatalogClient(api_client=api)
         await uc.create_catalog_async(name=CATALOG)
         await uc.create_schema_async(name="days", catalog_name=CATALOG)
-        for func in (tag_day, label_day, answer):
+        for func in (tag_day, label_day, answer, slow_double):
             await client.create_python_function_async(func=func, catalog=CATALOG, schema="days")
         await _strict(client)
         await _types(client)
         _names()
         await _permissions(client)
+        await _event_loop(client)
         await CatalogsApi(api).delete_catalog(name=CATALOG, force=True)
     finally:
         await api.close()
@@ -203,6 +218,100 @@ async def _permissions(client) -> None:
         assert str(exc) == "Unsupported function info type: <class 'NoneType'>", exc
     else:
         raise AssertionError("a missing function should not build a tool")
+
+
+async def _ticks_during(awaitable) -> tuple[object, int]:
+    """Await `awaitable` while a task ticks every 10 ms; return the ticks."""
+    ticks = 0
+
+    async def tick():
+        nonlocal ticks
+        while True:
+            await asyncio.sleep(0.01)
+            ticks += 1
+
+    ticker = asyncio.create_task(tick())
+    await asyncio.sleep(0)
+    try:
+        result = await awaitable
+    finally:
+        ticker.cancel()
+    return result, ticks
+
+
+async def _event_loop(client) -> None:
+    """Function calls and the event loop an `AsyncOpenAI` client runs on.
+
+    `execute_function_async` waits for the sandbox process in an executor, so
+    other tasks run while a function runs. The sync `execute_function`, which
+    `generate_tool_call_messages` calls, re-enters the running loop through
+    `nest_asyncio` (`syncify_method`, `run_in_sandbox`), so calling the helper
+    directly from a coroutine doesn't stall other tasks either. In a worker
+    thread (`asyncio.to_thread`) it fails: the client's aiohttp session can't
+    run outside a task on its own loop (ai-v0.4.0 client.py syncify_method,
+    executor/local.py run_in_sandbox).
+    """
+    from openai.types.chat import ChatCompletion
+    from unitycatalog.ai.openai.utils import generate_tool_call_messages
+
+    name = f"{CATALOG}.days.slow_double"
+    # 0.5 s of sleep is about 50 ticks; 20 leaves room for a slow machine.
+    result, ticks = await _ticks_during(
+        client.execute_function_async(name, parameters={"value": 21})
+    )
+    assert result.value == 42, result
+    assert ticks >= 20, ticks
+
+    response = ChatCompletion.model_validate(
+        {
+            "id": "chatcmpl-loop",
+            "object": "chat.completion",
+            "created": 0,
+            "model": "test",
+            "choices": [
+                {
+                    "index": 0,
+                    "finish_reason": "tool_calls",
+                    "message": {
+                        "role": "assistant",
+                        "content": None,
+                        "tool_calls": [
+                            {
+                                "id": "call-slow",
+                                "type": "function",
+                                "function": {
+                                    "name": f"{CATALOG}__days__slow_double",
+                                    "arguments": '{"value": 21}',
+                                },
+                            }
+                        ],
+                    },
+                }
+            ],
+        }
+    )
+
+    async def helper_directly():
+        return generate_tool_call_messages(response=response, client=client)
+
+    messages, ticks = await _ticks_during(helper_directly())
+    assert json.loads(messages[1]["content"]) == {"content": 42}, messages
+    assert ticks >= 20, ticks
+
+    for label, call in (
+        ("helper", lambda: generate_tool_call_messages(response=response, client=client)),
+        ("execute_function", lambda: client.execute_function(name, {"value": 21})),
+    ):
+        try:
+            await asyncio.to_thread(call)
+        except RuntimeError as exc:
+            assert str(exc) == "Timeout context manager should be used inside a task", (label, exc)
+        else:
+            raise AssertionError(f"{label} in a worker thread should fail")
+
+    # The client still works on the loop after the failed thread calls.
+    after = await client.execute_function_async(name, parameters={"value": 1})
+    assert after.value == 2, after
 
 
 if __name__ == "__main__":

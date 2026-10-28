@@ -26,8 +26,9 @@
 tool calls a model returns, and bound the tool-calling loop.
 
 The regions are what a reader types into `python -m asyncio`, step by step. The
-model is scripted: an `httpx.MockTransport` behind the OpenAI client, defined
-outside the regions, so no API key or network is needed. The page tells the
+model is scripted: an `httpx.MockTransport` behind an `httpx.AsyncClient` given
+to `AsyncOpenAI`, defined outside the regions, so no API key or network is
+needed. The page tells the
 reader to use their own server and model.
 
 Start the docs' local server from `uc-docs-env/unitycatalog`:
@@ -111,12 +112,12 @@ class ScriptedModel:
 
     def client(self):
         import httpx
-        from openai import OpenAI
+        from openai import AsyncOpenAI
 
-        return OpenAI(
+        return AsyncOpenAI(
             base_url="http://scripted.invalid/v1",
             api_key="scripted",
-            http_client=httpx.Client(transport=httpx.MockTransport(self.handler)),
+            http_client=httpx.AsyncClient(transport=httpx.MockTransport(self.handler)),
         )
 
 
@@ -128,7 +129,7 @@ async def main() -> None:
     # --8<-- [start:connect]
     import os
 
-    from openai import OpenAI
+    from openai import AsyncOpenAI
     from unitycatalog.ai.core.client import (
         UnitycatalogClient,
         UnitycatalogFunctionClient,
@@ -139,11 +140,14 @@ async def main() -> None:
     api = ApiClient(config)
     client = UnitycatalogFunctionClient(api_client=api)
 
-    llm = OpenAI(base_url="https://api.openai.com/v1", api_key=os.environ["OPENAI_API_KEY"])
+    llm = AsyncOpenAI(
+        base_url="https://api.openai.com/v1", api_key=os.environ["OPENAI_API_KEY"]
+    )
     model = os.environ["OPENAI_MODEL"]
     # --8<-- [end:connect]
+    assert isinstance(llm, AsyncOpenAI), llm
     assert str(llm.base_url) == "https://api.openai.com/v1/", llm.base_url
-    llm.close()
+    await llm.close()
     if url := os.environ.get("UC_BASE_URL"):
         config.host = url
     try:
@@ -307,13 +311,15 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     helper_model = ScriptedModel([[ORDER, SHIPPING]])
     llm = helper_model.client()
 
-    # The helper is sync; this coroutine runs on a running loop, as each line
-    # of a `python -m asyncio` session does, and the call still completes.
+    # The helper is sync and has no async variant. It is called directly, not
+    # awaited and not through asyncio.to_thread: the client re-enters the
+    # running loop (nest_asyncio), so other tasks keep running while the
+    # functions run, and a worker thread fails (tool_schemas.py _event_loop).
     # --8<-- [start:helper]
     from unitycatalog.ai.openai.utils import generate_tool_call_messages
 
     prompt = "Price 3 units at 19.99 with 10% off, shipped express at 2 kg."
-    response = llm.chat.completions.create(
+    response = await llm.chat.completions.create(
         model=model, messages=[{"role": "user", "content": prompt}], tools=tools
     )
     tool_messages = generate_tool_call_messages(response=response, client=client)
@@ -324,6 +330,7 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # tool {"content": 14.0}
     # --8<-- [end:helper]
     assert prompt == PROMPT
+    assert isinstance(response, ChatCompletion), type(response)
     assert len(helper_model.requests) == 1 and helper_model.requests[0]["tools"] == tools
     assert tool_messages[0]["role"] == "assistant"
     assert [m["role"] for m in tool_messages[1:]] == ["tool", "tool"], tool_messages
@@ -381,6 +388,10 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     else:
         raise AssertionError("an int for a DOUBLE parameter should be rejected")
 
+    # The dispatcher awaits execute_function_async: it waits for the sandbox
+    # process in an executor, so the loop keeps running while a function runs.
+    # asyncio.to_thread around the sync execute_function fails instead
+    # (tool_schemas.py _event_loop).
     # --8<-- [start:dispatch]
     allowed = {
         tool["function"]["name"]: function_name
@@ -411,6 +422,7 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     }, allowed
 
     # A model that asks for one tool round, then answers.
+    await llm.close()
     scripted = ScriptedModel(
         [[ORDER, SHIPPING], "The order total is 53.97 and shipping is 14.0."]
     )
@@ -422,7 +434,7 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     prompt = "Price 3 units at 19.99 with 10% off, shipped express at 2 kg."
     messages = [{"role": "user", "content": prompt}]
     for _ in range(MAX_ROUNDS):
-        response = llm.chat.completions.create(
+        response = await llm.chat.completions.create(
             model=model, messages=messages, tools=toolkit.tools
         )
         message = response.choices[0].message
@@ -431,7 +443,7 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
             break
         messages += await run_tool_calls(message)
     else:
-        response = llm.chat.completions.create(
+        response = await llm.chat.completions.create(
             model=model, messages=messages, tools=toolkit.tools, tool_choice="none"
         )
         messages.append(response.choices[0].message.to_dict())
@@ -464,17 +476,20 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # A model that never stops asking for tools: MAX_ROUNDS tool rounds, then
     # one call with tool_choice="none", which ends with text.
     endless = ScriptedModel([[ORDER]] * 5)
+    await llm.close()
     llm = endless.client()
     messages = [{"role": "user", "content": PROMPT}]
     for _ in range(MAX_ROUNDS):
-        response = llm.chat.completions.create(model=model, messages=messages, tools=toolkit.tools)
+        response = await llm.chat.completions.create(
+            model=model, messages=messages, tools=toolkit.tools
+        )
         message = response.choices[0].message
         messages.append(message.to_dict())
         if not message.tool_calls:
             break
         messages += await run_tool_calls(message)
     else:
-        response = llm.chat.completions.create(
+        response = await llm.chat.completions.create(
             model=model, messages=messages, tools=toolkit.tools, tool_choice="none"
         )
         messages.append(response.choices[0].message.to_dict())
@@ -590,7 +605,9 @@ async def _run(api, client, model, UnitycatalogClient, CatalogsApi) -> None:
     # --8<-- [start:clean-up]
     await CatalogsApi(api).delete_catalog(name="tools", force=True)
     await api.close()
+    await llm.close()
     # --8<-- [end:clean-up]
+    assert llm.is_closed(), llm
 
 
 async def _reset(api) -> None:

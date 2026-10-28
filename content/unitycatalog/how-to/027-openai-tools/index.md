@@ -47,7 +47,7 @@ The function sandbox caps each call's virtual memory at
 only on Linux. The command sets it to 4096, the value this page's scripts run
 with.
 
-Create the function client and the OpenAI client. The OpenAI client reads your
+Create the function client and an `AsyncOpenAI` client. The OpenAI client reads your
 key from `OPENAI_API_KEY`, and the model name comes from `OPENAI_MODEL`, so set
 both to your own values first:
 
@@ -156,8 +156,13 @@ returns the assistant message followed by one `tool` message per call:
 ```python file=./snippets/openai_tools.py start=start:helper end=end:helper
 ```
 
-The helper works in the asyncio session, but it blocks the event loop while the
-functions run. Check what else it does before you use it:
+The helper is synchronous and has no async variant, so call it directly after
+the awaited request. Other tasks on the event loop keep running while the
+functions run, but not another call on the same function client (see
+[Run calls concurrently](../run-functions/index.md#run-calls-concurrently)).
+Don't wrap it in `asyncio.to_thread`: that fails with
+`RuntimeError: Timeout context manager should be used inside a task`. Check
+what else it does before you use it:
 
 - It runs any `catalog__schema__function` name the model returns, including a
   function that isn't in the toolkit.
@@ -178,6 +183,11 @@ that aren't there, returns the result's JSON, and turns a `ValueError` or
 ```python file=./snippets/openai_tools.py start=start:dispatch end=end:dispatch
 ```
 
+It awaits `execute_function_async`, so the event loop keeps running while a
+function runs. It runs the calls one at a time, because two concurrent calls on
+one function client deadlock. To run calls concurrently, see
+[Run functions in apps and notebooks](../run-functions/index.md#run-calls-concurrently).
+
 Prefer this dispatcher to the helper. The errors it returns cover the cases
 this page's functions can hit:
 
@@ -194,10 +204,6 @@ A function that returns a falsy value, such as `order_total` at a 100%
 discount, returns a notice that starts "The function execution has completed,
 but no output was produced." instead of `0.0`. When the model needs to see a
 zero, return a value that isn't falsy, such as a string.
-
-The dispatcher runs the calls one at a time. Two concurrent calls on one
-function client deadlock. To run calls concurrently, see
-[Run functions in apps and notebooks](../run-functions/index.md#run-calls-concurrently).
 
 ## Bound the tool-calling loop
 
@@ -220,14 +226,14 @@ without an API key:
 ```python file=./snippets/openai_tools.py start=start:test end=end:test
 ```
 
-When you're done, delete the catalog and close the client:
+When you're done, delete the catalog and close the clients:
 
 ```python file=./snippets/openai_tools.py start=start:clean-up end=end:clean-up
 ```
 
 ## Use another OpenAI-compatible server
 
-To use another server, change `base_url` and `api_key` on the OpenAI client,
+To use another server, change `base_url` and `api_key` on the `AsyncOpenAI` client,
 and set `OPENAI_MODEL` to a model that server serves. The server must implement
 Chat Completions tool calling. If it rejects the tool schema, set `strict` to
 `False` in each definition's `function`.

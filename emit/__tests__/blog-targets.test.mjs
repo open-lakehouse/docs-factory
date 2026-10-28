@@ -60,3 +60,26 @@ test("emitOne hands the frontmatter context to the target", async () => {
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+test("a standalone image keeps the blank lines between blocks", async () => {
+  const dir = mkdtempSync(join(tmpdir(), "blog-targets-"));
+  try {
+    const inputPath = join(dir, "index.md");
+    writeFileSync(
+      inputPath,
+      "---\ntitle: T\nauthor: A Person\nsummary: S\n---\n\nPara one.\n\n![Alt](./x.png)\n\nPara two.\n",
+    );
+    for (const target of [unitycatalog, delta]) {
+      const { output } = await emitOne({
+        inputPath,
+        target,
+        likec4OutDir: join(dir, ".likec4-export"),
+      });
+      expect(output).toMatch(/---\n\n/);
+      expect(output).toContain("Para one.\n\n");
+      expect(output).toMatch(/\]\([^)]*x\.png\)\n\nPara two\./);
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});

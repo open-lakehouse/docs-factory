@@ -11,6 +11,12 @@ pins:
   unitycatalog-ai: 0.4.0
   # From the same source tree as unitycatalog-ai.
   unitycatalog-langchain: 0.4.0
+  # From the same source tree as unitycatalog-ai.
+  unitycatalog-openai: 0.4.0
+  # unitycatalog-openai 0.4.0 requires `openai>=1.46.1,<=2.24.0`, so it can't
+  # share an environment with an openai 3.x SDK. The cap is gone from the
+  # source tree at v0.7.0 (#1826) but not from the 0.4.0 wheel.
+  openai: 2.24.0
   # Versions independently of the other AI packages: 0.2.0 is the version in
   # the same source tree. Its wheel doesn't cap anthropic (the source tree's
   # pyproject caps it at 0.84.0).

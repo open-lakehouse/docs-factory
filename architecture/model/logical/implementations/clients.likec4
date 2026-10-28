@@ -95,6 +95,21 @@ model {
   unityCatalogLangChain -[consumes]-> unityCatalogSpec "calls"
   unityCatalogLangChain -[operatesOn]-> lakehouse.function "exposes as agent tools"
 
+  unityCatalogOpenAi = implementation "unitycatalog-openai" {
+    #client #public
+    description "OpenAI integration that turns Unity Catalog functions into Chat Completions tool definitions."
+    link https://pypi.org/project/unitycatalog-openai/
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      pypi "unitycatalog-openai"
+      license "Apache-2.0"
+      language "Python"
+    }
+  }
+  unityCatalogOpenAi -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogOpenAi -[operatesOn]-> lakehouse.function "exposes as tool definitions"
+
   unityCatalogAnthropic = implementation "unitycatalog-anthropic" {
     #client #public
     description "Anthropic integration that turns Unity Catalog functions into tool definitions for the Messages API."

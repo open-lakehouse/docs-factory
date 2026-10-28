@@ -91,8 +91,9 @@ nav:
             label: Run functions in apps and notebooks
           - page: how-to/langchain-tools
             id: H13
-          - planned: H14
-            title: Use catalog functions with OpenAI-compatible tool calling
+          - page: how-to/openai-tools
+            id: H14
+            label: OpenAI-compatible tool calling
           - page: how-to/anthropic-tools
             id: H51
           - planned: H52

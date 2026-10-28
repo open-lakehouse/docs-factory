@@ -25,6 +25,7 @@ interfaces:
   - mlflow
   - unitycatalog-ai
   - unitycatalog-langchain
+  - unitycatalog-openai
   - unitycatalog-anthropic
 
 # The implementation that plays each provider role in this project's cells: the
@@ -193,7 +194,7 @@ tables:
       - model.alias
   agent-tools:
     title: Agent tools
-    columns: [unitycatalog-langchain, unitycatalog-anthropic]
+    columns: [unitycatalog-langchain, unitycatalog-openai, unitycatalog-anthropic]
     rows:
       - function.tool
       - function.tool-call

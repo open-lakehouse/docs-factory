@@ -95,4 +95,19 @@ model {
   unityCatalogLangChain -[consumes]-> unityCatalogSpec "calls"
   unityCatalogLangChain -[operatesOn]-> lakehouse.function "exposes as agent tools"
 
+  unityCatalogAnthropic = implementation "unitycatalog-anthropic" {
+    #client #public
+    description "Anthropic integration that turns Unity Catalog functions into tool definitions for the Messages API."
+    link https://pypi.org/project/unitycatalog-anthropic/
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      pypi "unitycatalog-anthropic"
+      license "Apache-2.0"
+      language "Python"
+    }
+  }
+  unityCatalogAnthropic -[consumes]-> unityCatalogSpec "calls"
+  unityCatalogAnthropic -[operatesOn]-> lakehouse.function "exposes as Messages API tools"
+
 }

@@ -210,6 +210,17 @@
       "integrations": [],
       "rollup": [],
       "viaVersion": null
+    },
+    {
+      "key": "unitycatalog-anthropic",
+      "label": "unitycatalog-anthropic",
+      "version": "0.2.0",
+      "package": "unitycatalog-anthropic",
+      "model": "unityCatalogAnthropic",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "viaVersion": null
     }
   ],
   "tables": [
@@ -444,7 +455,8 @@
       "id": "agent-tools",
       "title": "Agent tools",
       "columns": [
-        "unitycatalog-langchain"
+        "unitycatalog-langchain",
+        "unitycatalog-anthropic"
       ],
       "rows": [
         "function.tool",
@@ -664,7 +676,8 @@
         "cli",
         "python-sdk",
         "unitycatalog-ai",
-        "unitycatalog-langchain"
+        "unitycatalog-langchain",
+        "unitycatalog-anthropic"
       ],
       "rows": [
         "function.create",
@@ -1727,6 +1740,28 @@
           "table": "agent-tools",
           "columns": [
             "unitycatalog-langchain"
+          ],
+          "rows": [
+            "function.tool",
+            "function.tool-call"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unityCatalogAnthropic",
+      "title": "unitycatalog-anthropic",
+      "interfaces": [
+        "unitycatalog-anthropic"
+      ],
+      "page": null,
+      "anchor": null,
+      "heading": null,
+      "groups": [
+        {
+          "table": "agent-tools",
+          "columns": [
+            "unitycatalog-anthropic"
           ],
           "rows": [
             "function.tool",
@@ -12227,6 +12262,28 @@
             }
           ],
           "evidence": []
+        },
+        "unitycatalog-anthropic": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/027-anthropic-tools/snippets/tools.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "anthropic-tools"
+              },
+              "anchor": "build-tool-definitions-for-the-messages-api",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.2.0",
+              "api": "UCFunctionToolkit",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -12270,6 +12327,28 @@
               "version": "0.4.0",
               "api": "create_agent",
               "note": "through an async adapter; `toolkit.tools` as-is fails in LangGraph's tool threads"
+            }
+          ],
+          "evidence": []
+        },
+        "unitycatalog-anthropic": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/027-anthropic-tools/snippets/tools.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "anthropic-tools"
+              },
+              "anchor": "continue-a-conversation-over-several-rounds",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.2.0",
+              "api": "messages.create",
+              "note": "with your own tool loop; `generate_tool_call_messages` runs any function and drops errors"
             }
           ],
           "evidence": []
@@ -18043,6 +18122,11 @@
     {
       "kind": "unverified-asset",
       "asset": "lakehouse.agentSkill"
+    },
+    {
+      "kind": "unverified-asset-edge",
+      "source": "unityCatalogAnthropic",
+      "asset": "lakehouse.function"
     },
     {
       "kind": "unverified-asset-edge",

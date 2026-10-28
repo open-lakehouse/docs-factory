@@ -66,7 +66,7 @@ views {
       lakehouse.catalog, lakehouse.metadataStore,
       unityCatalogSpec, unityCatalogDeltaApiSpec, icebergRestSpec,
       unityCatalogServer, lakekeeper, mangrove, postgresql,
-      unityCatalogCli, unityCatalogPythonSdk, unityCatalogJavaSdk, unityCatalogAi, unityCatalogLangChain, pyIceberg
+      unityCatalogCli, unityCatalogPythonSdk, unityCatalogJavaSdk, unityCatalogAi, unityCatalogLangChain, unityCatalogAnthropic, pyIceberg
     autoLayout LeftRight
   }
 

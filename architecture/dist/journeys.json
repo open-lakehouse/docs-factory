@@ -95,6 +95,10 @@
             "via": []
           },
           {
+            "id": "unityCatalogAnthropic",
+            "via": []
+          },
+          {
             "id": "unityCatalogCli",
             "via": []
           },
@@ -623,6 +627,17 @@
       "rollup": [],
       "projects": {
         "unitycatalog": "0.4.0"
+      }
+    },
+    "unitycatalog-anthropic": {
+      "label": "unitycatalog-anthropic",
+      "package": "unitycatalog-anthropic",
+      "model": "unityCatalogAnthropic",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "0.2.0"
       }
     }
   },

@@ -133,3 +133,8 @@ unitycatalog-langchain:
   pin: unitycatalog-langchain
   package: unitycatalog-langchain
   model: unityCatalogLangChain
+unitycatalog-anthropic:
+  label: unitycatalog-anthropic
+  pin: unitycatalog-anthropic
+  package: unitycatalog-anthropic
+  model: unityCatalogAnthropic

@@ -93,8 +93,8 @@ nav:
             id: H13
           - planned: H14
             title: Use catalog functions with OpenAI-compatible tool calling
-          - planned: H51
-            title: Use catalog functions with Anthropic tools
+          - page: how-to/anthropic-tools
+            id: H51
           - planned: H52
             title: Use catalog functions with LiteLLM tools
 

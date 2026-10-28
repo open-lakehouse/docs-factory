@@ -11,6 +11,12 @@ pins:
   unitycatalog-ai: 0.4.0
   # From the same source tree as unitycatalog-ai.
   unitycatalog-langchain: 0.4.0
+  # Versions independently of the other AI packages: 0.2.0 is the version in
+  # the same source tree. Its wheel doesn't cap anthropic (the source tree's
+  # pyproject caps it at 0.84.0).
+  unitycatalog-anthropic: 0.2.0
+  # The Anthropic SDK the Anthropic tools page runs on.
+  anthropic: 1.17.0
   # 1.0.9–1.0.13 break `import langchain.agents` under unitycatalog-langchain's
   # `langchain<=1.2.10` cap (ImportError: ExecutionInfo).
   langgraph-prebuilt: 1.0.8

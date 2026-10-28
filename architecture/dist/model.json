@@ -962,6 +962,34 @@
       "kind": "implementation",
       "id": "unityCatalogLangChain"
     },
+    "unityCatalogAnthropic": {
+      "metadata": {
+        "sourceRepo": "unitycatalog/unitycatalog",
+        "pypi": "unitycatalog-anthropic",
+        "license": "Apache-2.0",
+        "language": "Python"
+      },
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://pypi.org/project/unitycatalog-anthropic/"
+        }
+      ],
+      "tags": [
+        "client",
+        "public"
+      ],
+      "description": {
+        "txt": "Anthropic integration that turns Unity Catalog functions into tool definitions for the Messages API."
+      },
+      "title": "unitycatalog-anthropic",
+      "kind": "implementation",
+      "id": "unityCatalogAnthropic"
+    },
     "datafusion": {
       "metadata": {
         "sourceRepo": "apache/datafusion",
@@ -3135,6 +3163,30 @@
       "kind": "operatesOn",
       "id": "3aaba89ff0"
     },
+    "7321f04b4b": {
+      "line": "dashed",
+      "title": "calls",
+      "source": {
+        "model": "unityCatalogAnthropic"
+      },
+      "target": {
+        "model": "unityCatalogSpec"
+      },
+      "kind": "consumes",
+      "id": "7321f04b4b"
+    },
+    "0d939a52cb": {
+      "line": "dashed",
+      "title": "exposes as Messages API tools",
+      "source": {
+        "model": "unityCatalogAnthropic"
+      },
+      "target": {
+        "model": "lakehouse.function"
+      },
+      "kind": "operatesOn",
+      "id": "0d939a52cb"
+    },
     "077da3a8b4": {
       "line": "dotted",
       "title": "",
@@ -4882,6 +4934,20 @@
           "kind": "operatesOn"
         },
         {
+          "id": "1ko0cwl",
+          "parent": null,
+          "source": "unityCatalogAnthropic",
+          "target": "lakehouse",
+          "label": "exposes as Messages API tools",
+          "relations": [
+            "0d939a52cb"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "operatesOn"
+        },
+        {
           "id": "byeu7p",
           "parent": null,
           "source": "datafusion",
@@ -5616,6 +5682,20 @@
           "label": "calls",
           "relations": [
             "ee6baf1d83"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "5yw8vv",
+          "parent": null,
+          "source": "unityCatalogAnthropic",
+          "target": "unityCatalogSpec",
+          "label": "calls",
+          "relations": [
+            "7321f04b4b"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6661,6 +6741,45 @@
           "links": [
             {
               "url": "https://pypi.org/project/unitycatalog-langchain/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "unityCatalogAnthropic",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ko0cwl",
+            "5yw8vv"
+          ],
+          "title": "unitycatalog-anthropic",
+          "modelRef": "unityCatalogAnthropic",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Anthropic integration that turns Unity Catalog functions into tool definitions for the Messages API."
+          },
+          "tags": [
+            "client",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "pypi": "unitycatalog-anthropic",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://pypi.org/project/unitycatalog-anthropic/"
             }
           ],
           "kind": "implementation"
@@ -8136,6 +8255,7 @@
             "1s1iaj3",
             "ralwkn",
             "8evphi",
+            "5yw8vv",
             "8o013o",
             "1est51s",
             "myn69c",
@@ -8405,6 +8525,7 @@
             "mqk6sh",
             "3a9x8p",
             "gj9sso",
+            "1ko0cwl",
             "byeu7p",
             "bd1jqg",
             "1jzlfiv",
@@ -8487,7 +8608,7 @@
           }
         ]
       },
-      "hash": "MdmrVOgJLeKfCqtA4PmMcc-noo3rsuiwg0M1Jl5K3tc"
+      "hash": "VBfJdE1RGm8OyOv773_Rw_NasFuFfiEXCa5CHqGKhUc"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -14017,6 +14138,20 @@
           "kind": "consumes"
         },
         {
+          "id": "5yw8vv",
+          "parent": null,
+          "source": "unityCatalogAnthropic",
+          "target": "unityCatalogSpec",
+          "label": "calls",
+          "relations": [
+            "7321f04b4b"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
           "id": "156ihx2",
           "parent": null,
           "source": "pyIceberg",
@@ -14379,6 +14514,44 @@
           "kind": "implementation"
         },
         {
+          "id": "unityCatalogAnthropic",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "5yw8vv"
+          ],
+          "title": "unitycatalog-anthropic",
+          "modelRef": "unityCatalogAnthropic",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Anthropic integration that turns Unity Catalog functions into tool definitions for the Messages API."
+          },
+          "tags": [
+            "client",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "pypi": "unitycatalog-anthropic",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://pypi.org/project/unitycatalog-anthropic/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "pyIceberg",
           "parent": null,
           "level": 0,
@@ -14462,7 +14635,8 @@
             "1nrbqw7",
             "1s1iaj3",
             "ralwkn",
-            "8evphi"
+            "8evphi",
+            "5yw8vv"
           ],
           "outEdges": [
             "1h4glsp"
@@ -14653,7 +14827,7 @@
           }
         ]
       },
-      "hash": "9WQwyr-HSBGs8rnA1h6AnKxPEMrUCaMDxdrz632qnJw"
+      "hash": "s_izKUHJw5FN_G_YesxIXeRFmfgb461OPBiTCtW28Uo"
     },
     "techFormatsStorage": {
       "_type": "element",

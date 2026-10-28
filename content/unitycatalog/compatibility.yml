@@ -25,6 +25,7 @@ interfaces:
   - mlflow
   - unitycatalog-ai
   - unitycatalog-langchain
+  - unitycatalog-anthropic
 
 # The implementation that plays each provider role in this project's cells: the
 # server the docs' environments run. What it doesn't serve
@@ -192,7 +193,7 @@ tables:
       - model.alias
   agent-tools:
     title: Agent tools
-    columns: [unitycatalog-langchain]
+    columns: [unitycatalog-langchain, unitycatalog-anthropic]
     rows:
       - function.tool
       - function.tool-call

@@ -24,6 +24,14 @@ referenced by a pinned ref (never copied). See [`CONVENTIONS.md`](./CONVENTIONS.
   (series: The Composable Lakehouse).
   `repos:` trestle (`crates/stack-topology`) · `src:` architecture/, docs/design/trestle-integration.md
 
+- [x] **Lakehouse skills at /.well-known** — publish a tested
+  `build-open-lakehouse` Agent Skill at `openlakehouse.io/.well-known/agent-skills/`
+  (the emerging discovery convention Neon, Vercel, Supabase and Cloudflare already
+  serve), so agents install the procedure, not just read the docs. → graduated to
+  an idea folder: `blogs/well-known-agent-skills/`.
+  `src:` cloudflare/agent-skills-discovery-rfc (Draft v0.2.0) · `repos:`
+  docs-factory (`emit/docs/discovery.mjs`), trestle
+
 - [ ] **Delta Kernel, explained by reading the Rust** — walk the scan API to
   show how an engine reads a Delta table without reimplementing the protocol.
   `repos:` delta-kernel-rs, delta-rs · `audience:` Rust engineers who use

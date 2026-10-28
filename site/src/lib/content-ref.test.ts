@@ -1,6 +1,13 @@
 import { expect, test } from "bun:test";
 import { ContentArea } from "../gen/docs_factory/review/v1/messages_pb";
-import { modelOf, modelRef, refFromParam, refHref, refToParam } from "./content-ref";
+import {
+  modelOf,
+  modelRef,
+  pickOccurrence,
+  refFromParam,
+  refHref,
+  refToParam,
+} from "./content-ref";
 
 test("a model ref round-trips through the workspace tab token", () => {
   for (const target of [
@@ -31,4 +38,36 @@ test("a preamble anchor links to the page, not a heading", () => {
   expect(refHref(ref, "__preamble__")).toBe("/blog/p");
   expect(refHref(ref, "")).toBe("/blog/p");
   expect(refHref(ref, "intro")).toBe("/blog/p#intro");
+});
+
+// Two "volumes are" passages, as in the uc-volumes blog.
+const page =
+  "volumes are a building block. what makes a volume the first thing to note is that volumes are a first class data asset";
+const quote = "volumes are";
+const occurrences = [page.indexOf(quote), page.lastIndexOf(quote)];
+
+test("a trimmed prefix frames the occurrence it was captured before", () => {
+  const picked = pickOccurrence(page, quote.length, occurrences, {
+    prefix: "the first thing to note is that",
+  });
+  expect(picked).toBe(occurrences[1]);
+});
+
+test("the suffix frames the occurrence when the prefix no longer does", () => {
+  const picked = pickOccurrence(page, quote.length, occurrences, {
+    prefix: "edited away",
+    suffix: "a first class",
+  });
+  expect(picked).toBe(occurrences[1]);
+});
+
+test("without matching context, the occurrence under the heading wins", () => {
+  const heading = page.indexOf("what makes a volume");
+  const picked = pickOccurrence(page, quote.length, occurrences, { prefix: "gone" }, heading);
+  expect(picked).toBe(occurrences[1]);
+  expect(pickOccurrence(page, quote.length, occurrences, {})).toBe(occurrences[0]);
+});
+
+test("a single occurrence is returned as is", () => {
+  expect(pickOccurrence(page, quote.length, [7], { prefix: "nope" })).toBe(7);
 });

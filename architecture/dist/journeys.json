@@ -801,6 +801,30 @@
       ],
       "aliases": []
     },
+    "function.engine-udf": {
+      "title": "Run a function as an engine UDF",
+      "summary": "Fetch a registered Python function and register it as a UDF in an engine session, to call from SQL and DataFrames.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
     "function.replace": {
       "title": "Replace a function",
       "summary": "Replace a function's body or comments under the same name.",

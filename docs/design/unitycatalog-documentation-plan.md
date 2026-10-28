@@ -218,7 +218,7 @@ Personas are entry points, not mutually exclusive identities:
 | J03 Govern tabular data | "How do I register existing data or create managed Delta tables?" | E03/E04 -> H02/H17 -> T03 -> H03/H04 -> R02/R15 | Reader can distinguish registration from writing and complete a supported read/write lifecycle. |
 | J04 Govern files | "How do applications use unstructured files under UC?" | E03/E05 -> T04 -> H09/H10 -> API tab/R04 | Application resolves a volume and accesses files with appropriately scoped credentials. |
 | J05 Grant access | "How do I let a colleague or job read just the intended assets?" | E06 -> T09 -> H32/H34/H36 -> H35 -> H41 -> R05 | A permitted operation succeeds and a non-permitted operation is denied; principal mapping is understood. |
-| J06 Build AI tools | "How do I reuse governed functions in an application or agent?" | E07 -> T05 -> T06 -> H11-H14, H51, H52 -> R11/R12 | Registered function runs in the intended execution environment and exposes a bounded tool interface. |
+| J06 Build AI tools | "How do I reuse governed functions in an application or agent?" | E07 -> T05 -> T06 -> H11-H14, H51, H52, H54 -> R11/R12 | Registered function runs in the intended execution environment and exposes a bounded tool interface. |
 | J07 Manage models | "How do I register, version, and load a model using MLflow?" | E08 -> T07 -> H15 -> H10 -> API tab/R11 | A model version is registered and reloaded; tracking, registry, and artifact locations are understood. |
 | J08 Publish semantics | "How do I define reusable SQL views and business metrics?" | E09 -> H06 -> T08 -> H07 -> R02/R15 | A supported view/metric definition yields a verified query result, with engine restrictions visible. |
 | J09 Use another engine | "Can my engine use this UC deployment and these tables?" | R15 -> E04/E05 -> H17-H20, H47 -> H43 | Reader chooses the correct protocol and proves the intended operations with their engine. |
@@ -239,7 +239,7 @@ Use Unity Catalog
   Tables                                    -> H02, H08, H03-H05, TPC-H seed
   Views and metric views                    -> H06, H07
   Volumes and files                         -> H09, H10, H53, H49
-  Functions and AI                          -> H11-H14, H51, H52
+  Functions and AI                          -> H11-H14, H51, H52, H54
   Models                                    -> H15
 Connect engines and clients                 -> R15, H17, H18, H20, H47, H19, H16, H43
 Operate Unity Catalog
@@ -378,6 +378,7 @@ architecture to fit an article.
 | H14 | Use catalog functions with OpenAI-compatible tool calling | P1 / J06 | Toolkit/function schema, caller-side execution, bounded invocation flow, deterministic tool tests. Anthropic and LiteLLM have their own pages (H51, H52), not tabs promising universal parity. The other upstream integrations (AutoGen, CrewAI, DSPy, Gemini, LlamaIndex) are not planned: as of 2026-10 none has had a release or a code change of its own since 2025-11, CrewAI's OSS test is disabled upstream, and AutoGen and the `google-generativeai` SDK that Gemini depends on are archived. |
 | H51 | Use catalog functions with Anthropic tools | Drafted (`how-to/anthropic-tools`) / J06 | `unitycatalog-anthropic` toolkit, tool definitions for the Messages API, caller-side execution of `tool_use` blocks, multi-round tool history, deterministic tool tests against the OSS client. |
 | H52 | Use catalog functions with LiteLLM tools | P2 / J06 | `unitycatalog-litellm` toolkit, provider-neutral tool definitions, caller-side execution of returned tool calls, multi-round tool history, deterministic tool tests against the OSS client. |
+| H54 | Use catalog functions in Spark | P2 / J06 | The connector resolves tables, not functions: every function statement on a catalog name fails (`MISSING_CATALOG_ABILITY`). Fetch a registered Python function with `unitycatalog-ai` and register it as a session UDF (`register_function=False`, return type from `full_data_type`); SQL and DataFrame calls; the session copy has no defaults and goes stale on replace or delete. SQL-body functions run nowhere (R01). |
 | H15 | Manage registered models | P1 / J07 | Registry URI, version lifecycle, metadata, credentials/artifacts, permissions, unsupported aliases/stages if applicable, deletion effects. |
 | H16 | Use the Java client in an application | P1 / J10 | Artifact pinning, API base path, resource lookup, paging, auth and error handling; do not recreate generated endpoint documentation. |
 | H17 | Configure Spark to use Unity Catalog | P0 / J03, J09 | Spark/Scala/connector/Delta coordinates, catalog naming, filesystem dependencies, token/OAuth options, renewal/scoped-cache defaults. |

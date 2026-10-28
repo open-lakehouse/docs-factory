@@ -170,7 +170,7 @@ tables:
       - volume.write-files
   functions:
     title: Functions
-    columns: [cli, python-sdk, unitycatalog-ai]
+    columns: [cli, python-sdk, unitycatalog-ai, spark, spark-4.2]
     rows:
       - function.create
       - function.create-wrapped
@@ -180,6 +180,7 @@ tables:
       - function.get-source
       - function.replace
       - function.delete
+      - function.engine-udf
   models:
     title: Registered models
     columns: [mlflow, python-sdk, cli]

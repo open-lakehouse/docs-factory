@@ -2,7 +2,7 @@
 title: "Teach the agent at the front door: lakehouse skills at /.well-known"
 slug: well-known-agent-skills
 status: idea
-tags: [agents, lakehouse, devrel]
+tags: [agents, lakehouse]
 author: Robert Pack
 post_type: announcement
 audience: platform and DevRel engineers who already publish llms.txt and want agents to build on their stack, not just read about it

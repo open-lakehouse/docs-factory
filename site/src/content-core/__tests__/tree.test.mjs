@@ -107,12 +107,12 @@ test("blob section-node hashes equal the flat section rows (invariant)", () => {
 test("normalizeTopics folds synonyms, dedupes, sorts, drops unknowns", () => {
   const dropped = [];
   const topics = normalizeTopics({
-    tags: ["unity-catalog", "unitycatalog", "delta-lake", "delta-kernel", "made-up-tag", "devrel"],
+    tags: ["unity-catalog", "unitycatalog", "delta-lake", "delta-kernel", "made-up-tag"],
     project: "unitycatalog",
     warn: (l) => dropped.push(l),
   });
   expect(topics).toEqual(["delta", "unity-catalog"]);
-  // "made-up-tag" is a genuine unknown → warned; "devrel" maps to null → silently dropped.
+  // "made-up-tag" is a genuine unknown → warned.
   expect(dropped).toEqual(["made-up-tag"]);
 });
 

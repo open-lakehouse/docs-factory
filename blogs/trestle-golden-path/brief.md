@@ -2,7 +2,7 @@
 title: One proto file, a whole app — the Trestle golden path
 slug: trestle-golden-path
 status: draft
-tags: [lakehouse, rust, devrel, codegen, unity-catalog]
+tags: [lakehouse, rust, codegen, unity-catalog]
 series: Chef Casper's Ghost Kitchen
 series_order: 1
 author: Robert Pack

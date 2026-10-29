@@ -29,11 +29,11 @@ blogs/
 | Title | Folder | Series | Tags | Status | Target |
 |---|---|---|---|---|---|
 | Trust in your Open Lakehouse | [`trust-in-your-open-lakehouse/`](./trust-in-your-open-lakehouse/) | Building the Open Lakehouse (1) | governance, lakehouse, agents | draft | openlakehouse |
-| Unity Catalog storage | [`unity-catalog-storage/`](./unity-catalog-storage/) | — | unity-catalog, governance, lakehouse, devrel | draft | unitycatalog |
+| Unity Catalog storage | [`unity-catalog-storage/`](./unity-catalog-storage/) | — | unity-catalog, governance, lakehouse | draft | unitycatalog |
 | The UC Delta API | [`unity-catalog-delta-api/`](./unity-catalog-delta-api/) | — | unity-catalog, delta-lake, iceberg, lakehouse | draft | unitycatalog |
 | One catalog, both formats, any engine | [`uc-iceberg-rest/`](./uc-iceberg-rest/) | — | unity-catalog, iceberg, apache-spark, table-formats | draft | unitycatalog |
-| The true Unity Catalog docs | [`true-unity-catalog-docs/`](./true-unity-catalog-docs/) | — | unity-catalog, delta-lake, devrel, lakehouse | draft | unitycatalog |
-| Whose agent is it anyway? | [`omnigent-agent-scoping/`](./omnigent-agent-scoping/) | — | agents, governance, devrel | draft | openlakehouse |
+| The true Unity Catalog docs | [`true-unity-catalog-docs/`](./true-unity-catalog-docs/) | — | unity-catalog, delta-lake, lakehouse | draft | unitycatalog |
+| Whose agent is it anyway? | [`omnigent-agent-scoping/`](./omnigent-agent-scoping/) | — | agents, governance | draft | openlakehouse |
 | Parquet is engine territory, and Delta Kernel knows it | [`parquet-is-engine-territory/`](./parquet-is-engine-territory/) | Kernel Inside (3) | file-formats, delta-kernel, datafusion, delta-lake, rust | draft | delta |
 
 ## Workflow

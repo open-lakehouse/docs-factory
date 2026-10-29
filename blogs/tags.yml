@@ -43,8 +43,6 @@ unity-catalog:
 lakehouse:
   description: "Open lakehouse architecture"
   element: lakehouse
-devrel:
-  description: "Developer-relations narrative / tutorial"
 observability:
   description: "Tracing, MLflow, monitoring"
   element: lakehouse.observability

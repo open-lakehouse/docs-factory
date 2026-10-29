@@ -112,4 +112,93 @@ views {
       "
     }
   }
+
+  dynamic view ucFunctions_oneFunctionManyCallers {
+    variant sequence
+    title "One catalog function, three callers"
+    description "
+      A Python function registered once in Unity Catalog, then run by an app,
+      by Spark as a session UDF, and by an agent's tool loop. The catalog checks
+      who may fetch it; every caller runs the body on its own machine.
+    "
+
+    // --- Register once -----------------------------------------------------
+    unityCatalogAi -> unityCatalogServer "create_python_function: signature, docstring, body" {
+      notes "
+        **Register once.** `unitycatalog-ai` reads the function's type hints,
+        Google-style docstring, and source, and stores them under a three-part
+        name such as `tools.pricing.order_total`. The server stores text and
+        metadata. It never runs the body.
+      "
+    }
+
+    // --- App or notebook ---------------------------------------------------
+    unityCatalogAi -> unityCatalogServer "execute_function: fetch by name (EXECUTE, USE SCHEMA, USE CATALOG)" {
+      notes "
+        **Fetch.** A call starts by fetching the stored definition. With
+        authorization enabled, the server's source returns it only to a caller
+        with `EXECUTE` on the function plus `USE SCHEMA` and `USE CATALOG` (or
+        ownership in their place). The docs haven't run these rules with
+        authorization enabled.
+      "
+    }
+    unityCatalogAi -> unityCatalogAi "rebuild and run in a sandboxed child process" {
+      notes "
+        **Run on the caller's side.** The client rebuilds the function as Python
+        and runs it in a child process by default, with blocked imports and
+        time and CPU limits. Local mode runs it in the calling process
+        instead, with nothing blocked. The client caches the rebuilt function
+        the first time it runs it: after another client replaces the function,
+        this one keeps running the old body until it calls
+        `clear_function_cache()` or is created again.
+      "
+    }
+
+    // --- Query engine ------------------------------------------------------
+    unityCatalogAi -> apacheSpark "get_function_as_callable, then spark.udf.register" {
+      notes "
+        **Spark gets a session copy.** The Unity Catalog Spark connector
+        resolves tables, not functions, so the driver fetches the Python
+        function with `unitycatalog-ai` and registers it as a session UDF with
+        the stored return type. SQL and DataFrames call it by its short name,
+        and Spark's Python workers run it. Like the app's cached copy, the
+        session copy doesn't follow later replaces in the catalog, and it keeps
+        running after a delete, until you fetch and register it again.
+      "
+    }
+
+    // --- Agent tool loop ---------------------------------------------------
+    unityCatalogLangChain -> unityCatalogServer "UCFunctionToolkit: fetch each listed function" {
+      notes "
+        **Build tools from the record.** The toolkit fetches each function you
+        list by name and builds a tool from the stored signature and docstring:
+        a LangChain tool, an OpenAI Chat Completions definition, or an
+        Anthropic Messages tool, depending on the package.
+      "
+    }
+    unityCatalogLangChain -> agent "tool definitions: tools__pricing__order_total, description, JSON Schema" {
+      notes "
+        **What the model sees.** The tool name is the full name with `__` in
+        place of the dots, the description is the docstring's summary, and the
+        arguments carry their `Args:` descriptions. The model never sees the
+        source code.
+      "
+    }
+    agent -> unityCatalogLangChain "tool call: name + JSON arguments" {
+      notes "
+        **The model only asks.** A tool call is a name and arguments. Your code
+        decides whether to run it, so check the name against the toolkit
+        before you do.
+      "
+    }
+    unityCatalogLangChain -> unityCatalogAi "execute_function (metadata fetched again, EXECUTE checked again)" {
+      notes "
+        **Same path as the app.** The client fetches the function's metadata
+        again on every call, so the grant check applies each time, and runs it
+        in the sandbox on the agent's machine. The body it runs is the one it
+        cached on the first call, the same as in the app. The JSON result goes
+        back to the model as the tool's answer.
+      "
+    }
+  }
 }

@@ -9905,6 +9905,373 @@
       },
       "hash": "dgfvOImGzza8gBFF3WvglED2SCgRSe_CmN5rC50duEE"
     },
+    "ucFunctions_oneFunctionManyCallers": {
+      "_type": "dynamic",
+      "tags": null,
+      "links": null,
+      "variant": "sequence",
+      "_stage": "computed",
+      "sourcePath": "views/blog-views.likec4",
+      "description": {
+        "txt": "A Python function registered once in Unity Catalog, then run by an app,\nby Spark as a session UDF, and by an agent's tool loop. The catalog checks\nwho may fetch it; every caller runs the body on its own machine."
+      },
+      "title": "One catalog function, three callers",
+      "id": "ucFunctions_oneFunctionManyCallers",
+      "flow": [
+        "step-01",
+        "step-02",
+        "step-03",
+        "step-04",
+        "step-05",
+        "step-06",
+        "step-07",
+        "step-08"
+      ],
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "nodes": [
+        {
+          "id": "unityCatalogAi",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "step-03",
+            "step-08"
+          ],
+          "outEdges": [
+            "step-01",
+            "step-02",
+            "step-03",
+            "step-04"
+          ],
+          "title": "unitycatalog-ai",
+          "modelRef": "unityCatalogAi",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Python client library for registering and executing functions through Unity Catalog."
+          },
+          "tags": [
+            "client",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "pypi": "unitycatalog-ai",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/unitycatalog/unitycatalog/tree/main/ai"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "unityCatalogLangChain",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "step-07"
+          ],
+          "outEdges": [
+            "step-05",
+            "step-06",
+            "step-08"
+          ],
+          "title": "unitycatalog-langchain",
+          "modelRef": "unityCatalogLangChain",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "LangChain integration that turns Unity Catalog functions into tools an agent can call."
+          },
+          "tags": [
+            "client",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "pypi": "unitycatalog-langchain",
+            "license": "Apache-2.0",
+            "language": "Python"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://pypi.org/project/unitycatalog-langchain/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "unityCatalogServer",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "step-01",
+            "step-02",
+            "step-05"
+          ],
+          "outEdges": [],
+          "title": "Unity Catalog (OSS)",
+          "modelRef": "unityCatalogServer",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The open-source reference server implementing the Unity Catalog specification."
+          },
+          "tags": [
+            "service",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "unitycatalog/unitycatalog",
+            "license": "Apache-2.0",
+            "language": "Java"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/unitycatalog/unitycatalog"
+            },
+            {
+              "url": "https://unitycatalog.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "apacheSpark",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "step-04"
+          ],
+          "outEdges": [],
+          "title": "Apache Spark",
+          "modelRef": "apacheSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Unified analytics engine for large-scale data processing."
+          },
+          "tags": [
+            "service",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "apache/spark",
+            "pypi": "pyspark",
+            "maven": "org.apache.spark:spark-sql_2.13",
+            "license": "Apache-2.0",
+            "language": "Scala"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://spark.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "agent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "step-06"
+          ],
+          "outEdges": [
+            "step-07"
+          ],
+          "title": "AI agent",
+          "modelRef": "agent",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
+          },
+          "tags": [],
+          "kind": "person"
+        }
+      ],
+      "edges": [
+        {
+          "id": "step-01",
+          "parent": null,
+          "source": "unityCatalogAi",
+          "target": "unityCatalogServer",
+          "label": "create_python_function: signature, docstring, body",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@0",
+          "notes": {
+            "txt": "**Register once.** `unitycatalog-ai` reads the function's type hints,\nGoogle-style docstring, and source, and stores them under a three-part\nname such as `tools.pricing.order_total`. The server stores text and\nmetadata. It never runs the body."
+          }
+        },
+        {
+          "id": "step-02",
+          "parent": null,
+          "source": "unityCatalogAi",
+          "target": "unityCatalogServer",
+          "label": "execute_function: fetch by name (EXECUTE, USE SCHEMA, USE CATALOG)",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@1",
+          "notes": {
+            "txt": "**Fetch.** A call starts by fetching the stored definition. With\nauthorization enabled, the server's source returns it only to a caller\nwith `EXECUTE` on the function plus `USE SCHEMA` and `USE CATALOG` (or\nownership in their place). The docs haven't run these rules with\nauthorization enabled."
+          }
+        },
+        {
+          "id": "step-03",
+          "parent": null,
+          "source": "unityCatalogAi",
+          "target": "unityCatalogAi",
+          "label": "rebuild and run in a sandboxed child process",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@2",
+          "notes": {
+            "txt": "**Run on the caller's side.** The client rebuilds the function as Python\nand runs it in a child process by default, with blocked imports and\ntime and CPU limits. Local mode runs it in the calling process\ninstead, with nothing blocked. The client caches the rebuilt function\nthe first time it runs it: after another client replaces the function,\nthis one keeps running the old body until it calls\n`clear_function_cache()` or is created again."
+          }
+        },
+        {
+          "id": "step-04",
+          "parent": null,
+          "source": "unityCatalogAi",
+          "target": "apacheSpark",
+          "label": "get_function_as_callable, then spark.udf.register",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@3",
+          "notes": {
+            "txt": "**Spark gets a session copy.** The Unity Catalog Spark connector\nresolves tables, not functions, so the driver fetches the Python\nfunction with `unitycatalog-ai` and registers it as a session UDF with\nthe stored return type. SQL and DataFrames call it by its short name,\nand Spark's Python workers run it. Like the app's cached copy, the\nsession copy doesn't follow later replaces in the catalog, and it keeps\nrunning after a delete, until you fetch and register it again."
+          }
+        },
+        {
+          "id": "step-05",
+          "parent": null,
+          "source": "unityCatalogLangChain",
+          "target": "unityCatalogServer",
+          "label": "UCFunctionToolkit: fetch each listed function",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@4",
+          "notes": {
+            "txt": "**Build tools from the record.** The toolkit fetches each function you\nlist by name and builds a tool from the stored signature and docstring:\na LangChain tool, an OpenAI Chat Completions definition, or an\nAnthropic Messages tool, depending on the package."
+          }
+        },
+        {
+          "id": "step-06",
+          "parent": null,
+          "source": "unityCatalogLangChain",
+          "target": "agent",
+          "label": "tool definitions: tools__pricing__order_total, description, JSON Schema",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@5",
+          "notes": {
+            "txt": "**What the model sees.** The tool name is the full name with `__` in\nplace of the dots, the description is the docstring's summary, and the\narguments carry their `Args:` descriptions. The model never sees the\nsource code."
+          }
+        },
+        {
+          "id": "step-07",
+          "parent": null,
+          "source": "agent",
+          "target": "unityCatalogLangChain",
+          "label": "tool call: name + JSON arguments",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@6",
+          "notes": {
+            "txt": "**The model only asks.** A tool call is a name and arguments. Your code\ndecides whether to run it, so check the name against the toolkit\nbefore you do."
+          },
+          "dir": "back"
+        },
+        {
+          "id": "step-08",
+          "parent": null,
+          "source": "unityCatalogLangChain",
+          "target": "unityCatalogAi",
+          "label": "execute_function (metadata fetched again, EXECUTE checked again)",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@7",
+          "notes": {
+            "txt": "**Same path as the app.** The client fetches the function's metadata\nagain on every call, so the grant check applies each time, and runs it\nin the sandbox on the agent's machine. The body it runs is the one it\ncached on the first call, the same as in the app. The JSON result goes\nback to the model as the tool's answer."
+          },
+          "dir": "back"
+        }
+      ],
+      "notation": {
+        "nodes": [
+          {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          }
+        ]
+      },
+      "hash": "YR1WCr9nYKYsOazCD4NaKaUbgTGW48J2tOID5X2LcpU"
+    },
     "trustedComputeDeploy": {
       "_type": "deployment",
       "tags": null,

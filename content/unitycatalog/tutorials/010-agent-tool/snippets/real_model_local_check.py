@@ -73,7 +73,11 @@ class FakeOpenAI(BaseHTTPRequestHandler):
                 "created": int(time.time()),
                 "model": body.get("model"),
                 "choices": [{"index": 0, "message": message, "finish_reason": "stop"}],
-                "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2},
+                "usage": {
+                    "prompt_tokens": 1,
+                    "completion_tokens": 1,
+                    "total_tokens": 2,
+                },
             }
         ).encode()
         self.send_response(200)

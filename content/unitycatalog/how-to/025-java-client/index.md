@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogJavaSdk
   - unityCatalogServer
-status: draft
+status: ready
 ---
 
 The [Unity Catalog Java SDK](model:unityCatalogJavaSdk) is a synchronous

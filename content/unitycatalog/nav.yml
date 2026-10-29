@@ -91,7 +91,7 @@ nav:
             label: Run functions in apps and notebooks
           - page: how-to/spark-functions
             id: H54
-            label: Use functions in Spark
+            label: Use Python functions in Spark
           - page: how-to/langchain-tools
             id: H13
           - page: how-to/openai-tools

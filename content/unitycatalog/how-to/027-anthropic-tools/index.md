@@ -16,8 +16,7 @@ Python functions you registered in [Unity Catalog](model:unityCatalogServer) as
 tools, your code runs the calls Claude asks for, and errors go back to Claude
 flagged as errors. The `unitycatalog-anthropic` package supplies the tool
 definitions. The catalog stores each [function's](model:lakehouse.function)
-signature, descriptions, and source code. Claude only asks for a call. Your
-machine runs the code, not the server and not Claude.
+signature, descriptions, and source code. Claude only asks for a call.
 
 :::prerequisites
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).
@@ -34,12 +33,16 @@ Start Python with the Anthropic integration and the Anthropic SDK:
 EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 --with unitycatalog-ai==0.4.0 --with unitycatalog-anthropic==0.2.0 --with anthropic==1.17.0 python -m asyncio
 ```
 
+:::note
 Use Python 3.12, or 3.13.3 or later. On 3.13.0 to 3.13.2, a function that
 raises loses its traceback, and the call returns the generic "no output was
 produced" notice instead.
+:::
 
+:::note
 `EXECUTOR_MAX_MEMORY_LIMIT` raises the function sandbox's memory cap, which
 applies only on Linux, from 100 MB by default to 4096 MB.
+:::
 
 Create the function client:
 

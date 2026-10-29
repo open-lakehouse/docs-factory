@@ -1,6 +1,6 @@
 ---
-title: Use catalog functions in Spark
-summary: Spark can't call Unity Catalog functions by name. Fetch a Python function with unitycatalog-ai and register it as a session UDF for SQL and DataFrames.
+title: Use Python catalog functions in Spark
+summary: Fetch a Python function with unitycatalog-ai and register it as a session UDF for SQL and DataFrames.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -14,10 +14,7 @@ status: draft
 To run a catalog [function](model:lakehouse.function) in
 [Spark](model:apacheSpark), fetch it with
 [`unitycatalog-ai`](model:unityCatalogAi) and register it as a UDF in your
-session. This works for Python functions only. The Unity Catalog Spark
-connector resolves tables, not functions, so calling a function by its
-catalog name fails with `[MISSING_CATALOG_ABILITY.FUNCTIONS] Catalog unity
-does not support functions. SQLSTATE: 0A000`.
+session.
 
 :::prerequisites
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).
@@ -27,12 +24,10 @@ does not support functions. SQLSTATE: 0A000`.
   [Register a function](../manage-python-functions/index.md#register-a-function).
 :::
 
-Unity Catalog stores two kinds of function. A Python function has
-`routine_body` `EXTERNAL`, and it's the kind `unitycatalog-ai` registers. A
-SQL-body function has `routine_body` `SQL`, and neither client can run it in
-Spark. `unitycatalog-ai` refuses to fetch it with `ValueError: Function
-tools.pricing.double_it is not an EXTERNAL Python function and cannot be
-retrieved.`, and Spark can't resolve it by name.
+:::info
+SQL-body functions aren't supported. These steps run Python functions, the kind
+`unitycatalog-ai` registers.
+:::
 
 ## Set up the session and client
 

@@ -2030,7 +2030,7 @@
         },
         "java-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
@@ -2040,7 +2040,7 @@
                 "slug": "java-client"
               },
               "anchor": "look-up-objects-by-name",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -8761,7 +8761,7 @@
         },
         "java-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
@@ -8771,7 +8771,7 @@
                 "slug": "java-client"
               },
               "anchor": "create-a-catalog-and-a-schema",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -8851,7 +8851,7 @@
         },
         "java-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
@@ -8861,7 +8861,7 @@
                 "slug": "java-client"
               },
               "anchor": "page-through-a-list",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -9009,7 +9009,7 @@
         },
         "java-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
@@ -9019,7 +9019,7 @@
                 "slug": "java-client"
               },
               "anchor": "clean-up",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -9099,7 +9099,7 @@
         },
         "java-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
@@ -9109,7 +9109,7 @@
                 "slug": "java-client"
               },
               "anchor": "create-a-catalog-and-a-schema",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -9423,7 +9423,7 @@
         },
         "java-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
@@ -9433,7 +9433,7 @@
                 "slug": "java-client"
               },
               "anchor": "register-a-table",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -9626,7 +9626,7 @@
         },
         "java-sdk": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/025-java-client/snippets/JavaClient.java",
@@ -9636,7 +9636,7 @@
                 "slug": "java-client"
               },
               "anchor": "look-up-objects-by-name",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": null,
@@ -14916,6 +14916,50 @@
       ]
     },
     {
+      "source": "unityCatalogJavaSdk",
+      "kind": "consumes",
+      "target": "unityCatalogSpec",
+      "interfaces": [
+        "java-sdk"
+      ],
+      "journeys": [
+        "catalog.create",
+        "catalog.delete",
+        "catalog.list",
+        "schema.create",
+        "table.describe",
+        "table.list",
+        "table.register-external"
+      ]
+    },
+    {
+      "source": "unityCatalogJavaSdk",
+      "kind": "operatesOn",
+      "target": "lakehouse.namespace",
+      "interfaces": [
+        "java-sdk"
+      ],
+      "journeys": [
+        "catalog.create",
+        "catalog.delete",
+        "catalog.list",
+        "schema.create"
+      ]
+    },
+    {
+      "source": "unityCatalogJavaSdk",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "java-sdk"
+      ],
+      "journeys": [
+        "table.describe",
+        "table.list",
+        "table.register-external"
+      ]
+    },
+    {
       "source": "unityCatalogLangChain",
       "kind": "consumes",
       "target": "unityCatalogSpec",
@@ -18879,16 +18923,6 @@
       "kind": "unverified-asset-edge",
       "source": "unityCatalogAnthropic",
       "asset": "lakehouse.function"
-    },
-    {
-      "kind": "unverified-asset-edge",
-      "source": "unityCatalogJavaSdk",
-      "asset": "lakehouse.namespace"
-    },
-    {
-      "kind": "unverified-asset-edge",
-      "source": "unityCatalogJavaSdk",
-      "asset": "lakehouse.table"
     },
     {
       "kind": "unverified-asset-edge",

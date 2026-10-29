@@ -1,6 +1,8 @@
 // Where the server's re-anchoring placed a thread on the latest version
 // (server/src/anchor.ts), in reviewer terms: what the thread's card says, and
 // which text to look for in the rendered page.
+
+import { normalizeText } from "../content-core/normalize.mjs";
 import {
   AnchorState,
   type Comment,
@@ -55,13 +57,20 @@ export function anchorPlacement(root: Comment | undefined): AnchorPlacement | un
 
 /**
  * The selector to resolve in the rendered page: for a reworded passage, the
- * text the server matched (the original quote no longer occurs verbatim).
+ * text the server matched (the original quote no longer occurs verbatim); for
+ * an applied suggestion, its replacement in the quote's place. An applied
+ * deletion has nothing left to highlight, and any remaining copy of its quote
+ * is a different passage.
  */
 export function currentSelector(
   root: Comment | undefined,
 ): { quote: string; prefix?: string; suffix?: string } | undefined {
   const sel = root?.selector;
   if (!root || !sel?.quote) return undefined;
+  if (root.suggestion?.state === SuggestionState.APPLIED) {
+    const quote = normalizeText(root.suggestion.replacement);
+    return quote ? { quote, prefix: sel.prefix, suffix: sel.suffix } : undefined;
+  }
   if (root.anchorState === AnchorState.REWRITTEN && root.anchorCurrentQuote) {
     return { quote: root.anchorCurrentQuote };
   }

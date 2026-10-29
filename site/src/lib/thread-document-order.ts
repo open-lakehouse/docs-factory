@@ -5,6 +5,7 @@
 // sink to the end; equal positions fall back to created_at.
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import type { Thread } from "../gen/docs_factory/review/v1/messages_pb";
+import { currentSelector } from "./anchor-placement";
 import { locateSelector, sectionRootForAnchor } from "./content-ref";
 
 type DocPos = { node: Node; offset: number };
@@ -18,9 +19,10 @@ function documentPosition(thread: Thread, article: HTMLElement): DocPos | null {
   const root = thread.root;
   if (!root) return null;
 
-  if (root.selector?.quote) {
+  const sel = currentSelector(root);
+  if (sel) {
     const range = locateSelector(
-      root.selector,
+      sel,
       sectionRootForAnchor(article, root.anchorSlug),
       root.anchorSlug,
     );

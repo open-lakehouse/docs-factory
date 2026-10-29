@@ -63,9 +63,31 @@ test("the suffix frames the occurrence when the prefix no longer does", () => {
 
 test("without matching context, the occurrence under the heading wins", () => {
   const heading = page.indexOf("what makes a volume");
-  const picked = pickOccurrence(page, quote.length, occurrences, { prefix: "gone" }, heading);
+  const picked = pickOccurrence(
+    page,
+    quote.length,
+    occurrences,
+    { prefix: "gone" },
+    {
+      from: heading,
+    },
+  );
   expect(picked).toBe(occurrences[1]);
   expect(pickOccurrence(page, quote.length, occurrences, {})).toBe(occurrences[0]);
+});
+
+test("an occurrence inside the section beats a framed one outside it", () => {
+  // An applied edit removed the framed original; the copy under the heading stays.
+  const heading = page.indexOf("what makes a volume");
+  const section = { from: 0, to: heading };
+  const ctx = { prefix: "the first thing to note is that" };
+  expect(pickOccurrence(page, quote.length, occurrences, ctx, section)).toBe(occurrences[0]);
+});
+
+test("outside a section without the quote, every occurrence counts", () => {
+  const section = { from: page.indexOf("building"), to: page.indexOf("what makes") };
+  const ctx = { prefix: "the first thing to note is that" };
+  expect(pickOccurrence(page, quote.length, occurrences, ctx, section)).toBe(occurrences[1]);
 });
 
 test("a single occurrence is returned as is", () => {

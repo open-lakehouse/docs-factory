@@ -3,6 +3,7 @@
 // Never mutates compiled MDX — uses fixed positioning from Range.getClientRects().
 import { type RefObject, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { currentSelector } from "../../lib/anchor-placement";
 import { useAuth } from "../../lib/auth-context";
 import { locateSelector, sectionRootForAnchor } from "../../lib/content-ref";
 import PendingComposer from "./PendingComposer";
@@ -100,8 +101,8 @@ export default function InlineReviewSurface({
       if (showProsePending && pending?.kind === "prose") {
         range = locateSelector(pending.selector, article!, pending.anchorSlug);
       } else if (showProseThread && selected) {
-        const sel = selected.root?.selector;
-        if (!sel?.quote) {
+        const sel = currentSelector(selected.root);
+        if (!sel) {
           setPlacement(null);
           return;
         }

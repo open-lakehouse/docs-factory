@@ -46,6 +46,23 @@ test("a reworded thread resolves the text it matches now", () => {
   expect(currentSelector(root({ anchorState: AnchorState.MOVED }))?.prefix).toBe("so");
 });
 
+test("an applied suggestion resolves its replacement in the quote's place", () => {
+  const suggestion = create(SuggestionSchema, {
+    state: SuggestionState.APPLIED,
+    replacement: "Mount  the folder",
+  });
+  expect(currentSelector(root({ suggestion }))).toEqual({
+    quote: "mount the folder",
+    prefix: "so",
+    suffix: "",
+  });
+});
+
+test("an applied deletion resolves nothing", () => {
+  const suggestion = create(SuggestionSchema, { state: SuggestionState.APPLIED });
+  expect(currentSelector(root({ suggestion }))).toBeUndefined();
+});
+
 test("a reworded thread under its own heading doesn't name it", () => {
   const p = anchorPlacement(
     root({

@@ -5,9 +5,13 @@
 // Prose match precedence for a comment's (anchor_slug, anchor_fingerprint,
 // optional quote):
 //   1. quote present and found in the section that still carries anchor_slug
-//      → keep, refresh the quote's start offset.
-//   2. quote present and found (exact, else fuzzy ≥ threshold) in ANY new
-//      section → relink anchor_slug to that section, refresh start.
+//      → keep, refresh the quote's start offset. The occurrence its stored
+//      context frames wins over the first one.
+//   2. quote present and found in another section → relink anchor_slug there,
+//      refresh start. While the own heading survives, only an exact match that
+//      the stored context frames counts: a short quote recurs, and the section
+//      structure is better evidence than a bare repeat. Once the heading is gone,
+//      a framed match, else the first exact or fuzzy (≥ threshold) one.
 //   3. anchor_slug still present (heading-level comment, or quote drifted)
 //      → keep at section level.
 //   4. fingerprint match (heading renamed but same normalized text) → relink.
@@ -19,9 +23,11 @@
 // text is kept as `anchor_current_quote`), `section` (heading kept, quote
 // gone), `orphaned`. A null state reads as `exact`: never re-anchored.
 //
-// An open suggestion whose quote misses its own section (tier 1) is marked
+// An open suggestion whose framed quote is gone from its own section is marked
 // applied when that section now reads like the edit landed: the replacement
-// (or, for a deletion, the bare join) framed by the quote's own context.
+// (or, for a deletion, the bare join) framed by the quote's own context. An
+// applied suggestion stays on its own section and never runs tier 2: its quote
+// is gone on purpose, so any other occurrence is a different passage.
 //
 // Code match precedence for a comment's (code_path, code_region, code_line_hash):
 //   1. region still present in the file's snippet set → keep.
@@ -108,6 +114,34 @@ export function locateQuote(text: string, quote: string, threshold = 0.8): Quote
   return { at: best, exact: false, text: words.slice(bestWord, bestWord + win).join(" ") };
 }
 
+/** Characters of stored context, nearest the quote, that must agree to frame it. */
+const FRAME_CONTEXT = 16;
+
+const compact = (s: string) => s.replace(/\s+/g, "");
+
+/**
+ * Offset of the first exact occurrence of `quote` in `text` that its stored
+ * `prefix` or `suffix` frames, or -1. Context is compared without whitespace,
+ * as the site's pickOccurrence does: the stored context is trimmed, so the
+ * space between it and the quote is gone.
+ */
+export function framedOccurrence(
+  text: string,
+  quote: string,
+  ctx: { prefix?: string | null; suffix?: string | null },
+): number {
+  const pfx = compact(normalize(ctx.prefix ?? "")).slice(-FRAME_CONTEXT);
+  const sfx = compact(normalize(ctx.suffix ?? "")).slice(0, FRAME_CONTEXT);
+  if (!quote || (!pfx && !sfx)) return -1;
+  for (let at = text.indexOf(quote); at !== -1; at = text.indexOf(quote, at + 1)) {
+    const before = compact(text.slice(Math.max(0, at - 2 * FRAME_CONTEXT), at));
+    const end = at + quote.length;
+    const after = compact(text.slice(end, end + 2 * FRAME_CONTEXT));
+    if ((pfx && before.endsWith(pfx)) || (sfx && after.startsWith(sfx))) return at;
+  }
+  return -1;
+}
+
 /** Offset of `quote` in `text` per {@link locateQuote}, or -1. */
 export function findQuote(text: string, quote: string, threshold = 0.8): number {
   return locateQuote(text, quote, threshold)?.at ?? -1;
@@ -170,6 +204,27 @@ export async function reanchorThreads(
   // caching turns O(roots × sections) normalize() calls into O(sections).
   const normBySlug = new Map(sections.map((s) => [s.anchorSlug, normalize(s.text)]));
 
+  // Tier 2's search outside `ownSlug`. `framedOnly` while the own heading
+  // survives: then only an exact occurrence its context frames may move it.
+  const searchElsewhere = (
+    ownSlug: string,
+    quote: string,
+    ctx: { prefix?: string | null; suffix?: string | null },
+    framedOnly: boolean,
+  ): { slug: string; hit: QuoteMatch } | null => {
+    let first: { slug: string; hit: QuoteMatch } | null = null;
+    for (const s of sections) {
+      if (s.anchorSlug === ownSlug) continue;
+      const text = normBySlug.get(s.anchorSlug) ?? normalize(s.text);
+      const at = framedOccurrence(text, quote, ctx);
+      if (at !== -1) return { slug: s.anchorSlug, hit: { at, exact: true, text: quote } };
+      if (framedOnly || first) continue;
+      const hit = locateQuote(text, quote);
+      if (hit) first = { slug: s.anchorSlug, hit };
+    }
+    return first;
+  };
+
   const roots = await sql<
     {
       id: string;
@@ -217,20 +272,21 @@ export async function reanchorThreads(
     }
 
     const quote = root.selector_quote ? normalize(root.selector_quote) : null;
+    const ctx = { prefix: root.selector_prefix, suffix: root.selector_suffix };
+    const hasContext = Boolean(normalize(ctx.prefix ?? "") || normalize(ctx.suffix ?? ""));
+    let applied = root.suggestion_state === "applied";
+    const ownNorm = normBySlug.get(root.anchor_slug);
 
-    // Tier 1: quote still lives in its own section.
     if (quote) {
-      const ownNorm = normBySlug.get(root.anchor_slug);
+      // Tier 1: quote still lives in its own section.
       if (ownNorm !== undefined) {
-        const hit = locateQuote(ownNorm, quote);
-        if (hit) {
-          await place(sql, root.id, {
-            start: hit.at,
-            state: hit.exact ? placedAt(root.anchor_slug) : "rewritten",
-            currentQuote: hit.exact ? null : hit.text,
-          });
+        const framedAt = framedOccurrence(ownNorm, quote, ctx);
+        if (framedAt !== -1) {
+          await place(sql, root.id, { start: framedAt, state: placedAt(root.anchor_slug) });
           continue;
         }
+        // The framed original is gone. Check for the edit before an unframed
+        // repeat of a short quote further down the section can claim the thread.
         if (
           root.suggestion_state === "open" &&
           suggestionApplied(ownNorm, {
@@ -245,18 +301,26 @@ export async function reanchorThreads(
                 suggestion_state_at = now()
             where id = ${root.id}
           `;
+          applied = true;
+        }
+        if (applied) {
+          await keep(placedAt(root.anchor_slug));
+          continue;
+        }
+        const hit = locateQuote(ownNorm, quote);
+        if (hit) {
+          await place(sql, root.id, {
+            start: hit.at,
+            state: hit.exact ? placedAt(root.anchor_slug) : "rewritten",
+            currentQuote: hit.exact ? null : hit.text,
+          });
+          continue;
         }
       }
       // Tier 2: quote found in some other section → relink slug + start.
-      let matched: { slug: string; hit: QuoteMatch } | null = null;
-      for (const s of sections) {
-        if (s.anchorSlug === root.anchor_slug) continue;
-        const hit = locateQuote(normBySlug.get(s.anchorSlug) ?? normalize(s.text), quote);
-        if (hit) {
-          matched = { slug: s.anchorSlug, hit };
-          break;
-        }
-      }
+      const matched = applied
+        ? null
+        : searchElsewhere(root.anchor_slug, quote, ctx, ownNorm !== undefined && hasContext);
       if (matched) {
         const { slug, hit } = matched;
         await place(sql, root.id, {
@@ -271,7 +335,7 @@ export async function reanchorThreads(
 
     // Tier 3: heading-level comment (or quote drifted) but slug still present.
     if (bySlug.has(root.anchor_slug)) {
-      await keep(quote ? "section" : placedAt(root.anchor_slug));
+      await keep(quote && !applied ? "section" : placedAt(root.anchor_slug));
       continue;
     }
     // Tier 4: fingerprint match (heading renamed, same normalized text).
@@ -279,7 +343,7 @@ export async function reanchorThreads(
     if (viaFingerprint) {
       await place(sql, root.id, {
         slug: viaFingerprint.anchorSlug,
-        state: quote ? "section" : placedAt(viaFingerprint.anchorSlug),
+        state: quote && !applied ? "section" : placedAt(viaFingerprint.anchorSlug),
       });
       continue;
     }

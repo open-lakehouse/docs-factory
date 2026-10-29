@@ -169,10 +169,9 @@ describe("reanchorThreads (prose)", () => {
     const edited = [{ ...sections[0], text: "The broker vends to the engine." }, sections[1]];
     const orphaned = await reanchorThreads(sql, "blogs", "x", edited);
     expect(orphaned).toBe(0);
-    expect(updates).toHaveLength(2);
+    // The quote is gone on purpose: the thread stays where it was, as authored.
+    expect(updates).toHaveLength(1);
     expect(updates[0].sql).toContain("suggestion_state = 'applied'");
-    // The quoted text itself is gone, so the thread now sits at section level.
-    expect(updates[1].values).toContain("section");
   });
 
   test("tier 3: heading-level comment on a surviving slug → kept", async () => {
@@ -252,6 +251,111 @@ describe("reanchorThreads (prose)", () => {
     expect(orphaned).toBe(0);
     expect(updates).toHaveLength(1);
     expect(updates[0].sql).toContain("orphaned = false");
+  });
+});
+
+describe("reanchorThreads keeps a thread on its surviving section", () => {
+  // A short quote that recurs under another heading, as in a suggestion that
+  // replaced "the catalog" with "Unity Catalog" in the first section.
+  const before = { prefix: "Policies are enforced by", suffix: "for every engine." };
+  const edited: NewSection[] = [
+    {
+      anchorSlug: "governance",
+      fingerprint: "governance",
+      text: "Policies are enforced by Unity Catalog for every engine.",
+    },
+    {
+      anchorSlug: "storage",
+      fingerprint: "storage",
+      text: "Tables live in object storage that the catalog tracks.",
+    },
+  ];
+  const suggestion = (row: Record<string, unknown>) => ({
+    id: "s",
+    anchor_slug: "governance",
+    authored_anchor_slug: "governance",
+    anchor_fingerprint: "governance",
+    orphaned: false,
+    selector_quote: "the catalog",
+    selector_prefix: before.prefix,
+    selector_suffix: before.suffix,
+    suggestion_replacement: "Unity Catalog",
+    suggestion_state: "open",
+    ...row,
+  });
+  const run = async (row: Record<string, unknown>, sections = edited) => {
+    const { sql, updates } = fakeSql([row]);
+    await reanchorThreads(sql, "blogs", "x", sections);
+    return updates;
+  };
+
+  test("an applied edit is detected, and the repeat elsewhere doesn't claim it", async () => {
+    const updates = await run(suggestion({}));
+    expect(updates).toHaveLength(1);
+    expect(updates[0].sql).toContain("suggestion_state = 'applied'");
+    expect(updates.some((u) => u.values.includes("storage"))).toBe(false);
+  });
+
+  test("a suggestion already marked applied stays on its section", async () => {
+    const updates = await run(suggestion({ suggestion_state: "applied" }));
+    expect(updates).toHaveLength(0);
+  });
+
+  test("an unframed repeat later in the same section doesn't hide the edit", async () => {
+    const sections = [
+      {
+        ...edited[0],
+        text: "Policies are enforced by Unity Catalog for every engine. Ask the catalog.",
+      },
+      edited[1],
+    ];
+    const updates = await run(suggestion({}), sections);
+    expect(updates).toHaveLength(1);
+    expect(updates[0].sql).toContain("suggestion_state = 'applied'");
+  });
+
+  test("a framed repeat in the own section is picked over the first one", async () => {
+    const sections = [
+      {
+        ...edited[0],
+        text: "Ask the catalog first. Policies are enforced by the catalog for every engine.",
+      },
+      edited[1],
+    ];
+    const updates = await run(suggestion({ suggestion_state: null }), sections);
+    expect(updates[0].sql).toContain("selector_start");
+    expect(updates[0].values).toContain(
+      normalize(sections[0].text).indexOf("the catalog for every"),
+    );
+  });
+
+  test("a comment whose quote left a surviving section ignores an unframed repeat", async () => {
+    const updates = await run(suggestion({ suggestion_state: null }));
+    expect(updates).toHaveLength(1);
+    expect(updates[0].values).toContain("section");
+  });
+
+  test("a framed copy under another heading is still a move", async () => {
+    const sections = [
+      { ...edited[0], text: "Policies differ per engine." },
+      { ...edited[1], text: "Policies are enforced by the catalog for every engine." },
+    ];
+    const updates = await run(suggestion({ suggestion_state: null }), sections);
+    expect(updates[0].values).toContain("storage");
+    expect(updates[0].values).toContain("moved");
+  });
+
+  test("once the heading is gone, the framed occurrence wins", async () => {
+    const sections: NewSection[] = [
+      { anchorSlug: "intro", fingerprint: "intro", text: "Ask the catalog first." },
+      {
+        anchorSlug: "policies",
+        fingerprint: "policies",
+        text: "Policies are enforced by the catalog for every engine.",
+      },
+    ];
+    const updates = await run(suggestion({ suggestion_state: null }), sections);
+    expect(updates[0].values).toContain("policies");
   });
 });
 

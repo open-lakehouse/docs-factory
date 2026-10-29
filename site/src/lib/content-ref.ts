@@ -200,8 +200,9 @@ export function sectionRootForAnchor(article: HTMLElement, anchorSlug?: string):
  * covering it, or null if not found. Walks text nodes, builds the concatenated
  * raw text, finds the quote (normalized comparison via a folded index map), and
  * maps the match back to node offsets. A repeated quote resolves through
- * {@link pickOccurrence}, falling back to the first occurrence at or after the
- * `anchorSlug` heading, since `sectionEl` is often the whole article.
+ * {@link pickOccurrence} within the `anchorSlug` heading's section (up to the
+ * next heading of the same or a higher level), since `sectionEl` is often the
+ * whole article; the rest of the scope only counts when the section has none.
  */
 export function locateSelector(
   selector: { quote: string; prefix?: string; suffix?: string },
@@ -220,7 +221,9 @@ export function locateSelector(
   const heading = anchorSlug
     ? sectionEl.querySelector<HTMLElement>(`#${CSS.escape(anchorSlug)}`)
     : null;
+  const nextHeading = heading ? sectionEndHeading(sectionEl, heading) : null;
   let headingAt: number | undefined;
+  let sectionEnd: number | undefined;
 
   let norm = "";
   const map: { node: Text; offset: number }[] = []; // norm index -> source pos
@@ -233,6 +236,13 @@ export function locateSelector(
         heading.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING)
     )
       headingAt = norm.length;
+    if (
+      nextHeading &&
+      sectionEnd === undefined &&
+      (nextHeading.contains(node) ||
+        nextHeading.compareDocumentPosition(node) & Node.DOCUMENT_POSITION_FOLLOWING)
+    )
+      sectionEnd = norm.length;
     const raw = node.textContent ?? "";
     for (let i = 0; i < raw.length; i++) {
       const ch = raw[i];
@@ -261,7 +271,8 @@ export function locateSelector(
   }
   if (candidates.length === 0) return null;
 
-  const idx = pickOccurrence(trimmed, quote.length, candidates, selector, headingAt);
+  const section = headingAt === undefined ? undefined : { from: headingAt, to: sectionEnd };
+  const idx = pickOccurrence(trimmed, quote.length, candidates, selector, section);
 
   const startPos = map[idx];
   const endPos = map[idx + quote.length - 1];
@@ -272,12 +283,26 @@ export function locateSelector(
   return range;
 }
 
+/** The heading that ends `heading`'s section: the next one at its level or above. */
+function sectionEndHeading(scope: HTMLElement, heading: HTMLElement): HTMLElement | null {
+  const level = Number(heading.tagName.slice(1));
+  if (!Number.isInteger(level)) return null;
+  let after = false;
+  for (const h of scope.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6")) {
+    if (h === heading) after = true;
+    else if (after && Number(h.tagName.slice(1)) <= level) return h;
+  }
+  return null;
+}
+
 const compact = (s: string) => s.replace(/\s+/g, "");
 
 /**
  * Which of `candidates` (offsets of a quote of `quoteLen` in normalized `text`)
- * the selection meant: the one its prefix frames, then its suffix, then the
- * first at or after `preferFrom`, else the first. Context is compared without
+ * the selection meant. Candidates inside `section` (`to` exclusive, open-ended
+ * when absent) are considered first, all of them only when none fall inside.
+ * Among those: the one its prefix frames, then its suffix, then the first at or
+ * after `section.from`, else the first. Context is compared without
  * whitespace: normalizeText trims the stored prefix and suffix, so the space
  * between them and the quote is gone, and textContent runs blocks together.
  */
@@ -286,20 +311,24 @@ export function pickOccurrence(
   quoteLen: number,
   candidates: number[],
   { prefix, suffix }: { prefix?: string; suffix?: string },
-  preferFrom?: number,
+  section?: { from: number; to?: number },
 ): number {
-  if (candidates.length < 2) return candidates[0] ?? -1;
+  const inSection = section
+    ? candidates.filter((c) => c >= section.from && (section.to === undefined || c < section.to))
+    : [];
+  const pool = inSection.length > 0 ? inSection : candidates;
+  if (pool.length < 2) return pool[0] ?? -1;
   const pfx = compact(prefix ?? "");
   const sfx = compact(suffix ?? "");
   // Normalized text has single spaces, so twice the context length covers it.
   const byPrefix = pfx
-    ? candidates.find((c) => compact(text.slice(Math.max(0, c - 2 * pfx.length), c)).endsWith(pfx))
+    ? pool.find((c) => compact(text.slice(Math.max(0, c - 2 * pfx.length), c)).endsWith(pfx))
     : undefined;
   const bySuffix = sfx
-    ? candidates.find((c) =>
+    ? pool.find((c) =>
         compact(text.slice(c + quoteLen, c + quoteLen + 2 * sfx.length)).startsWith(sfx),
       )
     : undefined;
-  const byHeading = preferFrom === undefined ? undefined : candidates.find((c) => c >= preferFrom);
-  return byPrefix ?? bySuffix ?? byHeading ?? candidates[0];
+  const byHeading = section ? pool.find((c) => c >= section.from) : undefined;
+  return byPrefix ?? bySuffix ?? byHeading ?? pool[0];
 }

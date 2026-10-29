@@ -430,7 +430,10 @@
       "columns": [
         "cli",
         "python-sdk",
-        "unitycatalog-ai"
+        "unitycatalog-ai",
+        "spark",
+        "spark-4.2",
+        "duckdb"
       ],
       "rows": [
         "function.create",
@@ -440,7 +443,8 @@
         "function.list",
         "function.get-source",
         "function.replace",
-        "function.delete"
+        "function.delete",
+        "function.engine-udf"
       ]
     },
     {
@@ -685,6 +689,9 @@
       "id": "lakehouse.function",
       "title": "Function",
       "columns": [
+        "spark",
+        "spark-4.2",
+        "duckdb",
         "cli",
         "python-sdk",
         "unitycatalog-ai",
@@ -701,6 +708,7 @@
         "function.get-source",
         "function.replace",
         "function.delete",
+        "function.engine-udf",
         "function.tool",
         "function.tool-call"
       ]
@@ -886,6 +894,24 @@
             "iceberg.views",
             "iceberg.scan-planning",
             "iceberg.remote-signing"
+          ]
+        },
+        {
+          "table": "functions",
+          "columns": [
+            "spark",
+            "spark-4.2"
+          ],
+          "rows": [
+            "function.create",
+            "function.create-wrapped",
+            "function.describe",
+            "function.execute",
+            "function.list",
+            "function.get-source",
+            "function.replace",
+            "function.delete",
+            "function.engine-udf"
           ]
         },
         {
@@ -1091,6 +1117,23 @@
             "iceberg.views",
             "iceberg.scan-planning",
             "iceberg.remote-signing"
+          ]
+        },
+        {
+          "table": "functions",
+          "columns": [
+            "duckdb"
+          ],
+          "rows": [
+            "function.create",
+            "function.create-wrapped",
+            "function.describe",
+            "function.execute",
+            "function.list",
+            "function.get-source",
+            "function.replace",
+            "function.delete",
+            "function.engine-udf"
           ]
         }
       ]
@@ -1519,7 +1562,8 @@
             "function.list",
             "function.get-source",
             "function.replace",
-            "function.delete"
+            "function.delete",
+            "function.engine-udf"
           ]
         },
         {
@@ -1617,7 +1661,8 @@
             "function.list",
             "function.get-source",
             "function.replace",
-            "function.delete"
+            "function.delete",
+            "function.engine-udf"
           ]
         },
         {
@@ -1734,7 +1779,8 @@
             "function.list",
             "function.get-source",
             "function.replace",
-            "function.delete"
+            "function.delete",
+            "function.engine-udf"
           ]
         }
       ]
@@ -11215,6 +11261,94 @@
         }
       },
       "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.CREATE_FUNCTION",
+              "version": "4.1.0",
+              "api": null,
+              "note": "CREATE FUNCTION of any kind: a SQL body and a JVM class both fail"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark42_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.CREATE_FUNCTION",
+              "version": "4.2.0",
+              "api": null,
+              "note": "CREATE FUNCTION of any kind: a SQL body and a JVM class both fail"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.CREATE_FUNCTION",
+              "version": "4.1.0",
+              "api": null,
+              "note": "CREATE FUNCTION of any kind: a SQL body and a JVM class both fail"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/duckdb_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "UC databases do not support creating functions",
+              "version": "1.5.6",
+              "api": null,
+              "note": "CREATE FUNCTION and CREATE MACRO"
+            }
+          ],
+          "evidence": []
+        },
         "unitycatalog-ai": {
           "status": "tested",
           "draft": false,
@@ -11322,6 +11456,109 @@
         }
       },
       "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "spark.catalog.getFunction"
+            },
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "DESCRIBE FUNCTION"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark42_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.2.0",
+              "api": null,
+              "note": "DESCRIBE FUNCTION"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "DESCRIBE FUNCTION"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-python": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "spark.catalog.getFunction"
+            }
+          ],
+          "evidence": []
+        },
         "unitycatalog-ai": {
           "status": "tested",
           "draft": false,
@@ -11383,6 +11620,131 @@
         }
       },
       "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "call_function on the catalog name"
+            },
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "SELECT on the catalog name"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark42_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.2.0",
+              "api": null,
+              "note": "SELECT on the catalog name"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "SELECT on the catalog name"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-python": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "call_function on the catalog name"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/duckdb_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "Scalar Function with name order_total does not exist!",
+              "version": "1.5.6",
+              "api": null,
+              "note": "SELECT on the catalog name after ATTACH"
+            }
+          ],
+          "evidence": []
+        },
         "unitycatalog-ai": {
           "status": "tested",
           "draft": false,
@@ -11444,6 +11806,131 @@
         }
       },
       "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "spark.catalog.listFunctions"
+            },
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "SHOW FUNCTIONS"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark42_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.2.0",
+              "api": null,
+              "note": "SHOW FUNCTIONS"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "SHOW FUNCTIONS"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-python": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "spark.catalog.listFunctions"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/duckdb_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": null,
+              "version": "1.5.6",
+              "api": null,
+              "note": "duckdb_functions() lists none of the catalog's functions"
+            }
+          ],
+          "evidence": []
+        },
         "unitycatalog-ai": {
           "status": "tested",
           "draft": false,
@@ -11597,6 +12084,94 @@
         }
       },
       "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "DROP FUNCTION"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark42_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.DROP_FUNCTION",
+              "version": "4.2.0",
+              "api": null,
+              "note": "DROP FUNCTION"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
+              "version": "4.1.0",
+              "api": null,
+              "note": "DROP FUNCTION"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/duckdb_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "Macro Function with name order_total does not exist!",
+              "version": "1.5.6",
+              "api": null,
+              "note": "DROP FUNCTION"
+            }
+          ],
+          "evidence": []
+        },
         "unitycatalog-ai": {
           "status": "tested",
           "draft": false,
@@ -11629,6 +12204,74 @@
               "fails": null,
               "version": "0.4.0",
               "api": "delete_function_async",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.engine-udf",
+      "title": "Run a function as an engine UDF",
+      "summary": "Fetch a registered Python function and register it as a UDF in an engine session, to call from SQL and DataFrames.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "feature": null,
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": "register-a-catalog-function-as-a-spark-udf",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "get_function_as_callable + spark.udf.register",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-python": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": "register-a-catalog-function-as-a-spark-udf",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "get_function_as_callable + spark.udf.register",
               "note": null
             }
           ],

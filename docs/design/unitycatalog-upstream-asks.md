@@ -1,0 +1,15 @@
+# Unity Catalog: upstream asks
+
+Changes we'd ask of the Unity Catalog project (server, connectors, and AI
+packages) because a docs page has to work around their absence. Each ask names
+the evidence script that pins today's behavior, so the release that delivers
+it flips an assert and tells us which page to simplify.
+
+The deployment asks drafted for UC 0.7 (U1–U8, C1–C7, PR #186) never landed on
+`main`; fold them in here if that work resumes.
+
+| ID | Component | Ask | Why (the page's workaround) | Evidence |
+| --- | --- | --- | --- | --- |
+| F1 | Spark connector (`unitycatalog-spark`) | Implement Spark's `FunctionCatalog` on `UCSingleCatalog`: resolve `catalog.schema.function` for `EXTERNAL` Python functions (`SELECT`, `SHOW FUNCTIONS`, `DESCRIBE FUNCTION`, `spark.catalog.listFunctions`), and ideally `CREATE FUNCTION` / `DROP FUNCTION`. | Every function statement on a catalog name fails: calls, `SHOW FUNCTIONS`, `DESCRIBE FUNCTION`, and the catalog API with `MISSING_CATALOG_ABILITY.FUNCTIONS`, `CREATE FUNCTION` with `MISSING_CATALOG_ABILITY.CREATE_FUNCTION`, and `DROP FUNCTION` with `MISSING_CATALOG_ABILITY.FUNCTIONS` on 4.1 and `MISSING_CATALOG_ABILITY.DROP_FUNCTION` on 4.2. So H54 fetches the function with `unitycatalog-ai` and registers a session UDF. That copy has no defaults and runs without contacting the catalog, so a replace or delete doesn't reach it. | `content/unitycatalog/how-to/028-spark-functions/snippets/spark_functions.py` `_native_resolution_fails`, `spark42_functions.py`; [`UCSingleCatalog.scala`](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/connectors/spark/src/main/scala/io/unitycatalog/spark/UCSingleCatalog.scala#L43-L47) |
+| F2 | Server, engines, `unitycatalog-ai` | Give `routine_body = SQL` functions an executor: at least one OSS engine (Spark through F1, or DuckDB's `unity_catalog`) that evaluates the stored SQL body, or a server-side rejection of SQL bodies until one exists. | The server stores SQL-body functions, but `unitycatalog-ai` refuses them (`NotImplementedError: routine_body SQL is not supported…`), Spark can't resolve any catalog function, and the `uc` CLI runs any body as Python. A reader can register a function nothing runs. R01 records it. | `spark_functions.py` `_sql_body_functions`; [`python_engine.py`](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/etc/data/function/python_engine.py#L8-L25) |
+| F3 | `unitycatalog-ai` | Make `get_function_as_callable` default to a function that pickles by value (don't register it in `execution_utils`' globals by default), and keep parameter defaults in the rebuilt signature. | With the default `register_function=True`, a Spark UDF built from the callable fails on every worker (`AttributeError: Can't get attribute 'order_total' on <module 'unitycatalog.ai.core.utils.execution_utils'>`); H54 has to pass `register_function=False`. Missing defaults make SQL calls pass every argument. | `spark_functions.py` `_default_registration_fails`, `_udf_edges`; `how-to/018-manage-python-functions/snippets/functions.py` (defaults) |

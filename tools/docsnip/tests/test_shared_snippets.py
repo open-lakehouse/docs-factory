@@ -39,6 +39,11 @@ SHARED = [
         ["order-total", "shipping-cost"],
         "027-anthropic-tools/snippets/tools.py",
     ),
+    (
+        "017-langchain-tools/snippets/pricing.py",
+        ["order-total", "shipping-cost"],
+        "../tutorials/010-agent-tool/snippets/agent_tool.py",
+    ),
 ]
 
 

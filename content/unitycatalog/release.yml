@@ -35,6 +35,10 @@ pins:
   scikit-learn: 1.9.1
   # `ChatMlflow`, the chat model that talks to the MLflow AI Gateway.
   langchain-community: 0.4.1
+  # `ChatOpenAI`, the provider model in the agent tutorial's optional step.
+  # Resolves with langchain 1.2.10 under unitycatalog-langchain's
+  # `langchain<=1.2.10` cap.
+  langchain-openai: 1.7.2
   # The newest delta-spark the release's Spark connector is tested with.
   delta-spark: 4.3.1
   pyspark: 4.1.0

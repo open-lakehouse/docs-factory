@@ -12937,6 +12937,21 @@
               "version": "0.4.0",
               "api": "UCFunctionToolkit",
               "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/010-agent-tool/snippets/agent_tool.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "agent-tool"
+              },
+              "anchor": "turn-the-functions-into-tools",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "UCFunctionToolkit",
+              "note": null
             }
           ],
           "evidence": []
@@ -13027,6 +13042,21 @@
               "version": "0.4.0",
               "api": "create_agent",
               "note": "through an async adapter; `toolkit.tools` as-is fails in LangGraph's tool threads"
+            },
+            {
+              "script": "content/unitycatalog/tutorials/010-agent-tool/snippets/agent_tool.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "agent-tool"
+              },
+              "anchor": "run-the-agent",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "create_agent",
+              "note": "through an async adapter"
             }
           ],
           "evidence": []

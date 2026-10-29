@@ -35,8 +35,8 @@ nav:
             id: T04
           - page: tutorials/first-python-function
             id: T05
-          - planned: T06
-            title: Build an agent tool from a catalog function
+          - page: tutorials/agent-tool
+            id: T06
           - page: tutorials/first-metric-view
             id: T08
           - page: tutorials/register-model-mlflow

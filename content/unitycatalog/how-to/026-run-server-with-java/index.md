@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogServer
   - lakehouse.metadataStore
-status: draft
+status: ready
 ---
 
 The [Unity Catalog](model:unityCatalogServer) server is published to Maven
@@ -93,5 +93,3 @@ Restart the server after you change a file.
 
 - Connect an application:
   [Use the Java client in an application](../java-client/index.md).
-- Choose where the server and its stores run:
-  [Deployment patterns](../../explanation/deployment-patterns/index.md).

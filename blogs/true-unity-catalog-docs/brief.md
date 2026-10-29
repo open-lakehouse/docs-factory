@@ -1,5 +1,5 @@
 ---
-title: The true Unity Catalog docs
+title: "Trust but Verify: Building the New Unity Catalog Documentation"
 slug: true-unity-catalog-docs
 status: draft
 tags: [unity-catalog, delta-lake, lakehouse]

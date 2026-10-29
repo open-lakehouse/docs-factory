@@ -11,13 +11,11 @@ references:
 status: draft
 ---
 
-Register Python functions in [Unity Catalog](model:unityCatalogServer), turn
-them into Chat Completions tool definitions with `UCFunctionToolkit` from the
-[`unitycatalog-openai`](model:unityCatalogOpenAi) package, and run the tool
-calls a model returns. The catalog stores each
+[Unity Catalog](model:unityCatalogServer) stores each
 [function's](model:lakehouse.function) signature, descriptions, and source
-code. Your process builds the tool definitions and runs each call. Neither the
-model nor the server runs function code. For where functions sit among the
+code. Your process turns them into tool definitions with
+[`unitycatalog-openai`](model:unityCatalogOpenAi) and runs each call. Neither
+the model nor the server runs function code. For where functions sit among the
 other catalog objects, see
 [Core concepts](../../explanation/uc-basics/index.md).
 
@@ -38,14 +36,16 @@ EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 --with unitycatalog-openai==
 The integration needs `openai` 2.24.0 or earlier. If your app needs a newer
 SDK, install the integration in its own environment.
 
+:::note
 Use Python 3.12, or 3.13.3 or later. On 3.13.0 to 3.13.2, a function that
 raises loses its traceback, and the call returns a generic "no output was
 produced" notice instead.
+:::
 
-The function sandbox caps each call's virtual memory at
-`EXECUTOR_MAX_MEMORY_LIMIT` megabytes (100 by default), a limit that applies
-only on Linux. The command sets it to 4096, the value this page's scripts run
-with.
+:::note
+`EXECUTOR_MAX_MEMORY_LIMIT` raises the function sandbox's memory cap, which
+applies only on Linux, from 100 MB by default to 4096 MB.
+:::
 
 Create the function client and an `AsyncOpenAI` client. The OpenAI client reads your
 key from `OPENAI_API_KEY`, and the model name comes from `OPENAI_MODEL`, so set
@@ -102,23 +102,17 @@ Print a definition to check what the model sees:
 ```python file=./snippets/openai_tools.py start=start:inspect end=end:inspect
 ```
 
-Each definition has `type` set to `function` and a `function` object. Its
-`name` is the function's full name with `__` in place of the dots, and its
-`description` is the docstring's summary. Its `parameters` are a JSON Schema
-object with `additionalProperties: false`, and `strict: true` sits beside them
-in `function`. These are Chat Completions definitions, not the Responses API's
-tool shape.
+These are Chat Completions definitions, not the Responses API's tool shape.
+They set `strict: true`, so the model sends every parameter, `discount_pct`
+included; its default appears in the description. If your server rejects the
+schema, set `strict` to `False` in the definition's `function`.
 
-Under `strict: true`, every parameter is required, so the model must send
-`discount_pct` on every call, even though it has a default. The toolkit keeps
-the default in the schema as `default` and adds `(Default: 0.0)` to the
-description, so the model knows what to send when the user names no discount.
-If your server rejects the schema, set `strict` to `False` in the definition's
-`function` before you pass it as `tools=`.
-
-A name longer than 64 characters is cut to its last 64. A cut name, or one with
-`__` inside a part, can't be mapped back to the function, so keep catalog,
-schema, and function names short and free of `__`.
+:::tip
+A tool's name is the function's full name with `__` in place of the dots, cut
+to its last 64 characters. A cut name, or one with `__` inside a part, can't
+be mapped back to the function, so keep catalog, schema, and function names
+short and free of `__`.
+:::
 
 To include every function in a schema, use `catalog.schema.*`:
 

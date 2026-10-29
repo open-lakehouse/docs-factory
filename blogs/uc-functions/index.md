@@ -1,5 +1,5 @@
 ---
-title: "Unity Catalog functions: one definition for Spark, apps, and agent tools"
+title: "Unity Catalog functions: apps, agents, and engines, by hook or by UDF"
 slug: uc-functions
 status: draft
 tags: [unity-catalog, lakehouse, agents]

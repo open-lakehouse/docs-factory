@@ -38,10 +38,12 @@ async def _refuse_existing() -> None:
 
 async def _setup() -> None:
     """Register order_total in the catalog of this script's own."""
-    from unitycatalog.ai.core.client import UnitycatalogClient, UnitycatalogFunctionClient
-    from unitycatalog.client import ApiClient, Configuration
-
     from pricing import order_total
+    from unitycatalog.ai.core.client import (
+        UnitycatalogClient,
+        UnitycatalogFunctionClient,
+    )
+    from unitycatalog.client import ApiClient, Configuration
 
     api = ApiClient(Configuration(host=API))
     try:
@@ -123,7 +125,9 @@ def main() -> None:
         from pyspark.errors import AnalysisException
 
         try:
-            spark.sql(f"SELECT {CATALOG}.pricing.order_total(3, 19.99D, 10.0D)").collect()
+            spark.sql(
+                f"SELECT {CATALOG}.pricing.order_total(3, 19.99D, 10.0D)"
+            ).collect()
         except AnalysisException as exc:
             assert "MISSING_CATALOG_ABILITY.FUNCTIONS" in str(exc), exc
         else:

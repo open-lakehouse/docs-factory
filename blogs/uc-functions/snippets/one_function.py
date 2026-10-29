@@ -40,15 +40,16 @@ async def main() -> None:
     # that name at cleanup is what this run created.
     try:
         # --8<-- [start:register]
+        from pricing import order_total
         from unitycatalog.ai.core.client import (
             UnitycatalogClient,
             UnitycatalogFunctionClient,
         )
         from unitycatalog.client import ApiClient, Configuration
 
-        from pricing import order_total
-
-        api = ApiClient(Configuration(host="http://localhost:8080/api/2.1/unity-catalog"))
+        api = ApiClient(
+            Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
+        )
         client = UnitycatalogFunctionClient(api_client=api)
 
         uc = UnitycatalogClient(api_client=api)
@@ -85,7 +86,9 @@ async def main() -> None:
         # {"format": "SCALAR", "value": 53.97}
         # --8<-- [end:toolkit]
         assert tool.name == "uc_functions_demo__pricing__order_total", tool.name
-        assert tool.description.startswith("Calculate the total price"), tool.description
+        assert tool.description.startswith("Calculate the total price"), (
+            tool.description
+        )
         output = json.loads(
             tool.invoke({"quantity": 3, "unit_price": 19.99, "discount_pct": 10.0})
         )

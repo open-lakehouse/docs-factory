@@ -11,8 +11,8 @@ summary: Every claim in the Unity Catalog docs is a script CI runs against the p
 ---
 
 :::tldr
-- Code blocks are never pasted into a page. Each one is a marked region of a
-  runnable script that sits next to the page and runs in CI.
+- Every code block is a marked region of a runnable script that sits next to
+  the page and runs in CI.
 - Compatibility tables are rendered from claims the scripts make. A claim
   that something *fails* is tested too, so CI notices when an engine adds
   support.
@@ -32,7 +32,7 @@ The Unity Catalog docs state only what a script has proven. Every code block
 on a page is a region of a script that CI runs against the pinned release,
 Unity Catalog 0.7.0 today.
 
-## The true Unity Catalog docs
+## Prove it or don't write it
 
 Ask in any lakehouse community channel whether engine X works with catalog Y
 and you'll get three answers. One comes from a slide deck from two releases
@@ -53,20 +53,26 @@ the restructured Unity Catalog and Delta Lake docs.
 ## Every code block is a test
 
 A docs page never contains code that only exists on the page. Each page that
-shows code is a folder: the page's `index.md` sits next to a `snippets/`
-directory of runnable scripts. The page holds an empty code fence whose info
-string points at a region of a script, and the renderer pulls that region in
-at build time:
+shows code is a folder: the page's `index.md` sits next to a directory of
+runnable scripts. The page holds an empty code fence whose info string points
+at a region of a script, and the renderer pulls that region in at build time:
 
 ```text
 python file=./snippets/duckdb_tables.py start=start:append end=end:append
 ```
 
+None of this is new. mdBook's `include` anchors and MkDocs' snippets have
+pulled regions of real files into pages for years, and Python's doctest and
+Rust's doc tests run the examples a page shows. We borrowed the idea. What we
+add is the rule that a page may hold no other kind of code.
+
 Inside the script, region markers wrap exactly what the reader should see.
 Setup, teardown, and the assertions that make the script a test stay outside
 the markers. Each Python script declares its own dependencies with
-[PEP 723](https://peps.python.org/pep-0723/) inline metadata, so you can run
-the file you download from the docs with `uv run` and nothing else:
+[PEP 723](https://peps.python.org/pep-0723/) inline metadata, so `uv run`
+installs what the file you download from the docs needs. A script that talks
+to a server also needs a Docker Compose environment, and the docs offer that
+for download too (more on those environments below):
 
 ```python
 # /// script
@@ -92,11 +98,11 @@ the docs run:
 | Java | JBang, with `//DEPS` lines |
 | Rust | Examples in a snippets crate, run with `cargo run --example` |
 
-pytest collects every script and sorts it into a CI lane by what it needs. A
-default lane runs scripts that need nothing beyond their own dependencies, and
-separate lanes cover Spark, the JVM, Rust, and Docker-backed services. Each
-lane installs only its own toolchain, so a Rust change doesn't wait for a
-Spark download.
+A small pytest plugin of our own, `content/conftest.py`, collects every
+script and sorts it into a CI lane by what it needs. It's plain pytest,
+nothing you couldn't write yourself. A default lane runs scripts that need
+nothing beyond their own dependencies, and separate lanes cover Spark, the
+JVM, Rust, and Docker-backed services.
 
 Pages under review run as expected failures. A draft can be broken while
 someone works on it, but it can't break main. Once a page is approved and
@@ -121,12 +127,12 @@ say it. A script states what it proves instead, in its metadata:
 ```
 
 A *journey* is something a reader sets out to do, like reading a managed
-table or appending to one, however many calls it takes. The Unity Catalog
-matrix has 64 journeys across 10 interfaces (Spark, DuckDB, Polars, Daft,
-pandas, PyIceberg, the CLI, the Python SDK, and more), and the Delta Lake
-matrix has 52. `docsnip compat --fix` renders the compatibility tables on the
-docs pages from these claims, and `docsnip check` fails when a table on a page
-is stale. Nobody edits a ✓ by hand.
+table or appending to one, however many calls it takes. The Unity Catalog and
+Delta Lake matrices already track more than 200 journeys, across engines and
+clients like Spark, DuckDB, Polars, Daft, pandas, PyIceberg, `delta-rs`,
+MLflow, and the Unity Catalog CLI and SDKs, and the list keeps growing.
+`docsnip compat --fix` renders the compatibility tables on the docs pages
+from these claims, and `docsnip check` fails when a table on a page is stale. Nobody edits a ✓ by hand.
 
 Each ✓ links to the section of the page whose code proves it. If you doubt a
 cell, you can read the code and run it.
@@ -181,6 +187,21 @@ tears the stack down. The commands at the top of a tutorial that start the
 environment come from the same registry, and the environment bundle a reader
 downloads is the one CI used.
 
+Because the environments are generated rather than hand-written, the docs can
+do more with them than list a compose file. Each one comes with a model of
+what it runs, so a page can draw the stack instead of describing it. This is
+the richest one today, the environment behind the MLflow pages:
+
+```trestle uc-mlflow
+A gateway routes the Unity Catalog API to the Unity Catalog server and the MLflow API to the MLflow tracking server, which serves its model registry from Unity Catalog. Both keep metadata in one PostgreSQL server (separate `unitycatalog` and `mlflow` databases) and files in RustFS, a simulated S3 (`amzn-s3-demo-bucket` and `mlflow` buckets).
+```
+
+The diagram on the docs site is interactive, and it comes from the same
+generated files the tests start. Each environment is also a download of its
+own, `/env/<name>.tar.gz`, holding the compose file, the configuration, and a
+deployment guide. So you can start the stack a page describes, run its
+scripts, and see what CI saw.
+
 ## Metadata that keeps pages honest
 
 The pipeline only works if every page is honest about what it is, and
@@ -203,9 +224,6 @@ metadata is how we keep that machine-checkable:
 - **A release review.** A green CI run after a bump isn't the end. The
   claims a release can change, such as support states, known issues, and
   "the server has no X", get re-read on purpose before the bump merges.
-- **Git status is the release.** Reviewers comment on and approve drafts in
-  our review app. Approval is the signal to set `status: ready`, and merging
-  that to main publishes the page. The docs sites build from git alone.
 
 ## A renderer that only shows what's proven
 
@@ -251,6 +269,7 @@ cell, and nothing ships without them.
 Next time you read that something doesn't work with Unity Catalog, or that it
 does, check the compatibility tables on
 [docs.unitycatalog.io](https://docs.unitycatalog.io/) and follow the cell to
-the code. Run it. If our answer is wrong, we'd like to know: open an issue
+the code. Run it. If our answer is wrong, we'd like to know:
+[open an issue](https://github.com/open-lakehouse/docs-factory/issues/new)
 with a script that shows it. A failing script is the most useful bug report
 we can get, because it becomes a test and the table changes the day it passes.

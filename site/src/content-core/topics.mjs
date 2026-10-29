@@ -17,7 +17,7 @@ import { vocab } from "./vocab.mjs";
 
 /** Canonical topic ids (controlled vocabulary). */
 export const TOPICS = vocab.topics ?? [];
-/** Spelling/alias → canonical id (or null to deliberately drop, e.g. "devrel"). */
+/** Spelling/alias → canonical id (or null to deliberately drop). */
 export const TOPIC_SYNONYMS = vocab.topicSynonyms ?? {};
 
 const CANONICAL = new Set(TOPICS);
@@ -58,7 +58,7 @@ export function normalizeTopics({ tags, project, warn } = {}) {
       out.add(id);
     } else if (
       // Only warn for genuinely-unknown labels, not ones synonyms map to null
-      // (an intentional drop like "devrel") and not empty/non-string junk.
+      // (an intentional drop) and not empty/non-string junk.
       typeof label === "string" &&
       label.trim() &&
       warn &&

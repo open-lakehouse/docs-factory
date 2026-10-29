@@ -25,8 +25,7 @@
     "uc": "unity-catalog",
     "open-lakehouse": "lakehouse",
     "openlakehouse": "lakehouse",
-    "data-lineage": "governance",
-    "devrel": null
+    "data-lineage": "governance"
   },
   "$deltaTopicsComment": "`delta_features:` frontmatter takes a deltaSpec obligation name (architecture/journeys/obligations/deltaSpec.yml) or one of these topics.",
   "deltaTopics": ["time-travel", "table-features"]

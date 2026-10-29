@@ -31,8 +31,8 @@ Three forces were in play:
 1. **Two vocabularies that overlap in words, not identity.** Blog `tags.yml` is a
    flat set of discovery labels with prose descriptions; the model speaks element
    ids (`unityCatalogSpec`, `lakehouse.catalog`, `lakehouse.governance.pdp`). Some tags map
-   cleanly to model elements (`unity-catalog`→`unityCatalogSpec`); many (`wasm`, `codegen`,
-   `devrel`) map to nothing structural.
+   cleanly to model elements (`unity-catalog`→`unityCatalogSpec`); many (`wasm`, `codegen`) map
+   to nothing structural.
 2. **Abstract model, concrete content.** `architecture/adr/ADR-0003` keeps the
    logical layer technology-agnostic; blogs and how-tos name concrete technologies.
    The natural, least-churn anchor is therefore the **specification / implementation**

@@ -2,7 +2,7 @@
 title: The true Unity Catalog docs
 slug: true-unity-catalog-docs
 status: draft
-tags: [unity-catalog, delta-lake, devrel, lakehouse]
+tags: [unity-catalog, delta-lake, lakehouse]
 author: Robert Pack
 target: unitycatalog
 post_type: deep-dive

@@ -2,7 +2,7 @@
 title: Whose agent is it anyway?
 slug: omnigent-agent-scoping
 status: draft
-tags: [agents, governance, devrel]
+tags: [agents, governance]
 author: Robert Pack
 target: openlakehouse
 post_type: essay

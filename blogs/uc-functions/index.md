@@ -1,5 +1,5 @@
 ---
-title: "Unity Catalog functions: apps, agents, and engines, by hook or by UDF"
+title: "Unity Catalog Functions for agents, apps, and engines"
 slug: uc-functions
 status: draft
 tags: [unity-catalog, lakehouse, agents]

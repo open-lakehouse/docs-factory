@@ -1,4 +1,4 @@
-# GEO report: Unity Catalog functions: one definition for Spark, apps, and agent tools
+# GEO report: Unity Catalog Functions for agents, apps, and engines
 
 ## Reader questions
 | Question | Answering passage | Probe: cited today | Our edge |

@@ -432,7 +432,8 @@
         "python-sdk",
         "unitycatalog-ai",
         "spark",
-        "spark-4.2"
+        "spark-4.2",
+        "duckdb"
       ],
       "rows": [
         "function.create",
@@ -690,6 +691,7 @@
       "columns": [
         "spark",
         "spark-4.2",
+        "duckdb",
         "cli",
         "python-sdk",
         "unitycatalog-ai",
@@ -1115,6 +1117,23 @@
             "iceberg.views",
             "iceberg.scan-planning",
             "iceberg.remote-signing"
+          ]
+        },
+        {
+          "table": "functions",
+          "columns": [
+            "duckdb"
+          ],
+          "rows": [
+            "function.create",
+            "function.create-wrapped",
+            "function.describe",
+            "function.execute",
+            "function.list",
+            "function.get-source",
+            "function.replace",
+            "function.delete",
+            "function.engine-udf"
           ]
         }
       ]
@@ -11308,6 +11327,28 @@
           ],
           "evidence": []
         },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/duckdb_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "UC databases do not support creating functions",
+              "version": "1.5.6",
+              "api": null,
+              "note": "CREATE FUNCTION and CREATE MACRO"
+            }
+          ],
+          "evidence": []
+        },
         "unitycatalog-ai": {
           "status": "tested",
           "draft": false,
@@ -11682,6 +11723,28 @@
           ],
           "evidence": []
         },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/duckdb_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "Scalar Function with name order_total does not exist!",
+              "version": "1.5.6",
+              "api": null,
+              "note": "SELECT on the catalog name after ATTACH"
+            }
+          ],
+          "evidence": []
+        },
         "unitycatalog-ai": {
           "status": "tested",
           "draft": false,
@@ -11842,6 +11905,28 @@
               "version": "4.1.0",
               "api": null,
               "note": "spark.catalog.listFunctions"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/duckdb_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": null,
+              "version": "1.5.6",
+              "api": null,
+              "note": "duckdb_functions() lists none of the catalog's functions"
             }
           ],
           "evidence": []
@@ -12059,6 +12144,28 @@
               "works": false,
               "fails": "MISSING_CATALOG_ABILITY.FUNCTIONS",
               "version": "4.1.0",
+              "api": null,
+              "note": "DROP FUNCTION"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/028-spark-functions/snippets/duckdb_functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "spark-functions"
+              },
+              "anchor": null,
+              "ready": false,
+              "works": false,
+              "fails": "Macro Function with name order_total does not exist!",
+              "version": "1.5.6",
               "api": null,
               "note": "DROP FUNCTION"
             }

@@ -170,7 +170,7 @@ tables:
       - volume.write-files
   functions:
     title: Functions
-    columns: [cli, python-sdk, unitycatalog-ai, spark, spark-4.2]
+    columns: [cli, python-sdk, unitycatalog-ai, spark, spark-4.2, duckdb]
     rows:
       - function.create
       - function.create-wrapped

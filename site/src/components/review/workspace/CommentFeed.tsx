@@ -1,6 +1,7 @@
 // Recent threads across every page, grouped under quiet page headings. Opening
 // a row snapshots the feed into the stepper queue, so the reviewer can walk
-// the rest with ‹ › (or j/k) without coming back here. Shared by the right
+// the rest with ‹ › (or j/k) without coming back here, and resolving the
+// current thread moves on to the next open one. Shared by the right
 // pane's "All comments" view and the Inbox.
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { UserCheck } from "lucide-react";

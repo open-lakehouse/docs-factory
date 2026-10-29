@@ -74,3 +74,18 @@ export function buildFeed(
 export function feedQueue(groups: FeedGroup[]): FeedThread[] {
   return groups.flatMap((g) => g.threads);
 }
+
+/**
+ * The first thread after `from` that is still open, or -1. `resolved` holds
+ * threads resolved since the queue was snapshotted, which the snapshot can't see.
+ */
+export function nextOpenIndex(
+  queue: FeedThread[],
+  from: number,
+  resolved: ReadonlySet<string>,
+): number {
+  for (let i = from + 1; i < queue.length; i++) {
+    if (!queue[i].resolved && !resolved.has(queue[i].rootId)) return i;
+  }
+  return -1;
+}

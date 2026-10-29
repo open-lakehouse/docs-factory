@@ -18,6 +18,7 @@ import { useReviewInvalidation } from "../../lib/review-queries";
 import CommentBubble from "./CommentBubble";
 import ReviewComposer from "./ReviewComposer";
 import SuggestionDiff from "./SuggestionDiff";
+import { useOptionalCommentQueue } from "./workspace/comment-queue-context";
 
 const SUGGESTION_STATE_LABEL: Partial<Record<SuggestionState, string>> = {
   [SuggestionState.OPEN]: "open",
@@ -56,6 +57,7 @@ export default function ThreadConversation({
 }: ThreadConversationProps) {
   const contentRef = thread.root?.ref;
   const { invalidateComments } = useReviewInvalidation();
+  const queue = useOptionalCommentQueue();
   // Each mutation invalidates the shared listComments cache on success, so all
   // mounted consumers refresh from here rather than a threaded refetch prop.
   const mutationOpts = contentRef
@@ -123,6 +125,7 @@ export default function ThreadConversation({
     if (!id) return;
     await resolve.mutateAsync({ threadRootId: id });
     onCollapse?.();
+    queue?.advancePast(id);
   }
 
   async function doReopen(e: React.MouseEvent) {

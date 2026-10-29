@@ -4,7 +4,9 @@
 //
 // The queue is a snapshot of the feed's order taken when a row is opened. The
 // feed keeps refreshing underneath (new comments, read state), and stepping
-// through a live list would skip or repeat threads as rows move.
+// through a live list would skip or repeat threads as rows move. Resolving the
+// current thread moves on to the next open one, so the snapshot is paired with
+// the threads resolved since it was taken.
 import {
   createContext,
   type ReactNode,
@@ -14,7 +16,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import type { FeedThread } from "../../../lib/comment-feed";
+import { type FeedThread, nextOpenIndex } from "../../../lib/comment-feed";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
 
 export type RightPaneMode = "page" | "feed";
@@ -29,6 +31,8 @@ interface QueueValue {
   /** Snapshot `queue`, open `queue[index]`, and show it in the page rail. */
   start: (queue: FeedThread[], index: number) => void;
   step: (delta: 1 | -1) => void;
+  /** Record `rootId` as resolved; if it is the current thread, open the next open one. */
+  advancePast: (rootId: string) => void;
   clear: () => void;
 }
 
@@ -50,6 +54,7 @@ export function CommentQueueProvider({ children }: { children: ReactNode }) {
   const [mode, setModeState] = useState<RightPaneMode>(readMode);
   const [queue, setQueue] = useState<FeedThread[]>([]);
   const [index, setIndex] = useState(0);
+  const [resolvedIds, setResolvedIds] = useState<ReadonlySet<string>>(new Set());
 
   const setMode = useCallback((next: RightPaneMode) => {
     setModeState(next);
@@ -67,6 +72,7 @@ export function CommentQueueProvider({ children }: { children: ReactNode }) {
       if (!target) return;
       setQueue(next);
       setIndex(at);
+      setResolvedIds(new Set());
       setMode("page");
       open(target);
     },
@@ -84,9 +90,23 @@ export function CommentQueueProvider({ children }: { children: ReactNode }) {
     [index, queue, open],
   );
 
+  const advancePast = useCallback(
+    (rootId: string) => {
+      const resolved = new Set(resolvedIds).add(rootId);
+      setResolvedIds(resolved);
+      if (queue[index]?.rootId !== rootId) return;
+      const at = nextOpenIndex(queue, index, resolved);
+      if (at < 0) return;
+      setIndex(at);
+      open(queue[at]);
+    },
+    [resolvedIds, queue, index, open],
+  );
+
   const clear = useCallback(() => {
     setQueue([]);
     setIndex(0);
+    setResolvedIds(new Set());
   }, []);
 
   // j/k and ]/[ step while a queue is live, like a mail client.
@@ -104,8 +124,8 @@ export function CommentQueueProvider({ children }: { children: ReactNode }) {
   }, [queue.length, step]);
 
   const value = useMemo<QueueValue>(
-    () => ({ mode, setMode, queue, index, start, step, clear }),
-    [mode, setMode, queue, index, start, step, clear],
+    () => ({ mode, setMode, queue, index, start, step, advancePast, clear }),
+    [mode, setMode, queue, index, start, step, advancePast, clear],
   );
   return <QueueContext.Provider value={value}>{children}</QueueContext.Provider>;
 }
@@ -114,4 +134,9 @@ export function useCommentQueue(): QueueValue {
   const ctx = useContext(QueueContext);
   if (!ctx) throw new Error("useCommentQueue must be used within CommentQueueProvider");
   return ctx;
+}
+
+/** Surfaces outside the review workspace render threads without a queue. */
+export function useOptionalCommentQueue(): QueueValue | undefined {
+  return useContext(QueueContext);
 }

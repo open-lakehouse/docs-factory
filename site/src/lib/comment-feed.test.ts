@@ -7,7 +7,7 @@ import {
   type RecentComment,
   RecentCommentSchema,
 } from "../gen/docs_factory/review/v1/messages_pb";
-import { buildFeed, feedQueue } from "./comment-feed";
+import { buildFeed, feedQueue, nextOpenIndex } from "./comment-feed";
 
 const ref = (slug: string) => create(ContentRefSchema, { area: ContentArea.BLOGS, slug });
 const rc = (
@@ -45,4 +45,11 @@ test("collapses to one entry per thread, grouped by page in activity order", () 
 test("resolved threads only appear when asked for", () => {
   const groups = buildFeed(recent, { showResolved: true, titleOf });
   expect(feedQueue(groups).map((t) => t.rootId)).toEqual(["t1", "t2", "t3"]);
+});
+
+test("nextOpenIndex skips threads resolved in the snapshot or since", () => {
+  const queue = feedQueue(buildFeed(recent, { showResolved: true, titleOf }));
+  expect(nextOpenIndex(queue, 0, new Set())).toBe(2);
+  expect(nextOpenIndex(queue, 0, new Set(["t3"]))).toBe(-1);
+  expect(nextOpenIndex(queue, 2, new Set())).toBe(-1);
 });

@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["docsnip", "duckdb==1.5.6", "deltalake[pandas,pyarrow]==1.6.6"]
+# dependencies = ["docsnip", "duckdb==2.0.0", "deltalake[pandas,pyarrow]==1.6.6"]
 #
 # [tool.uv.sources]
 # docsnip = { path = "../../../../../tools/docsnip", editable = true }

@@ -1,6 +1,6 @@
 ---
 title: Use DuckDB with Unity Catalog
-summary: Attach a Unity Catalog catalog in DuckDB, query its Delta tables with SQL, and append rows.
+summary: Attach a Unity Catalog catalog in DuckDB, query its Delta tables with SQL, append rows, and create tables.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -9,8 +9,8 @@ references:
 status: ready
 ---
 
-DuckDB queries [Unity Catalog](model:unityCatalogServer) tables with SQL and
-appends rows to them, including catalog-managed Delta tables. DuckDB's
+DuckDB queries [Unity Catalog](model:unityCatalogServer) tables with SQL,
+appends rows to them, and creates catalog-managed Delta tables. DuckDB's
 `unity_catalog` extension attaches a catalog as a DuckDB database, and its
 `delta` extension reads and writes the [Delta](model:deltaSpec) files. Appends
 to a catalog-managed table go through the server, like a Spark write.
@@ -28,11 +28,10 @@ to a catalog-managed table go through the server, like a Spark write.
 Open a Python session with DuckDB:
 
 ```bash
-uv run --with duckdb==1.5.6 python
+uv run --with duckdb==2.0.0 python
 ```
 
-Install and load `delta`, then `unity_catalog` from DuckDB's `core_nightly`
-channel:
+Install and load the `delta` and `unity_catalog` extensions:
 
 ```python file=./snippets/duckdb_tables.py start=start:install end=end:install
 ```
@@ -107,15 +106,24 @@ and the table doesn't change.
 
 ## Create, change, and drop tables
 
-DuckDB reads tables and appends rows. Create tables with Spark. Update, delete
-from, and drop them with Spark too, as in
+`CREATE TABLE` creates a catalog-managed table, and `INSERT` adds its rows:
+
+```python file=./snippets/duckdb_tables.py start=start:create end=end:create
+```
+
+The server stages the new table as it does for Spark, so Spark and other
+clients read it and append to it.
+
+DuckDB can't create a table from a query (`CREATE TABLE … AS SELECT`), update
+or delete rows, or drop a table. Do those with Spark, as in
 [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md).
 
 ## Required privileges
 
 With authorization enabled, reading needs `USE CATALOG` on the catalog,
 `USE SCHEMA` on the schema, and `SELECT` on the table. Appending also needs
-`MODIFY` on the table. Owners have all of these. See
+`MODIFY` on the table, and creating a table needs `CREATE TABLE` on the
+schema. Owners have all of these. See
 [Core concepts](../../explanation/uc-basics/index.md#ownership-and-privileges).
 
 ## Next steps

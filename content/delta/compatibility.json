@@ -85,7 +85,7 @@
     {
       "key": "duckdb-sql",
       "label": "DuckDB · SQL",
-      "version": "1.5.6",
+      "version": "2.0.0",
       "package": "duckdb",
       "model": "duckdb",
       "via": null,
@@ -100,7 +100,7 @@
     {
       "key": "duckdb-python",
       "label": "DuckDB · Python",
-      "version": "1.5.6",
+      "version": "2.0.0",
       "package": "duckdb",
       "model": "duckdb",
       "via": null,
@@ -1238,10 +1238,10 @@
               "anchor": "append-rows",
               "ready": false,
               "works": false,
-              "fails": "Delta tables do not support creating tables",
-              "version": "1.5.6",
+              "fails": null,
+              "version": "2.0.0",
               "api": null,
-              "note": null
+              "note": "accepted, but writes no files"
             }
           ],
           "evidence": []
@@ -1567,7 +1567,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "INSERT INTO",
               "note": null
             }
@@ -1691,7 +1691,7 @@
               "ready": false,
               "works": false,
               "fails": "Can only delete from base table",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": "appends only"
             }
@@ -2228,7 +2228,7 @@
               "ready": false,
               "works": false,
               "fails": "Can only update base table",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -2320,7 +2320,7 @@
               "ready": false,
               "works": false,
               "fails": "Can only delete from base table",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -2835,7 +2835,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "delta_scan()",
               "note": null
             }
@@ -2857,7 +2857,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "con.sql(\"FROM delta_scan(…)\")",
               "note": null
             },
@@ -2872,7 +2872,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "delta_scan()",
               "note": null
             }
@@ -3138,7 +3138,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "AT (VERSION => n)",
               "note": null
             }
@@ -3160,7 +3160,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "AT (VERSION => n)",
               "note": null
             }
@@ -3270,7 +3270,7 @@
           ]
         },
         "duckdb-sql": {
-          "status": "fails",
+          "status": "tested",
           "draft": true,
           "proofs": [
             {
@@ -3282,10 +3282,10 @@
               },
               "anchor": "query-a-timestamp",
               "ready": false,
-              "works": false,
-              "fails": "only support at_clause with unit 'version'",
-              "version": "1.5.6",
-              "api": null,
+              "works": true,
+              "fails": null,
+              "version": "2.0.0",
+              "api": "AT (TIMESTAMP => ts)",
               "note": null
             }
           ],
@@ -3390,7 +3390,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": "while its files exist"
             }
@@ -6721,7 +6721,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -6852,7 +6852,7 @@
           "evidence": []
         },
         "duckdb-sql": {
-          "status": "fails",
+          "status": "tested",
           "draft": false,
           "proofs": [
             {
@@ -6864,25 +6864,10 @@
               },
               "anchor": "create-change-and-drop-tables",
               "ready": true,
-              "works": false,
+              "works": true,
               "fails": null,
-              "version": "1.5.6",
-              "api": null,
-              "note": null
-            },
-            {
-              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
-              "page": {
-                "project": "unitycatalog",
-                "bucket": "how-to",
-                "slug": "managed-delta-tables"
-              },
-              "anchor": "create-a-managed-table",
-              "ready": true,
-              "works": false,
-              "fails": null,
-              "version": "1.5.6",
-              "api": null,
+              "version": "2.0.0",
+              "api": "CREATE TABLE",
               "note": null
             }
           ],
@@ -7000,7 +6985,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             },
@@ -7015,7 +7000,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -7134,7 +7119,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "INSERT INTO",
               "note": null
             },
@@ -7149,7 +7134,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -7237,7 +7222,7 @@
               "ready": true,
               "works": false,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -7325,7 +7310,7 @@
               "ready": true,
               "works": false,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -7413,7 +7398,7 @@
               "ready": true,
               "works": false,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -7611,7 +7596,7 @@
               "ready": true,
               "works": false,
               "fails": "UCTableSet::AlterTable",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -7961,7 +7946,7 @@
               "ready": true,
               "works": false,
               "fails": "UCTableSet::AlterTable",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -8091,7 +8076,7 @@
               "ready": true,
               "works": false,
               "fails": "Only altering tables is supported for now",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -8436,7 +8421,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": "through Unity Catalog"
             }
@@ -9270,7 +9255,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "INSERT INTO",
               "note": "through Unity Catalog"
             }
@@ -10039,6 +10024,7 @@
         "column-mapping.write",
         "external.read",
         "managed.append",
+        "managed.create",
         "managed.read"
       ]
     },
@@ -10054,6 +10040,7 @@
         "column-mapping.write",
         "external.read",
         "managed.append",
+        "managed.create",
         "managed.read"
       ]
     },
@@ -10066,6 +10053,7 @@
       ],
       "journeys": [
         "managed.append",
+        "managed.create",
         "managed.read"
       ]
     },
@@ -10079,6 +10067,7 @@
       "journeys": [
         "external.read",
         "managed.append",
+        "managed.create",
         "managed.read"
       ]
     },

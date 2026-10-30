@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["docsnip", "deltalake==1.6.6", "duckdb==1.5.6"]
+# dependencies = ["docsnip", "deltalake==1.6.6", "duckdb==2.0.0"]
 #
 # [tool.uv.sources]
 # docsnip = { path = "../../../../../tools/docsnip", editable = true }
@@ -60,11 +60,13 @@ if __name__ == "__main__":
     con = duckdb.connect()
     con.execute("INSTALL delta")
     con.execute("LOAD delta")
-    assert con.execute(f"SELECT count(*) FROM delta_scan('{TABLE}')").fetchone() == (5,)
+    assert con.execute(f"SELECT count(*) FROM delta_scan('{TABLE}')").fetchall() == [
+        (5,)
+    ]
     con.execute(f"ATTACH '{TABLE}' AS orders (TYPE delta)")
-    assert con.execute("SELECT count(*) FROM orders AT (VERSION => 1)").fetchone() == (
-        3,
-    )
+    assert con.execute("SELECT count(*) FROM orders AT (VERSION => 1)").fetchall() == [
+        (3,)
+    ]
 
     log = shellregions.run(SHELL, "log")
     for version in range(3):

@@ -7,7 +7,7 @@
 #   "polars==1.44.2",
 #   "daft[unity]==0.7.25",
 #   "tenacity",
-#   "duckdb==1.5.6",
+#   "duckdb==2.0.0",
 # ]
 #
 # [tool.docs-factory]
@@ -87,7 +87,7 @@ def read_duckdb() -> int:
     con = duckdb.connect()
     con.execute("INSTALL delta")
     con.execute("LOAD delta")
-    con.execute("FORCE INSTALL unity_catalog FROM core_nightly")
+    con.execute("INSTALL unity_catalog")
     con.execute("LOAD unity_catalog")
     con.execute("""
         CREATE SECRET (
@@ -99,7 +99,7 @@ def read_duckdb() -> int:
     con.execute("ATTACH 'retail' AS retail (TYPE unity_catalog)")
     con.sql("SELECT * FROM retail.sales.orders").show()
     # --8<-- [end:duckdb]
-    return con.sql("SELECT count(*) FROM retail.sales.orders").fetchone()[0]
+    return con.sql("SELECT count(*) FROM retail.sales.orders").fetchall()[0][0]
 
 
 if __name__ == "__main__":

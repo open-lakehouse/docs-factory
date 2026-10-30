@@ -17,8 +17,7 @@ con = duckdb.connect()
 
 con.execute("INSTALL delta")
 con.execute("LOAD delta")
-# Switch to a regular install once the updated extension is released.
-con.execute("FORCE INSTALL unity_catalog FROM core_nightly")
+con.execute("INSTALL unity_catalog")
 con.execute("LOAD unity_catalog")
 # --8<-- [end:install]
 

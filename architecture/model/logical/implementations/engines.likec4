@@ -135,7 +135,6 @@ model {
     metadata {
       sourceRepo "duckdb/unity_catalog"
       duckdbExtension "unity_catalog"
-      maturity "nightly"
       license "MIT"
       language "C++"
     }

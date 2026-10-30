@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["deltalake[pandas,pyarrow]==1.6.6", "duckdb==1.5.6"]
+# dependencies = ["deltalake[pandas,pyarrow]==1.6.6", "duckdb==2.0.0"]
 #
 # [tool.docs-factory]
 # claims.delta-rs-python = [
@@ -116,8 +116,8 @@ def main():
     con.sql("ATTACH '/tmp/delta/orders' AS orders (TYPE delta)")
     con.sql("SELECT count(*) AS orders FROM orders AT (VERSION => 1)").show()
     # --8<-- [end:duckdb-version]
-    at_v1 = con.execute("SELECT count(*) FROM orders AT (VERSION => 1)").fetchone()
-    latest = con.execute("SELECT count(*) FROM orders").fetchone()
+    at_v1 = con.execute("SELECT count(*) FROM orders AT (VERSION => 1)").fetchall()[0]
+    latest = con.execute("SELECT count(*) FROM orders").fetchall()[0]
 
     return version_after_first, rows_after_first, operations, units, at_v1, latest
 

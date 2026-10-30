@@ -112,6 +112,8 @@ UNITYCATALOG = Project(
         # The tracking server image in env.toml and the rendered compose files.
         Rule("mlflow", re.compile(rf"ghcr\.io/mlflow/mlflow:v{_V}(?:-full)?\b")),
         Rule("scikit-learn", re.compile(rf"\bscikit-learn=={_V}")),
+        Rule("duckdb", re.compile(rf"\bduckdb=={_V}")),
+        _prose_pin("duckdb", "duckdb", "unitycatalog"),
         Rule(
             "delta-spark",
             re.compile(
@@ -129,7 +131,7 @@ UNITYCATALOG = Project(
         ),
     ),
     ranged_install=re.compile(
-        r"\b(?:unitycatalog-(?:client|ai)|mlflow|scikit-learn)(?:\[[^\]]*\])?\s*(?:[<>~!]=?)"
+        r"\b(?:unitycatalog-(?:client|ai)|mlflow|scikit-learn|duckdb)(?:\[[^\]]*\])?\s*(?:[<>~!]=?)"
     ),
     bump="just bump-uc",
 )

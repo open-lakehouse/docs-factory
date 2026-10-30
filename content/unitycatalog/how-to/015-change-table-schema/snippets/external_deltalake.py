@@ -4,7 +4,7 @@
 #   "deltalake==1.6.6",
 #   "pyarrow>=18",
 #   "unitycatalog-client==0.7.0",
-#   "duckdb==1.5.6",
+#   "duckdb==2.0.0",
 #   "pyspark==4.1.0",
 # ]
 #
@@ -420,7 +420,7 @@ async def main() -> None:
     con = duckdb.connect()
     con.execute("INSTALL delta")
     con.execute("LOAD delta")
-    con.execute("FORCE INSTALL unity_catalog FROM core_nightly")
+    con.execute("INSTALL unity_catalog")
     con.execute("LOAD unity_catalog")
     con.execute(
         "CREATE SECRET (TYPE unity_catalog, TOKEN 'not-used', ENDPOINT 'http://localhost:8080')"

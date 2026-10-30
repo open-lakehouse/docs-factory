@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["duckdb==1.5.6", "pyspark==4.1.0", "deltalake==1.6.6", "pyarrow"]
+# dependencies = ["duckdb==2.0.0", "pyspark==4.1.0", "deltalake==1.6.6", "pyarrow"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -18,7 +18,6 @@
 # claims.duckdb-sql = [
 #   { journey = "managed.read", region = "duckdb-read" },
 #   { journey = "managed.append", region = "duckdb-append" },
-#   { journey = "managed.create", fails = true, anchor = "create-a-managed-table" },
 # ]
 # ///
 """Create, write, read, and drop a catalog-managed Delta table with Spark and DuckDB.
@@ -136,7 +135,7 @@ import duckdb  # noqa: E402
 con = duckdb.connect()
 con.execute("INSTALL delta")
 con.execute("LOAD delta")
-con.execute("FORCE INSTALL unity_catalog FROM core_nightly")
+con.execute("INSTALL unity_catalog")
 con.execute("LOAD unity_catalog")
 con.execute("""
     CREATE SECRET (
@@ -338,14 +337,6 @@ spark.sql("DELETE FROM inventory.stock.items WHERE qty = 0")
 expected = [("apple", 10), ("pear", 9)]
 assert _rows("SELECT sku, qty FROM inventory.stock.items ORDER BY sku") == expected
 assert _latest_version() == 3
-
-# DuckDB can't create tables.
-try:
-    con.execute("CREATE TABLE inventory.stock.returns (sku VARCHAR)")
-except duckdb.NotImplementedException:
-    pass
-else:
-    raise AssertionError("DuckDB creates managed tables now: update the page")
 
 # --8<-- [start:spark-read]
 spark.sql("""

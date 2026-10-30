@@ -124,7 +124,7 @@ Then install and load its `delta` extension:
 Open a Python session with DuckDB:
 
 ```bash
-uv run --with duckdb==1.5.6 python
+uv run --with duckdb==2.0.0 python
 ```
 
 Then connect, and install and load the `delta` extension:

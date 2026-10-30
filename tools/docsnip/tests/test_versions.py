@@ -162,6 +162,20 @@ def test_mlflow_pins_follow_their_keys(tmp_path: Path) -> None:
     assert gateway.count("==3.17.0") == 2
 
 
+def test_unitycatalog_duckdb_pins_follow_their_key(tmp_path: Path) -> None:
+    manifest = MANIFEST + "  duckdb: 2.0.0\n"
+    pages = {
+        "how-to/h/snippets/s.py": '# dependencies = ["duckdb==1.5.6"]\n',
+        "how-to/h/index.md": "uv run --with duckdb==1.5.6 python\n",
+    }
+    repo = _repo(tmp_path, pages, manifest=manifest)
+    errors = versions.check(repo)
+    assert len(errors) == 2, errors
+    assert all("should be 2.0.0" in e and "just bump-uc" in e for e in errors)
+    versions.fix(repo)
+    assert versions.check(repo) == []
+
+
 def test_ranged_mlflow_install_in_a_page_is_an_error(tmp_path: Path) -> None:
     page = "```bash\nuv run --with 'mlflow[databricks]>=3.17' python\n```\n"
     repo = _repo(tmp_path, {"tutorials/t/index.md": page})

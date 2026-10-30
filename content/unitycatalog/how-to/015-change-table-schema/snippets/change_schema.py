@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pyspark==4.1.0", "unitycatalog-client==0.7.0", "duckdb==1.5.6"]
+# dependencies = ["pyspark==4.1.0", "unitycatalog-client==0.7.0", "duckdb==2.0.0"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -310,7 +310,7 @@ spark.sql("DROP TABLE sales.scratch_props")
 con = duckdb.connect()
 con.execute("INSTALL delta")
 con.execute("LOAD delta")
-con.execute("FORCE INSTALL unity_catalog FROM core_nightly")
+con.execute("INSTALL unity_catalog")
 con.execute("LOAD unity_catalog")
 con.execute(
     "CREATE SECRET (TYPE unity_catalog, TOKEN 'not-used', ENDPOINT 'http://localhost:8080')"

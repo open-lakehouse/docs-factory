@@ -51,7 +51,7 @@ setting and the connector versions.
 Open a Python session with DuckDB:
 
 ```bash
-uv run --with duckdb==1.5.6 python
+uv run --with duckdb==2.0.0 python
 ```
 
 Install the `delta` and `unity_catalog` extensions, then attach the catalog:
@@ -77,7 +77,8 @@ The connector creates it as a catalog-managed table and sets
 `delta.feature.catalogManaged` for you. You don't choose where it lives: the
 server allocates a path under the nearest storage root.
 
-DuckDB can't create tables.
+DuckDB creates one with `CREATE TABLE` too; see
+[Use DuckDB with Unity Catalog](../duckdb/index.md#create-change-and-drop-tables).
 
 Creating a table from a query (`CREATE TABLE … AS SELECT`) is covered in the
 guide *Replace or overwrite a managed Delta table*.

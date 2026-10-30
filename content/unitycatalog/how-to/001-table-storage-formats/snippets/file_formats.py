@@ -4,7 +4,7 @@
 #   "unitycatalog-client==0.7.0",
 #   "pyarrow>=18",
 #   "polars==1.44.2",
-#   "duckdb==1.5.6",
+#   "duckdb==2.0.0",
 # ]
 #
 # [tool.docs-factory]
@@ -208,7 +208,7 @@ def _assert_duckdb_by_name_fails() -> None:
     con = duckdb.connect()
     con.execute("INSTALL delta")
     con.execute("LOAD delta")
-    con.execute("FORCE INSTALL unity_catalog FROM core_nightly")
+    con.execute("INSTALL unity_catalog")
     con.execute("LOAD unity_catalog")
     endpoint = config.host.removesuffix("/api/2.1/unity-catalog")
     con.execute(

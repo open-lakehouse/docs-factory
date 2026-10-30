@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["duckdb==1.5.6"]
+# dependencies = ["duckdb==2.0.0"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/uc-aws/compose.yaml"
@@ -95,7 +95,7 @@ con.execute("""
 # --8<-- [start:read]
 con.sql("SELECT * FROM retail.sales.orders WHERE amount > 5 ORDER BY order_id").show()
 # --8<-- [end:read]
-assert con.sql("SELECT count(*) FROM retail.sales.orders").fetchone() == (3,)
+assert con.sql("SELECT count(*) FROM retail.sales.orders").fetchall() == [(3,)]
 
 # --8<-- [start:change]
 con.execute("UPDATE retail.sales.orders SET amount = 21.0 WHERE order_id = 2")
@@ -116,4 +116,4 @@ assert tables == [("order_history",)], tables
 con.execute("DROP TABLE retail.sales.order_history")
 con.execute("DROP SCHEMA retail.staging")
 # --8<-- [end:drop]
-assert con.sql("SELECT count(*) FROM (SHOW ALL TABLES)").fetchone() == (0,)
+assert con.sql("SELECT count(*) FROM (SHOW ALL TABLES)").fetchall() == [(0,)]

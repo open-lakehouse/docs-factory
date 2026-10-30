@@ -62,7 +62,7 @@
   outcome: fails
   why: "`CREATE TABLE … AS SELECT` fails with `Not implemented Error`."
   source: unitycatalog:reference/features-and-limitations#clients-and-engines
-  verified: {duckdb: 1.5.6}
+  verified: {duckdb: 2.0.0}
 # The server side of Iceberg REST, as of `IcebergRestCatalogService.java` at
 # the release tag. Each is a fact about the server, so it blocks the journeys
 # that cover these operations for every client that reaches Iceberg REST, in

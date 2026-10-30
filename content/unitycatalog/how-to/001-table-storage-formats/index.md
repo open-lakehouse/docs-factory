@@ -44,7 +44,7 @@ Start Python with the SDK:
 
 ```bash
 uv run --with unitycatalog-client==0.7.0 --with pyarrow \
-  --with polars==1.44.2 --with duckdb==1.5.6 python -m asyncio
+  --with polars==1.44.2 --with duckdb==2.0.0 python -m asyncio
 ```
 
 ```python file=./snippets/file_formats.py start=start:connect end=end:connect

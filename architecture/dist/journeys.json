@@ -484,7 +484,7 @@
         "duckdb-python"
       ],
       "projects": {
-        "unitycatalog": "1.5.6"
+        "unitycatalog": "2.0.0"
       }
     },
     "duckdb-sql": {
@@ -499,7 +499,7 @@
       ],
       "rollup": [],
       "projects": {
-        "delta": "1.5.6"
+        "delta": "2.0.0"
       }
     },
     "duckdb-python": {
@@ -514,7 +514,7 @@
       ],
       "rollup": [],
       "projects": {
-        "delta": "1.5.6"
+        "delta": "2.0.0"
       }
     },
     "polars": {

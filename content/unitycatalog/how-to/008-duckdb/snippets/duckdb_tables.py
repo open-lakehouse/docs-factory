@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["duckdb==1.5.6", "pyspark==4.1.0", "unitycatalog-client==0.7.0"]
+# dependencies = ["duckdb==2.0.0", "pyspark==4.1.0", "unitycatalog-client==0.7.0"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -9,7 +9,7 @@
 #   { journey = "table.list", region = "list" },
 #   { journey = "managed.read", region = "query" },
 #   { journey = "managed.append", region = "append", api = "INSERT INTO" },
-#   { journey = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "managed.create", region = "create", api = "CREATE TABLE" },
 #   { journey = "managed.update", fails = true, anchor = "create-change-and-drop-tables" },
 #   { journey = "managed.delete", fails = true, anchor = "create-change-and-drop-tables" },
 #   { journey = "managed.drop", fails = true, anchor = "create-change-and-drop-tables" },
@@ -27,8 +27,8 @@ Then run this script:
 
     uv run duckdb_tables.py
 
-DuckDB can't create Unity Catalog tables, so the script first creates one with
-Spark. That needs Java 17 and Maven access on first run. Behind a Maven mirror,
+The script creates the first table with Spark and reads DuckDB's tables back
+with it. That needs Java 17 and Maven access on first run. Behind a Maven mirror,
 export PYSPARK_SUBMIT_ARGS="--repositories <mirror-url> pyspark-shell" first.
 """
 
@@ -38,15 +38,13 @@ import duckdb
 con = duckdb.connect()
 con.execute("INSTALL delta")
 con.execute("LOAD delta")
-con.execute("FORCE INSTALL unity_catalog FROM core_nightly")
+con.execute("INSTALL unity_catalog")
 con.execute("LOAD unity_catalog")
 # --8<-- [end:install]
 
 import asyncio  # noqa: E402
 import json  # noqa: E402
 import os  # noqa: E402
-import subprocess  # noqa: E402
-import sys  # noqa: E402
 import urllib.request  # noqa: E402
 
 from pyspark.sql import SparkSession  # noqa: E402
@@ -123,30 +121,6 @@ assert (
     == "name"
 )  # Spark's default for new managed tables: DuckDB appends to it below.
 
-# The stable `unity_catalog` build (from `core`) reads the table's DECIMAL column
-# too: DuckDB 1.5.4's stable build failed on it (`type_precision`). A separate
-# process and extension directory, so the nightly install above stays loaded.
-_STABLE_PROBE = r"""
-import tempfile, duckdb
-con = duckdb.connect(config={"extension_directory": tempfile.mkdtemp()})
-for s in ["INSTALL delta", "LOAD delta", "INSTALL unity_catalog", "LOAD unity_catalog",
-          "CREATE SECRET (TYPE unity_catalog, TOKEN 'not-used', ENDPOINT 'http://localhost:8080')",
-          "ATTACH 'retail' AS retail (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')"]:
-    con.execute(s)
-print(con.sql(
-    "SELECT installed_from FROM duckdb_extensions() WHERE extension_name = 'unity_catalog'"
-).fetchone()[0])
-print(sorted(float(r[0]) for r in con.sql("SELECT amount FROM retail.sales.orders").fetchall()))
-"""
-_stable = subprocess.run(
-    [sys.executable, "-c", _STABLE_PROBE], capture_output=True, text=True, timeout=300
-)
-assert _stable.returncode == 0, (
-    "stable unity_catalog can't read DECIMAL again: update the page and R01: "
-    f"out={_stable.stdout!r} err={_stable.stderr[-800:]!r}"
-)
-assert _stable.stdout.split() == ["core", "[3.25,", "9.5,", "20.0]"], _stable.stdout
-
 # --8<-- [start:attach]
 con.execute("""
     CREATE SECRET (
@@ -183,7 +157,7 @@ assert [(r[0], r[1], float(r[2])) for r in rows.fetchall()] == [
 con.execute("INSERT INTO retail.sales.orders VALUES (4, 'barbara', 12.00)")
 # --8<-- [end:append]
 assert _latest_version() == 2, "DuckDB's append should be a catalog-accepted commit"
-assert con.sql("SELECT count(*) FROM retail.sales.orders").fetchone() == (4,)
+assert con.sql("SELECT count(*) FROM retail.sales.orders").fetchall() == [(4,)]
 # Real values, not NULLs, on a table with column mapping.
 appended = [(4, "barbara", 12.0)]
 duck_seen = con.sql(
@@ -200,7 +174,22 @@ assert [(r[0], r[1], float(r[2])) for r in spark_seen] == [
     *appended,
 ], spark_seen
 
-# DuckDB with the `core_nightly` unity_catalog: appends only, no row changes or DDL.
+# --8<-- [start:create]
+con.execute("CREATE TABLE retail.sales.returns (order_id BIGINT, reason VARCHAR)")
+con.execute("INSERT INTO retail.sales.returns VALUES (4, 'damaged')")
+# --8<-- [end:create]
+# The server staged it: a catalog-managed table that Spark reads and appends to.
+returns_props = {
+    r[0]: r[1] for r in spark.sql("SHOW TBLPROPERTIES retail.sales.returns").collect()
+}
+assert returns_props.get("delta.feature.catalogManaged") == "supported", returns_props
+spark.sql("INSERT INTO retail.sales.returns VALUES (5, 'late')")
+assert sorted(
+    tuple(r) for r in spark.sql("SELECT * FROM retail.sales.returns").collect()
+) == [(4, "damaged"), (5, "late")]
+assert _latest_version("returns") == 2  # CREATE TABLE, DuckDB's INSERT, Spark's
+
+# DuckDB doesn't change rows, create a table from a query, or drop one.
 for unsupported, error, prefix in [
     (
         "UPDATE retail.sales.orders SET amount = 1 WHERE order_id = 4",
@@ -213,12 +202,7 @@ for unsupported, error, prefix in [
         "Binder Error: Can only delete from base table",
     ),
     (
-        "CREATE TABLE retail.sales.returns (order_id BIGINT)",
-        duckdb.NotImplementedException,
-        "Not implemented Error: UCTableSet::CreateTable",
-    ),
-    (
-        "CREATE TABLE retail.sales.returns AS SELECT * FROM retail.sales.orders",
+        "CREATE TABLE retail.sales.copied AS SELECT * FROM retail.sales.orders",
         duckdb.NotImplementedException,
         "Not implemented Error: UnityCatalog PlanCreateTableAs",
     ),

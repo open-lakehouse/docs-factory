@@ -3,7 +3,7 @@
 # # nest_asyncio crashes asyncio.run at exit (see R01).
 # requires-python = "==3.12.*"
 # # numpy: DuckDB's create_function needs it.
-# dependencies = ["duckdb==1.5.6", "unitycatalog-ai==0.4.0", "numpy>=2"]
+# dependencies = ["duckdb==2.0.0", "unitycatalog-ai==0.4.0", "numpy>=2"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -22,9 +22,8 @@ The page shows no DuckDB code. This script backs the DuckDB cells of the
 functions compatibility table and the R01 row. DuckDB's `unity_catalog`
 extension serves the tables and views in an attached catalog, not its
 functions: a function name on the catalog fails to bind, and
-`duckdb_functions()` lists none of them. The script checks the extension's
-stable (`core`) and nightly (`core_nightly`) builds, each in a process of its
-own, and prints the DuckDB and extension versions it ran.
+`duckdb_functions()` lists none of them. The script prints the DuckDB and
+extension versions it ran.
 
 It also pins a workaround the page doesn't show: fetch the function with
 unitycatalog-ai and register it with the connection's `create_function`, as
@@ -53,7 +52,6 @@ URL = os.environ.get("UC_BASE_URL", HOST)
 ENDPOINT = URL.split("/api/")[0]
 BUILDS = {
     "core": "INSTALL unity_catalog",
-    "core_nightly": "FORCE INSTALL unity_catalog FROM core_nightly",
 }
 # The first line of each error. DuckDB appends a "Did you mean" suggestion on
 # the next line, which changes with the functions it has loaded.
@@ -94,15 +92,14 @@ def check_build(build: str) -> None:
         "ATTACH 'tools' AS tools (TYPE unity_catalog, DEFAULT_SCHEMA 'pricing')",
     ):
         con.execute(statement)
-    version, installed_from = con.sql(
+    [(version, installed_from)] = con.sql(
         "SELECT extension_version, installed_from FROM duckdb_extensions() "
         "WHERE extension_name = 'unity_catalog'"
-    ).fetchone()
+    ).fetchall()
     print(
         f"duckdb={duckdb.__version__} unity_catalog installed_from={installed_from} "
         f"extension_version={version}"
     )
-    assert duckdb.__version__ == "1.5.6", duckdb.__version__
     assert installed_from == build, installed_from
 
     # The attach worked: the schema is there.
@@ -145,6 +142,7 @@ def check_build(build: str) -> None:
         ).fetchall()
     )
     assert extension_functions == [
+        "uc_read_deletion_vector",
         "unity_catalog_checkpoint_table",
         "unity_catalog_force_checkpoint_table",
     ], extension_functions
@@ -179,7 +177,7 @@ def _workaround(con) -> None:
     # The callable carries the catalog signature as annotations, so DuckDB
     # infers BIGINT, DOUBLE, DOUBLE -> DOUBLE.
     con.create_function("order_total", order_total)
-    assert con.sql("SELECT order_total(3, 19.99, 10.0)").fetchone() == (53.97,)
+    assert con.sql("SELECT order_total(3, 19.99, 10.0)").fetchall() == [(53.97,)]
     rows = con.sql(
         "SELECT order_total(q, p, d) FROM "
         "(VALUES (3, 19.99, 10.0), (1, 5.0, 0.0)) t(q, p, d)"

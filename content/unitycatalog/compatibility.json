@@ -80,7 +80,7 @@
     {
       "key": "duckdb",
       "label": "DuckDB",
-      "version": "1.5.6",
+      "version": "2.0.0",
       "package": "duckdb",
       "model": "duckdb",
       "via": null,
@@ -1934,7 +1934,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -2092,7 +2092,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -2468,7 +2468,7 @@
           "evidence": []
         },
         "duckdb": {
-          "status": "fails",
+          "status": "tested",
           "draft": false,
           "proofs": [
             {
@@ -2480,25 +2480,10 @@
               },
               "anchor": "create-change-and-drop-tables",
               "ready": true,
-              "works": false,
+              "works": true,
               "fails": null,
-              "version": "1.5.6",
-              "api": null,
-              "note": null
-            },
-            {
-              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
-              "page": {
-                "project": "unitycatalog",
-                "bucket": "how-to",
-                "slug": "managed-delta-tables"
-              },
-              "anchor": "create-a-managed-table",
-              "ready": true,
-              "works": false,
-              "fails": null,
-              "version": "1.5.6",
-              "api": null,
+              "version": "2.0.0",
+              "api": "CREATE TABLE",
               "note": null
             }
           ],
@@ -2592,7 +2577,7 @@
               "why": "`CREATE TABLE … AS SELECT` fails with `Not implemented Error`.",
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
-              "verified": "1.5.6",
+              "verified": "2.0.0",
               "note": null,
               "implementation": null
             }
@@ -2747,7 +2732,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             },
@@ -2762,7 +2747,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -2984,7 +2969,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "INSERT INTO",
               "note": null
             },
@@ -2999,7 +2984,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -3190,7 +3175,7 @@
               "ready": true,
               "works": false,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -3315,7 +3300,7 @@
               "ready": true,
               "works": false,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -3499,7 +3484,7 @@
               "ready": true,
               "works": false,
               "fails": "UCTableSet::AlterTable",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -4215,7 +4200,7 @@
               "ready": true,
               "works": false,
               "fails": "UCTableSet::AlterTable",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -4397,7 +4382,7 @@
               "ready": true,
               "works": false,
               "fails": "Only altering tables is supported for now",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -4814,7 +4799,7 @@
               "ready": true,
               "works": false,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -5095,7 +5080,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": "by path from the table's location"
             }
@@ -5217,7 +5202,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "duckdb_schemas()",
               "note": null
             }
@@ -5339,7 +5324,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "CREATE SCHEMA",
               "note": null
             }
@@ -5494,7 +5479,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "DROP SCHEMA",
               "note": null
             }
@@ -5655,7 +5640,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "CREATE TABLE",
               "note": null
             }
@@ -5780,7 +5765,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "INSERT INTO",
               "note": null
             }
@@ -5941,7 +5926,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": null
             }
@@ -6066,7 +6051,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "UPDATE",
               "note": null
             }
@@ -6191,7 +6176,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "DELETE FROM",
               "note": null
             }
@@ -6397,7 +6382,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "ALTER TABLE … RENAME TO",
               "note": null
             }
@@ -6664,7 +6649,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": "DROP TABLE",
               "note": null
             }
@@ -11342,7 +11327,7 @@
               "ready": false,
               "works": false,
               "fails": "UC databases do not support creating functions",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": "CREATE FUNCTION and CREATE MACRO"
             }
@@ -11738,7 +11723,7 @@
               "ready": false,
               "works": false,
               "fails": "Scalar Function with name order_total does not exist!",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": "SELECT on the catalog name after ATTACH"
             }
@@ -11924,7 +11909,7 @@
               "ready": false,
               "works": false,
               "fails": null,
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": "duckdb_functions() lists none of the catalog's functions"
             }
@@ -12165,7 +12150,7 @@
               "ready": false,
               "works": false,
               "fails": "Macro Function with name order_total does not exist!",
-              "version": "1.5.6",
+              "version": "2.0.0",
               "api": null,
               "note": "DROP FUNCTION"
             }
@@ -14490,6 +14475,7 @@
         "iceberg.rename",
         "iceberg.update",
         "managed.append",
+        "managed.create",
         "managed.read",
         "table.list"
       ]
@@ -14504,6 +14490,7 @@
       "journeys": [
         "external.read",
         "managed.append",
+        "managed.create",
         "managed.read"
       ]
     },
@@ -14553,6 +14540,7 @@
       ],
       "journeys": [
         "managed.append",
+        "managed.create",
         "managed.read"
       ]
     },
@@ -14567,6 +14555,7 @@
         "external.read",
         "external.read-format",
         "managed.append",
+        "managed.create",
         "managed.read",
         "table.list"
       ]

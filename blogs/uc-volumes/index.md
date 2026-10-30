@@ -42,7 +42,14 @@ Say you want to browse a volume from a notebook. [marimo](https://marimo.io)
 lists every [obstore](https://developmentseed.org/obstore/) store a notebook defines in its
 [Remote Storage panel](https://docs.marimo.io/guides/working_with_data/remote_storage/), where
 you can browse and download files. Give that store a credential provider that asks Unity Catalog
-for credentials, and you can open a volume as a store. This is the cell that does it:
+for credentials, and you can open a volume as a store. That provider is small enough to show in full:
+
+```python file=../../content/unitycatalog/how-to/023-obstore-credentials/snippets/obstore_credentials.py start=start:provider end=end:provider title="obstore_credentials.py"
+```
+
+obstore calls the provider whenever it needs a credential, and each call goes back to
+Unity Catalog for a fresh one. The first answer also carries the volume's storage location, which becomes the
+store's URL. With that in place, this is the cell that opens the volume:
 
 ```python file=../../content/unitycatalog/how-to/024-marimo-remote-storage/snippets/notebook.py start=start:nb-store end=end:nb-store title="notebook.py"
 ```
@@ -61,8 +68,7 @@ which needs ownership of the volume. obstore renews the credential once less tha
 minutes remain, so a long-running notebook keeps working, and since every renewal goes back to
 the server, revoking the grant also cuts off a notebook that is already open.
 
-The provider behind `UnityCatalogCredentials` is a small class, and nothing in it is specific
-to marimo. Any tool that accepts an obstore store gets the same volume, with the same grants.
+Nothing in `UnityCatalogCredentials` is specific to marimo. Any tool that accepts an obstore store gets the same volume, with the same grants.
 [Use volumes as marimo remote storage](../../content/unitycatalog/how-to/024-marimo-remote-storage/index.md)
 walks through the whole notebook, and
 [Use Unity Catalog credentials with obstore](../../content/unitycatalog/how-to/023-obstore-credentials/index.md)

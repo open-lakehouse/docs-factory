@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["duckdb==1.5.6", "deltalake[pandas,pyarrow]==1.6.6"]
+# dependencies = ["duckdb==2.0.0", "deltalake[pandas,pyarrow]==1.6.6"]
 #
 # [tool.docs-factory]
 # claims.duckdb-python = [

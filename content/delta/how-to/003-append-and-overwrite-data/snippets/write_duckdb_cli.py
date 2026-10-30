@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["docsnip", "duckdb==1.5.6", "deltalake[pandas,pyarrow]==1.6.6"]
+# dependencies = ["docsnip", "duckdb==2.0.0", "deltalake[pandas,pyarrow]==1.6.6"]
 #
 # [tool.uv.sources]
 # docsnip = { path = "../../../../../tools/docsnip", editable = true }
@@ -12,12 +12,13 @@
 #   { journey = "write.overwrite", fails = "Can only delete from base table", anchor = "overwrite-a-table", note = "appends only" },
 #   { journey = "dml.delete", fails = "Can only delete from base table", anchor = "overwrite-a-table" },
 #   { journey = "dml.update", fails = "Can only update base table", anchor = "overwrite-a-table" },
-#   { journey = "create.table", fails = "Delta tables do not support creating tables", anchor = "append-rows" },
+#   { journey = "create.table", fails = true, anchor = "append-rows", note = "accepted, but writes no files" },
 # ]
 # ///
 """Run write_duckdb.sql against a table deltalake wrote, read DuckDB's commit
 back with deltalake, then pin what DuckDB can't write."""
 
+import shutil
 from pathlib import Path
 
 import duckdb
@@ -43,7 +44,7 @@ if __name__ == "__main__":
     run(SQL, "setup", lambda s: con.execute(s).fetchall())
     run(SQL, "append", lambda s: con.execute(s).fetchall())
 
-    assert con.execute("SELECT count(*) FROM orders").fetchone() == (6,)
+    assert con.execute("SELECT count(*) FROM orders").fetchall() == [(6,)]
     dt = DeltaTable("/tmp/delta/orders")
     assert dt.version() == 3, dt.version()
     assert sorted(dt.to_pandas()["order_id"]) == [1, 2, 3, 4, 5, 6]
@@ -55,9 +56,10 @@ if __name__ == "__main__":
     fails_with(
         con, "UPDATE orders SET status = 'shipped'", "Can only update base table"
     )
+    # On a path with no table, CREATE TABLE and INSERT succeed but write nothing.
+    shutil.rmtree("/tmp/delta/new-table", ignore_errors=True)
     con.execute("ATTACH '/tmp/delta/new-table' AS fresh (TYPE delta)")
-    fails_with(
-        con,
-        "CREATE TABLE fresh.t (a INT)",
-        "Delta tables do not support creating tables",
-    )
+    con.execute("CREATE TABLE fresh (a INT)")
+    con.execute("INSERT INTO fresh VALUES (1)")
+    con.execute("DETACH fresh")
+    assert not Path("/tmp/delta/new-table").exists(), "DuckDB creates Delta tables now"

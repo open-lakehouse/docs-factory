@@ -92,7 +92,9 @@ Add a sixth order to the table:
 ```sql file=./snippets/write_duckdb.sql start=start:append end=end:append
 ```
 
-DuckDB writes to an attached table, not to `delta_scan`.
+DuckDB writes to an attached table, not to `delta_scan`. It doesn't create
+one: attached to a path with no table, `CREATE TABLE` and `INSERT` succeed
+but write no files, so the rows are lost.
 :::
 
 The table now has six orders. Unlike an upsert, an append doesn't check for

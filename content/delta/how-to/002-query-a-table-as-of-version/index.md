@@ -16,8 +16,8 @@ Each operation that modifies a [Delta Lake](model:deltaSpec) table creates a
 new table version, recorded in its transaction log. Time travel queries an
 older snapshot of the table, by version number or by timestamp, to reproduce
 a report, audit a change, or compare before and after. This guide uses Spark
-SQL, PySpark, the `deltalake` Python package, and DuckDB. DuckDB queries
-earlier versions by number only, and doesn't list a table's history.
+SQL, PySpark, the `deltalake` Python package, and DuckDB. DuckDB doesn't list
+a table's history.
 
 :::prerequisites
 - A Delta table with history at `/tmp/delta/orders`, such as the one from
@@ -146,11 +146,15 @@ statement registers the path as `orders` in the shell's metastore.
 ```
 :::
 
+:::tab[DuckDB · SQL]
+```sql file=./snippets/time_travel_duckdb.sql start=start:timestamp end=end:timestamp
+```
+:::
+
 Delta reads the latest version committed at or before the timestamp. A
 timestamp before the table's first commit is an error, so a table created
 today has no version from a day ago: use a timestamp from its history
-instead. DuckDB can't query a timestamp: its `AT` clause takes only a
-version.
+instead.
 
 ## Retention limits time travel
 

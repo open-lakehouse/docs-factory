@@ -28,7 +28,7 @@ in the same two commits, so every how-to guide works on the result.
 Open a Python session with `deltalake` and DuckDB installed:
 
 ```bash
-uv run --with "deltalake[pandas,pyarrow]==1.6.6" --with duckdb==1.5.6 python
+uv run --with "deltalake[pandas,pyarrow]==1.6.6" --with duckdb==2.0.0 python
 ```
 
 Enter each of the following snippets in it, in order.

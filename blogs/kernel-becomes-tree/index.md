@@ -17,14 +17,14 @@ And while we eventually have to accept that entropy is real and time
 is inevitably moving forward, there is a chance we can all relive this
 feeling.
 
-The Delta ecosystem is currently undergoing a transformation, a defragmentation of you will,
+The Delta ecosystem is currently undergoing a transformation, a defragmentation if you will,
 which aims to address one of the longest standing and in my opinion most annoyinmg issues
 that has been plagueing the entire data ecosystem for some decades now - fragmentation.
 And the vehicle by which this happens, is the [delta-kernel-rs] library.
 
 Since we are talking about [Delta](delta.io), we'll use it as an example to see how
 this affects the community. Column Mapping is a table feature defined in the
-[delta protocol][delta-protocol] which enables rich features,  specifically freely renaming columns
+[delta protocol][delta-protocol] which allows freely renaming columns
 and even using names that would not be valid when used directly with a parquet file. It achieves this
 by separating logical (what the query engine sees) from physical (what is stored on disk) column names.
 Implementing this feature can have a significnat blast radius as it touches all code where

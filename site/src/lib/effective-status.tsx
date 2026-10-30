@@ -129,8 +129,7 @@ export function statusBucketLabel(bucket: StatusBucket): string {
 export function statusBucketDotClass(bucket: StatusBucket): string {
   switch (bucket) {
     case "changes-requested":
-    case "idea":
-      return "tree-status-dot-idea";
+      return "tree-status-dot-changes-requested";
     case "needs-review":
       return "tree-status-dot-in-review";
     case "approved":
@@ -140,8 +139,10 @@ export function statusBucketDotClass(bucket: StatusBucket): string {
     case "private":
       return "tree-status-dot-private";
     case "draft":
-    case "none":
       return "tree-status-dot-draft";
+    case "idea":
+    case "none":
+      return "tree-status-dot-idea";
   }
 }
 

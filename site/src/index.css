@@ -2324,22 +2324,27 @@ button.tag {
   background: #3f844b;
   border-color: #3f844b;
 }
-/* Idea: earliest, not-yet-committed stage. A distinct amber so reviewers can
- * spot posts still open to structural feedback at a glance. */
-.status-badge-idea {
+/* Draft: being written — blue so it reads as further along than the idle grey
+ * of an idea, and apart from in-review purple. */
+.status-badge-draft {
+  color: #3b82f6;
+  background: color-mix(in srgb, #3b82f6 12%, transparent);
+  border-color: color-mix(in srgb, #3b82f6 30%, transparent);
+}
+.status-badge-changes-requested {
   color: #b7791f;
   background: color-mix(in srgb, #b7791f 12%, transparent);
   border-color: color-mix(in srgb, #b7791f 30%, transparent);
 }
 /* Private: reviewable, never released. A cool slate so it reads as "parked
- * here on purpose", apart from the draft grey and the release greens. */
+ * here on purpose", apart from the idle grey and the release greens. */
 .status-badge-private {
   color: #64748b;
   background: color-mix(in srgb, #64748b 12%, transparent);
   border-color: color-mix(in srgb, #64748b 30%, transparent);
 }
-/* In review: active lifecycle — purple so it reads apart from ready-green and
- * changes-requested amber (and from the muted "not started" idle tone). */
+/* In review: active lifecycle — purple so it reads apart from ready-green,
+ * changes-requested amber, and draft blue. */
 .status-badge-in-review {
   color: #8b5cf6;
   background: color-mix(in srgb, #8b5cf6 12%, transparent);
@@ -2355,13 +2360,18 @@ button.tag {
   border-radius: 999px;
   flex-shrink: 0;
 }
+/* Approved is a tinted ring and released a solid fill, as on the badges. */
 .tree-status-dot-ready {
-  background: #4f9c5a;
+  background: color-mix(in srgb, #4f9c5a 20%, transparent);
+  box-shadow: inset 0 0 0 1.5px #4f9c5a;
 }
-.tree-status-dot-idea {
+.tree-status-dot-changes-requested {
   background: #b7791f;
 }
-.tree-status-dot-draft,
+.tree-status-dot-draft {
+  background: #3b82f6;
+}
+.tree-status-dot-idea,
 .tree-status-dot-none {
   background: var(--muted-foreground);
   opacity: 0.45;
@@ -2373,8 +2383,7 @@ button.tag {
   background: #64748b;
 }
 .tree-status-dot-released {
-  background: #4f9c5a;
-  box-shadow: 0 0 0 1.5px color-mix(in srgb, #4f9c5a 45%, transparent);
+  background: #3f844b;
 }
 
 /* Leaf-row icons tinted with the same effective-status tones as the dots. */
@@ -2382,10 +2391,16 @@ button.tag {
 .tree-status-icon-released {
   color: #4f9c5a;
 }
-.tree-status-icon-idea {
+.tree-status-icon-released {
+  fill: color-mix(in srgb, #4f9c5a 45%, transparent);
+}
+.tree-status-icon-changes-requested {
   color: #b7791f;
 }
-.tree-status-icon-draft,
+.tree-status-icon-draft {
+  color: #3b82f6;
+}
+.tree-status-icon-idea,
 .tree-status-icon-none {
   color: var(--muted-foreground);
   opacity: 0.7;

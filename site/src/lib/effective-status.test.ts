@@ -5,6 +5,7 @@ import {
   effectiveStatusIconClass,
   effectiveStatusLabel,
   statusBucket,
+  statusBucketDotClass,
 } from "./effective-status";
 
 describe("effectiveStatus", () => {
@@ -65,8 +66,26 @@ describe("effectiveStatus", () => {
     expect(effectiveStatusIconClass(effectiveStatus("idea", ReviewState.NONE))).toBe(
       "tree-status-icon-idea",
     );
+    expect(effectiveStatusIconClass(effectiveStatus("draft", ReviewState.NONE))).toBe(
+      "tree-status-icon-draft",
+    );
     expect(effectiveStatusIconClass(effectiveStatus("draft", ReviewState.NEEDS_REVIEW))).toBe(
       "tree-status-icon-in-review",
+    );
+  });
+
+  test("changes requested has its own tone, apart from idea", () => {
+    const status = effectiveStatus("draft", ReviewState.CHANGES_REQUESTED);
+    expect(effectiveStatusIconClass(status)).toBe("tree-status-icon-changes-requested");
+    expect(statusBucketDotClass(statusBucket(status))).toBe("tree-status-dot-changes-requested");
+  });
+
+  test("approved and released icons differ", () => {
+    expect(effectiveStatusIconClass(effectiveStatus("ready", ReviewState.APPROVED))).toBe(
+      "tree-status-icon-ready",
+    );
+    expect(effectiveStatusIconClass(effectiveStatus("ready", ReviewState.RELEASED))).toBe(
+      "tree-status-icon-released",
     );
   });
 

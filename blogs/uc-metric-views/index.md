@@ -13,7 +13,8 @@ target: unitycatalog
 - Metric Views as part of your semantic layer allow you to centrally
   define and govern metrics and KPIs for your business.
 - Metric views are specifically designed to also be consumed by agents.
-- You can try metric views today with Unity Catalog `0.7` and Apache Spark `4.2`:
+- Metric views are new in open source Unity Catalog. Try them today with
+  Unity Catalog `0.7` and Apache Spark `4.2`:
   [define and query your first metric view](../../content/unitycatalog/tutorials/008-first-metric-view/index.md).
 :::
 
@@ -149,12 +150,16 @@ by joining it with data from another table and maybe applying some filters.
 ```
 
 As you can see, joins are defined as an array so you can accommodate complex
-scenarios, like warehouses built on [star or snowflake schemas](https://docs.databricks.com/aws/en/uc-semantics/metric-views/joins).
+scenarios, like warehouses built on
+[star](https://docs.databricks.com/aws/en/uc-semantics/metric-views/joins#star-schema-joins)
+or [snowflake](https://docs.databricks.com/aws/en/uc-semantics/metric-views/joins#snowflake-schema-joins)
+schemas.
 
 ### Define relevant fields
 
-Fields are essentially projections (i.e by row computations) we apply to process the data
-within our metric view along with additional metadata as we saw earlier. 
+Fields are expressions computed for each row of the source, like a truncated
+date or a status code mapped to a readable label. They're the dimensions you
+group and slice by, and they carry the same kind of metadata we saw earlier.
 
 ```yaml file=./metric-view.yaml start=start:fields end=end:fields
 ```
@@ -168,7 +173,7 @@ to steer our business.
 ```
 
 They mainly differ from fields in that the expressions for a measure
-are aggregates over some group vs. projections.
+aggregate over a group of rows, while a field computes one value per row.
 
 ### Register the metric view
 

@@ -102,6 +102,16 @@ Then each catalog creates its own kind of table:
 `retail_iceberg.sales.orders` is a managed Iceberg table. Both sit in the same
 schema, `retail.sales`.
 
+:::note[One catalog, two Spark entries]
+Spark needs the two entries because the Unity Catalog connector doesn't hand
+Iceberg tables over to Iceberg. With connector 0.7.0, the connector finds
+`retail.sales.orders`, but reading it fails with `iceberg is not a valid Spark
+SQL Data Source`. Iceberg REST lists only `orders`, not the Delta table. So
+you name each table through the Spark catalog for its format. The
+[how-to's cross-format script](../../content/unitycatalog/how-to/012-iceberg-rest/index.md#join-delta-and-iceberg-tables-in-spark)
+tests both behaviors.
+:::
+
 ### DuckDB appends and updates
 
 DuckDB's `iceberg` extension attaches the same catalog by its warehouse name:

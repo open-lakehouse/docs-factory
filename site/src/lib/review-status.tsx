@@ -10,7 +10,7 @@ import { RequestStatus, Requirement, ReviewState } from "../gen/docs_factory/rev
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
-// Badge tone per review state: released = solid, approved = ready-green,
+// Badge tone per review state: released = solid green, approved = tinted green,
 // changes-requested = amber, needs-review = purple, none = muted outline.
 export const REVIEW_BADGE_VARIANT: Record<number, BadgeVariant> = {
   [ReviewState.NONE]: "outline",
@@ -28,7 +28,7 @@ export const REVIEW_STATE_LABEL: Record<number, string> = {
   [ReviewState.RELEASED]: "released",
 };
 
-/** Extra badge class for a review state tint (ready / idea / needs-review). */
+/** Extra badge class for a review state tint. */
 export function reviewStateBadgeClass(state: ReviewState): string {
   switch (state) {
     case ReviewState.RELEASED:
@@ -36,7 +36,7 @@ export function reviewStateBadgeClass(state: ReviewState): string {
     case ReviewState.APPROVED:
       return "status-badge-ready";
     case ReviewState.CHANGES_REQUESTED:
-      return "status-badge-idea";
+      return "status-badge-changes-requested";
     case ReviewState.NEEDS_REVIEW:
       return "status-badge-in-review";
     default:
@@ -50,7 +50,7 @@ export function reviewStateDotClass(state: ReviewState | undefined): string {
     case ReviewState.NEEDS_REVIEW:
       return "tree-status-dot-in-review";
     case ReviewState.CHANGES_REQUESTED:
-      return "tree-status-dot-idea";
+      return "tree-status-dot-changes-requested";
     case ReviewState.APPROVED:
       return "tree-status-dot-ready";
     case ReviewState.RELEASED:

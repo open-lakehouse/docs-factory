@@ -3,13 +3,13 @@
 // (see review-status.tsx). One source of truth for the status-badge tone so the
 // index tables and the RevOps pipeline view render it identically.
 
-/** Extra badge class for a frontmatter status, or "" for the plain (draft) tone. */
+/** Extra badge class for a frontmatter status, or "" for the idle (idea) tone. */
 export function statusBadgeClass(status: string | undefined): string {
   switch ((status ?? "").toLowerCase()) {
     case "ready":
       return "status-badge-ready";
-    case "idea":
-      return "status-badge-idea";
+    case "draft":
+      return "status-badge-draft";
     case "private":
       return "status-badge-private";
     default:
@@ -22,11 +22,11 @@ export function statusDotClass(status: string | undefined): string {
   switch ((status ?? "").toLowerCase()) {
     case "ready":
       return "tree-status-dot-ready";
-    case "idea":
-      return "tree-status-dot-idea";
+    case "draft":
+      return "tree-status-dot-draft";
     case "private":
       return "tree-status-dot-private";
     default:
-      return "tree-status-dot-draft";
+      return "tree-status-dot-idea";
   }
 }

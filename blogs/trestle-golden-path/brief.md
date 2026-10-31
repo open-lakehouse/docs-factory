@@ -51,6 +51,11 @@ register of the Trust arc (cross-link, don't duplicate).
   **protocol-neutral core with two thin adapters**, mounted on one port.
 - Connect reuses the same generated model crate REST already produces — no second
   model generation.
+- Generated handlers are **generic over the request context** (`Handler<Cx>`): the
+  crate that owns an API owns its routes, validation, and action vocabulary, and the
+  host owns `Cx` — how it's populated (an auth layer + extractor) and how it's
+  judged (a `Policy<Cx>`). That's what lets a whole API crate (mangrove's Delta API)
+  drop into a different server (Lakekeeper) with that server's own auth model.
 - Trestle follows the **Unity Catalog** design: flat, top-level routes with the
   hierarchy *discovered* from `resource_reference` edges, not nested collections.
 - The **generated** store is generic — every resource is an `Object<L>` in one
@@ -80,9 +85,22 @@ register of the Trust arc (cross-link, don't duplicate).
    (server, clients, store, web app). *(code sample)*
 4. **One core, two protocols, one port** — the protocol-neutral core + REST/Connect
    adapters; the `Router::merge(...).fallback_service(...)` mount. *(code sample)*
-5. **The client and the screen for free** — typed client + the React check-in
+5. **Who's asking? One generic context, wire to policy** — §4 makes the core
+   protocol-neutral; this makes it *host*-neutral. Beats, one small abridged
+   sample each: (a) the generic is the contract — `trait DriverHandler<Cx =
+   RequestContext>`, route fns generic `<T, Cx>`; (b) populated once at the edge —
+   a tower auth layer puts an identity in the request extensions, an extractor
+   (`FromRequestParts`, or delta-api's async `ContextExtractor`) turns it into `Cx`;
+   (c) propagates by type — `Cx` is chosen once at mount time and the compiler
+   threads it to every handler; (d) how the layers play together (one diagram);
+   (e) it lands in `Policy<Cx>::authorize(resource, permission, &cx)`, with the
+   request naming its own resource + permission (`SecuredAction`) so a handler
+   authorizes in one line; (f) payoff — the Delta API crate's narrow
+   `DeltaBackend<Cx>` port + crate-owned `DeltaAction` lets mangrove and Lakekeeper
+   mount the same API under two different auth models. *(code samples)*
+6. **The client and the screen for free** — typed client + the React check-in
    screen. *(code sample)*
-6. **Carving a resource onto its own table** — the golden path's storage
+7. **Carving a resource onto its own table** — the golden path's storage
    progression, and where the scaffold hands off to you. Ship on the *generated*
    generic `Object<L>` store first (one table, routed by `Label`). Then, when a
    resource warrants a bespoke schema, **we hand-write** a `Label`-routed backend
@@ -99,7 +117,7 @@ register of the Trust arc (cross-link, don't duplicate).
    convention keeps them from colliding — store schema at `0001+`, app schema at
    `0100+`. Shown working for SQLite in mangrove; Postgres next. *(code sample —
    adopter code, not generated)*
-7. **Opinionated by default: sensitive data at rest** — why a *usable* baseline
+8. **Opinionated by default: sensitive data at rest** — why a *usable* baseline
    still can't punt on sensitive data. The same `FieldRole::Sensitive` seam that
    routes secrets out of the searchable payload also seals them with envelope
    encryption in the generated store: per-value AES-256-GCM data key, wrapped by a
@@ -107,7 +125,7 @@ register of the Trust arc (cross-link, don't duplicate).
    by re-wrap. The template ships this so the golden path is safe-by-default, not a
    later retrofit — the concrete face of "opinionated but usable from the get-go."
    *(code sample)*
-8. **Where the generator earns its keep** — the payoff, honest seams, and what to
+9. **Where the generator earns its keep** — the payoff, honest seams, and what to
    reach for it (and not).
 
 ## 6. Source material
@@ -151,13 +169,33 @@ register of the Trust arc (cross-link, don't duplicate).
     merges the crate-local migrator (sqlx::migrate!()) into ONE Migrator sharing one
     _sqlx_migrations ledger; local migrations versioned 0100+ vs olai_store's 0001+ so they
     interleave without collision. mangrove's SqliteStore also carries an EnvelopeEncryptor
-    field — the §7 encryption story is live here for SQLite. NOTE: Postgres is the NEXT
+    field — the §8 encryption story is live here for SQLite. NOTE: Postgres is the NEXT
     application of this (in progress) — SQLite is what's shown working today (§9).`
   - `trestle · crates/olai-store/src/backend/sql.rs (migrator / migrator_with / migrate;
     "SqlStore::connect assumes an already-migrated pool and runs no migrations") ·
     olai-store-v0.0.4 (public) — the store side of the contract: migrations exposed as data,
     no eager migrate-on-connect (avoids every process racing the advisory lock on boot), so
     the adopter owns one gated migrate step.`
+  - `trestle · crates/olai-codegen/src/codegen/{handler,server}.rs + examples/golden-path-app
+    (codegen/greeting/{handler,server}.rs, api/context.rs, main.rs) · 1af79ee (public) — the
+    generated seam for §5: handler traits generic `<Cx = server.context_type>`, route fns
+    generic `<T, Cx: FromRequestParts<T>>`, `Cx` bound by turbofish at mount; the adopter's
+    `RequestContext` built from `x-forwarded-*` headers. No policy layer in trestle.`
+  - `mangrove · crates/server/src/rest/auth.rs (Authenticator<I>, AuthenticationLayer),
+    crates/server/src/policy/mod.rs (Policy<Cx>, ProvidesPolicy), crates/server/src/api/mod.rs
+    (SecuredAction), crates/handlers/src/context.rs (RequestContext{Principal}) · 193a899e
+    (public) — population (layer → request extensions) and the policy end of §5.`
+  - `mangrove · crates/delta-api/src/{backend,authz,handler,router}.rs · 193a899e, crate
+    v0.0.6 (public) — the embeddable API: DeltaBackend<Cx> port with ONE authorize hook,
+    #[non_exhaustive] DeltaAction vocabulary, blanket DeltaApiHandler<Cx> owning Delta
+    semantics, async ContextExtractor<Cx> + router_with_context_at<S, Cx> -> Router<S>.
+    Mangrove's adapter: crates/server/src/services/delta_backend.rs; its extractor:
+    crates/server/src/rest/routers/mod.rs (create_delta_router).`
+  - `lakekeeper (fork roeap/lakekeeper) · branch feat/delta-v1-read-path @ c2d026fb, pins
+    delta-api 0.0.5 (UNMERGED) — crates/lakekeeper/src/server/delta/{context,router,backend}.rs:
+    DeltaRequestContext{RequestMetadata, WarehouseId}, extractor 401s without metadata and
+    resolves {prefix} → warehouse, authorize maps DeltaAction onto Lakekeeper's Authorizer
+    and fails closed on unknown/unserved actions.`
 - *Prior art:* general proto-first framers (Buf/Connect docs, Google AIP). This
   post's angle differs: one *core*, two protocols on one port, plus a generated
   web app — not just a compiler.
@@ -213,13 +251,29 @@ running). Diagrams (the one-core/two-adapter mount) authored in D2 if used.
 - **Envelope encryption — in-progress, verify at the merged ref.** The sensitive-
   data-at-rest story lives on branch `feat/olai-store-envelope-encryption` and is
   **actively being implemented / merging soon**, not yet on `main`. Do not draft the
-  §7 (opinionated-baseline) section as shipped until it lands; then pin to the merged
+  §8 (opinionated-baseline) section as shipped until it lands; then pin to the merged
   tag/SHA and re-verify against `encryption.rs` + `managed.rs`. Cite it as
   developed-and-landing (§6 publish-as-we-develop allows this) but disclose the status
   plainly; confirm what the template *actually* ships by default vs. what is opt-in
   (does `trestle generate` wire the `EnvelopeEncryptor` in, or is it a config step?),
   and keep crypto specifics (AES-256-GCM, per-value DEK, KEK-wrap, AAD-to-UUID,
   rotate-by-rewrap) matched to the code — don't paraphrase the scheme loosely.
+- **Generic context (§5) — what trestle generates vs. what the servers built.**
+  Trestle generates only the `Cx` seam (generic handler traits + route fns); the
+  adopter writes the context type, and the auth layer + `Policy<Cx>` are mangrove
+  code built on that seam. Don't imply `trestle generate` emits authz.
+- **Connect doesn't carry `Cx` yet.** The generated Connect trait takes
+  `connectrpc::RequestContext`, not the app's `Cx`; in golden-path-app the identity
+  reaches REST handlers only. State it as a seam, or close it before publish.
+- **"One authorization seam" is the crate's contract, not yet every adapter's.**
+  delta-api's docs say data methods never authorize and `authorize` is the single
+  hook; mangrove's adapter (`delta_backend.rs` ~L359) leaves ReadTable/Delete/Rename/
+  vend/CreateStaging arms as `Ok(())` and relies on the downstream UC handlers'
+  `check_required`. Lakekeeper's adapter does centralize it. Either fix mangrove or
+  word the claim as the crate's contract and show Lakekeeper's arm.
+- **Lakekeeper is in progress.** The integration is an unmerged branch on a fork,
+  pinned to delta-api 0.0.5 (mangrove is at 0.0.6, with a breaking change). Disclose
+  as work in progress; re-pin if it merges upstream before publish.
 
 ## 10. Open questions / risks
 

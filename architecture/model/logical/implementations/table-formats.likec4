@@ -61,6 +61,7 @@ model {
   icebergRust -[realizes]-> lakehouse.tableFormat
   icebergRust -[consumes]-> icebergRestSpec "uses the REST catalog"
   icebergRust -[consumes]-> s3Spec "reads/writes data files via"
+  icebergRust -[operatesOn]-> lakehouse.namespace "creates and lists"
   icebergRust -[operatesOn]-> lakehouse.table "creates and changes"
 
 }

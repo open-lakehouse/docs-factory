@@ -5283,6 +5283,28 @@
             }
           ],
           "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "55.1",
+              "api": "Catalog::list_namespaces",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -5401,6 +5423,28 @@
               "fails": null,
               "version": "0.12.0",
               "api": "create_namespace",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "55.1",
+              "api": "Catalog::create_namespace",
               "note": null
             }
           ],
@@ -5556,6 +5600,28 @@
               "fails": null,
               "version": "0.12.0",
               "api": "drop_namespace",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "55.1",
+              "api": "Catalog::drop_namespace",
               "note": null
             }
           ],
@@ -5724,8 +5790,23 @@
         },
         "datafusion-rust": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "55.1",
+              "api": "CREATE TABLE",
+              "note": null
+            },
             {
               "script": "content/unitycatalog/how-to/029-datafusion-iceberg-rust/snippets/query.rs",
               "page": {
@@ -5871,8 +5952,23 @@
         },
         "datafusion-rust": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "55.1",
+              "api": "INSERT INTO",
+              "note": null
+            },
             {
               "script": "content/unitycatalog/how-to/029-datafusion-iceberg-rust/snippets/query.rs",
               "page": {
@@ -6054,8 +6150,23 @@
         },
         "datafusion-rust": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "55.1",
+              "api": "SELECT",
+              "note": null
+            },
             {
               "script": "content/unitycatalog/how-to/029-datafusion-iceberg-rust/snippets/query.rs",
               "page": {
@@ -6198,6 +6309,28 @@
             }
           ],
           "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": true,
+              "works": false,
+              "fails": "UPDATE not supported",
+              "version": "55.1",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -6319,6 +6452,28 @@
               "fails": null,
               "version": "0.12.0",
               "api": "Table.delete",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": true,
+              "works": false,
+              "fails": "DELETE not supported",
+              "version": "55.1",
+              "api": null,
               "note": null
             }
           ],
@@ -6525,6 +6680,28 @@
               "fails": null,
               "version": "0.12.0",
               "api": "rename_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "55.1",
+              "api": "Catalog::rename_table",
               "note": null
             }
           ],
@@ -6792,6 +6969,28 @@
               "fails": null,
               "version": "0.12.0",
               "api": "drop_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "55.1",
+              "api": "Catalog::drop_table",
               "note": null
             }
           ],
@@ -14590,6 +14789,34 @@
       ]
     },
     {
+      "source": "datafusion",
+      "kind": "operatesOn",
+      "target": "lakehouse.namespace",
+      "interfaces": [
+        "datafusion-rust"
+      ],
+      "journeys": [
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
+        "iceberg.schema-create"
+      ]
+    },
+    {
+      "source": "datafusion",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "datafusion-rust"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.drop",
+        "iceberg.read",
+        "iceberg.rename"
+      ]
+    },
+    {
       "source": "deltaRs",
       "kind": "consumes",
       "target": "unityCatalogSpec",
@@ -14782,6 +15009,39 @@
         "managed.create",
         "managed.read",
         "table.list"
+      ]
+    },
+    {
+      "source": "icebergRust",
+      "kind": "consumes",
+      "target": "icebergRestSpec",
+      "interfaces": [
+        "datafusion-rust"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.drop",
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.schema-create"
+      ]
+    },
+    {
+      "source": "icebergRust",
+      "kind": "implements",
+      "target": "icebergSpec",
+      "interfaces": [
+        "datafusion-rust"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.drop",
+        "iceberg.read",
+        "iceberg.rename"
       ]
     },
     {
@@ -19106,12 +19366,12 @@
       "spec": "icebergRestSpec",
       "roles": {
         "client": {
-          "tested": 0,
+          "tested": 8,
           "documented": 0,
           "fails": 0,
           "missing": 0,
           "blocked": 0,
-          "unknown": 10,
+          "unknown": 2,
           "untracked": 15
         }
       },
@@ -19125,7 +19385,7 @@
         {
           "obligation": "listNamespaces",
           "role": "client",
-          "status": "unknown",
+          "status": "tested",
           "journeys": [
             "iceberg.namespace-list"
           ]
@@ -19133,7 +19393,7 @@
         {
           "obligation": "createNamespace",
           "role": "client",
-          "status": "unknown",
+          "status": "tested",
           "journeys": [
             "iceberg.schema-create"
           ]
@@ -19161,7 +19421,7 @@
         {
           "obligation": "dropNamespace",
           "role": "client",
-          "status": "unknown",
+          "status": "tested",
           "journeys": [
             "iceberg.namespace-drop"
           ]
@@ -19177,7 +19437,7 @@
         {
           "obligation": "createTable",
           "role": "client",
-          "status": "unknown",
+          "status": "tested",
           "journeys": [
             "iceberg.create"
           ]
@@ -19191,7 +19451,7 @@
         {
           "obligation": "loadTable",
           "role": "client",
-          "status": "unknown",
+          "status": "tested",
           "journeys": [
             "iceberg.read",
             "iceberg.read-uniform"
@@ -19200,7 +19460,7 @@
         {
           "obligation": "updateTable",
           "role": "client",
-          "status": "unknown",
+          "status": "tested",
           "journeys": [
             "iceberg.append",
             "iceberg.overwrite",
@@ -19212,7 +19472,7 @@
         {
           "obligation": "dropTable",
           "role": "client",
-          "status": "unknown",
+          "status": "tested",
           "journeys": [
             "iceberg.drop"
           ]
@@ -19220,7 +19480,7 @@
         {
           "obligation": "renameTable",
           "role": "client",
-          "status": "unknown",
+          "status": "tested",
           "journeys": [
             "iceberg.rename",
             "iceberg.rename-namespace"

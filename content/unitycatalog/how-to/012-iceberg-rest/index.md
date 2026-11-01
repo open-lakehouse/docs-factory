@@ -1,6 +1,6 @@
 ---
 title: Use Iceberg REST clients with Unity Catalog
-summary: Connect Spark, DuckDB, and PyIceberg to Unity Catalog's Iceberg REST API, then create, write, change, rename, and drop managed Iceberg tables with vended S3 credentials.
+summary: Connect Spark, DuckDB, PyIceberg, and DataFusion to Unity Catalog's Iceberg REST API, then create, write, change, rename, and drop managed Iceberg tables with vended S3 credentials.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -9,6 +9,8 @@ references:
   - icebergSpec
   - apacheSpark
   - duckdb
+  - icebergRust
+  - datafusion
 status: ready
 ---
 
@@ -25,6 +27,7 @@ same privileges.
   [Set managed storage for catalogs and schemas on S3](../managed-storage-s3/index.md).
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).
 - [Java 17](https://adoptium.net/temurin/releases/?version=17), for Spark.
+- [Rust](https://www.rust-lang.org/tools/install), for DataFusion.
 :::
 
 ## How Iceberg names map to the catalog
@@ -126,6 +129,40 @@ real AWS, leave it unset.
 :::
 ::::
 
+:::tab[DataFusion]
+Create a Cargo project with [iceberg-rust](model:icebergRust)'s REST catalog,
+its [DataFusion](model:datafusion) integration and S3 storage, DataFusion, and
+the Tokio runtime:
+
+```bash
+cargo new iceberg-datafusion && cd iceberg-datafusion
+cargo add iceberg-datafusion --git https://github.com/apache/datafusion-iceberg --rev 8979482936eff6509e40c2e4e3bfc1235d965d60
+cargo add iceberg iceberg-catalog-rest iceberg-storage-opendal --git https://github.com/apache/iceberg-rust --rev 5b82ab99aeaf50bf4f5b3b776ac9cd6380a5f3e3
+cargo add datafusion@55.1
+cargo add tokio --features macros,rt-multi-thread
+```
+
+The DataFusion integration isn't on crates.io, so the first command adds it
+from a commit of its repository, and the next two add the iceberg-rust commit
+and DataFusion release it builds on.
+
+The steps below go into `src/main.rs`, in a
+`#[tokio::main] async fn main() -> Result<(), Box<dyn std::error::Error>>`.
+Run them with `cargo run`. They use these imports:
+
+```rust file=./snippets/datafusion_iceberg.rs start=start:imports end=end:imports
+```
+
+```rust file=./snippets/datafusion_iceberg.rs start=start:connect end=end:connect
+```
+
+The REST catalog takes the same three values, and its S3 storage uses the
+credentials the server vends for each table. `register_catalog` makes the
+catalog's schemas DataFusion schemas, so SQL names a table
+`retail.sales.orders`. Keep `catalog` as well: schemas and renames go through
+it.
+:::
+
 ## Create a schema
 
 :::tab[Spark]
@@ -141,6 +178,15 @@ real AWS, leave it unset.
 :::tab[PyIceberg]
 ```python file=./snippets/pyiceberg_tables.py start=start:schema end=end:schema
 ```
+:::
+
+:::tab[DataFusion]
+```rust file=./snippets/datafusion_iceberg.rs start=start:schema end=end:schema
+```
+
+DataFusion SQL has no `CREATE SCHEMA` for an Iceberg catalog, so create the
+namespace through the catalog. DataFusion lists the schemas when you create
+the provider; create it again to query tables in the new schema.
 :::
 
 The new namespace is an ordinary Unity Catalog schema, `retail.staging`, and
@@ -160,6 +206,11 @@ other clients see it at once.
 
 :::tab[PyIceberg]
 ```python file=./snippets/pyiceberg_tables.py start=start:create end=end:create
+```
+:::
+
+:::tab[DataFusion]
+```rust file=./snippets/datafusion_iceberg.rs start=start:create end=end:create
 ```
 :::
 
@@ -223,6 +274,23 @@ amount: [[9.5,20]]
 ```
 :::
 
+:::tab[DataFusion]
+```rust file=./snippets/datafusion_iceberg.rs start=start:write end=end:write
+```
+
+```rust file=./snippets/datafusion_iceberg.rs start=start:read end=end:read
+```
+
+```text
++----------+----------+--------+
+| order_id | customer | amount |
++----------+----------+--------+
+| 1        | ada      | 9.5    |
+| 2        | grace    | 20.0   |
++----------+----------+--------+
+```
+:::
+
 The client writes data and metadata files with the vended credentials, then
 asks the server to commit the new snapshot. The server accepts a commit only if
 the table hasn't changed since the client read it, so concurrent writers can't
@@ -251,6 +319,11 @@ PyIceberg has no `UPDATE`. Replace the matching rows with `overwrite` and an
 `overwrite_filter`.
 :::
 
+:::tab[DataFusion]
+DataFusion's Iceberg integration has no `UPDATE` or `DELETE FROM`; its
+`INSERT INTO` only appends.
+:::
+
 ## Rename and drop a table
 
 :::tab[Spark]
@@ -275,6 +348,19 @@ PyIceberg has no `UPDATE`. Replace the matching rows with `overwrite` and an
 
 ```python file=./snippets/pyiceberg_tables.py start=start:drop end=end:drop
 ```
+:::
+
+:::tab[DataFusion]
+```rust file=./snippets/datafusion_iceberg.rs start=start:rename end=end:rename
+```
+
+```rust file=./snippets/datafusion_iceberg.rs start=start:drop end=end:drop
+```
+
+DataFusion SQL has no `ALTER TABLE … RENAME`, so rename through the catalog.
+DataFusion keeps the table names it has already seen, so drop the renamed
+table through the catalog too, or create the provider again before you name
+it in SQL.
 :::
 
 A rename keeps the table in its schema. Dropping a managed table removes it

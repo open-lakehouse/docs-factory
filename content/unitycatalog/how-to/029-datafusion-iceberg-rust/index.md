@@ -108,7 +108,7 @@ other Iceberg REST client: `CREATE TABLE` on the schema to create the table,
 ## Next steps
 
 - [Use Iceberg REST clients with Unity Catalog](../iceberg-rest/index.md)
-  connects Spark, DuckDB, and PyIceberg to the same catalog, and covers
-  updates, renames, and drops.
+  connects Spark, DuckDB, and PyIceberg to the same catalog, and shows
+  DataFusion creating schemas and renaming and dropping tables.
 - [Credential vending](../../explanation/credential-vending/index.md) explains
   how the server scopes the credentials it hands each client.

@@ -28,3 +28,7 @@ path = "../delta/how-to/001-read-a-delta-table/snippets/read.rs"
 [[example]]
 name = "uc-datafusion-iceberg-rust"
 path = "../unitycatalog/how-to/029-datafusion-iceberg-rust/snippets/query.rs"
+
+[[example]]
+name = "uc-iceberg-rest-datafusion"
+path = "../unitycatalog/how-to/012-iceberg-rest/snippets/datafusion_iceberg.rs"

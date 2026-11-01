@@ -51,6 +51,7 @@ confirmed, and *archived* means the project no longer ships.
 | Polars | Unity Catalog REST | Polars | [Python DataFrame libraries](../python-dataframes/index.md); [`polars.Catalog`](https://docs.pola.rs/api/python/stable/reference/catalog/api/polars.Catalog.html) | Tested here | 2026-10-25 |
 | delta-rs (`deltalake`) | Unity Catalog REST | Delta Lake | [Python DataFrame libraries](../python-dataframes/index.md); [Load table from Unity Catalog](https://delta-io.github.io/delta-rs/latest/usage/loading-table/) | Tested here | 2026-10-25 |
 | PyIceberg | Iceberg REST | Apache Iceberg | [Use Iceberg REST clients with Unity Catalog](../iceberg-rest/index.md) | Tested here | 2026-10-25 |
+| DataFusion (iceberg-rust) | Iceberg REST | Apache DataFusion | [Use Iceberg REST clients with Unity Catalog](../iceberg-rest/index.md) | Tested here | 2026-11-01 |
 | MLflow | Unity Catalog REST | MLflow | [Manage registered models](../manage-models/index.md) | Tested here | 2026-10-25 |
 | LangChain | Unity Catalog REST | Unity Catalog | [Use catalog functions as LangChain tools](../langchain-tools/index.md) | Tested here | 2026-10-25 |
 | obstore | Unity Catalog REST | Development Seed | [Use Unity Catalog credentials with obstore](../obstore-credentials/index.md) | Tested here | 2026-10-25 |

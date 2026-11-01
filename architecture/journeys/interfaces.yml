@@ -101,6 +101,14 @@ pyiceberg:
   label: PyIceberg
   package: pyiceberg
   model: pyIceberg
+# DataFusion embedded in a Rust program, reaching Iceberg REST catalogs
+# through iceberg-rust's DataFusion integration.
+datafusion-rust:
+  label: DataFusion · Rust
+  pin: iceberg-rust
+  package: iceberg-datafusion
+  model: datafusion
+  integrations: [icebergRust]
 # The catalog clients. They manage catalog objects; scripts that read or write
 # data through them pair them with a storage library, named in the claim's note.
 cli:

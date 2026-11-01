@@ -4,7 +4,7 @@
 model {
 
   datafusion = implementation "Apache DataFusion" {
-    #library
+    #library #public
 
     description "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
     link https://datafusion.apache.org
@@ -24,6 +24,7 @@ model {
   datafusion -[realizes]-> lakehouse.queryEngine
   datafusion -[consumes]-> s3Spec "reads data files via"
   datafusion -[builtOn]-> objectStore
+  datafusion -[integrates]-> icebergRust "reads and writes Iceberg tables through"
 
   apacheSpark = implementation "Apache Spark" {
     #service #public

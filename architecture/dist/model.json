@@ -1037,7 +1037,8 @@
         }
       ],
       "tags": [
-        "library"
+        "library",
+        "public"
       ],
       "description": {
         "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
@@ -1856,6 +1857,34 @@
       "title": "PyIceberg",
       "kind": "implementation",
       "id": "pyIceberg"
+    },
+    "icebergRust": {
+      "metadata": {
+        "sourceRepo": "apache/iceberg-rust",
+        "crate": "iceberg",
+        "license": "Apache-2.0",
+        "language": "Rust"
+      },
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://rust.iceberg.apache.org"
+        }
+      ],
+      "tags": [
+        "library",
+        "public"
+      ],
+      "description": {
+        "txt": "Rust implementation of Apache Iceberg with REST catalog and table APIs, and a DataFusion integration."
+      },
+      "title": "iceberg-rust",
+      "kind": "implementation",
+      "id": "icebergRust"
     },
     "deltaSpec": {
       "notation": "Specification / open standard",
@@ -3272,6 +3301,17 @@
       "kind": "builtOn",
       "id": "56b1955f70"
     },
+    "d99456c1fd": {
+      "title": "reads and writes Iceberg tables through",
+      "source": {
+        "model": "datafusion"
+      },
+      "target": {
+        "model": "icebergRust"
+      },
+      "kind": "integrates",
+      "id": "d99456c1fd"
+    },
     "1bba5f18a3": {
       "line": "dotted",
       "title": "",
@@ -4277,6 +4317,66 @@
       },
       "kind": "operatesOn",
       "id": "e025b6af71"
+    },
+    "cf039357af": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "icebergRust"
+      },
+      "target": {
+        "model": "icebergSpec"
+      },
+      "kind": "implements",
+      "id": "cf039357af"
+    },
+    "ed49ded72e": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "icebergRust"
+      },
+      "target": {
+        "model": "lakehouse.tableFormat"
+      },
+      "kind": "realizes",
+      "id": "ed49ded72e"
+    },
+    "b0db974e5c": {
+      "line": "dashed",
+      "title": "uses the REST catalog",
+      "source": {
+        "model": "icebergRust"
+      },
+      "target": {
+        "model": "icebergRestSpec"
+      },
+      "kind": "consumes",
+      "id": "b0db974e5c"
+    },
+    "173180c0b6": {
+      "line": "dashed",
+      "title": "reads/writes data files via",
+      "source": {
+        "model": "icebergRust"
+      },
+      "target": {
+        "model": "s3Spec"
+      },
+      "kind": "consumes",
+      "id": "173180c0b6"
+    },
+    "ae282aff30": {
+      "line": "dashed",
+      "title": "creates and changes",
+      "source": {
+        "model": "icebergRust"
+      },
+      "target": {
+        "model": "lakehouse.table"
+      },
+      "kind": "operatesOn",
+      "id": "ae282aff30"
     },
     "98e8a6de19": {
       "title": "queries and governs data through",
@@ -5378,6 +5478,20 @@
           "head": "normal"
         },
         {
+          "id": "1unka5s",
+          "parent": null,
+          "source": "icebergRust",
+          "target": "lakehouse",
+          "label": "creates and changes",
+          "relations": [
+            "ed49ded72e",
+            "ae282aff30"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal"
+        },
+        {
           "id": "1pfr91s",
           "parent": null,
           "source": "deltaSpec",
@@ -5793,6 +5907,20 @@
           "line": "dashed",
           "head": "normal",
           "kind": "builtOn"
+        },
+        {
+          "id": "hm9qq7",
+          "parent": null,
+          "source": "datafusion",
+          "target": "icebergRust",
+          "label": "reads and writes Iceberg tables through",
+          "relations": [
+            "d99456c1fd"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "integrates"
         },
         {
           "id": "1nipxsn",
@@ -6432,6 +6560,48 @@
           "label": "uses the REST catalog",
           "relations": [
             "75393f87ca"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1b9ehdb",
+          "parent": null,
+          "source": "icebergRust",
+          "target": "icebergSpec",
+          "label": null,
+          "relations": [
+            "cf039357af"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "w1t41r",
+          "parent": null,
+          "source": "icebergRust",
+          "target": "icebergRestSpec",
+          "label": "uses the REST catalog",
+          "relations": [
+            "b0db974e5c"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "6pknzm",
+          "parent": null,
+          "source": "icebergRust",
+          "target": "s3Spec",
+          "label": "reads/writes data files via",
+          "relations": [
+            "173180c0b6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8130,6 +8300,7 @@
           "outEdges": [
             "byeu7p",
             "15qymuw",
+            "hm9qq7",
             "1nipxsn"
           ],
           "title": "Apache DataFusion",
@@ -8145,7 +8316,8 @@
             "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
           },
           "tags": [
-            "library"
+            "library",
+            "public"
           ],
           "metadata": {
             "sourceRepo": "apache/datafusion",
@@ -8408,79 +8580,6 @@
           "kind": "openSpecification"
         },
         {
-          "id": "icebergSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "88sjk8",
-            "1tr0ggg",
-            "z7z97q"
-          ],
-          "outEdges": [
-            "1n3wkt1"
-          ],
-          "title": "Apache Iceberg",
-          "modelRef": "icebergSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open table-format specification for huge analytic datasets,\nwith hidden partitioning and snapshot isolation."
-          },
-          "tags": [
-            "public"
-          ],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://iceberg.apache.org"
-            }
-          ],
-          "kind": "openSpecification"
-        },
-        {
-          "id": "icebergRestSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "wv3hil",
-            "u9bajv",
-            "8vssns",
-            "1m7m43k",
-            "156ihx2"
-          ],
-          "outEdges": [
-            "lv7f45"
-          ],
-          "title": "Iceberg REST Catalog",
-          "modelRef": "icebergRestSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open specification for an Iceberg catalog served over REST: engines use it\nto create, load, and commit Iceberg tables through any conforming catalog."
-          },
-          "tags": [
-            "public"
-          ],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://iceberg.apache.org/rest-catalog-spec/"
-            }
-          ],
-          "kind": "openSpecification"
-        },
-        {
           "id": "objectStore",
           "parent": null,
           "level": 0,
@@ -8525,41 +8624,47 @@
           "kind": "implementation"
         },
         {
-          "id": "s3Spec",
+          "id": "icebergRust",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "1nipxsn",
-            "pkqp96",
-            "1g9xi2h",
-            "1nj8xph",
-            "1vxufpy"
+            "hm9qq7"
           ],
           "outEdges": [
-            "baig88"
+            "1unka5s",
+            "1b9ehdb",
+            "w1t41r",
+            "6pknzm"
           ],
-          "title": "S3 API",
-          "modelRef": "s3Spec",
-          "shape": "rectangle",
-          "color": "sky",
+          "title": "iceberg-rust",
+          "modelRef": "icebergRust",
+          "shape": "cylinder",
+          "color": "muted",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement."
+            "txt": "Rust implementation of Apache Iceberg with REST catalog and table APIs, and a DataFusion integration."
           },
           "tags": [
+            "library",
             "public"
           ],
-          "notation": "Specification / open standard",
+          "metadata": {
+            "sourceRepo": "apache/iceberg-rust",
+            "crate": "iceberg",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
+          "notation": "Implementation (software / service)",
           "links": [
             {
-              "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+              "url": "https://rust.iceberg.apache.org"
             }
           ],
-          "kind": "openSpecification"
+          "kind": "implementation"
         },
         {
           "id": "azureBlobSpec",
@@ -8626,6 +8731,119 @@
           "kind": "openSpecification"
         },
         {
+          "id": "icebergSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "88sjk8",
+            "1tr0ggg",
+            "z7z97q",
+            "1b9ehdb"
+          ],
+          "outEdges": [
+            "1n3wkt1"
+          ],
+          "title": "Apache Iceberg",
+          "modelRef": "icebergSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open table-format specification for huge analytic datasets,\nwith hidden partitioning and snapshot isolation."
+          },
+          "tags": [
+            "public"
+          ],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "icebergRestSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "wv3hil",
+            "u9bajv",
+            "8vssns",
+            "1m7m43k",
+            "156ihx2",
+            "w1t41r"
+          ],
+          "outEdges": [
+            "lv7f45"
+          ],
+          "title": "Iceberg REST Catalog",
+          "modelRef": "icebergRestSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open specification for an Iceberg catalog served over REST: engines use it\nto create, load, and commit Iceberg tables through any conforming catalog."
+          },
+          "tags": [
+            "public"
+          ],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org/rest-catalog-spec/"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "s3Spec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1nipxsn",
+            "pkqp96",
+            "1g9xi2h",
+            "1nj8xph",
+            "1vxufpy",
+            "6pknzm"
+          ],
+          "outEdges": [
+            "baig88"
+          ],
+          "title": "S3 API",
+          "modelRef": "s3Spec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement."
+          },
+          "tags": [
+            "public"
+          ],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
           "id": "lakehouse",
           "parent": null,
           "level": 0,
@@ -8669,6 +8887,7 @@
             "1aocmg4",
             "1h9jz10",
             "103slfd",
+            "1unka5s",
             "1pfr91s",
             "1n3wkt1",
             "aqakf8",
@@ -8726,7 +8945,7 @@
           }
         ]
       },
-      "hash": "Ko7gwAQZMJuys7nASICYj6_IG0KYvVwb30LpfC8oPlk"
+      "hash": "QnZDMD6iPNLAqAUXhWt93f0G_sIwxUb5osmcU0ZZgnk"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -14027,7 +14246,8 @@
             "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
           },
           "tags": [
-            "library"
+            "library",
+            "public"
           ],
           "metadata": {
             "sourceRepo": "apache/datafusion",
@@ -14662,6 +14882,20 @@
           "line": "dashed",
           "head": "normal",
           "kind": "consumes"
+        },
+        {
+          "id": "w1t41r",
+          "parent": null,
+          "source": "icebergRust",
+          "target": "icebergRestSpec",
+          "label": "uses the REST catalog",
+          "relations": [
+            "b0db974e5c"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
         }
       ],
       "nodes": [
@@ -15126,6 +15360,44 @@
           "kind": "implementation"
         },
         {
+          "id": "icebergRust",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "w1t41r"
+          ],
+          "title": "iceberg-rust",
+          "modelRef": "icebergRust",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Rust implementation of Apache Iceberg with REST catalog and table APIs, and a DataFusion integration."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "apache/iceberg-rust",
+            "crate": "iceberg",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://rust.iceberg.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "unityCatalogDeltaApiSpec",
           "parent": null,
           "level": 0,
@@ -15209,7 +15481,8 @@
           "inEdges": [
             "u9bajv",
             "wv3hil",
-            "156ihx2"
+            "156ihx2",
+            "w1t41r"
           ],
           "outEdges": [
             "dton7c"
@@ -15364,7 +15637,7 @@
           }
         ]
       },
-      "hash": "ZfjQXgR2-tmNFsberBYpYkSx4CYsyBCzYzp69ULaBbs"
+      "hash": "bzKnbOfh4bTnoh4XhP077iTpDhv1ulilOo6mSrazqss"
     },
     "techFormatsStorage": {
       "_type": "element",
@@ -15562,6 +15835,48 @@
           "line": "dotted",
           "head": "normal",
           "kind": "implements"
+        },
+        {
+          "id": "1qhm4eb",
+          "parent": null,
+          "source": "icebergRust",
+          "target": "lakehouse.tableFormat",
+          "label": null,
+          "relations": [
+            "ed49ded72e"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1b9ehdb",
+          "parent": null,
+          "source": "icebergRust",
+          "target": "icebergSpec",
+          "label": null,
+          "relations": [
+            "cf039357af"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "6pknzm",
+          "parent": null,
+          "source": "icebergRust",
+          "target": "s3Spec",
+          "label": "reads/writes data files via",
+          "relations": [
+            "173180c0b6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
         },
         {
           "id": "1x0w5p9",
@@ -15972,6 +16287,46 @@
           "kind": "implementation"
         },
         {
+          "id": "icebergRust",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1qhm4eb",
+            "1b9ehdb",
+            "6pknzm"
+          ],
+          "title": "iceberg-rust",
+          "modelRef": "icebergRust",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Rust implementation of Apache Iceberg with REST catalog and table APIs, and a DataFusion integration."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "metadata": {
+            "sourceRepo": "apache/iceberg-rust",
+            "crate": "iceberg",
+            "license": "Apache-2.0",
+            "language": "Rust"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://rust.iceberg.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "deltaSpark",
           "parent": null,
           "level": 0,
@@ -16351,6 +16706,7 @@
           "children": [],
           "inEdges": [
             "z7z97q",
+            "1b9ehdb",
             "88sjk8",
             "1tr0ggg"
           ],
@@ -16429,6 +16785,7 @@
           "children": [],
           "inEdges": [
             "1vxufpy",
+            "6pknzm",
             "1nj8xph",
             "pkqp96",
             "1g9xi2h"
@@ -16540,6 +16897,7 @@
             "1sx0c59",
             "1cchpk7",
             "1snzgy2",
+            "1qhm4eb",
             "1x0w5p9",
             "1pxiy78",
             "c3f35l",
@@ -16580,6 +16938,7 @@
             "67455y",
             "1cchpk7",
             "1snzgy2",
+            "1qhm4eb",
             "1x0w5p9",
             "1pxiy78",
             "c3f35l",
@@ -16685,7 +17044,7 @@
           }
         ]
       },
-      "hash": "RRZqi6Prmhzp4HIoDAcKTMu9Lxb46LgFvJlXXyDfFNU"
+      "hash": "wxSsPBclZGfkhozU9doPy8mQzYZzwAV81iK8BvmjSVk"
     },
     "techConcerns": {
       "_type": "element",

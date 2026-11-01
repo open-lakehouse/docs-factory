@@ -66,7 +66,7 @@ views {
       lakehouse.catalog, lakehouse.metadataStore,
       unityCatalogSpec, unityCatalogDeltaApiSpec, icebergRestSpec,
       unityCatalogServer, lakekeeper, mangrove, postgresql,
-      unityCatalogCli, unityCatalogPythonSdk, unityCatalogJavaSdk, unityCatalogAi, unityCatalogLangChain, unityCatalogOpenAi, unityCatalogAnthropic, pyIceberg
+      unityCatalogCli, unityCatalogPythonSdk, unityCatalogJavaSdk, unityCatalogAi, unityCatalogLangChain, unityCatalogOpenAi, unityCatalogAnthropic, pyIceberg, icebergRust
     autoLayout LeftRight
   }
 
@@ -77,7 +77,7 @@ views {
     include
       lakehouse.tableFormat, lakehouse.fileFormat, lakehouse.objectStorage,
       deltaSpec, icebergSpec, parquetSpec, s3Spec, azureBlobSpec, gcsSpec,
-      deltaRs, pyIceberg, deltaSpark, icebergSparkRuntime, duckdbDelta, duckdbIceberg,
+      deltaRs, pyIceberg, icebergRust, deltaSpark, icebergSparkRuntime, duckdbDelta, duckdbIceberg,
       objectStore, obstore,
       rustfs, amazonS3, azurite, azureBlobStorage
     autoLayout LeftRight

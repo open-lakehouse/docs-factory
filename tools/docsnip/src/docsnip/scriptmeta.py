@@ -318,7 +318,20 @@ SNIPPETS_CRATE = Path("_rust") / "Cargo.toml"
 @dataclasses.dataclass(frozen=True)
 class _Crate:
     examples: dict[Path, str]  # script path → example name
-    dependencies: list[str]
+    dependencies: dict[str, str]  # crate name → `cargo add` argument
+
+    def used_by(self, source: str) -> list[str]:
+        """The `cargo add` arguments for the crates ``source`` names by path.
+
+        The crate holds every script's dependencies, and a reader's project
+        needs only its own script's. The lookbehind skips a re-export path such
+        as `deltalake::datafusion::`.
+        """
+        return [
+            arg
+            for name, arg in self.dependencies.items()
+            if re.search(rf"(?<![\w:]){name.replace('-', '_')}::", source)
+        ]
 
 
 def _crate_for(path: Path) -> _Crate | None:
@@ -335,13 +348,13 @@ def _load_crate(manifest: Path) -> _Crate:
         (manifest.parent / e["path"]).resolve(): e["name"]
         for e in raw.get("example", [])
     }
-    deps = []
+    deps = {}
     for name, spec in (raw.get("dependencies") or {}).items():
         spec = {"version": spec} if isinstance(spec, str) else spec
         arg = f"{name}@{str(spec.get('version', '')).lstrip('=')}".rstrip("@")
         if spec.get("features"):
             arg += f" --features {','.join(spec['features'])}"
-        deps.append(arg)
+        deps[name] = arg
     return _Crate(examples=examples, dependencies=deps)
 
 
@@ -385,7 +398,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
         block = {}
         if runner.name == "rust":
             crate = _crate_for(path)
-            dependencies = crate.dependencies if crate else []
+            dependencies = crate.used_by(text) if crate else []
         else:
             assert runner.deps_re is not None
             dependencies = [

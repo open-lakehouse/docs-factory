@@ -68,6 +68,8 @@ def _prose_pin(key: str, package: str, project: str) -> Rule:
     )
 
 
+_ICEBERG_RS = r"iceberg(?:-catalog-rest|-datafusion|-storage-opendal)?"
+
 _MLFLOW_PIN = re.compile(rf"\bmlflow(?:\[[^\]]*\])?=={_V}")
 
 # Blogs are dated narrative and keep the versions they were written against.
@@ -75,7 +77,8 @@ UNITYCATALOG = Project(
     name="unitycatalog",
     product=r"Unity Catalog\s+(?:OSS\s+)?",
     scan=(
-        ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml", "*.java")),
+        ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml", "*.java", "*.rs")),
+        ("content/_rust", ("Cargo.toml",)),
         ("envs", ("*.yaml", "*.yml", "*.md", "*.py", "*.toml", "Dockerfile")),
         ("emit/docs/sites", ("unitycatalog-docs.mjs",)),
     ),
@@ -114,6 +117,9 @@ UNITYCATALOG = Project(
         Rule("scikit-learn", re.compile(rf"\bscikit-learn=={_V}")),
         Rule("duckdb", re.compile(rf"\bduckdb=={_V}")),
         _prose_pin("duckdb", "duckdb", "unitycatalog"),
+        # iceberg-rust's crates release together, under one version.
+        Rule("iceberg-rust", re.compile(rf"\b{_ICEBERG_RS}@{_V}")),
+        Rule("iceberg-rust", re.compile(rf'^{_ICEBERG_RS} = "={_V}"', re.M)),
         Rule(
             "delta-spark",
             re.compile(

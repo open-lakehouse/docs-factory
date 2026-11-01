@@ -131,20 +131,31 @@ def plan(
     scripts: Iterable[ScriptMeta], repo_root: Path, changed: list[str] | None
 ) -> dict[str, list[dict]]:
     """Per lane, the matrix of shards:
-    ``[{"id": "spark-1", "shard": "1/2", "scripts": [...]}]``. The ``id`` is safe
-    in artifact names, which can't hold the ``/`` of ``shard``.
+    ``[{"id": "spark-1", "shard": "1/2", "scripts": [...], "rust": False}]``. The
+    ``id`` is safe in artifact names, which can't hold the ``/`` of ``shard``.
+    ``rust`` marks a shard that runs a Rust script, so a services shard builds
+    the snippets crate before its scripts' timeouts start.
 
     A lane with nothing selected maps to ``[]``, which the workflow skips.
     """
     durations = load_durations(repo_root)
     by_lane: dict[str, list[str]] = {lane: [] for lane in LANES}
+    rust: set[str] = set()
     for meta in select(scripts, repo_root, changed):
-        by_lane[lane_of(meta)].append(_rel(meta.path, repo_root))
+        rel = _rel(meta.path, repo_root)
+        by_lane[lane_of(meta)].append(rel)
+        if meta.runner == "rust":
+            rust.add(rel)
     out: dict[str, list[dict]] = {}
     for lane, paths in by_lane.items():
         bins = shard(paths, durations, _MAX_SHARDS[lane])
         out[lane] = [
-            {"id": f"{lane}-{i}", "shard": f"{i}/{len(bins)}", "scripts": b}
+            {
+                "id": f"{lane}-{i}",
+                "shard": f"{i}/{len(bins)}",
+                "scripts": b,
+                "rust": any(p in rust for p in b),
+            }
             for i, b in enumerate(bins, start=1)
         ]
     return out

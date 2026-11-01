@@ -296,3 +296,20 @@ def test_delta_prose_boundaries_name_the_product(tmp_path: Path) -> None:
     )
     warnings = versions.prose_warnings(repo)
     assert [w.split(":")[1] for w in warnings] == ["1"]
+
+
+def test_iceberg_rust_crate_pins_follow_the_manifest(tmp_path: Path) -> None:
+    repo = _repo(
+        tmp_path,
+        {
+            "how-to/h/snippets/query.rs": (
+                "//! `cargo add iceberg@0.10.1 iceberg-catalog-rest@0.10.1"
+                " iceberg-datafusion@0.9.0`\n"
+            )
+        },
+        manifest=MANIFEST + "  iceberg-rust: 0.10.1\n",
+    )
+    [error] = versions.check(repo)
+    assert "iceberg-datafusion@0.9.0" in error and "should be 0.10.1" in error
+    versions.fix(repo)
+    assert versions.check(repo) == []

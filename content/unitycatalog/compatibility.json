@@ -146,6 +146,19 @@
       "viaVersion": null
     },
     {
+      "key": "datafusion-rust",
+      "label": "DataFusion · Rust",
+      "version": "0.10.1",
+      "package": "iceberg-datafusion",
+      "model": "datafusion",
+      "via": null,
+      "integrations": [
+        "icebergRust"
+      ],
+      "rollup": [],
+      "viaVersion": null
+    },
+    {
       "key": "cli",
       "label": "uc CLI",
       "version": "0.7.0",
@@ -278,6 +291,7 @@
         "spark",
         "duckdb",
         "pyiceberg",
+        "datafusion-rust",
         "polars",
         "daft"
       ],
@@ -526,6 +540,7 @@
         "daft",
         "pandas",
         "pyiceberg",
+        "datafusion-rust",
         "cli",
         "python-sdk"
       ],
@@ -612,6 +627,7 @@
         "polars",
         "daft",
         "pyiceberg",
+        "datafusion-rust",
         "cli",
         "python-sdk"
       ],
@@ -1481,6 +1497,43 @@
             "iceberg.views",
             "iceberg.scan-planning",
             "iceberg.remote-signing"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "datafusion",
+      "title": "Apache DataFusion",
+      "interfaces": [
+        "datafusion-rust"
+      ],
+      "page": null,
+      "anchor": null,
+      "heading": null,
+      "groups": [
+        {
+          "table": "iceberg-rest",
+          "columns": [
+            "datafusion-rust"
+          ],
+          "rows": [
+            "iceberg.namespace-list",
+            "iceberg.schema-create",
+            "iceberg.namespace-properties",
+            "iceberg.namespace-drop",
+            "iceberg.list",
+            "iceberg.create",
+            "iceberg.append",
+            "iceberg.overwrite",
+            "iceberg.read",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.merge",
+            "iceberg.rename",
+            "iceberg.rename-namespace",
+            "iceberg.drop",
+            "iceberg.join-delta",
+            "iceberg.read-uniform"
           ]
         }
       ]
@@ -5668,6 +5721,28 @@
             }
           ],
           "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/029-datafusion-iceberg-rust/snippets/query.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "datafusion-iceberg-rust"
+              },
+              "anchor": "create-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.10.1",
+              "api": "DataFusion CREATE TABLE",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -5789,6 +5864,28 @@
               "fails": null,
               "version": "0.12.0",
               "api": "Table.append",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/029-datafusion-iceberg-rust/snippets/query.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "datafusion-iceberg-rust"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.10.1",
+              "api": "DataFusion INSERT INTO",
               "note": null
             }
           ],
@@ -5950,6 +6047,28 @@
               "fails": null,
               "version": "0.12.0",
               "api": "Table.scan",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "datafusion-rust": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/029-datafusion-iceberg-rust/snippets/query.rs",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "datafusion-iceberg-rust"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.10.1",
+              "api": "DataFusion SELECT",
               "note": null
             }
           ],
@@ -7934,6 +8053,27 @@
               "implementation": "unityCatalogServer"
             }
           ]
+        },
+        "datafusion-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `registerTable` endpoint.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
         }
       }
     },
@@ -8099,6 +8239,27 @@
           ]
         },
         "pyiceberg": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `commitTransaction` endpoint.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
+        "datafusion-rust": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -8307,6 +8468,27 @@
               "implementation": "unityCatalogServer"
             }
           ]
+        },
+        "datafusion-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
         }
       }
     },
@@ -8491,6 +8673,27 @@
               "implementation": "unityCatalogServer"
             }
           ]
+        },
+        "datafusion-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
         }
       }
     },
@@ -8656,6 +8859,27 @@
           ]
         },
         "pyiceberg": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `signRequest` endpoint; it vends credentials instead.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
+        "datafusion-rust": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -18874,6 +19098,199 @@
           "journeys": [
             "iceberg.v3-multi-arg-transforms"
           ]
+        }
+      ]
+    },
+    {
+      "interface": "datafusion-rust",
+      "spec": "icebergRestSpec",
+      "roles": {
+        "client": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "blocked": 0,
+          "unknown": 10,
+          "untracked": 15
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "getConfig",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "listNamespaces",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-list"
+          ]
+        },
+        {
+          "obligation": "createNamespace",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.schema-create"
+          ]
+        },
+        {
+          "obligation": "namespaceExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadNamespaceMetadata",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "updateProperties",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-properties"
+          ]
+        },
+        {
+          "obligation": "dropNamespace",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-drop"
+          ]
+        },
+        {
+          "obligation": "listTables",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.list"
+          ]
+        },
+        {
+          "obligation": "createTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.create"
+          ]
+        },
+        {
+          "obligation": "tableExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.read",
+            "iceberg.read-uniform"
+          ]
+        },
+        {
+          "obligation": "updateTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.append",
+            "iceberg.overwrite",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.merge"
+          ]
+        },
+        {
+          "obligation": "dropTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.drop"
+          ]
+        },
+        {
+          "obligation": "renameTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.rename",
+            "iceberg.rename-namespace"
+          ]
+        },
+        {
+          "obligation": "registerTable",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadCredentials",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "reportMetrics",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "commitTransaction",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "planTableScan",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "fetchScanTasks",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "signRequest",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "listViews",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadView",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "createView",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "getToken",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
         }
       ]
     }

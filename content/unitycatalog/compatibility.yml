@@ -19,6 +19,7 @@ interfaces:
   - daft
   - pandas
   - pyiceberg
+  - datafusion-rust
   - cli
   - python-sdk
   - java-sdk
@@ -65,7 +66,7 @@ tables:
   # Polars and Daft reach Iceberg REST through PyIceberg's catalog.
   iceberg-rest:
     title: Iceberg tables through Iceberg REST
-    columns: [spark, duckdb, pyiceberg, polars, daft]
+    columns: [spark, duckdb, pyiceberg, datafusion-rust, polars, daft]
     rows:
       - iceberg.namespace-list
       - iceberg.schema-create

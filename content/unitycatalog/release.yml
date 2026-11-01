@@ -49,11 +49,6 @@ pins:
   # build.sbt `icebergVersion` at the release tag; the Iceberg REST spec page
   # renders from this ref.
   iceberg: 1.11.0
-  # iceberg-rust (the `iceberg`, `iceberg-catalog-rest`, `iceberg-datafusion`,
-  # and `iceberg-storage-opendal` crates), for the Rust examples. Moving it also
-  # moves `datafusion` (content/_rust/Cargo.toml, the `cargo add datafusion@`
-  # lines) to the release iceberg-datafusion builds on.
-  iceberg-rust: 0.10.1
   # The deltalake (delta-rs) release the external-table examples run on.
   deltalake: 1.6.6
   # The DuckDB release the Unity Catalog pages' DuckDB examples run on.

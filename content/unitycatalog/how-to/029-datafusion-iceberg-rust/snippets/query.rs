@@ -14,8 +14,9 @@
 //! queries it with DataFusion SQL. Start the docs' local server from
 //! `uc-docs-env/uc-aws` with `docker compose up -d --wait`. Put this file in a
 //! Cargo project's `src/main.rs` after
-//! `cargo add iceberg@0.10.1 iceberg-catalog-rest@0.10.1 iceberg-datafusion@0.10.1 iceberg-storage-opendal@0.10.1`,
-//! `cargo add datafusion@53.1 serde_json`, `cargo add reqwest@0.12 --features json`,
+//! `cargo add iceberg-datafusion --git https://github.com/apache/datafusion-iceberg --rev 8979482936eff6509e40c2e4e3bfc1235d965d60`,
+//! `cargo add iceberg iceberg-catalog-rest iceberg-storage-opendal --git https://github.com/apache/iceberg-rust --rev 5b82ab99aeaf50bf4f5b3b776ac9cd6380a5f3e3`,
+//! `cargo add datafusion@55.1 serde_json`, `cargo add reqwest@0.12 --features json`,
 //! and `cargo add tokio --features macros,rt-multi-thread`, then run it with
 //! `AWS_ENDPOINT_URL=http://localhost:9000 AWS_REGION=us-east-1 cargo run`.
 //!

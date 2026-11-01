@@ -49,7 +49,7 @@ The other states don't say that a tool can't do something:
 | [Polars](#polars) | Polars 1.44.2 | 5 of 70 |
 | [Daft](#daft) | Daft 0.7.25 | 2 of 70 |
 | [PyIceberg](#pyiceberg) | PyIceberg 0.12.0 | 10 of 47 |
-| Apache DataFusion | DataFusion · Rust 0.10.1 | 0 of 17 |
+| Apache DataFusion | DataFusion · Rust 55.1 | 0 of 17 |
 | [uc CLI](#uc-cli) | uc CLI 0.7.0 | 33 of 51 |
 | [Python SDK](#python-sdk) | Python SDK 0.7.0 | 45 of 65 |
 | Unity Catalog Java SDK | Java SDK 0.7.0 | 0 of 0 |

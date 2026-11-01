@@ -589,7 +589,7 @@
     },
     "datafusion-rust": {
       "label": "DataFusion · Rust",
-      "package": "iceberg-datafusion",
+      "package": "datafusion",
       "model": "datafusion",
       "via": null,
       "integrations": [
@@ -597,7 +597,7 @@
       ],
       "rollup": [],
       "projects": {
-        "unitycatalog": "0.10.1"
+        "unitycatalog": "55.1"
       }
     },
     "cli": {

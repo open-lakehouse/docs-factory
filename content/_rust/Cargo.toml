@@ -8,13 +8,15 @@ publish = false
 
 [dependencies]
 deltalake = { version = "=1.1.1", features = ["datafusion"] }
-# iceberg-datafusion 0.10.1 builds on DataFusion 53; the deltalake examples
-# bring their own DataFusion.
-datafusion = "53.1"
-iceberg = "=0.10.1"
-iceberg-catalog-rest = "=0.10.1"
-iceberg-datafusion = "=0.10.1"
-iceberg-storage-opendal = "=0.10.1"
+# The DataFusion deltalake builds on; iceberg-datafusion must share it.
+datafusion = "55.1"
+# Unreleased: datafusion-iceberg's first release (0.12) is the one on DataFusion
+# 55. Until it is on crates.io, pin a commit of it and the iceberg-rust commit
+# that commit builds against, so Cargo resolves one copy of each.
+iceberg = { git = "https://github.com/apache/iceberg-rust", rev = "5b82ab99aeaf50bf4f5b3b776ac9cd6380a5f3e3" }
+iceberg-catalog-rest = { git = "https://github.com/apache/iceberg-rust", rev = "5b82ab99aeaf50bf4f5b3b776ac9cd6380a5f3e3" }
+iceberg-datafusion = { git = "https://github.com/apache/datafusion-iceberg", rev = "8979482936eff6509e40c2e4e3bfc1235d965d60" }
+iceberg-storage-opendal = { git = "https://github.com/apache/iceberg-rust", rev = "5b82ab99aeaf50bf4f5b3b776ac9cd6380a5f3e3" }
 reqwest = { version = "0.12", features = ["json"] }
 serde_json = "1"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }

@@ -351,7 +351,12 @@ def _load_crate(manifest: Path) -> _Crate:
     deps = {}
     for name, spec in (raw.get("dependencies") or {}).items():
         spec = {"version": spec} if isinstance(spec, str) else spec
-        arg = f"{name}@{str(spec.get('version', '')).lstrip('=')}".rstrip("@")
+        if "git" in spec:
+            arg = f"{name} --git {spec['git']}" + (
+                f" --rev {spec['rev']}" if "rev" in spec else ""
+            )
+        else:
+            arg = f"{name}@{str(spec.get('version', '')).lstrip('=')}".rstrip("@")
         if spec.get("features"):
             arg += f" --features {','.join(spec['features'])}"
         deps[name] = arg

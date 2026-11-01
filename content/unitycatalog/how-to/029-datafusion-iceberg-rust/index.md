@@ -33,13 +33,18 @@ and S3 storage, DataFusion, and the Tokio runtime:
 
 ```bash
 cargo new iceberg-datafusion && cd iceberg-datafusion
-cargo add iceberg@0.10.1 iceberg-catalog-rest@0.10.1 iceberg-datafusion@0.10.1 iceberg-storage-opendal@0.10.1
-cargo add datafusion@53.1
+cargo add iceberg-datafusion --git https://github.com/apache/datafusion-iceberg --rev 8979482936eff6509e40c2e4e3bfc1235d965d60
+cargo add iceberg iceberg-catalog-rest iceberg-storage-opendal --git https://github.com/apache/iceberg-rust --rev 5b82ab99aeaf50bf4f5b3b776ac9cd6380a5f3e3
+cargo add datafusion@55.1
 cargo add tokio --features macros,rt-multi-thread
 ```
 
-Add the DataFusion release that `iceberg-datafusion` builds on. With
-another one, its catalog doesn't fit your `SessionContext`.
+The DataFusion integration, `iceberg-datafusion`, isn't published on
+crates.io, so the first command adds it from a commit of its repository. The
+second adds iceberg-rust from the commit that integration builds on, so your
+project holds one copy of iceberg-rust. Add the DataFusion release the
+integration builds on too: with another one, its catalog doesn't fit your
+`SessionContext`.
 
 Rust has no shell, so the steps below go into `src/main.rs`, in a
 `#[tokio::main] async fn main() -> Result<(), Box<dyn std::error::Error>>`.

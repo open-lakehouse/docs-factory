@@ -148,8 +148,8 @@
     {
       "key": "datafusion-rust",
       "label": "DataFusion · Rust",
-      "version": "0.10.1",
-      "package": "iceberg-datafusion",
+      "version": "55.1",
+      "package": "datafusion",
       "model": "datafusion",
       "via": null,
       "integrations": [
@@ -5737,7 +5737,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "0.10.1",
+              "version": "55.1",
               "api": "DataFusion CREATE TABLE",
               "note": null
             }
@@ -5884,7 +5884,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "0.10.1",
+              "version": "55.1",
               "api": "DataFusion INSERT INTO",
               "note": null
             }
@@ -6067,7 +6067,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "0.10.1",
+              "version": "55.1",
               "api": "DataFusion SELECT",
               "note": null
             }

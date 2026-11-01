@@ -94,8 +94,7 @@ def test_a_rust_script_reruns_when_its_crate_or_lockfile_changes(tmp_path) -> No
 def test_a_rust_script_with_a_compose_marks_its_services_shard(tmp_path) -> None:
     _, path = _content(tmp_path)
     path.write_text(
-        BLOCK.replace("// ///\n", '// compose = "compose.yaml"\n// ///\n', 1)
-        + MAIN
+        BLOCK.replace("// ///\n", '// compose = "compose.yaml"\n// ///\n', 1) + MAIN
     )
     (path.parent / "compose.yaml").write_text("services: {}\n")
     meta = parse_script(path)
@@ -103,3 +102,18 @@ def test_a_rust_script_with_a_compose_marks_its_services_shard(tmp_path) -> None
     shards = plan([meta], tmp_path, None)
     assert [s["rust"] for s in shards["services"]] == [True]
     assert shards["rust"] == []
+
+
+def test_a_git_dependency_is_added_from_its_commit(tmp_path) -> None:
+    crate = CRATE.replace(
+        'anyhow = "1"\n',
+        'anyhow = "1"\niceberg = { git = "https://github.com/apache/iceberg-rust", '
+        'rev = "5b82ab9" }\n',
+    )
+    _, path = _content(tmp_path, crate)
+    path.write_text(BLOCK + "use iceberg::Catalog;\n" + MAIN)
+    meta = parse_script(path)
+    assert meta is not None
+    assert "iceberg --git https://github.com/apache/iceberg-rust --rev 5b82ab9" in (
+        meta.dependencies
+    )

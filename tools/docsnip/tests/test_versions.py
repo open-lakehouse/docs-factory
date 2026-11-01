@@ -298,18 +298,27 @@ def test_delta_prose_boundaries_name_the_product(tmp_path: Path) -> None:
     assert [w.split(":")[1] for w in warnings] == ["1"]
 
 
-def test_iceberg_rust_crate_pins_follow_the_manifest(tmp_path: Path) -> None:
+def test_git_commits_in_pages_follow_the_snippets_crate(tmp_path: Path) -> None:
+    url = "https://github.com/apache/datafusion-iceberg"
+    crate = tmp_path / "content" / "_rust" / "Cargo.toml"
+    crate.parent.mkdir(parents=True)
+    crate.write_text(
+        f'[dependencies]\niceberg-datafusion = {{ git = "{url}", rev = "{"a" * 40}" }}\n'
+    )
     repo = _repo(
         tmp_path,
         {
-            "how-to/h/snippets/query.rs": (
-                "//! `cargo add iceberg@0.10.1 iceberg-catalog-rest@0.10.1"
-                " iceberg-datafusion@0.9.0`\n"
+            "how-to/h/index.md": (
+                f"```bash\ncargo add iceberg-datafusion --git {url} --rev {'b' * 40}\n"
+                "cargo add other --git https://github.com/x/y --rev abcdef1\n```\n"
             )
         },
-        manifest=MANIFEST + "  iceberg-rust: 0.10.1\n",
     )
-    [error] = versions.check(repo)
-    assert "iceberg-datafusion@0.9.0" in error and "should be 0.10.1" in error
+    stale, unknown = versions.check(repo)
+    assert "should be " + "a" * 40 in stale
+    assert (
+        "no dependency in content/_rust/Cargo.toml comes from https://github.com/x/y"
+        in unknown
+    )
     versions.fix(repo)
-    assert versions.check(repo) == []
+    assert len(versions.check(repo)) == 1

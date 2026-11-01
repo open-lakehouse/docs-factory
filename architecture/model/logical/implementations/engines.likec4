@@ -25,6 +25,8 @@ model {
   datafusion -[consumes]-> s3Spec "reads data files via"
   datafusion -[builtOn]-> objectStore
   datafusion -[integrates]-> icebergRust "reads and writes Iceberg tables through"
+  datafusion -[operatesOn]-> lakehouse.namespace "lists"
+  datafusion -[operatesOn]-> lakehouse.table "queries and writes"
 
   apacheSpark = implementation "Apache Spark" {
     #service #public

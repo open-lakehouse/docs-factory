@@ -3312,6 +3312,30 @@
       "kind": "integrates",
       "id": "d99456c1fd"
     },
+    "7ce0bd9e0e": {
+      "line": "dashed",
+      "title": "lists",
+      "source": {
+        "model": "datafusion"
+      },
+      "target": {
+        "model": "lakehouse.namespace"
+      },
+      "kind": "operatesOn",
+      "id": "7ce0bd9e0e"
+    },
+    "d8a2014b5e": {
+      "line": "dashed",
+      "title": "queries and writes",
+      "source": {
+        "model": "datafusion"
+      },
+      "target": {
+        "model": "lakehouse.table"
+      },
+      "kind": "operatesOn",
+      "id": "d8a2014b5e"
+    },
     "1bba5f18a3": {
       "line": "dotted",
       "title": "",
@@ -4366,6 +4390,18 @@
       "kind": "consumes",
       "id": "173180c0b6"
     },
+    "2b4c6ef3ec": {
+      "line": "dashed",
+      "title": "creates and lists",
+      "source": {
+        "model": "icebergRust"
+      },
+      "target": {
+        "model": "lakehouse.namespace"
+      },
+      "kind": "operatesOn",
+      "id": "2b4c6ef3ec"
+    },
     "ae282aff30": {
       "line": "dashed",
       "title": "creates and changes",
@@ -5116,14 +5152,15 @@
           "parent": null,
           "source": "datafusion",
           "target": "lakehouse",
-          "label": null,
+          "label": "[...]",
           "relations": [
-            "077da3a8b4"
+            "077da3a8b4",
+            "7ce0bd9e0e",
+            "d8a2014b5e"
           ],
           "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
+          "line": "dashed",
+          "head": "normal"
         },
         {
           "id": "bd1jqg",
@@ -5482,9 +5519,10 @@
           "parent": null,
           "source": "icebergRust",
           "target": "lakehouse",
-          "label": "creates and changes",
+          "label": "[...]",
           "relations": [
             "ed49ded72e",
+            "2b4c6ef3ec",
             "ae282aff30"
           ],
           "color": "gray",
@@ -8945,7 +8983,7 @@
           }
         ]
       },
-      "hash": "QnZDMD6iPNLAqAUXhWt93f0G_sIwxUb5osmcU0ZZgnk"
+      "hash": "Ga5ps2Zg44MrF0dHY-6kXTMbpmSaWmkt5zWeDQwylEY"
     },
     "ucAwsDeploy": {
       "_type": "deployment",

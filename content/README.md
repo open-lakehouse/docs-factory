@@ -393,7 +393,8 @@ region markers, but declare no dependencies of their own: each is an
 `[[example]]` of the snippets crate, `content/_rust/Cargo.toml`, so the crate's
 dependencies (`deltalake`, `tokio`) compile once for every script, and
 `docsnip check` fails on a script no example builds. They run in the `rust`
-lane (`just test-rust`). Rust has no shell either, so a page tells the reader
+lane (`just test-rust`), or in the service lane when they declare a `compose`
+(so `just test-services` needs cargo too). Rust has no shell either, so a page tells the reader
 to `cargo add` those dependencies and put the steps in `src/main.rs`; write the
 script's `//!` doc comment for that reader, and keep it clean under
 `cargo fmt` and `cargo clippy -- -D warnings`.

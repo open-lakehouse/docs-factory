@@ -267,10 +267,20 @@
             ]
           },
           {
+            "id": "datafusion",
+            "via": [
+              "icebergRust"
+            ]
+          },
+          {
             "id": "duckdb",
             "via": [
               "duckdbIceberg"
             ]
+          },
+          {
+            "id": "icebergRust",
+            "via": []
           },
           {
             "id": "polars",
@@ -326,10 +336,20 @@
             ]
           },
           {
+            "id": "datafusion",
+            "via": [
+              "icebergRust"
+            ]
+          },
+          {
             "id": "duckdb",
             "via": [
               "duckdbIceberg"
             ]
+          },
+          {
+            "id": "icebergRust",
+            "via": []
           },
           {
             "id": "polars",
@@ -565,6 +585,19 @@
       "rollup": [],
       "projects": {
         "unitycatalog": "0.12.0"
+      }
+    },
+    "datafusion-rust": {
+      "label": "DataFusion · Rust",
+      "package": "datafusion",
+      "model": "datafusion",
+      "via": null,
+      "integrations": [
+        "icebergRust"
+      ],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "55.1"
       }
     },
     "cli": {
@@ -7158,7 +7191,8 @@
             "duckdb",
             "polars",
             "daft",
-            "pyiceberg"
+            "pyiceberg",
+            "datafusion-rust"
           ],
           "journeys": [
             "iceberg.register"
@@ -7187,7 +7221,8 @@
             "duckdb",
             "polars",
             "daft",
-            "pyiceberg"
+            "pyiceberg",
+            "datafusion-rust"
           ],
           "journeys": [
             "iceberg.transactions"
@@ -7224,7 +7259,8 @@
             "duckdb",
             "polars",
             "daft",
-            "pyiceberg"
+            "pyiceberg",
+            "datafusion-rust"
           ],
           "journeys": [
             "iceberg.views"
@@ -7257,7 +7293,8 @@
             "duckdb",
             "polars",
             "daft",
-            "pyiceberg"
+            "pyiceberg",
+            "datafusion-rust"
           ],
           "journeys": [
             "iceberg.scan-planning"
@@ -7286,7 +7323,8 @@
             "duckdb",
             "polars",
             "daft",
-            "pyiceberg"
+            "pyiceberg",
+            "datafusion-rust"
           ],
           "journeys": [
             "iceberg.remote-signing"

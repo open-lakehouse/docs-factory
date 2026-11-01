@@ -296,3 +296,29 @@ def test_delta_prose_boundaries_name_the_product(tmp_path: Path) -> None:
     )
     warnings = versions.prose_warnings(repo)
     assert [w.split(":")[1] for w in warnings] == ["1"]
+
+
+def test_git_commits_in_pages_follow_the_snippets_crate(tmp_path: Path) -> None:
+    url = "https://github.com/apache/datafusion-iceberg"
+    crate = tmp_path / "content" / "_rust" / "Cargo.toml"
+    crate.parent.mkdir(parents=True)
+    crate.write_text(
+        f'[dependencies]\niceberg-datafusion = {{ git = "{url}", rev = "{"a" * 40}" }}\n'
+    )
+    repo = _repo(
+        tmp_path,
+        {
+            "how-to/h/index.md": (
+                f"```bash\ncargo add iceberg-datafusion --git {url} --rev {'b' * 40}\n"
+                "cargo add other --git https://github.com/x/y --rev abcdef1\n```\n"
+            )
+        },
+    )
+    stale, unknown = versions.check(repo)
+    assert "should be " + "a" * 40 in stale
+    assert (
+        "no dependency in content/_rust/Cargo.toml comes from https://github.com/x/y"
+        in unknown
+    )
+    versions.fix(repo)
+    assert len(versions.check(repo)) == 1

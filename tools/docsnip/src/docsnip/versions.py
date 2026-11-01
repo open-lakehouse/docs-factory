@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import dataclasses
 import re
+import tomllib
 from pathlib import Path
 
 import yaml
@@ -75,7 +76,7 @@ UNITYCATALOG = Project(
     name="unitycatalog",
     product=r"Unity Catalog\s+(?:OSS\s+)?",
     scan=(
-        ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml", "*.java")),
+        ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml", "*.java", "*.rs")),
         ("envs", ("*.yaml", "*.yml", "*.md", "*.py", "*.toml", "Dockerfile")),
         ("emit/docs/sites", ("unitycatalog-docs.mjs",)),
     ),
@@ -235,9 +236,33 @@ def matches(repo_root: Path, project: Project, key: str) -> list[str]:
     return found
 
 
+# A `cargo add … --git <url> --rev <sha>` in a page or a script's doc comment.
+_GIT_ADD = re.compile(r"--git\s+(?P<url>\S+)\s+--rev\s+(?P<rev>[0-9a-f]{7,40})\b")
+SNIPPETS_CRATE = Path("content") / "_rust" / "Cargo.toml"
+
+
+def _crate_revs(repo_root: Path) -> dict[str, str]:
+    """Git URL → the commit the snippets crate builds its dependencies from.
+
+    A crate not yet on crates.io is pinned to a commit, and the commit the docs
+    tell a reader to `cargo add` must be the one CI builds.
+    """
+    manifest = repo_root / SNIPPETS_CRATE
+    if not manifest.is_file():
+        return {}
+    deps = tomllib.loads(manifest.read_text()).get("dependencies") or {}
+    return {
+        spec["git"]: spec["rev"]
+        for spec in deps.values()
+        if isinstance(spec, dict) and "git" in spec and "rev" in spec
+    }
+
+
 def check(repo_root: Path) -> list[str]:
-    """Pins that disagree with their manifest, and ranged installs in pages."""
+    """Pins that disagree with their manifest or the snippets crate, and ranged
+    installs in pages."""
     errors: list[str] = []
+    revs = _crate_revs(repo_root)
     for project in _active(repo_root):
         try:
             versions = load(repo_root, project)
@@ -260,6 +285,18 @@ def check(repo_root: Path) -> list[str]:
                             f"should be {want} ({project.manifest} {key}); "
                             f"run `{project.bump}`"
                         )
+            for m in _GIT_ADD.finditer(text):
+                want = revs.get(m["url"])
+                if want is None:
+                    errors.append(
+                        f"{rel}:{_line(text, m.start())}: no dependency in "
+                        f"{SNIPPETS_CRATE} comes from {m['url']}"
+                    )
+                elif m["rev"] != want:
+                    errors.append(
+                        f"{rel}:{_line(text, m.start())}: --rev {m['rev']} should be "
+                        f"{want} ({SNIPPETS_CRATE}); run `docsnip versions --fix`"
+                    )
             if path.suffix == ".md":
                 for m in project.ranged_install.finditer(text):
                     errors.append(
@@ -270,8 +307,10 @@ def check(repo_root: Path) -> list[str]:
 
 
 def fix(repo_root: Path) -> list[Path]:
-    """Rewrite every pin to its manifest; returns the files changed."""
+    """Rewrite every pin to its manifest, and every git commit to the snippets
+    crate's; returns the files changed."""
     changed: list[Path] = []
+    revs = _crate_revs(repo_root)
     for project in _active(repo_root):
         versions = load(repo_root, project)
         for path in _files(repo_root, project):
@@ -290,6 +329,9 @@ def fix(repo_root: Path) -> list[Path]:
                     ),
                     new,
                 )
+            new = _GIT_ADD.sub(
+                lambda m: m[0].replace(m["rev"], revs.get(m["url"], m["rev"])), new
+            )
             if new != text:
                 path.write_text(new)
                 changed.append(path)

@@ -44,4 +44,23 @@ model {
   pyIceberg -[operatesOn]-> lakehouse.namespace "creates and lists"
   pyIceberg -[operatesOn]-> lakehouse.table "creates and changes"
 
+  icebergRust = implementation "iceberg-rust" {
+    #library #public
+
+    description "Rust implementation of Apache Iceberg with REST catalog and table APIs, and a DataFusion integration."
+    link https://rust.iceberg.apache.org
+
+    metadata {
+      sourceRepo "apache/iceberg-rust"
+      crate "iceberg"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  icebergRust -[implements]-> icebergSpec
+  icebergRust -[realizes]-> lakehouse.tableFormat
+  icebergRust -[consumes]-> icebergRestSpec "uses the REST catalog"
+  icebergRust -[consumes]-> s3Spec "reads/writes data files via"
+  icebergRust -[operatesOn]-> lakehouse.table "creates and changes"
+
 }

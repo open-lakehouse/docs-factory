@@ -121,6 +121,8 @@ nav:
       # Was H21, which collides with the plan's H21 (ecosystem directory).
       - page: how-to/iceberg-rest
         id: H47
+      - page: how-to/datafusion-iceberg-rust
+        id: H55
       - planned: H19
         title: Read UniForm tables from Trino through Iceberg REST
       - page: how-to/integrations

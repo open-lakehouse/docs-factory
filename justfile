@@ -219,10 +219,11 @@ test-jvm:
     uv run pytest content -m "needs_jvm and not needs_uc_server"
 
 # Run the Rust scripts (opt-in): builds the snippets crate (content/_rust), whose
-# examples they are, then runs each.
+# examples they are, then runs each. Those that call a server run with
+# test-services.
 test-rust:
     cargo build --locked --package docs-factory-snippets --examples
-    uv run pytest content -m needs_rust
+    uv run pytest content -m "needs_rust and not needs_uc_server"
 
 # Fold the script durations a CI run measured into .github/script-durations.json,
 # which `docsnip plan` packs shards by. Use a full run (main or nightly).

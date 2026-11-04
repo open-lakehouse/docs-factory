@@ -64,7 +64,7 @@ test("the .md twin gets the alt text and the view's Mermaid", async () => {
 test("a blog MDX target renders <LikeC4View> and imports it once", async () => {
   const { output } = await render(unitycatalog);
   expect(output).toContain('import LikeC4View from "@/components/blog/LikeC4View.astro";');
-  expect(output).toContain('<LikeC4View viewId="flow" />');
+  expect(output).toContain('<LikeC4View viewId="flow" alt="A client asks the catalog." />');
   expect(output).not.toContain("mermaid");
 });
 

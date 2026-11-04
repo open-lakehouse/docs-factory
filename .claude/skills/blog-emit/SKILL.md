@@ -3,17 +3,19 @@ name: blog-emit
 description: |
   Emit a canonical blog draft (blogs/<slug>/index.md) to a downstream target. Runs
   the deterministic emitter core (resolves file= snippets, renders
-  journeys/callouts/diagrams per the target), then delivers the result and
-  records the delivery for idempotent re-emits. Targets:
+  journeys/callouts/LikeC4 and Trestle diagrams per the target), then delivers the
+  result and records the delivery for idempotent re-emits. Targets:
     - unitycatalog — a rich native Astro MDX post in the sibling unitycatalog-website
       repo (interactive LikeC4, <Journey> timelines, :::callouts).
     - delta — a rich native Astro MDX post in the sibling delta-io/website repo
       (../website), same rich rendering.
+    - openlakehouse — a rich MDX post in the sibling openlakehouse-io repo (Vite +
+      React), written in the site's own components (<Callout>, <Steps>).
   A post may list several targets to cross-post to; the first is the primary and the
   others carry a canonical link to it.
   Use when the user wants to emit / export / cross-publish a draft to unitycatalog.io
   or delta.io, or to refresh an already-delivered post there.
-argument-hint: 'A blogs/<slug> to emit. Optional --target <unitycatalog|delta>[,…]; defaults to the target: list in the draft.'
+argument-hint: 'A blogs/<slug> to emit. Optional --target <unitycatalog|delta|openlakehouse>[,…]; defaults to the target: list in the draft.'
 ---
 
 # blog-emit: emit a draft to a downstream target
@@ -54,7 +56,7 @@ The draft's `target:` is one site or a list of sites to cross-post to; the **fir
 the primary**. Take the targets from `--target` if given, else from that list, and
 **confirm the list with the user before delivering** (each delivers to an external
 site). Valid targets are the delivery modules in `emit/targets/` (`unitycatalog`,
-`delta`); a listed target without one (`openlakehouse`) can't be emitted.
+`delta`, `openlakehouse`); a listed target without one can't be emitted.
 
 Work through the targets **one at a time, primary first**, running steps 1–4 for
 each. For each target, **read the matching runbook and follow it for step 3** — only
@@ -64,6 +66,7 @@ that one (this is the progressive-disclosure seam; don't load the others):
 | ------------- | -------------------------------------------- | ---------------------------------------- |
 | `unitycatalog`| [`references/unitycatalog-target.md`](references/unitycatalog-target.md) | `../unitycatalog-website` (Astro MDX)     |
 | `delta`       | [`references/delta-target.md`](references/delta-target.md)               | `../website` — delta-io/website (Astro MDX) |
+| `openlakehouse` | [`references/openlakehouse-target.md`](references/openlakehouse-target.md) | `../openlakehouse-io` (Vite + React MDX) |
 
 ### 1. Run the deterministic core
 
@@ -79,10 +82,13 @@ cross-posts again after the primary's delivery is recorded, see below.)
 
 This writes, under `blogs/<slug>/dist/<target>/`:
 
-- the render — `index.mdx` (unitycatalog, delta);
-- `assets.json` — `{ slug, target, primary, canonical, title, existing, images: [...] }`;
+- the render — `index.mdx` (unitycatalog, delta, openlakehouse);
+- `assets.json` — `{ slug, target, primary, canonical, title, existing, images: [...], public: [...] }`;
 - `likec4-webcomponent.mjs` — the interactive-diagram bundle (rich targets, only when
-  the post has a `likec4` block).
+  the post has a `likec4` block);
+- `public/` — files for the site's `public/` root, only when the post has a `trestle`
+  block: the `<trestle-view>` bundle and the post's diagram snapshots under
+  `trestle/<slug>/`.
 
 It also prints whether delivery should **CREATE** or **UPDATE**. The core refuses a
 `private` post and warns when the post isn't `ready`: rendering a draft to check

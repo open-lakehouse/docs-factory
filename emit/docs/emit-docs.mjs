@@ -77,6 +77,7 @@ import remarkModelLinks from "../plugins/remark-model-links.mjs";
 import remarkPromoteJourneySteps from "../plugins/remark-promote-journey-steps.mjs";
 import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
+import { trestleFiles } from "../plugins/remark-trestle-md.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget, trestleSnapshotUrl } from "../targets/docs-site.mjs";
 import mdTwin, { TRESTLE_ASSET_BASE } from "../targets/md-twin.mjs";
@@ -475,18 +476,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       // remark-trestle-views fetches each diagram's snapshot from where the
       // docs-site target pointed its marker.
       for (const diagram of rendered.trestle) {
-        const url = trestleSnapshotUrl(diagram, assetBase);
-        const snapshot = readFileSync(diagram.snapshot);
-        files.set(`public${url}`, snapshot);
-        // A node's files open from beside the snapshot. Only the manifest ships,
-        // and docsnip leaves sensitive files out of it.
-        if (diagram.env) {
-          for (const path of JSON.parse(snapshot.toString("utf8")).files ?? []) {
-            files.set(
-              `public${dirname(url)}/${path}`,
-              readFileSync(join(dirname(diagram.snapshot), path)),
-            );
-          }
+        for (const { url, path } of trestleFiles(diagram, trestleSnapshotUrl(diagram, assetBase))) {
+          files.set(`public${url}`, readFileSync(path));
         }
         hasTrestle = true;
       }

@@ -40,7 +40,8 @@ For the `unitycatalog` (RICH, component) target, `dist/unitycatalog/`:
 
 - **`index.mdx`** — a rich Astro MDX post with UC-shaped frontmatter:
   - `::::journey` → `<Journey><JourneyStep>`; `likec4` blocks → `<LikeC4View>`
-    (interactive canvas); `:::` callouts are **left as directives** (the site styles
+    (interactive canvas); `trestle` blocks → `<TrestleView src>` over the snapshot
+    the emit ships in `public/`; `:::` callouts are **left as directives** (the site styles
     them); `file=` snippets inlined; a snippet's filename is **kept on the fence** as
     `title="x.py"` meta — the site renders fences with Expressive Code, which turns
     that into a native filename frame (so, unlike a flattening target, this one does
@@ -51,11 +52,21 @@ For the `unitycatalog` (RICH, component) target, `dist/unitycatalog/`:
   - MDX-significant chars in prose (`<`, `>`, `{`, `}`) are entity-escaped.
 - **`likec4-webcomponent.mjs`** — the framework-agnostic LikeC4 web-component
   bundle (when the post has a diagram).
+- **`public/`** — what the site serves from its `public/` root, when the post has
+  a Trestle diagram: `trestle/trestle-webcomponent.mjs`, the `<trestle-view>`
+  custom element built from [`webcomponents/trestle/`](webcomponents/trestle/)
+  (`@open-lakehouse/trestle-diagram` with React 19 bundled in, so a site without
+  React 19 can draw it), and `trestle/<slug>/<env>/`, the post's own copy of the
+  snapshot plus the environment files its nodes open.
 - **`assets.json`** — a manifest of every image in the output, so a delivery
   adapter can upload/insert images from data rather than re-parsing Markdown.
 
 The `delta` target (`dist/delta/`) is the same shape with a delta-io-shaped
-frontmatter schema and a callout-vocabulary remap.
+frontmatter schema and a callout-vocabulary remap. The `openlakehouse` target
+(`dist/openlakehouse/`) is the same shape too, but its site has no
+remark-directive and provides its components to MDX, so it writes the site's own
+`<Callout>`, `<Steps><Step>`, and `<Figure>` (images imported), with no component
+imports, and fails on any directive it can't map.
 
 The one **FLATTENING** target is the internal `md-twin` (used by the site build,
 not `/blog-emit`): it renders portable CommonMark instead of MDX components —
@@ -151,23 +162,26 @@ with a warning. See `blog-links.mjs`.
 ## Targets
 
 `--target` (or each entry of the draft's `target:` list) selects a target module in
-`targets/`; a listed site without one (`openlakehouse`) fails with
-`no emitter for target`:
+`targets/`; a listed site without one fails with `no emitter for target`:
 
-- **`unitycatalog`** — the UnityCatalog.io / OpenLakehouse Astro site (a RICH,
-  component target: MDX with interactive LikeC4 + `<Journey>` + `:::` callouts).
+- **`unitycatalog`** — the UnityCatalog.io Astro site (a RICH, component target:
+  MDX with interactive LikeC4 and Trestle diagrams + `<Journey>` + `:::` callouts).
 - **`delta`** — the Delta.io Astro site (`delta-io/website`, sibling `../website`) —
   also a RICH, component target (same interactive LikeC4 + `<Journey>` + `:::`
   callouts), with a delta-shaped frontmatter schema and callout-vocabulary remap.
+- **`openlakehouse`** — the OpenLakehouse.io React site (sibling `../openlakehouse-io`),
+  a RICH target written in the site's own MDX components.
 
-Delivery for both is the single `/blog-emit` skill (`--target` picks the runbook).
+Delivery for all three is the single `/blog-emit` skill (`--target` picks the runbook).
 There is also an internal **`md-twin`** (FLATTENING) target, invoked by the site
 build (`site/scripts/build-md-twins.mjs`), not by `/blog-emit`.
 
 The pipeline is **target-aware**: a target module declares its per-construct
-renderers (`constructs: { callouts, journey, codeCaption, likec4 }`) plus flags
+renderers (`constructs: { callouts, journey, codeCaption, likec4, trestle }`, and
+`renderLikeC4` / `renderTrestle` for the diagram markers) plus flags
 (`titleAsH1`, `unwrapProse`, `stringifyExtension`, `safeText`, `outputFile`,
-`componentImportBase`, `likec4WebComponent`) — so one target can flatten while
+`componentImportBase`, `likec4WebComponent`, `trestleWebComponent` +
+`trestleAssetBase`) — so one target can flatten while
 another upgrades to components, over one shared `resolve` core. A blog target also
 declares `siteUrl` and `postUrl(postDir)`, which a cross-post's canonical is built from. A new target is a new
 `targets/<name>.mjs` (+ any rewrite plugins in `plugins/`) plus a
@@ -197,3 +211,5 @@ Tests: `bun test docs`.
 
 - Bun (matches `preview/`). Deps installed via `bun install`, plus `site/`'s
   (`likec4`, for the views' Mermaid).
+- The Trestle bundle installs its own pinned dependencies
+  (`webcomponents/trestle/`, `bun install --frozen-lockfile`) on first use.

@@ -1,0 +1,19 @@
+{
+  "name": "trestle-webcomponent",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Builds trestle-webcomponent.mjs: a <trestle-view> custom element wrapping @open-lakehouse/trestle-diagram, with React bundled in, for blog sites that have no React 19 (unitycatalog.io's Astro site, openlakehouse.io's React 18 app). emit.mjs runs the build when a post has a trestle diagram.",
+  "scripts": {
+    "build": "bun build.mjs"
+  },
+  "dependencies": {
+    "@open-lakehouse/trestle-diagram": "0.5.2",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
+}

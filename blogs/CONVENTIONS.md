@@ -255,9 +255,10 @@ bullets. Copy this to start a post.
     for a docs environment, or ```` ```trestle ./assets/<stem>.trestle-graph.json ````
     for a snapshot exported from Trestle's editor ("Export snapshot"), with the
     alt text as the block's body. `docsnip check` fails when the ref names no
-    snapshot or the snapshot has no Mermaid. The preview and the docs sites draw
-    the interactive canvas; the `.md` twins and the blog targets get the alt
-    text and Trestle's Mermaid flowchart.
+    snapshot or the snapshot has no Mermaid. The preview, the docs sites, and
+    the blog targets draw the interactive canvas (a blog post ships its own
+    copy of the snapshot, so a later re-render of the environment never redraws
+    it); the `.md` twins get the alt text and Trestle's Mermaid flowchart.
   - **D2** ([d2lang.com](https://d2lang.com)) is still fine for an existing `.d2`
     or a quick one-off — commit `.d2` + `.svg`, render with
     `blogs/render-diagrams.sh` (needs `brew install d2`). Prefer LikeC4 for new
@@ -390,9 +391,10 @@ bullets. Copy this to start a post.
   *target emitter* resolves it into what a downstream target consumes. The
   deterministic core [`emit/`](../emit/) reuses the same snippet inlining the
   `site/` harness runs, and renders each rich construct the way the chosen target
-  needs: a `file=` fence is inlined with the real code, and each `likec4` block
+  needs: a `file=` fence is inlined with the real code, each `likec4` block
   becomes the target's interactive `<LikeC4View>`, drawn from the unified
-  `architecture/model` workspace. Run it for every target in the post's `target:` list, or name the targets:
+  `architecture/model` workspace, and each `trestle` block a `<TrestleView>` over
+  the snapshot the emit ships with the post. Run it for every target in the post's `target:` list, or name the targets:
   ```
   just emit <slug>                      # every listed target, primary first
   just emit <slug> unitycatalog delta   # just these
@@ -401,8 +403,11 @@ bullets. Copy this to start a post.
   render is throwaway and gitignored — the draft stays the source of truth). The
   [`/blog-emit`](../.claude/skills/blog-emit/) skill cross-publishes to the
   **UnityCatalog.io** and **Delta.io** Astro sites (`--target unitycatalog` /
-  `--target delta`) — RICH targets that keep the constructs interactive (native MDX
-  `<Journey>`, `<LikeC4View>`, styled `:::` callouts). On re-emit it **updates the
+  `--target delta`) and the **OpenLakehouse.io** React site (`--target openlakehouse`)
+  — RICH targets that keep the constructs interactive (native MDX `<Journey>`,
+  `<LikeC4View>`, `<TrestleView>`, styled callouts). OpenLakehouse.io renders no
+  `:::` directives, so its target writes the site's own `<Callout>` and `<Steps>`
+  and fails on any other directive (`:::prerequisites`, `:::tab`). On re-emit it **updates the
   same post in place** (the post dir lives in a committed `blogs/<slug>/.emitted.json`
   sidecar, so the mapping travels with the post while `index.md` stays pure), so the
   draft stays canonical and delivery never duplicates. Do **not** feed raw `index.md`

@@ -21,29 +21,12 @@
  * `:::tip … :::` inside the step and render there.
  */
 
+import { defaultImportNode, prependImports } from "./mdx-import.mjs";
+
 const DEFAULT_IMPORT_BASE = "@/components/blog";
 
-/** Build a `import Name from "<base>/Name.astro"` (default import) mdast node. */
-function defaultImportNode(name, base) {
-  const source = `${base}/${name}.astro`;
-  return {
-    type: "mdxjsEsm",
-    value: `import ${name} from "${source}";`,
-    data: {
-      estree: {
-        type: "Program",
-        sourceType: "module",
-        body: [
-          {
-            type: "ImportDeclaration",
-            specifiers: [{ type: "ImportDefaultSpecifier", local: { type: "Identifier", name } }],
-            source: { type: "Literal", value: source, raw: `"${source}"` },
-          },
-        ],
-      },
-    },
-  };
-}
+/** The elements a journey becomes: UC's `<Journey><JourneyStep step>` by default. */
+const DEFAULT_ELEMENTS = { journey: "Journey", step: "JourneyStep", stepTitle: "step" };
 
 /** Plain-text of a heading node (its inline children concatenated). */
 function headingText(node) {
@@ -72,17 +55,27 @@ function splitSteps(children) {
   return steps;
 }
 
-function journeyStepNode(step) {
+function journeyStepNode(step, elements) {
   return {
     type: "mdxJsxFlowElement",
-    name: "JourneyStep",
-    attributes: step.label ? [{ type: "mdxJsxAttribute", name: "step", value: step.label }] : [],
+    name: elements.step,
+    attributes: step.label
+      ? [{ type: "mdxJsxAttribute", name: elements.stepTitle, value: step.label }]
+      : [],
     children: step.body,
   };
 }
 
+/**
+ * Options: `{ componentImportBase, elements, imports }`. `elements` renames the
+ * journey, step, and step-title attribute for a site with its own timeline
+ * (openlakehouse.io's `<Steps><Step title>`); `imports: false` skips the import
+ * nodes for a site that provides its components to MDX.
+ */
 export default function remarkJourneyMdx(options = {}) {
   const base = options.componentImportBase ?? DEFAULT_IMPORT_BASE;
+  const elements = { ...DEFAULT_ELEMENTS, ...options.elements };
+  const imports = options.imports ?? true;
 
   return (tree) => {
     let upgraded = false;
@@ -95,9 +88,9 @@ export default function remarkJourneyMdx(options = {}) {
           const steps = splitSteps(child.children ?? []);
           node.children[i] = {
             type: "mdxJsxFlowElement",
-            name: "Journey",
+            name: elements.journey,
             attributes: [],
-            children: steps.map(journeyStepNode),
+            children: steps.map((step) => journeyStepNode(step, elements)),
           };
           upgraded = true;
           continue;
@@ -107,17 +100,11 @@ export default function remarkJourneyMdx(options = {}) {
     };
     walk(tree);
 
-    // Inject the imports once — AFTER a leading `yaml` frontmatter node if present
-    // (MDX requires frontmatter to be the very first block; an import before it
-    // breaks parsing), else at the top.
-    if (upgraded) {
-      const at = tree.children[0]?.type === "yaml" ? 1 : 0;
-      tree.children.splice(
-        at,
-        0,
-        defaultImportNode("Journey", base),
-        defaultImportNode("JourneyStep", base),
-      );
+    if (upgraded && imports) {
+      prependImports(tree, [
+        defaultImportNode(elements.journey, base),
+        defaultImportNode(elements.step, base),
+      ]);
     }
   };
 }

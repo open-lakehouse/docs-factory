@@ -15,7 +15,9 @@ clean branch (its `.agents/rules/branching-rule.mdc` governs naming) before writ
 - `index.mdx` — the site's post frontmatter (`title`, ISO `date`, `authors: [<slug>]`,
   `excerpt` from the draft `summary`, `tags`, `include: [blog]`, `kind: post`, and on a
   cross-post `originalUrl` + `originalPublisher`, which the site treats as a
-  republished post: canonical to the original, left out of the sitemap). The body
+  republished post: canonical to the original, left out of the sitemap; the body
+  then ends with the visible "originally published on …" line the site's
+  AGENTS.md requires). The body
   uses only the site's `MdxProvider` components, so it has no component imports:
   - `:::tldr` → `<Callout type="info" title="TL;DR">`; `:::note`/`:::info` → `info`,
     `:::tip` → `tip`, `:::warning`/`:::caution`/`:::danger` → `warn`; a `[Label]`

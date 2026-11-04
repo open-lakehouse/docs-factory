@@ -441,6 +441,11 @@ export async function emitOne({
   });
   if (constructs.trestle) processor = processor.use(constructs.trestle, { componentImportBase });
 
+  // A target's closing content (openlakehouse.io's attribution on a republished
+  // post). It reads the draft frontmatter the prelude captured.
+  if (target.epilogue)
+    processor = processor.use(target.epilogue, { capture, context: frontmatterContext });
+
   // Prose-unwrap is only for flattening targets that reflow authoring hard-wraps
   // (md-twin); MDX must keep authored line breaks, so unitycatalog opts out.
   if (target.unwrapProse ?? true) processor = processor.use(remarkUnwrapProse);

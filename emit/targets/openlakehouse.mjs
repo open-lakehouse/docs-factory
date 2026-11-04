@@ -116,6 +116,38 @@ function frontmatter(draft, { canonical } = {}) {
   return fm;
 }
 
+/** "A Person", "A and B", "A, B, and C". */
+function names(list) {
+  if (list.length < 3) return list.join(" and ");
+  return `${list.slice(0, -1).join(", ")}, and ${list.at(-1)}`;
+}
+
+/**
+ * A cross-post ends with the visible attribution the site gives a republished
+ * post: where it was first published, and by whom.
+ */
+function attribution({ capture, context }) {
+  return (tree) => {
+    if (!context?.canonical) return;
+    const draft = capture.frontmatter ?? {};
+    const authors = (Array.isArray(draft.author) ? draft.author : [draft.author]).filter(Boolean);
+    const text = (value) => ({ type: "text", value });
+    const children = [
+      text("This post was originally published on the "),
+      {
+        type: "link",
+        url: context.canonical,
+        children: [text(`${publisher(context.canonical)} blog`)],
+      },
+      text(authors.length ? ` by ${names(authors.map(String))}.` : "."),
+    ];
+    tree.children.push(
+      { type: "thematicBreak" },
+      { type: "paragraph", children: [{ type: "emphasis", children }] },
+    );
+  };
+}
+
 const journey = (options) =>
   remarkJourneyMdx({
     ...options,
@@ -166,6 +198,7 @@ const openlakehouse = {
   titleAsH1: false, // PostLayout renders the title
   unwrapProse: false,
   frontmatter,
+  epilogue: attribution,
   likec4WebComponent: true,
   trestleWebComponent: true,
   trestleAssetBase: "/trestle",

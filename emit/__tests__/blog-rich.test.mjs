@@ -18,7 +18,7 @@ afterAll(() => rmSync(dir, { recursive: true, force: true }));
 const ALT = "A gateway routes the Unity Catalog API to the server.";
 const SNAPSHOT = "/trestle/p/uc-mlflow/diagram.trestle-graph.json";
 
-async function emit(target, body, name = "index.md") {
+async function emit(target, body, name = "index.md", context = {}) {
   const inputPath = join(dir, name);
   writeFileSync(
     inputPath,
@@ -29,6 +29,7 @@ async function emit(target, body, name = "index.md") {
     target,
     likec4OutDir: join(dir, ".likec4-export"),
     trestleUrlBase: "/trestle/p",
+    frontmatterContext: context,
   });
 }
 
@@ -117,4 +118,14 @@ test("openlakehouse.io frontmatter, category, and URL", () => {
   expect(category(draft.tags)).toBe("agentic");
   expect(category(["rust"])).toBe("lakehouse");
   expect(openlakehouse.postUrl("agentic/p")).toBe("https://openlakehouse.io/blog/agentic/p");
+});
+
+test("an openlakehouse.io cross-post credits where it was first published", async () => {
+  const canonical = "https://www.unitycatalog.io/blogs/2026-11-04-p/";
+  const { output } = await emit(openlakehouse, "Body.\n", "index.md", { canonical });
+  expect(output).toContain(
+    `*This post was originally published on the [Unity Catalog blog](${canonical}) by A Person.*`,
+  );
+  const { output: primary } = await emit(openlakehouse, "Body.\n");
+  expect(primary).not.toContain("originally published");
 });

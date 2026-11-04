@@ -347,4 +347,47 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
     });
     expect(requests.map((r) => r.id)).toContain(id);
   });
+
+  test("a maintainer deletes everything held for content removed from git", async () => {
+    const gone = { area: ContentArea.BLOGS, slug: `flow-gone-${randomUUID()}` };
+    await reviewer.registerVersion(
+      create(RegisterVersionRequestSchema, {
+        ref: gone,
+        contentHash: "gone-v1",
+        gitSha: "gone-v1",
+        title: "Removed post",
+        frontmatterStatus: "draft",
+        sections: [{ anchorSlug: "intro", fingerprint: "intro", headingText: "Intro", text: "T" }],
+      }),
+    );
+    const { comment } = await reviewer.createComment({
+      ref: gone,
+      anchorSlug: "intro",
+      anchorFingerprint: "intro",
+      bodyMd: "Section note.",
+    });
+    await maintainer.createComment({
+      ref: gone,
+      anchorSlug: "intro",
+      anchorFingerprint: "intro",
+      parentId: comment?.id,
+      bodyMd: "Reply.",
+    });
+    await reviewer.markThreadSeen({ threadRootId: comment?.id ?? "" });
+    await reviewer.recordApproval({ ref: gone });
+    await reviewer.recordRating({ ref: gone, score: 4 });
+    await maintainer.setPriority({ ref: gone, priority: 3 });
+    await reviewer.requestReview({
+      ref: gone,
+      reviewers: [{ userId: "flow-maintainer" }],
+      requirement: Requirement.OPTIONAL,
+    });
+
+    expect(await code(reviewer.deleteContent({ ref: gone }))).toBe(Code.PermissionDenied);
+    const res = await maintainer.deleteContent({ ref: gone });
+    expect(res).toMatchObject({ versions: 1, comments: 2 });
+    const { drafts } = await maintainer.listDrafts({});
+    expect(drafts.some((d) => d.ref?.slug === gone.slug)).toBe(false);
+    expect(await code(maintainer.deleteContent({ ref: gone }))).toBe(Code.NotFound);
+  });
 });

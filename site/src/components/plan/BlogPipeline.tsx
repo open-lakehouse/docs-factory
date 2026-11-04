@@ -47,11 +47,13 @@ import {
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
 import { refHref } from "../../lib/content-ref";
+import { isOrphaned } from "../../lib/on-disk";
 import { type DateFlag, dateFlag, daysUntil, SOON_DAYS } from "../../lib/plan/pipeline-dates";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { ReviewStateBadge } from "../../lib/review-status";
 import BlogPostDetail from "../BlogPostDetail";
 import ContentEventTimeline from "../review/ContentEventTimeline";
+import { DeleteOrphanControl, NotOnDiskBadge } from "../review/DeleteOrphanControl";
 import { FrontmatterStatusBadge } from "../StatusBadge";
 
 /** Columns in the main row (for detail colspan). */
@@ -171,7 +173,7 @@ function SortableRow({
         </td>
         <td className="revops-col-rank mono">{d.priority != null ? d.priority : "—"}</td>
         <td>
-          {d.ref ? (
+          {d.ref && post ? (
             <Link to={refHref(d.ref)} className="revops-title">
               {draftLabel(d)}
             </Link>
@@ -180,6 +182,12 @@ function SortableRow({
           )}
           {post?.frontmatter.series && (
             <span className="revops-series">({post.frontmatter.series})</span>
+          )}
+          {d.ref && !post && (
+            <>
+              {" "}
+              <NotOnDiskBadge />
+            </>
           )}
         </td>
         <td>{d.frontmatterStatus && <FrontmatterStatusBadge status={d.frontmatterStatus} />}</td>
@@ -214,7 +222,13 @@ function SortableRow({
               {post ? (
                 <BlogPostDetail post={post} />
               ) : (
-                <p className="muted">No on-disk metadata for this post yet.</p>
+                <div className="revops-orphan">
+                  <p className="muted">
+                    This post is no longer in the repository; the review app still holds its
+                    history.
+                  </p>
+                  {d.ref && <DeleteOrphanControl contentRef={d.ref} label={draftLabel(d)} />}
+                </div>
               )}
               {d.ref && (
                 <div className="revops-detail-timeline">
@@ -276,12 +290,11 @@ export default function BlogPipeline() {
   // whole list (idempotent — re-sending a row's current rank is a no-op) so
   // unranked rows get a concrete priority the moment they move.
   async function persistOrder(nextRows: DraftSummary[]) {
+    const ranked = nextRows.filter((r) => r.ref && !isOrphaned(r.ref));
     await Promise.all(
-      nextRows.map((r, i) => {
-        if (!r.ref) return Promise.resolve();
-        const rank = i + 1;
-        return prioritize.mutateAsync({ ref: r.ref, priority: rank });
-      }),
+      ranked.map((r, i) =>
+        r.ref ? prioritize.mutateAsync({ ref: r.ref, priority: i + 1 }) : null,
+      ),
     );
   }
 

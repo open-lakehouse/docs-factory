@@ -74,6 +74,8 @@ import {
   ChangeKind,
   type CreateCommentRequest,
   CreateCommentResponseSchema,
+  type DeleteContentRequest,
+  DeleteContentResponseSchema,
   type DismissApprovalRequest,
   DismissApprovalResponseSchema,
   type EraseUserRequest,
@@ -1256,6 +1258,45 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         });
         const draft = await loadDraftSummary(sql, area, slug, viewer.userId ?? "");
         return create(DismissApprovalResponseSchema, { draft: draft ?? undefined });
+      },
+
+      async deleteContent(req: DeleteContentRequest, ctx) {
+        const viewer = requireMaintainer(ctx);
+        if (!req.ref?.slug) throw new ConnectError("ref is required", Code.InvalidArgument);
+        const area = areaToDb(req.ref.area);
+        const slug = req.ref.slug;
+        const counts = await db().begin(async (tx) => {
+          // Comments first: comment.section_id / authored_version_id reference
+          // the versions without a cascade. Replies, resolutions and seen-marks
+          // cascade from the rows deleted here.
+          const comments = await tx`delete from comment where area = ${area} and slug = ${slug}`;
+          let other = 0;
+          other += (await tx`delete from review_request where area = ${area} and slug = ${slug}`)
+            .count;
+          other += (await tx`delete from content_approval where area = ${area} and slug = ${slug}`)
+            .count;
+          other += (await tx`delete from content_rating where area = ${area} and slug = ${slug}`)
+            .count;
+          other += (await tx`delete from review_state where area = ${area} and slug = ${slug}`)
+            .count;
+          other += (await tx`delete from content_event where area = ${area} and slug = ${slug}`)
+            .count;
+          other += (await tx`delete from content_revops where area = ${area} and slug = ${slug}`)
+            .count;
+          const versions =
+            await tx`delete from content_version where area = ${area} and slug = ${slug}`;
+          return { comments: comments.count, versions: versions.count, other };
+        });
+        if (counts.comments + counts.versions + counts.other === 0) {
+          throw new ConnectError(`no review data for ${area}/${slug}`, Code.NotFound);
+        }
+        console.log(
+          `deleteContent ${area}/${slug} by ${actorId(viewer)}: ${counts.versions} version(s), ${counts.comments} comment(s)`,
+        );
+        return create(DeleteContentResponseSchema, {
+          versions: counts.versions,
+          comments: counts.comments,
+        });
       },
 
       async recordRating(req: RecordRatingRequest, ctx) {

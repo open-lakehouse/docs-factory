@@ -15,6 +15,7 @@ import { useQuery } from "@connectrpc/connect-query";
 import { Link } from "react-router-dom";
 import Shell from "../components/layout/Shell";
 import { useOpenContentRequests } from "../components/review/ContentRequests";
+import { DeleteOrphanControl, NotOnDiskBadge } from "../components/review/DeleteOrphanControl";
 import {
   type DraftSummary,
   type ReviewRequest,
@@ -27,6 +28,7 @@ import {
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../lib/auth-context";
 import { refHref } from "../lib/content-ref";
+import { isOrphaned } from "../lib/on-disk";
 import { ratingLabel } from "../lib/rating";
 import { ReviewRequestBadge, ReviewStateBadge } from "../lib/review-status";
 
@@ -61,7 +63,7 @@ function requestTargetLabel(r: ReviewRequest): string {
 }
 
 export default function ReviewDashboard() {
-  const { isLoading: authLoading, isAllowlisted } = useAuth();
+  const { isLoading: authLoading, isAllowlisted, isMaintainer } = useAuth();
   const openRequests = useOpenContentRequests();
   const { data: draftsData, isLoading: draftsLoading } = useQuery(
     listDrafts,
@@ -109,6 +111,7 @@ export default function ReviewDashboard() {
   // `ready` derives to RELEASED, so APPROVED is exactly "cleared, not yet ready".
   const approvedNotReady = drafts.filter((d) => d.reviewState === ReviewState.APPROVED);
   const releasedUnreviewed = drafts.filter((d) => d.readyWithoutApproval);
+  const orphans = drafts.filter((d) => isOrphaned(d.ref));
   const recent = recentData?.comments ?? [];
   const toMe = toMeData?.requests ?? [];
   const byMe = byMeData?.requests ?? [];
@@ -246,6 +249,35 @@ export default function ReviewDashboard() {
                   </span>
                 </li>
               ))}
+            </ul>
+          </section>
+        )}
+
+        {isMaintainer && orphans.length > 0 && (
+          <section className="review-dash-section">
+            <h2>Not on disk</h2>
+            <p className="muted review-dash-hint">
+              The review app still holds these, but the pages are gone from the repository. Delete
+              them once their threads no longer matter.
+            </p>
+            <ul className="review-dash-list">
+              {orphans.map((d) =>
+                d.ref ? (
+                  <li key={refHref(d.ref)} className="review-dash-row">
+                    <span className="review-dash-title">{draftLabel(d)}</span>
+                    <span className="review-dash-meta">
+                      <NotOnDiskBadge />
+                      {d.openCommentCount > 0 && (
+                        <span className="review-dash-count">
+                          {d.openCommentCount} open{" "}
+                          {d.openCommentCount === 1 ? "comment" : "comments"}
+                        </span>
+                      )}
+                      <DeleteOrphanControl contentRef={d.ref} label={draftLabel(d)} />
+                    </span>
+                  </li>
+                ) : null,
+              )}
             </ul>
           </section>
         )}

@@ -123,6 +123,15 @@ export const markReviewed = ReviewService.method.markReviewed;
 export const dismissApproval = ReviewService.method.dismissApproval;
 
 /**
+ * Maintainer-only hard delete of everything the review DB holds for one
+ * artifact (versions, threads, approvals, ratings, requests, timeline,
+ * RevOps). For content removed from git; not reversible.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.DeleteContent
+ */
+export const deleteContent = ReviewService.method.deleteContent;
+
+/**
  * Record the current viewer's quality rating (allowlist-gated). Re-rating the
  * same version edits in place; rating a newer version supersedes the prior
  * rating (kept for history). Ratings never affect review state.

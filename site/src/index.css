@@ -1028,6 +1028,8 @@ a.roadmap-slot-title:hover { color: var(--accent); }
   background: color-mix(in srgb, var(--surface) 45%, transparent);
 }
 .revops-detail-row > td { padding: 0.85rem 1.25rem 1.15rem 3.4rem; }
+.revops-orphan { display: flex; align-items: center; gap: 0.75rem; }
+.revops-orphan > p { margin: 0; }
 .revops-detail-timeline {
   margin-top: 1.25rem;
   padding-top: 1rem;

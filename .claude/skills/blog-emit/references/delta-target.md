@@ -18,7 +18,8 @@ pushes or opens a PR (that is the user's action).
   [<profile-id>]`, `publishedAt` ISO date, `thumbnail: ./<file>`, and `canonical` on
   a cross-post whose primary is another site), then default
   imports (`Journey`, `JourneyStep`, `LikeC4View` from `@/components/blog`), then body.
-  `::::journey`→`<Journey><JourneyStep step="…">`; ```` ```likec4 ````→`<LikeC4View viewId="…" />`;
+  `::::journey`→`<Journey><JourneyStep step="…">`; ```` ```likec4 ````→`<LikeC4View viewId="…" alt="…" />`;
+  ```` ```trestle ````→`<TrestleView src="/trestle/<slug>/…" alt="…" />` (+ its import);
   `:::` callouts LEFT as directives but **remapped** to the delta site's vocabulary
   (`tip`→`note`, `caution`→`danger`; `note`/`info`/`warning`/`danger` unchanged);
   MDX-significant chars in prose escaped.
@@ -26,6 +27,11 @@ pushes or opens a PR (that is the user's action).
   = file to copy in). LikeC4 views ship no PNG.
 - `likec4-webcomponent.mjs` — the `<likec4-view>` bundle (present when the post has a
   diagram).
+- `public/` — files for the site's `public/` (listed in `assets.json` `public`) when
+  the post has a Trestle diagram: the `<trestle-view>` bundle
+  (`trestle/trestle-webcomponent.mjs`) and the post's snapshots under
+  `trestle/<slug>/`. The site needs a `TrestleView.astro` for them, wired like
+  `LikeC4View.astro`; the unitycatalog runbook's §D item 9 is the worked example.
 
 ## A0. A cross-post needs canonical wiring (BEFORE copying)
 
@@ -81,6 +87,8 @@ DEST=../website/src/content/blog/<YYYY-MM-DD>-<slug>
   `../website/public/likec4/likec4-webcomponent.mjs` (the stable path
   `LikeC4View.astro` loads). Safe to overwrite — generated from the whole `blogs/`
   model.
+- If `assets.json` lists `public` files, copy `dist/delta/public/.` over
+  `../website/public/` (the Trestle bundle and the post's snapshots).
 
 ## C. Build-verify, then report
 

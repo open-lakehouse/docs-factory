@@ -50,6 +50,13 @@ DEST=../unitycatalog-website/src/content/blog/<YYYY-MM-DD>-<slug>
   `../unitycatalog-website/public/likec4/likec4-webcomponent.mjs` (a shared, stable
   path `LikeC4View.astro` loads). Safe to overwrite — it's generated from the whole
   `blogs/` model.
+- If `assets.json` lists `public` files, copy `dist/unitycatalog/public/` over
+  `../unitycatalog-website/public/` (`cp -R dist/unitycatalog/public/. ../unitycatalog-website/public/`):
+  the `<trestle-view>` bundle at `public/trestle/trestle-webcomponent.mjs`, and each
+  diagram's snapshot and environment files under `public/trestle/<slug>/`, where
+  `<TrestleView src>` fetches them. Each post has its own snapshots, so re-emitting
+  one never redraws another; the bundle is shared and safe to overwrite. This needs
+  the TrestleView wiring (§D item 9).
 - (Optional) For a thumbnail, copy a hero image in and add `thumbnail: ./<file>` to
   the frontmatter — else omit (schema allows it).
 
@@ -61,14 +68,14 @@ cd ../unitycatalog-website && pnpm install && pnpm build
 
 Must pass zod schema validation + MDX compile. Then `pnpm preview` and confirm the
 post renders: journey timeline, `:::` callouts as styled asides, and the LikeC4
-canvas hydrates (a real browser check — a static HTML grep is not sufficient for the
+canvas and any Trestle diagram hydrate (a real browser check — a static HTML grep is not sufficient for the
 diagram). Then **report** the post dir + preview URL. The skill's shared step 4
 records the `unitycatalog` sidecar block `{ post_dir, updated }`. Opening a PR is the
 **user's** action — prepare the branch/diff if asked, but never push/open it unbidden.
 
 ---
 
-## D. One-time site wiring (installed except item 8 — reference / re-verify)
+## D. One-time site wiring (installed except items 8–9 — reference / re-verify)
 
 The below is the enabling wiring the site needed the first time this target was used.
 It is **already present** in `../unitycatalog-website`; treat this as documentation
@@ -90,12 +97,19 @@ dated folder name), authors are `reference("profiles")`, `category` is the enum
   cross-post whose primary is another site), then default imports
   `import Journey from "@/components/blog/Journey.astro"` (+ `JourneyStep`,
   `LikeC4View`), then body. `::::journey`→`<Journey><JourneyStep step="…">`;
-  ```` ```likec4 ````→`<LikeC4View viewId="…" />`; `:::` callouts LEFT as directives;
+  ```` ```likec4 ````→`<LikeC4View viewId="…" alt="…" />`;
+  ```` ```trestle ````→`<TrestleView src="/trestle/<slug>/…trestle-graph.json" alt="…" />`
+  (+ its default import); `:::` callouts LEFT as directives;
   MDX-significant chars in prose (`<`,`>`,`{`,`}`) escaped to HTML entities.
 - `assets.json` — image manifest (`filename` = `./<filename>` in the MDX;
   `localPath` = file to copy in). LikeC4 views ship no PNG.
 - `likec4-webcomponent.mjs` — the `<likec4-view>` custom-element bundle (present
   when the post has a diagram). Attributes: `view-id`, `dynamic-variant`.
+- `public/` — files for the site's `public/` (listed in `assets.json` `public`),
+  present when the post has a Trestle diagram: `trestle/trestle-webcomponent.mjs`,
+  the `<trestle-view>` bundle (built from `emit/webcomponents/trestle`, React
+  inside; attributes `src`, `label`, `color-mode`), and `trestle/<slug>/<env>/`, the
+  snapshot plus the environment files the diagram's nodes open.
 
 ### The wiring pieces (all present today)
 
@@ -164,6 +178,14 @@ dated folder name), authors are `reference("profiles")`, `category` is the enum
    - `src/layouts/Layout.astro`: add an optional `canonical?: string` prop and render
      `href={canonical ?? new URL(Astro.url.pathname, Astro.site)}`.
    - `src/pages/blogs/[id].astro`: pass `canonical={post.data.canonical}` to `<Layout>`.
+
+9. **Trestle diagrams — `TrestleView`.** Needed by a post with a ```` ```trestle ````
+   block. `src/components/blog/TrestleView.astro` renders
+   `<trestle-view src={src} label={alt} color-mode="dark">` inside a `<figure>` with
+   the alt text as a visually hidden `<figcaption>` (the text equivalent in the
+   prerendered HTML), and loads
+   `<script type="module" src="/trestle/trestle-webcomponent.mjs" is:inline>`.
+   `[id].astro` adds it to `mdxComponents`. `LikeC4View.astro` takes the same `alt`.
 
 ## Gotchas confirmed during bring-up
 

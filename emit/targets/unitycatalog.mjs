@@ -31,10 +31,11 @@ import remarkJourneyMdx from "../plugins/remark-journey-mdx.mjs";
 import remarkLikeC4Mdx, { renderLikeC4Mdx } from "../plugins/remark-likec4-mdx.mjs";
 import remarkMdxSafeText from "../plugins/remark-mdx-safe-text.mjs";
 import remarkStringifyMdx from "../plugins/remark-stringify-mdx.mjs";
+import remarkTrestleMdx, { renderTrestleMdx } from "../plugins/remark-trestle-mdx.mjs";
 
 /** Slugify an author's display name to a `profiles` collection id
  *  (`Robert Pack` → `robert-pack`). The delivery skill verifies the id exists. */
-function authorSlug(name) {
+export function authorSlug(name) {
   return String(name)
     .toLowerCase()
     .normalize("NFKD")
@@ -69,7 +70,7 @@ function humanDate(iso) {
   return `${MONTHS[Number(mo) - 1]} ${Number(d)}, ${y}`;
 }
 
-function emitDay() {
+export function emitDay() {
   return new Date().toISOString().slice(0, 10);
 }
 
@@ -123,15 +124,21 @@ const unitycatalog = {
   // repo's tsconfig maps `@` → src/, so components live at src/components/blog/.
   componentImportBase: "@/components/blog",
   likec4WebComponent: true, // generate dist/unitycatalog/likec4-webcomponent.mjs
+  // Trestle diagrams draw in the <trestle-view> web component; the bundle and each
+  // diagram's snapshot land under dist/unitycatalog/public/trestle/ for the site's public/.
+  trestleWebComponent: true,
+  trestleAssetBase: "/trestle",
   constructs: {
     // callouts: OMITTED — pass `:::tip`/… through untouched; the UC site styles them.
     // codeCaption: OMITTED — keep `title="x.py"` on the fence; Expressive Code
     //   renders it as a native filename frame (see the module comment above).
     journey: remarkJourneyMdx, // ::::journey → <Journey><JourneyStep>
     likec4: remarkLikeC4Mdx, // imports LikeC4View.astro for the rendered views
+    trestle: remarkTrestleMdx, // imports TrestleView.astro for the rendered diagrams
     images: remarkImagesMd, // local images → `./<filename>` + manifest
   },
-  renderLikeC4: renderLikeC4Mdx, // likec4 block → <LikeC4View viewId=…>
+  renderLikeC4: renderLikeC4Mdx, // likec4 block → <LikeC4View viewId=… alt=…>
+  renderTrestle: renderTrestleMdx, // trestle block → <TrestleView src=… alt=…>
   // Co-located post assets: Astro resolves `./file.png` relative to index.mdx.
   renderImage(entry) {
     return { type: "image", url: `./${entry.filename}`, alt: entry.altText, title: null };

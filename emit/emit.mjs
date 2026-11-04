@@ -20,8 +20,16 @@
  * agent step — the /blog-emit skill.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import remarkDirective from "remark-directive";
 import remarkFrontmatter from "remark-frontmatter";
@@ -43,7 +51,7 @@ import { blogLinkPlugins } from "./blog-links.mjs";
 // directly — see emit/targets/*.mjs. This keeps one linear core pipeline while
 // letting a target flatten (md-twin) OR upgrade to components (unitycatalog).
 import remarkLikeC4Blocks from "./plugins/remark-likec4-blocks.mjs";
-import remarkTrestleMd from "./plugins/remark-trestle-md.mjs";
+import remarkTrestleMd, { trestleFiles } from "./plugins/remark-trestle-md.mjs";
 import remarkUnwrapProse from "./plugins/remark-unwrap-prose.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -245,6 +253,34 @@ export function generateLikeC4WebComponent(modelDir, outFile, hasLikeC4Refs) {
   return outFile;
 }
 
+const TRESTLE_WEBCOMPONENT_DIR = join(HERE, "webcomponents", "trestle");
+let trestleBundle = null; // this process's build: cross-posts copy it
+
+/**
+ * Build the `<trestle-view>` web-component bundle (webcomponents/trestle) into
+ * `outFile`, for a target whose site draws Trestle diagrams without React 19.
+ * Installs the package's pinned dependencies first if they aren't yet.
+ */
+export function generateTrestleWebComponent(outFile) {
+  mkdirSync(dirname(outFile), { recursive: true });
+  if (trestleBundle && existsSync(trestleBundle)) {
+    if (trestleBundle !== outFile) copyFileSync(trestleBundle, outFile);
+    return outFile;
+  }
+  const run = (args) =>
+    execFileSync("bun", args, { cwd: TRESTLE_WEBCOMPONENT_DIR, stdio: "inherit" });
+  try {
+    if (!existsSync(join(TRESTLE_WEBCOMPONENT_DIR, "node_modules"))) {
+      run(["install", "--frozen-lockfile"]);
+    }
+    run(["build.mjs", outFile]);
+  } catch (err) {
+    throw new Error(`Trestle web-component build failed. Underlying error: ${err.message}`);
+  }
+  trestleBundle = outFile;
+  return outFile;
+}
+
 // --- delivery sidecar (idempotency) ---------------------------------------
 
 // Each post carries its delivery state in a committed sidecar dotfile next to
@@ -297,13 +333,18 @@ export function defaultModelDir() {
  *                                  export (a multi-page caller exports once).
  * @param {object} [o.frontmatterContext] passed to the target's `frontmatter`
  *                                  hook (`{ canonical }` for a cross-post).
+ * @param {string} [o.trestleUrlBase] where the site serves this page's Trestle
+ *                                  snapshots (each entry's `url`), for a target
+ *                                  that ships them.
+ * @param {string} [o.trestleWebComponentPath] where to write the `<trestle-view>`
+ *                                  bundle (only for targets with `trestleWebComponent`).
  * @param {string} [o.envsDir]    where `trestle` markers' environments are
  *                                  (default: the repo's envs/).
  * @param {Array} [o.plugins]      extra `[plugin, options]` remark transforms, run
  *                                  right after snippet inlining and before the
  *                                  target's constructs (e.g. the docs-site emitter's
  *                                  link rewriting).
- * @returns {Promise<{output:string, frontmatter:object, manifest:Array, likec4:Array, trestle:Array, likec4Dir:(string|null), webComponentPath:(string|null)}>}
+ * @returns {Promise<{output:string, frontmatter:object, manifest:Array, likec4:Array, trestle:Array, likec4Dir:(string|null), webComponentPath:(string|null), trestleWebComponentPath:(string|null)}>}
  *   `likec4` and `trestle` list the page's diagram markers (see
  *   plugins/remark-likec4-blocks.mjs, plugins/remark-trestle-md.mjs).
  */
@@ -314,6 +355,8 @@ export async function emitOne({
   likec4OutDir,
   assetsDir,
   webComponentPath: webComponentOut,
+  trestleUrlBase,
+  trestleWebComponentPath: trestleWebComponentOut,
   likec4Exported = false,
   frontmatterContext = {},
   envsDir = join(REPO_ROOT, "envs"),
@@ -386,14 +429,17 @@ export async function emitOne({
       assetsDir: imageDir,
       renderImage: target.renderImage,
     });
-  // Every target resolves Trestle diagram markers: the twin and the blog targets
-  // to Trestle's Mermaid, the docs-site target to a marker its canvas reads.
+  // Every target resolves Trestle diagram markers: the twin to Trestle's Mermaid,
+  // the docs-site target to a marker its canvas reads, the blog targets to their
+  // site's <TrestleView>.
   processor = processor.use(remarkTrestleMd, {
     entries: trestle,
     envsDir,
     pageDir: dirname(inputPath),
+    urlBase: trestleUrlBase,
     renderTrestle: target.renderTrestle,
   });
+  if (constructs.trestle) processor = processor.use(constructs.trestle, { componentImportBase });
 
   // Prose-unwrap is only for flattening targets that reflow authoring hard-wraps
   // (md-twin); MDX must keep authored line breaks, so unitycatalog opts out.
@@ -417,6 +463,10 @@ export async function emitOne({
   if (target.likec4WebComponent && webComponentOut) {
     webComponentPath = generateLikeC4WebComponent(modelDir, webComponentOut, hasLikeC4Refs);
   }
+  let trestleWebComponentPath = null;
+  if (target.trestleWebComponent && trestleWebComponentOut && trestle.length) {
+    trestleWebComponentPath = generateTrestleWebComponent(trestleWebComponentOut);
+  }
 
   return {
     output,
@@ -426,6 +476,7 @@ export async function emitOne({
     trestle,
     likec4Dir,
     webComponentPath,
+    trestleWebComponentPath,
   };
 }
 
@@ -507,7 +558,21 @@ async function emitTarget({
   const targetDistDir = join(distDir, name);
   mkdirSync(targetDistDir, { recursive: true });
 
-  const { output, frontmatter, manifest, likec4Dir, webComponentPath } = await emitOne({
+  // What the site serves from its public/ root lands under dist/<target>/public/,
+  // mirroring it: the Trestle bundle, and each diagram's snapshot per post, so a
+  // later re-render of the environment never redraws an earlier post.
+  const publicDir = join(targetDistDir, "public");
+  rmSync(publicDir, { recursive: true, force: true });
+  const trestleBase = target.trestleAssetBase;
+  const {
+    output,
+    frontmatter,
+    manifest,
+    trestle,
+    likec4Dir,
+    webComponentPath,
+    trestleWebComponentPath,
+  } = await emitOne({
     inputPath: draftPath,
     target,
     likec4OutDir: join(distDir, ".likec4-export"),
@@ -515,10 +580,29 @@ async function emitTarget({
     // The images plugin resolves committed images against the draft folder.
     assetsDir: draftDir,
     webComponentPath: join(targetDistDir, "likec4-webcomponent.mjs"),
+    trestleUrlBase: trestleBase && `${trestleBase}/${slug}`,
+    trestleWebComponentPath:
+      trestleBase && join(publicDir, `${trestleBase}/trestle-webcomponent.mjs`),
     frontmatterContext: { canonical },
     // Docs links become the page's URL on its docs site (blog-links.mjs).
     plugins: blogLinkPlugins({ repoRoot: REPO_ROOT }),
   });
+
+  if (trestleBase) {
+    for (const diagram of trestle) {
+      for (const { url, path } of trestleFiles(diagram, diagram.url)) {
+        const dest = join(publicDir, url);
+        mkdirSync(dirname(dest), { recursive: true });
+        copyFileSync(path, dest);
+      }
+    }
+  }
+  const publicFiles = existsSync(publicDir)
+    ? readdirSync(publicDir, { recursive: true, withFileTypes: true })
+        .filter((e) => e.isFile())
+        .map((e) => relative(publicDir, join(e.parentPath, e.name)))
+        .sort()
+    : [];
 
   const outName = target.outputFile ?? `${slug}.md`;
   const outPath = join(targetDistDir, outName);
@@ -538,6 +622,8 @@ async function emitTarget({
         // place. Shape is { post_dir, updated }.
         existing,
         images: manifest,
+        // Paths under the site's public/ root, copied from dist/<target>/public/.
+        public: publicFiles,
       },
       null,
       2,
@@ -552,6 +638,11 @@ async function emitTarget({
     `  ${rel(assetsPath)}  (${manifest.length} image${manifest.length === 1 ? "" : "s"})`,
   );
   if (webComponentPath) console.log(`  ${rel(webComponentPath)}  (LikeC4 web component)`);
+  if (trestleWebComponentPath) {
+    console.log(
+      `  ${rel(publicDir)}/  (${publicFiles.length} public files: Trestle bundle + snapshots)`,
+    );
+  }
   console.log(
     existing
       ? `  delivery: UPDATE existing ${name} target (${existing.post_dir ?? "recorded"})`

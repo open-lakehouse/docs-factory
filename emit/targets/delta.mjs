@@ -34,6 +34,7 @@ import remarkJourneyMdx from "../plugins/remark-journey-mdx.mjs";
 import remarkLikeC4Mdx, { renderLikeC4Mdx } from "../plugins/remark-likec4-mdx.mjs";
 import remarkMdxSafeText from "../plugins/remark-mdx-safe-text.mjs";
 import remarkStringifyMdx from "../plugins/remark-stringify-mdx.mjs";
+import remarkTrestleMdx, { renderTrestleMdx } from "../plugins/remark-trestle-mdx.mjs";
 
 /** Slugify an author's display name to a `profiles` collection id
  *  (`Robert Pack` → `robert-pack`). The delivery skill verifies the id exists. */
@@ -116,6 +117,10 @@ const delta = {
   // gets an `@` → src/ alias in this pass, so components live at src/components/blog/.
   componentImportBase: "@/components/blog",
   likec4WebComponent: true, // generate dist/delta/likec4-webcomponent.mjs
+  // Trestle diagrams draw in the <trestle-view> web component; the bundle and each
+  // diagram's snapshot land under dist/delta/public/trestle/ for the site's public/.
+  trestleWebComponent: true,
+  trestleAssetBase: "/trestle",
   constructs: {
     // callouts: REMAP our vocabulary to the delta site's supported set, then pass
     //   the `:::` directive through for the site's remarkPlugins.ts to style.
@@ -123,9 +128,11 @@ const delta = {
     // codeCaption: OMITTED — keep `title="x.py"` meta on the fence.
     journey: remarkJourneyMdx, // ::::journey → <Journey><JourneyStep>
     likec4: remarkLikeC4Mdx, // imports LikeC4View.astro for the rendered views
+    trestle: remarkTrestleMdx, // imports TrestleView.astro for the rendered diagrams
     images: remarkImagesMd, // local images → `./<filename>` + manifest
   },
-  renderLikeC4: renderLikeC4Mdx, // likec4 block → <LikeC4View viewId=…>
+  renderLikeC4: renderLikeC4Mdx, // likec4 block → <LikeC4View viewId=… alt=…>
+  renderTrestle: renderTrestleMdx, // trestle block → <TrestleView src=… alt=…>
   // Co-located post assets: Astro resolves `./file.png` relative to index.mdx.
   renderImage(entry) {
     return { type: "image", url: `./${entry.filename}`, alt: entry.altText, title: null };

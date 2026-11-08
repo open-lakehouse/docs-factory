@@ -84,6 +84,12 @@ architecture/
       deployment-views.likec4   # one view per deployment environment
       docs-views.likec4         # views docs pages embed (sequences, deployment patterns)
       blog-views.likec4         # blog-specific preview views (not the reference model)
+  codebase/                     # SEPARATE LikeC4 project: our repos as C4 systems/containers/components (ADR-0010)
+    specification.likec4        # codebase vocabulary (repo, crate, binary, component, adapter, …)
+    estate.likec4               # the olai estate + upstream projects
+    repos/<repo>.likec4         # one file per repo: its containers and intra-repo edges
+    relations.likec4            # cross-repo edges, from manifests
+    views.likec4                # landscape, per-repo containers, trestle components
   design/                       # architecture-focused prose (designDoc targets)
   adr/                          # architecture decision records
   estate.yml                   # ref-free repo facts
@@ -91,7 +97,7 @@ architecture/
   conflicts.md                 # open-questions register
   integrations/trestle.yaml     # Trestle role -> capability/concern contribution (full|partial)
   journeys/                     # estate-wide compatibility journeys, paths, interfaces, evidence (ADR-0009)
-  dist/                         # generated: model.json, trestle-catalog.json, trestle-context.json, journeys.json
+  dist/                         # generated: model.json, codebase.json, trestle-catalog.json, trestle-context.json, journeys.json
 ```
 
 ## Commands
@@ -100,8 +106,9 @@ Run from the repo root via `just` (recipes shell into `architecture/`):
 
 ```bash
 just arch-dev       # interactive dev server (http://localhost:5173)
-just arch-check     # validate syntax + semantics
-just arch-model     # export dist/model.json
+just arch-check     # validate syntax + semantics (both projects)
+just codebase-dev   # the codebase C4 model at http://localhost:5173
+just arch-model     # export dist/model.json and dist/codebase.json (+ bridge check)
 just arch-build     # build the static site into dist/static
 just arch-refresh   # check + model + build — run after any model edit
 just trestle-catalog  # snapshot the pinned Trestle's modules, refresh the context, check the join

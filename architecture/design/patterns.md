@@ -2,9 +2,8 @@
 
 The estate is organized by repo, but its **identity is these three opinionated
 seams** that recur across repos. Each repo is an *application* of them; hydrofoil
-is where several get composed into one experience. In the model these are tags
-(`pattern-composition`, `pattern-agentic-cli`, `pattern-composable-ui`) on the
-repos that apply them.
+is where several get composed into one experience. `estate.yml` records which repos apply each one
+(`applies_patterns`).
 
 Frame them as **established-and-converging** — real today, still settling — not as
 a finished standard.
@@ -15,9 +14,12 @@ a finished standard.
 building monoliths.** Services, DataFusion integrations, and UIs are each
 assembled, not fused.
 
-- **Seam:** narrow port traits + a `Provides*` compile-time DI pattern (established
-  in trestle) + `Arc<dyn Trait>` boundaries, so a piece can be swapped or reused.
-- **Applied by:** trestle (establishes it), mangrove, headwaters, hydrofoil.
+- **Seam:** narrow, object-safe port traits behind `Arc<dyn Trait>` boundaries,
+  each with adapters and a fake (trestle's runtime and tooling crates), plus a
+  `Provides*` compile-time DI pattern that wires a server's ports (mangrove's
+  server and store crates), so a piece can be swapped or reused.
+- **Applied by:** trestle, mangrove, distributary (an engine over pluggable
+  ports), headwaters, hydrofoil.
 - **Exemplar:** hydrofoil composes services and multiple DataFusion integrations
   into a single consolidated session (the `session` component).
 - **Status:** established; the estate's core design stance.

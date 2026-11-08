@@ -1,0 +1,124 @@
+// trestle — proto-driven codegen, project scaffolding, and environment tooling.
+// Facts from the workspace manifests (crates/*, node/*) on the default branch.
+
+model {
+
+  extend olai {
+
+    trestle = repo "trestle" {
+      description "Generates Rust APIs, typed clients, and Python/Node bindings from annotated protobuf; scaffolds projects; plans, renders, and runs local lakehouse environments."
+      link https://github.com/open-lakehouse/trestle
+      metadata {
+        sourceRepo "open-lakehouse/trestle"
+      }
+
+      // --- Build time: code generation -----------------------------------
+      codegen = crate "olai-codegen" {
+        #published #buildTime
+        description "Reads a compiled proto descriptor and emits server handler traits, clients, language bindings, resource labels, and the field-role registry. Never ships in a service binary."
+      }
+
+      // --- Runtime libraries a generated service links -------------------
+      store = crate "olai-store" {
+        #published #runtime
+        description "TAO-inspired object and association store, generic over a generated resource label; mem/SQLite/Postgres backends, field-role enforcement, envelope encryption."
+      }
+      http = crate "olai-http" {
+        #published #runtime
+        description "Cloud credential abstraction and HTTP client (AWS, Azure, GCP, Databricks) behind one client/signer seam; the default transport for generated clients."
+      }
+      httpWasm = crate "olai-http-wasm" {
+        #published #runtime #wasm
+        description "Browser Fetch transport for generated clients; same client bodies, browser-managed session."
+      }
+      auth = crate "olai-auth" {
+        #published #runtime
+        description "Authentication and authorization for axum services: EdDSA JWT, API keys, a Principal extractor, and an Authorizer port (embedded Cedar or remote PDP)."
+      }
+      storageCredentials = crate "olai-storage-credentials" {
+        #published #runtime
+        description "Canonical model, storage locations, and wire adapters for vended cloud storage credentials."
+      }
+      credentialVending = crate "olai-credential-vending" {
+        #published #runtime
+        description "Server-side minting of downscoped storage credentials (AWS STS, Azure SAS, GCS) for registered principals."
+      }
+      vendedStore = crate "olai-vended-store" {
+        #published #runtime
+        description "object_store stores backed by vended, auto-refreshing credentials."
+      }
+
+      // --- Tooling: environments and the CLI ------------------------------
+      stackTopology = crate "olai-stack-topology" {
+        #published #tooling
+        description "Environment model: module catalog, role index, planner, Compose and Envoy renderers, env.toml and workspace manifests. Pure and wasm-clean."
+      }
+      stackTopologyWasm = crate "stack-topology-wasm" {
+        #unpublished #tooling #wasm
+        description "wasm bindings for the planner (catalog, plan, render), consumed by the browser editor through @open-lakehouse/stack-wasm."
+      }
+      stackRuntime = crate "olai-stack-runtime" {
+        #published #tooling
+        description "Runs environments on Docker Compose (ComposeEngine), overlays sources (user vars, Neon branches), and resolves secrets."
+      }
+      stackState = crate "olai-stack-state" {
+        #published #tooling
+        description "SQLite state shared by the CLI and desktop shells: workspaces, environments with immutable revisions, instances, host-wide slot leases."
+      }
+      cli = binary "trestle" {
+        #published #tooling
+        description "The trestle CLI: new (scaffold), generate (codegen), env/ws (environments, workspaces), up/down/ps/logs/health, neon."
+        metadata {
+          publishedAs "olai-trestle"
+        }
+      }
+      testEmulators = crate "olai-test-emulators" {
+        #unpublished
+        description "Testcontainers storage emulators for integration tests."
+      }
+
+      // --- UI packages (released as GitHub release tarballs) --------------
+      envEditor = npmPackage "@open-lakehouse/env-editor" {
+        #tooling
+        description "Headless React environment editor and IDE-style workspace shell, extended through host contributions."
+      }
+      envApp = npmPackage "@open-lakehouse/env-editor-app" {
+        #unpublished #tooling
+        description "The standalone web app wrapping the environment editor."
+      }
+      stackWasm = npmPackage "@open-lakehouse/stack-wasm" {
+        #tooling #wasm
+        description "TypeScript surface of the planner: DTO and Planner types over the wasm build."
+      }
+      host = npmPackage "@open-lakehouse/host" {
+        description "Shared host contract for Open Lakehouse service UIs: service bindings by module id and the environment a UI runs in."
+      }
+      uiKit = npmPackage "@open-lakehouse/ui-kit" {
+        description "Headless, theme-agnostic React primitives (Radix, CVA, Tailwind) and the shared design tokens."
+      }
+      trestleDiagram = npmPackage "@open-lakehouse/trestle-diagram" {
+        description "Read-only, embeddable environment diagram rendered from a graph snapshot."
+      }
+    }
+  }
+
+  // Intra-repo dependencies (Cargo [dependencies] / package.json).
+  olai.trestle.cli -[dependsOn]-> olai.trestle.codegen
+  olai.trestle.cli -[dependsOn]-> olai.trestle.stackTopology
+  olai.trestle.cli -[dependsOn]-> olai.trestle.stackRuntime
+  olai.trestle.cli -[dependsOn]-> olai.trestle.stackState
+  olai.trestle.stackRuntime -[dependsOn]-> olai.trestle.stackTopology
+  olai.trestle.stackRuntime -[dependsOn]-> olai.trestle.stackState
+  olai.trestle.stackState -[dependsOn]-> olai.trestle.stackTopology
+  olai.trestle.stackTopologyWasm -[dependsOn]-> olai.trestle.stackTopology
+  olai.trestle.credentialVending -[dependsOn]-> olai.trestle.http
+  olai.trestle.credentialVending -[dependsOn]-> olai.trestle.storageCredentials
+  olai.trestle.vendedStore -[dependsOn]-> olai.trestle.http
+  olai.trestle.vendedStore -[dependsOn]-> olai.trestle.storageCredentials
+  olai.trestle.stackWasm -[dependsOn]-> olai.trestle.stackTopologyWasm "wraps the wasm build of"
+  olai.trestle.envEditor -[dependsOn]-> olai.trestle.stackWasm
+  olai.trestle.envEditor -[dependsOn]-> olai.trestle.uiKit
+  olai.trestle.envApp -[dependsOn]-> olai.trestle.envEditor
+  olai.trestle.envApp -[dependsOn]-> olai.trestle.stackWasm
+  olai.trestle.envApp -[dependsOn]-> olai.trestle.uiKit
+}

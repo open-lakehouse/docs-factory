@@ -15,6 +15,10 @@
 # purpose and story role, and the *pattern* of what it publishes (e.g. "olai-uc-*
 # crates") — NOT a maintained roster of every crate/version. Enumerate an
 # individual artifact only where its name is load-bearing to the story.
+#
+# The structural record — every workspace member and each cross-repo edge, from
+# the manifests — is the codebase C4 model in architecture/codebase/ (ADR-0010).
+# When the two disagree, the codebase model wins; fix this file to match.
 
 initiative: open-lakehouse (olai — "open lakehouse and ai")
 org: github.com/open-lakehouse
@@ -53,8 +57,11 @@ patterns:
       building monoliths. The recurring shape of the estate: services, DataFusion
       integrations, and UIs are each assembled, not fused.
     seam: >-
-      Narrow port traits + a Provides* compile-time DI pattern (established in
-      Trestle); `Arc<dyn Trait>` boundaries so a piece can be swapped or reused.
+      Narrow, object-safe port traits behind `Arc<dyn Trait>` boundaries so a
+      piece can be swapped or reused (Trestle's runtime and tooling crates are
+      built this way, each port with adapters and a fake), plus a Provides*
+      compile-time DI pattern that wires a server's ports (mangrove's server and
+      store crates).
     applied_by: [trestle, mangrove, headwaters, hydrofoil]
     status: established; the estate's core design stance
     notes: >-
@@ -107,7 +114,11 @@ patterns:
       counterpart to the composition pattern above; the design.md files are a small
       extra agentic proof point (a contract agents can read), not a headline.
 
-# Dependency spine: trestle -> {mangrove, headwaters, breakwater} -> hydrofoil.
+# Dependency spine (from manifests; detail in architecture/codebase/):
+#   trestle -> {mangrove, distributary, headwaters (olai-http only), hydrofoil, luminescent}
+#   mangrove -> {distributary, hydrofoil};  breakwater -> hydrofoil
+#   luminescent-lakehouse deploys headwaters, mangrove, and distributary.
+#   tributary stands alone.
 repos:
 
   trestle:
@@ -117,20 +128,20 @@ repos:
     public: true
     depends_on: []          # the root of the spine; depends on no sibling
     publishes:
-      # olai-* published crates + the CLI. Load-bearing names called out; the set
-      # as a whole is "the olai-* framework crates", not a maintained roster.
-      - olai-codegen         # build-time proto -> Axum/clients/registry codegen
-      - olai-store           # TAO-inspired typed object/association graph store; field roles + encryption
-      - olai-http            # unified cloud-credential + HTTP client (CloudClient)
-      - olai-http-wasm       # browser/WASM HTTP transport for generated clients
-      - olai-stack-topology  # role/placement-aware service-to-service addressing model
-      - olai-trestle (CLI)   # the `trestle` binary: codegen + `trestle new` scaffolding
+      # olai-* framework crates in three stages, + the CLI. Load-bearing names
+      # called out; the roster is in architecture/codebase/repos/trestle.likec4.
+      - olai-codegen         # BUILD TIME: proto -> axum handlers, clients, bindings, registry
+      - olai-store / olai-http / olai-http-wasm / olai-auth   # RUNTIME: store, transport, auth
+      - olai-credential-vending / olai-vended-store / olai-storage-credentials   # RUNTIME: vended storage credentials
+      - olai-stack-topology / olai-stack-runtime / olai-stack-state   # TOOLING: plan, run, and record environments
+      - olai-trestle (CLI)   # the `trestle` binary: new, generate, env, ws, up
+      - "@open-lakehouse/* UI packages"   # env-editor, host, ui-kit, stack-wasm, trestle-diagram (GitHub release tarballs)
     key_paths:               # orientation only — where to look, not pinned refs
-      - crates/olai-store/src/
-      - crates/olai-codegen/docs/codegen-design.md
-      - crates/stack-topology/
       - docs/architecture.md
-    applies_patterns: [composition]   # establishes the opinionated composition seams
+      - crates/olai-codegen/docs/codegen-design.md
+      - crates/stack-topology/src/catalog/   # the module catalog and roles
+      - crates/trestle/templates/            # `trestle new` scaffolds
+    applies_patterns: [composition]   # ports-and-adapters throughout its runtime and tooling crates
     story_role: >-
       The generator. Everything downstream is built with it; it is how we build
       services fast enough to explore the estate — and where the estate's
@@ -148,17 +159,18 @@ repos:
     public: true
     depends_on: [trestle]
     publishes:
-      - olai-uc-* crates      # common / client / delta-api / sharing-client / object-store / postgres / sqlite / datafusion / server / cli
+      - olai-uc-* crates      # common / client / handlers / delta-api / datafusion / object-store / storage-access / postgres / sqlite / sharing / files-proto / server / cli
+      - files-api, storage-proxy (bins)   # volume files over ConnectRPC; same-origin storage proxy
+      - unitycatalog-client (PyPI), "@open-lakehouse/unity-catalog-node", "@open-lakehouse/unity-catalog-client" (npm)
       - uc (CLI)              # command-line client for a running server
       - uc-server (bin)       # the deployable UC service
       - mangrove (Docker image)
     key_paths:
       - crates/delta-api/         # the UC Delta v1 REST API (also -> Lakekeeper)
       - crates/datafusion/        # UC-backed DataFusion catalog provider — a piece we want to MATURE
-      - crates/query-wasm/        # in-browser query engine (separate workspace)
-      - docs/src/content/docs/explanation/   # architecture/design explanations (Starlight site)
-      - WASM_QUERY_PREVIEW.md
-      - lakekeeper-delta-api-feasibility.md
+      - wasm/query-wasm/          # in-browser query engine (separate wasm workspace)
+      - node/ARCHITECTURE.md      # the UI packages
+      - trestle.yaml              # `trestle generate` config for the committed models + client
     trade_off: >-
       Moves faster but makes FEWER guarantees than UC OSS — this is deliberate and
       must be stated wherever mangrove is positioned. The DataFusion integration
@@ -175,23 +187,22 @@ repos:
 
   headwaters:
     purpose: >-
-      OpenLineage on Apache DataFusion: emits column-level data lineage at
-      planning time and ingests OpenLineage events into a queryable store with a
-      read API (a Rust-native take inspired by, not a drop-in for, Marquez).
+      OpenLineage for the Rust data ecosystem: ingests OpenLineage events into a
+      Postgres-backed lineage store and serves a Marquez-compatible read API (a
+      Rust-native take inspired by, not a drop-in for, Marquez). Emitting lineage
+      from DataFusion plans is the upstream datafusion-contrib/datafusion-openlineage
+      crate, not part of this repo.
     public: true
-    depends_on: [trestle]
+    depends_on: [trestle]   # olai-http only (optional client feature); its proto is buf-generated, not trestle
     publishes:
-      - datafusion-openlineage   # OpenLineage integration for DataFusion (published)
-      - openlineage-client       # engine-agnostic OpenLineage event model + emit client
-      - headwaters-client / headwaters-proto   # read-API client + generated proto types
-      - hw (CLI)                 # inspect a lineage estate (humans + agents)
-      - headwaters (bin)         # the ingest/read service
+      - headwaters-client / headwaters-proto   # read-API client + generated proto types (crates.io)
+      - hw (CLI)                 # inspect a lineage estate (humans + agents); git-only
+      - headwaters (bin)         # the ingest/read service; git-only
       - headwaters (Docker image)
     key_paths:
-      - crates/open-lineage/src/rule.rs   # planning-time column-level lineage
-      - docs/adr/                         # the lineage design decisions (0001-0014)
-      - docs/open-lineage-design.md
+      - docs/adr/                         # the lineage design decisions (0001-0016)
       - docs/agent-cli-design.md
+      - docs/marquez-compatibility.md
     applies_patterns: [composition, composable-ui, agentic-cli]   # hw is the agentic-CLI lead
     story_role: >-
       The lineage plane — where the estate answers "where did this data come from,
@@ -233,7 +244,7 @@ repos:
       table formats through UC with policy and lineage wired in, plus a Tauri desktop
       app and React UIs. The integration hub that composes the siblings back together.
     public: true
-    depends_on: [trestle, mangrove, headwaters, breakwater]
+    depends_on: [trestle, mangrove, breakwater]   # mangrove + breakwater by git; trestle's olai-stack-topology (desktop) by crates.io; lineage via upstream datafusion-openlineage
     publishes:
       # unpublished application layer — consumes the published olai-* libs
       - hydrofoil (bin + GHCR image)   # the query engine service
@@ -258,3 +269,53 @@ repos:
       patterns culminate: services + DataFusion integrations composed into one
       session, and the siblings' composable UI components composed into one
       consolidated experience.
+
+  distributary:
+    purpose: >-
+      OpenSharing / Delta Sharing in Rust: protocol models, a client, the protocol
+      surface, an engine over pluggable ports (delta_kernel-backed Delta), a
+      provider domain with Postgres and SQLite stores, and a composable sharing
+      server that maps shares onto a catalog.
+    public: true
+    depends_on: [trestle, mangrove]   # trestle codegen + credential crates; mangrove's olai-uc-* (sharing state, handlers, client)
+    publishes:
+      - opensharing-* crates   # common / api / client / admin-api / engine / provider / postgres / sqlite
+      - sharing-server (bin)   # published as opensharing-server
+    key_paths:
+      - ARCHITECTURE.md
+      - trestle.yaml           # `trestle generate` config for models, handler traits, client
+    applies_patterns: [composition]
+    story_role: >-
+      The sharing plane: the protocol over ports, mapped onto any catalog. A second
+      service generated with trestle, alongside mangrove.
+
+  luminescent-lakehouse:
+    purpose: >-
+      Deploys open-lakehouse services to Neon as Neon Functions (the services live
+      in their own repos), plus a desktop shell for local trestle environments and
+      the Neon Auth web pages.
+    public: true
+    depends_on: [trestle, headwaters, mangrove, distributary]   # services by git; trestle stack crates by crates.io, UI packages by release tarball
+    publishes: []              # deployments and apps only; nothing published
+    key_paths:
+      - neon.ts                # which functions deploy
+      - docs/deployment.md
+      - docs/desktop.md
+    story_role: >-
+      The hosted face: the same services the estate builds, running serverless on
+      Neon branches.
+
+  tributary:
+    purpose: >-
+      Simulation and geospatial processing framework (DataFusion/Arrow) with Python
+      bindings; generates realistic event data for demo domains (ghost kitchen,
+      logistics).
+    public: true
+    depends_on: []
+    publishes:
+      - sim-* crates           # core / events / geo / kitchen / logistics / telemetry / artifacts / validate
+      - caspers (CLI), caspers (Python)
+    key_paths:
+      - docs/ARCHITECTURE.md
+    story_role: >-
+      The data source for demos: simulated domains whose events land in the lakehouse.

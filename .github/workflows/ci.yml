@@ -330,6 +330,10 @@ jobs:
       # (a missing model silently skips id validation — a false pass).
       - name: Export architecture model
         run: cd architecture && bun install --frozen-lockfile && bun run model
+      # The codebase C4 model (ADR-0010): validate it, and check that every
+      # lakehouseElement it names exists in the model just exported.
+      - name: Validate codebase model
+        run: cd architecture && bun run check && bun run codebase:model
       - name: Validate frontmatter and snippets
         run: uv run docsnip check
       # content-core is the shared parsing authority (render plugin + version

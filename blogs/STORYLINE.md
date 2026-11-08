@@ -43,9 +43,9 @@ hydrofoil is where they culminate. (Both are **established and converging**: rea
 the repos today, still settling — not a finished standard.)
 
 **Composition.** The recurring shape is to **compose** independently-built pieces
-into one consolidated whole rather than to fuse monoliths. Trestle establishes the
-opinionated seams (narrow port traits, a `Provides*` compile-time DI pattern,
-`Arc<dyn Trait>` boundaries), and hydrofoil is the exemplar: it composes services and
+into one consolidated whole rather than to fuse monoliths. The seams are narrow
+port traits behind `Arc<dyn Trait>` boundaries (throughout Trestle) and a
+`Provides*` compile-time DI pattern (mangrove), and hydrofoil is the exemplar: it composes services and
 multiple DataFusion integrations into a **single consolidated session**. The same
 stance runs through the catalog, lineage, and policy work — a piece is built to be
 swapped or reused, not welded in.

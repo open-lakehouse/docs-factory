@@ -1,0 +1,253 @@
+// trestle at component level: the generator stages and the seams that keep
+// it pluggable. A `component` is a port, registry, or stage; an `adapter` is
+// an implementation that plugs into a port. Test fakes are omitted except where
+// the fake is part of the published surface (FakeEngine, FakeNeon).
+
+model {
+
+  // --- Code generation (olai-codegen) ---------------------------------------
+  extend olai.trestle.codegen {
+    descriptorParser = component "Descriptor parser" {
+      description "Reads the FileDescriptorSet and the resource, field_behavior, resource_reference, and http annotations into a service/resource model; rebuilds the resource hierarchy from reference edges."
+    }
+    typeRenderer = component "TypeRenderer" {
+      description "Port: renders a proto type in a target language."
+    }
+    rustRenderer = adapter "RustRenderer"
+    napiRenderer = adapter "NapiRenderer"
+    tsRenderer = adapter "TypeScriptRenderer"
+    bindingBackend = component "BindingBackend" {
+      description "Port: emits language-binding method bodies over the generated Rust client."
+    }
+    pyBackend = adapter "PyBackend" {
+      description "PyO3 bindings and .pyi typings."
+    }
+    napiBackend = adapter "NapiBackend" {
+      description "NAPI bindings and TypeScript client/models."
+    }
+    config = component "Codegen config" {
+      description "Build-time switches: Runtime (prost | buffa), ClientProtocol (REST | Connect), transport_type_path, optional output dirs."
+    }
+    modelsLayer = component "Models and labels layer" {
+      description "Generated models, the ObjectLabel enum (impl Label), the field-role registry, request extractors."
+    }
+    serverLayer = component "Server layer" {
+      description "Per service: a handler trait plus one axum route fn per RPC. The router is hand-written."
+    }
+    clientLayer = component "Client layer" {
+      description "Typed REST or ConnectRPC clients with request builders, optional resource-scoped clients, and a wasm client."
+    }
+    bindingsLayer = component "Bindings layer" {
+      description "Python (PyO3) and Node (NAPI) bindings with typings."
+    }
+  }
+
+  olai.trestle.codegen.rustRenderer -[plugsInto]-> olai.trestle.codegen.typeRenderer
+  olai.trestle.codegen.napiRenderer -[plugsInto]-> olai.trestle.codegen.typeRenderer
+  olai.trestle.codegen.tsRenderer -[plugsInto]-> olai.trestle.codegen.typeRenderer
+  olai.trestle.codegen.pyBackend -[plugsInto]-> olai.trestle.codegen.bindingBackend
+  olai.trestle.codegen.napiBackend -[plugsInto]-> olai.trestle.codegen.bindingBackend
+  olai.trestle.codegen.descriptorParser -[produces]-> olai.trestle.codegen.modelsLayer
+  olai.trestle.codegen.descriptorParser -[produces]-> olai.trestle.codegen.serverLayer
+  olai.trestle.codegen.descriptorParser -[produces]-> olai.trestle.codegen.clientLayer
+  olai.trestle.codegen.descriptorParser -[produces]-> olai.trestle.codegen.bindingsLayer
+  olai.trestle.codegen.bindingsLayer -[uses]-> olai.trestle.codegen.bindingBackend
+  olai.trestle.codegen.serverLayer -[uses]-> olai.trestle.codegen.typeRenderer
+  olai.trestle.codegen.clientLayer -[uses]-> olai.trestle.codegen.config "protocol and transport from"
+  olai.trestle.codegen.modelsLayer -[dependsOn]-> olai.trestle.store "ObjectLabel implements Label from"
+  olai.trestle.codegen.clientLayer -[dependsOn]-> olai.trestle.http "default transport"
+  olai.trestle.codegen.clientLayer -[dependsOn]-> olai.trestle.httpWasm "wasm32 transport"
+
+  // --- Resource store (olai-store) -------------------------------------------
+  extend olai.trestle.store {
+    label = component "Label" {
+      description "The resource taxonomy the store is generic over; implemented by the generated ObjectLabel."
+    }
+    objectStore = component "ObjectStore<L> / AssociationStore<L>" {
+      description "Port: async object CRUD and typed association (graph) operations, with transactions."
+    }
+    memBackend = adapter "mem backend"
+    sqliteBackend = adapter "SQLite backend"
+    postgresBackend = adapter "Postgres backend"
+    managed = component "ManagedObjectStore" {
+      description "Enforces field roles from the generated registry (output-only, immutable, sensitive)."
+    }
+    keyProvider = component "KeyProvider" {
+      description "Port: key source for envelope encryption of sensitive fields."
+    }
+    localKeys = adapter "LocalKeyProvider"
+  }
+  olai.trestle.store.memBackend -[plugsInto]-> olai.trestle.store.objectStore
+  olai.trestle.store.sqliteBackend -[plugsInto]-> olai.trestle.store.objectStore
+  olai.trestle.store.postgresBackend -[plugsInto]-> olai.trestle.store.objectStore
+  olai.trestle.store.localKeys -[plugsInto]-> olai.trestle.store.keyProvider
+  olai.trestle.store.managed -[uses]-> olai.trestle.store.objectStore
+  olai.trestle.store.managed -[uses]-> olai.trestle.store.keyProvider
+  olai.trestle.store.objectStore -[uses]-> olai.trestle.store.label
+
+  // --- Auth (olai-auth) -------------------------------------------------------
+  extend olai.trestle.auth {
+    principal = component "Principal extractor" {
+      description "axum extractor resolving a JWT or API key into a Principal."
+    }
+    authorizer = component "Authorizer" {
+      description "Port, fail-closed: decides whether a principal may perform an action on a resource."
+    }
+    cedarAuthorizer = adapter "CedarAuthorizer" {
+      description "Embedded Cedar evaluation."
+    }
+    httpAuthorizer = adapter "HttpAuthorizer" {
+      description "Remote policy decision point."
+    }
+    cachedAuthorizer = adapter "CachedAuthorizer" {
+      description "Decision cache wrapping another Authorizer."
+    }
+    keySource = component "KeySource / ApiKeyStore" {
+      description "Ports: verification key discovery and API key persistence."
+    }
+  }
+  olai.trestle.auth.cedarAuthorizer -[plugsInto]-> olai.trestle.auth.authorizer
+  olai.trestle.auth.httpAuthorizer -[plugsInto]-> olai.trestle.auth.authorizer
+  olai.trestle.auth.cachedAuthorizer -[plugsInto]-> olai.trestle.auth.authorizer
+  olai.trestle.auth.principal -[uses]-> olai.trestle.auth.keySource
+
+  // --- HTTP and credentials ----------------------------------------------------
+  extend olai.trestle.http {
+    credentialProvider = component "CredentialProvider" {
+      description "Port: obtains cloud credentials (AWS, Azure, GCP, Databricks, bearer tokens)."
+    }
+    requestSigner = component "RequestSigner" {
+      description "Port: signs an outgoing request with those credentials."
+    }
+    cloudClient = component "CloudClient" {
+      description "HTTP client composed from a provider and a signer; the native transport for generated clients."
+    }
+  }
+  olai.trestle.http.cloudClient -[uses]-> olai.trestle.http.credentialProvider
+  olai.trestle.http.cloudClient -[uses]-> olai.trestle.http.requestSigner
+
+  extend olai.trestle.credentialVending {
+    minter = component "CredentialMinter" {
+      description "Port: mints a downscoped storage credential."
+    }
+    awsMinter = adapter "AwsStsMinter"
+    azureMinter = adapter "Azure SAS minters" {
+      description "User-delegation and account-key SAS."
+    }
+    gcsMinter = adapter "GcsDownscopedMinter"
+    cachingMinter = adapter "CachingMinter" {
+      description "Cache wrapping another minter."
+    }
+  }
+  olai.trestle.credentialVending.awsMinter -[plugsInto]-> olai.trestle.credentialVending.minter
+  olai.trestle.credentialVending.azureMinter -[plugsInto]-> olai.trestle.credentialVending.minter
+  olai.trestle.credentialVending.gcsMinter -[plugsInto]-> olai.trestle.credentialVending.minter
+  olai.trestle.credentialVending.cachingMinter -[plugsInto]-> olai.trestle.credentialVending.minter
+
+  extend olai.trestle.vendedStore {
+    credentialSource = component "CredentialSource" {
+      description "Port: where a vended store gets (and refreshes) its credentials."
+    }
+    catalogSources = adapter "Catalog sources" {
+      description "Unity Catalog, UC Delta API, Delta Sharing, Iceberg REST, and Neon sources."
+    }
+  }
+  olai.trestle.vendedStore.catalogSources -[plugsInto]-> olai.trestle.vendedStore.credentialSource
+
+  // --- Environments (olai-stack-topology) --------------------------------------
+  extend olai.trestle.stackTopology {
+    module = component "Module" {
+      description "Port (object-safe): a deployable unit with services, provided roles, knobs, requirements, conflicts, resource demands, and per-target render specs."
+    }
+    dataModule = adapter "DataModule" {
+      description "Declarative module: data plus templates, no code."
+    }
+    hostedModule = adapter "Hosted modules" {
+      description "A managed service in place of an in-stack one: hosted Postgres, S3, Azure Storage, Neon."
+    }
+    catalog = component "Module catalog" {
+      description "The baseline registry (18 modules) with a role index (providers_of) and default providers per role."
+    }
+    role = component "Role" {
+      description "Open set of capability names a module provides (object_store, relational_db, data_catalog, gateway, policy, lineage, …)."
+    }
+    planner = component "Planner" {
+      description "Resolves a selection into a plan: fills roles, satisfies resource demands, applies knobs, checks conflicts. Target-neutral."
+    }
+    deployTarget = component "DeployTarget" {
+      description "Port: materializes a plan for a target; modules carry a render spec per target id."
+    }
+    composeTarget = adapter "Compose target" {
+      description "The only target today: Compose files per module plus the Envoy gateway config."
+    }
+    manifests = component "Manifests" {
+      description "env.toml (an environment) and trestle-workspace.toml (a workspace)."
+    }
+  }
+  olai.trestle.stackTopology.dataModule -[plugsInto]-> olai.trestle.stackTopology.module
+  olai.trestle.stackTopology.hostedModule -[plugsInto]-> olai.trestle.stackTopology.module
+  olai.trestle.stackTopology.composeTarget -[plugsInto]-> olai.trestle.stackTopology.deployTarget
+  olai.trestle.stackTopology.catalog -[uses]-> olai.trestle.stackTopology.module "registers"
+  olai.trestle.stackTopology.catalog -[uses]-> olai.trestle.stackTopology.role "indexes providers by"
+  olai.trestle.stackTopology.planner -[uses]-> olai.trestle.stackTopology.catalog
+  olai.trestle.stackTopology.planner -[uses]-> olai.trestle.stackTopology.manifests "reads selection from"
+  olai.trestle.stackTopology.planner -[produces]-> olai.trestle.stackTopology.deployTarget "hands the plan to"
+
+  // --- Running environments (olai-stack-runtime, olai-stack-state) ----------
+  extend olai.trestle.stackRuntime {
+    composeEngine = component "ComposeEngine" {
+      description "Port: up/down/status/logs/health of a rendered environment."
+    }
+    dockerCli = adapter "DockerCli"
+    fakeEngine = adapter "FakeEngine" {
+      description "In-memory engine for tests."
+    }
+    source = component "Source" {
+      description "Port: overlays variables and endpoints onto an instance (between stored vars and instance overrides)."
+    }
+    userVars = adapter "UserVars"
+    neonBranchSource = adapter "NeonBranchSource"
+    secretProvider = component "SecretProvider" {
+      description "Port: resolves a stored SecretRef { provider, key } to a value."
+    }
+    envSecrets = adapter "EnvProvider"
+    keychainSecrets = adapter "KeychainProvider"
+    neonControl = component "NeonControl" {
+      description "Port: the Neon control plane (branches, connection strings)."
+    }
+    neonCli = adapter "NeonCli"
+    fakeNeon = adapter "FakeNeon"
+  }
+  olai.trestle.stackRuntime.dockerCli -[plugsInto]-> olai.trestle.stackRuntime.composeEngine
+  olai.trestle.stackRuntime.fakeEngine -[plugsInto]-> olai.trestle.stackRuntime.composeEngine
+  olai.trestle.stackRuntime.userVars -[plugsInto]-> olai.trestle.stackRuntime.source
+  olai.trestle.stackRuntime.neonBranchSource -[plugsInto]-> olai.trestle.stackRuntime.source
+  olai.trestle.stackRuntime.envSecrets -[plugsInto]-> olai.trestle.stackRuntime.secretProvider
+  olai.trestle.stackRuntime.keychainSecrets -[plugsInto]-> olai.trestle.stackRuntime.secretProvider
+  olai.trestle.stackRuntime.neonCli -[plugsInto]-> olai.trestle.stackRuntime.neonControl
+  olai.trestle.stackRuntime.fakeNeon -[plugsInto]-> olai.trestle.stackRuntime.neonControl
+  olai.trestle.stackRuntime.neonBranchSource -[uses]-> olai.trestle.stackRuntime.neonControl
+
+  extend olai.trestle.stackState {
+    stateStore = component "State store" {
+      description "SQLite under TRESTLE_HOME: workspaces, environments with immutable revisions, instances bound to revisions, host-wide slot leases."
+    }
+  }
+
+  // --- CLI: scaffolding and entry points --------------------------------------
+  extend olai.trestle.cli {
+    scaffolder = component "Scaffolder (trestle new)" {
+      description "Renders MiniJinja templates: a base (lakehouse) plus an app (databricks-app-rust) plus components toggled by when:/profiles:, then post_init hooks."
+    }
+    generateCmd = component "trestle generate" {
+      description "Runs buf generate and buf build, then olai-codegen over the descriptor."
+    }
+    envCmds = component "trestle env / ws / up" {
+      description "Plan, render, and run environments and workspaces."
+    }
+  }
+  olai.trestle.cli.generateCmd -[uses]-> olai.trestle.codegen.descriptorParser
+  olai.trestle.cli.envCmds -[uses]-> olai.trestle.stackTopology.planner
+  olai.trestle.cli.envCmds -[uses]-> olai.trestle.stackRuntime.composeEngine
+  olai.trestle.cli.envCmds -[uses]-> olai.trestle.stackState.stateStore
+}

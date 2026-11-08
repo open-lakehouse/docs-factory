@@ -73,9 +73,9 @@ _(Opinionated seams that recur across repos; each repo *applies* them. See the
 block in [estate.yml](./estate.yml).)_
 
 - **composition** — the estate's core stance: assemble independently-built pieces
-  into one consolidated whole rather than fuse a monolith. Established via Trestle's
-  seams (narrow port traits, a `Provides*` compile-time DI pattern, `Arc<dyn Trait>`
-  boundaries); hydrofoil composes services + DataFusion integrations into one session.
+  into one consolidated whole rather than fuse a monolith. Built from narrow port
+  traits behind `Arc<dyn Trait>` boundaries (throughout Trestle) and a `Provides*`
+  compile-time DI pattern (mangrove); hydrofoil composes services + DataFusion integrations into one session.
 - **composable / headless UI** — the UI counterpart to composition: reusable,
   ideally **headless** components with **pluggable seams**, wrapped by a thin
   per-service app; the same set composes into one consolidated experience (hydrofoil).

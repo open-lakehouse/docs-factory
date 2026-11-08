@@ -27,6 +27,7 @@ see `ADR-0002` for the fact-vs-factory dividing line.
 | [ADR-0007](./ADR-0007-cross-cutting-concerns.md) | Cross-cutting concerns as their own element kind | Accepted (amended 2026-10-23) | 2026-10-16 |
 | [ADR-0008](./ADR-0008-model-conventions.md) | One meaning per relationship kind, and the rules for applying the vocabulary | Accepted | 2026-10-23 |
 | [ADR-0009](./ADR-0009-journeys-as-path-patterns.md) | Journeys are tasks through contract paths, defined once for the estate | Proposed | 2026-10-23 |
+| [ADR-0010](./ADR-0010-codebase-model.md) | Our source repos get their own C4 model, separate from the lakehouse model | Proposed | 2026-11-08 |
 
 ---
 

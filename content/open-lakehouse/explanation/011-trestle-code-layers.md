@@ -2,7 +2,7 @@
 title: Trestle's generated code layers
 summary: One proto descriptor becomes models, server handler traits, typed clients and bindings. Each layer lands in its own crate, and the author keeps the router and the logic.
 diataxis: explanation
-project: trestle
+project: open-lakehouse
 status: draft
 references:
   - trestle

@@ -25,7 +25,7 @@ export {
 /** All doc file paths discovered at build time (keys from import.meta.glob).
  * This file is one level deeper than src/, hence `../../../content`. */
 export const docPaths = Object.keys(
-  import.meta.glob("../../../content/{delta,unitycatalog,open-lakehouse,trestle}/**/*.{md,mdx}", {
+  import.meta.glob("../../../content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}", {
     eager: true,
   }),
 ).filter((p) => !p.endsWith("/README.md"));

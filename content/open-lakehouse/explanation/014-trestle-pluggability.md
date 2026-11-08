@@ -2,7 +2,7 @@
 title: How Trestle stays pluggable
 summary: Trestle keeps every varying part behind a small set of repeated patterns, mainly object-safe ports with adapters and fakes, and a module registry indexed by role.
 diataxis: explanation
-project: trestle
+project: open-lakehouse
 status: draft
 references:
   - trestle

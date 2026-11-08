@@ -2,9 +2,9 @@
 # table formats and catalogs, rather than one project. Contract:
 # content/README.md § "Curated navigation".
 #
-# `id:` / `planned:` values are backlog ids from
-# docs/design/format-compatibility-plan.md §4. Planned slots render for
-# reviewers only.
+# `id:` / `planned:` values are backlog ids: E01–E06, H01–H02 and R01 from
+# docs/design/format-compatibility-plan.md §4; E07–E11, R02, T01 and H03–H04
+# for the Trestle section. Planned slots render for reviewers only.
 nav:
   - section: Concepts
     items:
@@ -22,6 +22,28 @@ nav:
         title: Interoperating between table formats
       - page: explanation/reference-architecture
         id: E04
+  # Trestle: the generator and environment tooling the open-lakehouse services
+  # are built with. Concept fact sheets for now; prose and task pages later.
+  - section: Trestle
+    items:
+      - page: explanation/what-trestle-generates
+        id: E07
+      - page: explanation/trestle-code-layers
+        id: E08
+      - page: explanation/trestle-scaffolded-projects
+        id: E09
+      - page: explanation/trestle-environments
+        id: E10
+      - page: explanation/trestle-pluggability
+        id: E11
+      - page: reference/trestle-crate-map
+        id: R02
+      - planned: T01
+        title: Scaffold a service from protobuf
+      - planned: H03
+        title: Add a module to the environment catalog
+      - planned: H04
+        title: Add a code generation backend
   - section: Guides
     items:
       - page: how-to/composable-compose

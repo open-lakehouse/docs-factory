@@ -16,8 +16,8 @@ local lakehouse emulation, and deployment.
 Framework crates under the `olai-*` prefix, plus the CLI, in three stages. The
 full container and component breakdown is the codebase model
 (`architecture/codebase/`, views `trestleContainers`, `trestleCodegen`,
-`trestleEnvironments`, `trestleRuntimeSeams`); the concepts are
-`content/trestle/`.
+`trestleEnvironments`, `trestleRuntimeSeams`); the concepts are the
+`trestle-*` pages in `content/open-lakehouse/`.
 
 | Stage | Crate / binary | Role |
 |---|---|---|
@@ -57,7 +57,7 @@ for tests (`Authorizer`, `CredentialMinter`, `ComposeEngine`, `SecretProvider`,
 the environment `Module`, …), a store generic over a generated taxonomy, and
 build-time switches for runtime and protocol. The `Provides*` compile-time DI
 pattern is mangrove's, not trestle's. See [`patterns.md`](./patterns.md) and
-`content/trestle/explanation/005-pluggability-patterns.md`.
+`content/open-lakehouse/explanation/014-trestle-pluggability.md`.
 
 ## Orientation
 

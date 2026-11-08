@@ -1,0 +1,51 @@
+// headwaters — OpenLineage ingest and a Marquez-compatible read service.
+
+model {
+  extend olai {
+    headwaters = repo "headwaters" {
+      description "OpenLineage for the Rust data ecosystem: ingests lineage events into a Postgres-backed store and serves a read API, a CLI for humans and agents, and a lineage UI."
+      link https://github.com/open-lakehouse/headwaters
+      metadata {
+        sourceRepo "open-lakehouse/headwaters"
+        lakehouseElement "headwaters"
+      }
+
+      service = binary "headwaters" {
+        #unpublished
+        description "OpenLineage ingest and Marquez-compatible read service (HTTP, ConnectRPC, Postgres); also a library."
+      }
+      hw = binary "hw" {
+        #unpublished
+        description "Agent-optimized lineage CLI."
+        metadata { publishedAs "headwaters-cli" }
+      }
+      client = crate "headwaters-client" {
+        #published
+        description "Async Rust client for the read API."
+      }
+      proto = crate "headwaters-proto" {
+        #published
+        description "Protobuf types and ConnectRPC stubs (buf-generated, committed)."
+      }
+      lineageClient = npmPackage "@headwaters/lineage-client" {
+        #unpublished
+        description "ConnectRPC TypeScript client."
+      }
+      lineageUi = npmPackage "@headwaters/lineage-ui" {
+        #unpublished
+        description "React lineage graph components."
+      }
+      lineageApp = app "@headwaters/lineage-app" {
+        #unpublished
+        description "Vite SPA bundled into the headwaters image."
+      }
+    }
+  }
+
+  olai.headwaters.service -[dependsOn]-> olai.headwaters.proto
+  olai.headwaters.client -[dependsOn]-> olai.headwaters.proto
+  olai.headwaters.hw -[dependsOn]-> olai.headwaters.client
+  olai.headwaters.lineageUi -[dependsOn]-> olai.headwaters.lineageClient
+  olai.headwaters.lineageApp -[dependsOn]-> olai.headwaters.lineageUi
+  olai.headwaters.lineageApp -[dependsOn]-> olai.headwaters.lineageClient
+}

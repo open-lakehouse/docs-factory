@@ -1,0 +1,48 @@
+// hydrofoil — catalog-native query engine, platform services, and the desktop lab.
+
+model {
+  extend olai {
+    hydrofoil = repo "hydrofoil" {
+      description "Open Lakehouse Lab: a Flight SQL query engine over catalog-governed tables, ConnectRPC platform services, and a desktop app composing them."
+      link https://github.com/open-lakehouse/hydrofoil
+      metadata {
+        sourceRepo "open-lakehouse/hydrofoil"
+        lakehouseElement "hydrofoil"
+      }
+
+      server = binary "hydrofoil" {
+        description "Flight SQL server over tables backed by open table formats; also a library."
+      }
+      portal = binary "portal" {
+        description "ConnectRPC platform services (tags, files)."
+      }
+      common = crate "hydrofoil-common" {
+        description "Shared types."
+      }
+      client = crate "hydrofoil-client" {
+        description "Client for the hydrofoil server."
+      }
+      deltaDatafusion = crate "deltalake-datafusion" {
+        description "Unity Catalog-backed DataFusion integration for Delta tables."
+      }
+      desktopHost = crate "desktop-host" {
+        description "Embeds portal and hydrofoil for the desktop app."
+      }
+      desktop = app "open-lakehouse-desktop" {
+        #unpublished
+        description "Tauri desktop shell (own Cargo workspace) with the @open-lakehouse/desktop frontend."
+      }
+      ui = npmPackage "@open-lakehouse/ui" {
+        description "React UI composed from mangrove's UI packages."
+      }
+    }
+  }
+
+  olai.hydrofoil.server -[dependsOn]-> olai.hydrofoil.deltaDatafusion
+  olai.hydrofoil.server -[dependsOn]-> olai.hydrofoil.common
+  olai.hydrofoil.client -[dependsOn]-> olai.hydrofoil.common
+  olai.hydrofoil.desktopHost -[dependsOn]-> olai.hydrofoil.server
+  olai.hydrofoil.desktopHost -[dependsOn]-> olai.hydrofoil.portal
+  olai.hydrofoil.desktop -[dependsOn]-> olai.hydrofoil.desktopHost
+  olai.hydrofoil.desktop -[dependsOn]-> olai.hydrofoil.ui
+}

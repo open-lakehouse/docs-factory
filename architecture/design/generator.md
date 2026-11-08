@@ -13,16 +13,25 @@ local lakehouse emulation, and deployment.
 
 ## What it publishes
 
-Framework crates under the `olai-*` prefix, plus the CLI. Load-bearing pieces:
+Framework crates under the `olai-*` prefix, plus the CLI, in three stages. The
+full container and component breakdown is the codebase model
+(`architecture/codebase/`, views `trestleContainers`, `trestleCodegen`,
+`trestleEnvironments`, `trestleRuntimeSeams`); the concepts are
+`content/trestle/`.
 
-| Crate / binary | Role |
-|---|---|
-| `olai-codegen` | Build-time proto → Axum handlers / clients / registry codegen |
-| `olai-store` | TAO-inspired typed object/association graph store; field roles + encryption |
-| `olai-http` | Unified cloud-credential + HTTP client (`CloudClient`) |
-| `olai-http-wasm` | Browser/WASM HTTP transport for generated clients |
-| `olai-stack-topology` | Role/placement-aware service-to-service addressing |
-| `olai-trestle` (CLI) | The `trestle` binary: codegen + `trestle new` scaffolding |
+| Stage | Crate / binary | Role |
+|---|---|---|
+| build time | `olai-codegen` | Proto descriptor → axum handler traits, REST/Connect clients, PyO3/NAPI bindings, resource labels, field-role registry |
+| runtime | `olai-store` | TAO-inspired object/association store, generic over the generated label; field roles + envelope encryption |
+| runtime | `olai-http` / `olai-http-wasm` | Cloud-credential HTTP client; the native and browser transports for generated clients |
+| runtime | `olai-auth` | JWT + API keys, `Principal` extractor, `Authorizer` port (embedded Cedar or remote PDP) |
+| runtime | `olai-credential-vending` / `olai-vended-store` / `olai-storage-credentials` | Mint downscoped storage credentials; object stores over vended credentials |
+| tooling | `olai-stack-topology` | Module catalog, roles, planner, Compose/Envoy renderers (pure, wasm-clean) |
+| tooling | `olai-stack-runtime` / `olai-stack-state` | Run environments on Docker Compose; shared SQLite state (workspaces, revisions, instances) |
+| tooling | `olai-trestle` (CLI) | The `trestle` binary: `new`, `generate`, `env`, `ws`, `up` |
+
+UI packages (`@open-lakehouse/env-editor`, `host`, `ui-kit`, `stack-wasm`,
+`trestle-diagram`) ship as GitHub release tarballs.
 
 > The `olai-*` prefix is a defensive publish-time shell, not the code's identity —
 > call sites use aspirational eventual-official names via Cargo `package =`
@@ -31,19 +40,28 @@ Framework crates under the `olai-*` prefix, plus the CLI. Load-bearing pieces:
 
 ## Why it's the root
 
-mangrove and headwaters depend on trestle (`olai-http` / `olai-store` + codegen).
-breakwater has no crate dependency on a sibling. hydrofoil depends on `olai-http`
-transitively. So trestle is the one repo every service traces back to.
+From the manifests (detail in the codebase model's `landscape` view):
+
+- mangrove and distributary commit `trestle generate` output (models, handler
+  traits, clients) and link trestle's runtime crates.
+- headwaters uses only `olai-http` (optional); its proto is buf-generated.
+- hydrofoil and luminescent-lakehouse use the environment crates
+  (`olai-stack-*`) in their desktop shells.
+- breakwater and tributary have no trestle dependency.
 
 ## Patterns it establishes
 
-trestle is where the estate's **composition** pattern is established: narrow port
-traits + a `Provides*` compile-time DI pattern + `Arc<dyn Trait>` boundaries, so a
-piece can be swapped or reused. See [`patterns.md`](./patterns.md).
+trestle applies the estate's **composition** pattern throughout: narrow,
+object-safe port traits behind `Arc<dyn Trait>`, each with adapters and a fake
+for tests (`Authorizer`, `CredentialMinter`, `ComposeEngine`, `SecretProvider`,
+the environment `Module`, …), a store generic over a generated taxonomy, and
+build-time switches for runtime and protocol. The `Provides*` compile-time DI
+pattern is mangrove's, not trestle's. See [`patterns.md`](./patterns.md) and
+`content/trestle/explanation/005-pluggability-patterns.md`.
 
 ## Orientation
 
-- `crates/olai-store/src/`
-- `crates/olai-codegen/docs/codegen-design.md`
-- `crates/stack-topology/`
 - `docs/architecture.md`
+- `crates/olai-codegen/docs/codegen-design.md`
+- `crates/stack-topology/src/catalog/`
+- `crates/trestle/templates/`

@@ -1,0 +1,121 @@
+// Views over the codebase model: context (landscape), one container view per
+// repo, and Trestle's component views.
+
+views {
+
+  view landscape {
+    title "Open Lakehouse codebase — landscape"
+    description "Our repositories, how they build on each other, and the upstream projects they build on. Edges between repos roll up crate-level dependencies, codegen, and deployment."
+    include
+      olai,
+      olai.*,
+      element.kind == upstream
+    autoLayout TopBottom
+  }
+
+  view trestleContainers of olai.trestle {
+    title "trestle — containers"
+    description "trestle's crates and UI packages by stage: build-time codegen, runtime libraries that generated services link, and environment tooling."
+    include
+      *,
+      -> olai.trestle.* ->
+    exclude
+      element.kind == component,
+      element.kind == adapter
+    autoLayout LeftRight
+  }
+
+  view mangroveContainers of olai.mangrove {
+    title "mangrove — containers"
+    include
+      *,
+      -> olai.mangrove.* ->
+    autoLayout LeftRight
+  }
+
+  view headwatersContainers of olai.headwaters {
+    title "headwaters — containers"
+    include
+      *,
+      -> olai.headwaters.* ->
+    autoLayout LeftRight
+  }
+
+  view breakwaterContainers of olai.breakwater {
+    title "breakwater — containers"
+    include
+      *,
+      -> olai.breakwater.* ->
+    autoLayout LeftRight
+  }
+
+  view hydrofoilContainers of olai.hydrofoil {
+    title "hydrofoil — containers"
+    include
+      *,
+      -> olai.hydrofoil.* ->
+    autoLayout LeftRight
+  }
+
+  view distributaryContainers of olai.distributary {
+    title "distributary — containers"
+    include
+      *,
+      -> olai.distributary.* ->
+    autoLayout LeftRight
+  }
+
+  view luminescentContainers of olai.luminescent {
+    title "luminescent-lakehouse — containers"
+    include
+      *,
+      -> olai.luminescent.* ->
+    autoLayout LeftRight
+  }
+
+  view tributaryContainers of olai.tributary {
+    title "tributary — containers"
+    include
+      *,
+      -> olai.tributary.* ->
+    autoLayout LeftRight
+  }
+
+  // --- Trestle components ----------------------------------------------------
+
+  view trestleCodegen of olai.trestle.codegen {
+    title "trestle — code generation"
+    description "How a proto descriptor becomes generated layers, and the renderer and binding-backend ports that select output languages."
+    include
+      *,
+      olai.trestle.cli.generateCmd,
+      olai.trestle.store,
+      olai.trestle.http,
+      olai.trestle.httpWasm
+    autoLayout LeftRight
+  }
+
+  view trestleEnvironments of olai.trestle.stackTopology {
+    title "trestle — environments"
+    description "The module catalog and role index, the planner, and the deploy-target port; how the CLI runs and records environments."
+    include
+      *,
+      olai.trestle.cli.envCmds,
+      olai.trestle.stackRuntime.composeEngine,
+      olai.trestle.stackState.stateStore
+    autoLayout LeftRight
+  }
+
+  view trestleRuntimeSeams of olai.trestle {
+    title "trestle — runtime and tooling seams"
+    description "The ports behind which trestle's runtime libraries and environment runtime stay pluggable, and the adapters that implement them today."
+    include
+      olai.trestle.store.*,
+      olai.trestle.auth.*,
+      olai.trestle.http.*,
+      olai.trestle.credentialVending.*,
+      olai.trestle.vendedStore.*,
+      olai.trestle.stackRuntime.*
+    autoLayout TopBottom
+  }
+}

@@ -1,0 +1,125 @@
+// Specification for the codebase C4 model: our source repos, the build units
+// they contain, and the seams worth naming. Separate from the lakehouse model
+// in ../model (ADR-0010); conventions there do not apply here.
+//
+// METADATA CONVENTIONS:
+//   sourceRepo        — org/repo on GitHub.
+//   publishedAs       — the crates.io / npm / PyPI name, when it differs from
+//                       the element title or the title is a directory.
+//   lakehouseElement  — id of the corresponding element in ../model; checked
+//                       by scripts/check-codebase-bridge.mjs.
+//   via (on dependsOn) — how the dependency is pulled: crates.io | git | npm | path (a sibling checkout).
+//                       Never a version or rev.
+
+specification {
+
+  // --- Context level --------------------------------------------------------
+
+  element estate {
+    notation "Organization"
+    style {
+      color secondary
+      opacity 10%
+    }
+  }
+
+  // C4 software system: one first-party repository.
+  element repo {
+    notation "First-party repository"
+    style {
+      color primary
+    }
+  }
+
+  // External OSS or service a repo builds on or deploys onto.
+  element upstream {
+    notation "Upstream project or service"
+    style {
+      color muted
+      shape rectangle
+    }
+  }
+
+  // --- Container level (build units: workspace members) ---------------------
+
+  element crate {
+    notation "Rust library crate"
+    style {
+      color sky
+    }
+  }
+
+  element binary {
+    notation "Executable (CLI or server)"
+    style {
+      color indigo
+    }
+  }
+
+  element npmPackage {
+    notation "npm package"
+    style {
+      color green
+    }
+  }
+
+  element pyPackage {
+    notation "Python package"
+    style {
+      color amber
+    }
+  }
+
+  // A deployable application that is not a library: desktop, web, or a
+  // serverless function bundle.
+  element app {
+    notation "Application or function bundle"
+    style {
+      color indigo
+      shape browser
+    }
+  }
+
+  // --- Component level ------------------------------------------------------
+
+  // A named seam inside a container: a trait/port, a registry, a generator
+  // stage. Modeled only where the seams are the point (Trestle, first pass).
+  element component {
+    notation "Component / seam"
+    style {
+      color slate
+      shape component
+    }
+  }
+
+  // An implementation behind a port (an adapter). Kept distinct from
+  // `component` so views can show the port and what plugs into it.
+  element adapter {
+    notation "Adapter (implements a port)"
+    style {
+      color muted
+      shape rectangle
+    }
+  }
+
+  // --- Relationship kinds ---------------------------------------------------
+
+  relationship dependsOn { line dashed }        // a Cargo/npm dependency (metadata via)
+  relationship generatedWith { line dotted }    // committed code produced by `trestle generate`
+  relationship deploys                          // packages another repo's service for a runtime
+  relationship builtOn { line dashed }          // load-bearing upstream dependency
+  relationship plugsInto { line dotted }        // adapter -> the port it implements
+  relationship produces                         // generator stage -> artifact or layer
+  relationship uses                             // component -> component inside a repo
+
+  // --- Tags -----------------------------------------------------------------
+  tag published     // released to crates.io, npm, or PyPI
+  tag unpublished   // workspace-internal (publish = false, private, placeholder)
+  tag buildTime     // runs at build time; never linked into the service binary
+  tag runtime       // linked into a running service
+  tag tooling       // developer tooling: CLI, environments, state
+  tag wasm          // compiled to wasm32
+  tag designed {
+    color #d97706
+  }
+}

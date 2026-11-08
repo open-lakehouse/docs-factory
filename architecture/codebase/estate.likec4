@@ -1,0 +1,42 @@
+// The estate and the upstream projects it builds on. Repos live in repos/,
+// cross-repo edges in relations.likec4.
+
+model {
+
+  olai = estate "Open Lakehouse (olai)" {
+    description "First-party repositories of the open-lakehouse initiative (github.com/open-lakehouse)."
+    link https://github.com/open-lakehouse
+  }
+
+  // --- Upstreams (load-bearing only) ----------------------------------------
+  datafusion = upstream "Apache DataFusion" {
+    description "Query engine core."
+    metadata { lakehouseElement "datafusion" }
+  }
+  deltaKernel = upstream "delta-kernel-rs" {
+    description "Delta protocol kernel (consumed as the buoyant_kernel distribution)."
+  }
+  deltaRs = upstream "delta-rs" {
+    description "Delta Lake for Rust (consumed from a fork by git)."
+    metadata { lakehouseElement "deltaRs" }
+  }
+  objectStore = upstream "object_store" {
+    description "Object storage abstraction for Rust."
+    metadata { lakehouseElement "objectStore" }
+  }
+  cedar = upstream "Cedar" {
+    description "Policy language and evaluator."
+  }
+  datafusionOpenlineage = upstream "datafusion-openlineage" {
+    description "OpenLineage events from DataFusion plans (datafusion-contrib)."
+  }
+  protobuf = upstream "buf + protobuf" {
+    description "Proto compilation into the descriptor set Trestle generates from."
+  }
+  dockerCompose = upstream "Docker Compose" {
+    description "Runtime for rendered local environments."
+  }
+  neon = upstream "Neon" {
+    description "Managed Postgres branches and Neon Functions."
+  }
+}

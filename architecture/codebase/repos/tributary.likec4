@@ -1,0 +1,58 @@
+// tributary — agent-based simulation framework. No sibling dependencies.
+
+model {
+  extend olai {
+    tributary = repo "tributary" {
+      description "Simulation and geospatial processing framework (DataFusion/Arrow) with Python bindings; generates realistic event data for demo domains."
+      link https://github.com/open-lakehouse/tributary
+      metadata {
+        sourceRepo "open-lakehouse/tributary"
+      }
+
+      simCore = crate "sim-core" {
+        description "Simulation engine with workflow orchestration."
+      }
+      simEvents = crate "sim-events" {
+        description "CloudEvents 1.0 infrastructure and Parquet persistence."
+      }
+      simGeo = crate "sim-geo" {
+        description "Road-network routing, journeys, H3 indexing."
+      }
+      simKitchen = crate "sim-kitchen" {
+        description "Ghost kitchen domain (reference implementation)."
+      }
+      simLogistics = crate "sim-logistics" {
+        description "Package delivery domain."
+      }
+      simTelemetry = crate "sim-telemetry" {
+        description "Observability and telemetry."
+      }
+      simArtifacts = crate "sim-artifacts" {
+        description "Artifacts derived from events (emails, API calls, web events)."
+      }
+      simValidate = crate "sim-validate" {
+        description "Invariant checks over a run's events and artifacts."
+      }
+      cli = binary "caspers" {
+        description "CLI and TUI runner for simulations."
+        metadata { publishedAs "caspers-cli" }
+      }
+      python = pyPackage "caspers" {
+        description "Python bindings for the kitchen and logistics simulations (PyO3)."
+      }
+    }
+  }
+
+  olai.tributary.simEvents -[dependsOn]-> olai.tributary.simCore
+  olai.tributary.simGeo -[dependsOn]-> olai.tributary.simCore
+  olai.tributary.simCore -[dependsOn]-> olai.tributary.simTelemetry "optional"
+  olai.tributary.simKitchen -[dependsOn]-> olai.tributary.simEvents
+  olai.tributary.simKitchen -[dependsOn]-> olai.tributary.simArtifacts
+  olai.tributary.simLogistics -[dependsOn]-> olai.tributary.simEvents
+  olai.tributary.simValidate -[dependsOn]-> olai.tributary.simEvents
+  olai.tributary.cli -[dependsOn]-> olai.tributary.simKitchen
+  olai.tributary.cli -[dependsOn]-> olai.tributary.simLogistics
+  olai.tributary.cli -[dependsOn]-> olai.tributary.simValidate
+  olai.tributary.python -[dependsOn]-> olai.tributary.simKitchen
+  olai.tributary.python -[dependsOn]-> olai.tributary.simLogistics
+}

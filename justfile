@@ -317,7 +317,11 @@ rust:
 arch-dev: _arch-deps
     cd architecture && bun run dev
 
-# Validate the LikeC4 model (syntax + semantics). CI-gateable.
+# Interactive dev server for the codebase C4 model (ADR-0010).
+codebase-dev: _arch-deps
+    cd architecture && bun run codebase:dev
+
+# Validate both LikeC4 models (syntax + semantics). CI-gateable.
 arch-check: _arch-deps
     cd architecture && bun run check
 
@@ -325,10 +329,11 @@ arch-check: _arch-deps
 arch-build: _arch-deps
     cd architecture && bun run build
 
-# Export the model to architecture/dist/model.json (agent / interactive-site input),
-# then refresh the Trestle context artifact that quotes it.
+# Export the model to architecture/dist/model.json (agent / interactive-site input)
+# and the codebase model to dist/codebase.json (checking its bridge ids), then
+# refresh the Trestle context artifact that quotes the model.
 arch-model: _arch-deps
-    cd architecture && bun run model
+    cd architecture && bun run model && bun run codebase:model
     uv run docsnip trestle --fix >/dev/null
 
 # Validate + export JSON + build static site in one step. Run after any model edit.

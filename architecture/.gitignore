@@ -17,3 +17,5 @@ dist/*
 !dist/trestle-catalog.json
 !dist/trestle-context.json
 !dist/journeys.json
+#   - dist/codebase.json  the codebase C4 model export (ADR-0010)
+!dist/codebase.json

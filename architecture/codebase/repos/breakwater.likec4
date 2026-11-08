@@ -1,0 +1,29 @@
+// breakwater — Cedar fine-grained access control for DataFusion. Libraries only.
+
+model {
+  extend olai {
+    breakwater = repo "breakwater" {
+      description "Fine-grained access control for DataFusion: an engine-neutral policy core and Cedar enforcement as a query-planner extension."
+      link https://github.com/open-lakehouse/breakwater
+      metadata {
+        sourceRepo "open-lakehouse/breakwater"
+      }
+
+      policy = crate "olai-datafusion-policy" {
+        #published
+        description "Engine-neutral policy core: the decide contract, the session seam, row and column rewrites."
+      }
+      policyCedar = crate "olai-datafusion-policy-cedar" {
+        #published
+        description "Cedar enforcement for DataFusion sessions."
+      }
+      cedarOci = crate "olai-cedar-oci" {
+        #published
+        description "Cedar policy provider backed by OCI-distributed bundles."
+      }
+    }
+  }
+
+  olai.breakwater.policyCedar -[dependsOn]-> olai.breakwater.policy
+  olai.breakwater.policyCedar -[dependsOn]-> olai.breakwater.cedarOci
+}

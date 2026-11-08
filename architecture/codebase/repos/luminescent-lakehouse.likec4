@@ -1,0 +1,44 @@
+// luminescent-lakehouse — deploys our services to Neon; desktop and web shells.
+
+model {
+  extend olai {
+    luminescent = repo "luminescent-lakehouse" {
+      description "Deploys open-lakehouse services to Neon as Neon Functions (the services live in their own repos), plus a desktop shell for local environments and the Neon Auth web pages."
+      link https://github.com/open-lakehouse/luminescent-lakehouse
+      metadata {
+        sourceRepo "open-lakehouse/luminescent-lakehouse"
+      }
+
+      headwatersNeon = app "headwaters-neon" {
+        #unpublished
+        description "headwaters as a Neon Function (NAPI addon + fetch handler)."
+      }
+      unitycatalogNeon = app "unitycatalog-neon" {
+        #unpublished
+        description "The mangrove Unity Catalog server as a Neon Function."
+      }
+      opensharingNeon = app "opensharing-neon" {
+        #unpublished #designed
+        description "The distributary sharing server as a Neon Function; built and tested, not yet deployed."
+      }
+      migrate = binary "luminescent-migrate" {
+        #unpublished
+        description "Applies a service's migrations to a Neon branch; luminescent-admin manages authz data."
+      }
+      shellCore = crate "shell-core" {
+        #unpublished
+        description "Desktop shell logic without Tauri: state, planner, toolchain doctor, service proxy."
+      }
+      desktop = app "luminescent-desktop" {
+        #unpublished
+        description "Tauri desktop shell for running trestle environments, optionally bound to Neon branches."
+      }
+      web = app "@luminescent-lakehouse/web" {
+        #unpublished
+        description "Neon Auth sign-in and consent pages for every Neon branch."
+      }
+    }
+  }
+
+  olai.luminescent.desktop -[dependsOn]-> olai.luminescent.shellCore
+}

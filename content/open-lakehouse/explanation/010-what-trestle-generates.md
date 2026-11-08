@@ -2,7 +2,7 @@
 title: What Trestle generates
 summary: Trestle produces three things from one source of truth, annotated protobuf and a module catalog. They are service code, scaffolded projects, and local environments.
 diataxis: explanation
-project: trestle
+project: open-lakehouse
 status: draft
 explains: trestle
 ---
@@ -12,13 +12,17 @@ author writes protobuf with standard Google API annotations and the business
 logic behind it. Trestle derives everything in between, and it also stands up
 the lakehouse the service runs against.
 
+Its code generation was carved out of mangrove. The page on
+[reference architectures](./reference-architecture.md) places Trestle among the
+other open-lakehouse projects.
+
 ## Three generated surfaces
 
 | Surface | Command | Engine | Output |
 |---|---|---|---|
-| Service code | `trestle generate` | `olai-codegen` (Rust token streams, no templates) | Handler traits and routes, typed clients, Python and Node bindings, resource labels, field-role registry. See [generated code layers](./generated-code-layers.md). |
-| Projects | `trestle new` | MiniJinja templates embedded in the CLI | A Cargo workspace with `common`, `server`, and `client` crates, `proto/`, Docker and Databricks Apps deployment files, and optional frontend and CI. See [scaffolded projects](./scaffolded-projects.md). |
-| Environments | `trestle env`, `trestle up` | `olai-stack-topology` planner and renderers, `olai-stack-runtime` | A Docker Compose stack behind an Envoy gateway, with storage, a catalog, tracking and other modules, and client env files. See [environments](./environments.md). |
+| Service code | `trestle generate` | `olai-codegen` (Rust token streams, no templates) | Handler traits and routes, typed clients, Python and Node bindings, resource labels, field-role registry. See [generated code layers](./trestle-code-layers.md). |
+| Projects | `trestle new` | MiniJinja templates embedded in the CLI | A Cargo workspace with `common`, `server`, and `client` crates, `proto/`, Docker and Databricks Apps deployment files, and optional frontend and CI. See [scaffolded projects](./trestle-scaffolded-projects.md). |
+| Environments | `trestle env`, `trestle up` | `olai-stack-topology` planner and renderers, `olai-stack-runtime` | A Docker Compose stack behind an Envoy gateway, with storage, a catalog, tracking and other modules, and client env files. See [environments](./trestle-environments.md). |
 
 ## One source of truth per surface
 
@@ -44,7 +48,7 @@ the lakehouse the service runs against.
 
 ## Build time, runtime, tooling
 
-Trestle's crates fall into three stages (the [crate map](../reference/crate-map.md)
+Trestle's crates fall into three stages (the [crate map](../reference/trestle-crate-map.md)
 lists them all):
 
 - **Build time.** `olai-codegen` runs at build time and never ships in a

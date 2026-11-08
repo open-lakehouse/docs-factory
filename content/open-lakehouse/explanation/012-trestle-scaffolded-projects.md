@@ -2,7 +2,7 @@
 title: Trestle's scaffolded projects
 summary: "`trestle new` composes a base, an app template, and optional components into a project that already has the codegen boundary in place."
 diataxis: explanation
-project: trestle
+project: open-lakehouse
 status: draft
 references:
   - trestle

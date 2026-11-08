@@ -16,6 +16,7 @@ The remainder of this document deals with how we can structure compose files and
 several features to create a framework of conventions that favours reusability and
 extensibility across the various lakehouse variants we want to deploy. 
 
-- olai-stack-topology
+Trestle's environment renderer (`olai-stack-topology`) applies these conventions;
+see [Trestle environments](../explanation/trestle-environments.md).
 
 [docker compose]: https://docs.docker.com/compose/

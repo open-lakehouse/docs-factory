@@ -53,7 +53,6 @@ export const PROJECT_LABELS: Record<string, string> = {
   delta: "Delta Lake",
   unitycatalog: "Unity Catalog",
   "open-lakehouse": "Open Lakehouse",
-  trestle: "Trestle",
 };
 
 // The Diátaxis buckets are a closed set (one folder each), so their sidebar
@@ -67,7 +66,7 @@ const BUCKET_LABELS: Record<string, string> = {
 };
 
 const docTitleModules = import.meta.glob<MdxModule>(
-  "../../content/{delta,unitycatalog,open-lakehouse,trestle}/**/*.{md,mdx}",
+  "../../content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}",
   { eager: true },
 );
 

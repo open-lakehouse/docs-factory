@@ -87,7 +87,7 @@ points back into the codebase model.
 
 - One place answers "which repo builds on which, through which crate", and the
   lakehouse model stays readable.
-- The Trestle concept pages (`content/trestle/`) can point at component views.
+- The Trestle concept pages in `content/open-lakehouse/` can point at component views.
 
 ### Negative / Trade-offs
 

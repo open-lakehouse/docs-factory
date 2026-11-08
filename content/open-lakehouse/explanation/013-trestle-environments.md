@@ -2,7 +2,7 @@
 title: Trestle environments
 summary: An environment is a selection of catalog modules. The planner fills each module's roles and resource demands, then renders the plan for a deploy target, today Docker Compose behind Envoy.
 diataxis: explanation
-project: trestle
+project: open-lakehouse
 status: draft
 references:
   - trestle

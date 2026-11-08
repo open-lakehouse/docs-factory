@@ -10,6 +10,7 @@ model {
       link https://github.com/open-lakehouse/trestle
       metadata {
         sourceRepo "open-lakehouse/trestle"
+        lakehouseElement "trestle"
       }
 
       // --- Build time: code generation -----------------------------------

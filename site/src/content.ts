@@ -48,7 +48,7 @@ interface MdxModule {
 
 const blogModules = import.meta.glob<MdxModule>("../../blogs/*/index.md", { eager: true });
 const docModules = import.meta.glob<MdxModule>(
-  "../../content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}",
+  "../../content/{delta,unitycatalog,open-lakehouse,trestle}/**/*.{md,mdx}",
   { eager: true },
 );
 

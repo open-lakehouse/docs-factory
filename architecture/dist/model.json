@@ -1747,6 +1747,34 @@
       "kind": "implementation",
       "id": "omnigent"
     },
+    "trestle": {
+      "metadata": {
+        "sourceRepo": "open-lakehouse/trestle",
+        "crate": "olai-trestle",
+        "license": "Apache-2.0",
+        "language": "Rust",
+        "designDoc": "design/generator.md"
+      },
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://github.com/open-lakehouse/trestle"
+        }
+      ],
+      "tags": [
+        "library"
+      ],
+      "description": {
+        "txt": "Generates Rust APIs, typed clients, and Python and Node bindings from annotated protobuf; scaffolds projects; plans, renders, and runs local lakehouse environments."
+      },
+      "title": "Trestle",
+      "kind": "implementation",
+      "id": "trestle"
+    },
     "objectStore": {
       "metadata": {
         "sourceRepo": "apache/arrow-rs-object-store",
@@ -7856,6 +7884,42 @@
           "kind": "implementation"
         },
         {
+          "id": "trestle",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Trestle",
+          "modelRef": "trestle",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Generates Rust APIs, typed clients, and Python and Node bindings from annotated protobuf; scaffolds projects; plans, renders, and runs local lakehouse environments."
+          },
+          "tags": [
+            "library"
+          ],
+          "metadata": {
+            "sourceRepo": "open-lakehouse/trestle",
+            "crate": "olai-trestle",
+            "license": "Apache-2.0",
+            "language": "Rust",
+            "designDoc": "design/generator.md"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/trestle"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "openSharingSpec",
           "parent": null,
           "level": 0,
@@ -8983,7 +9047,7 @@
           }
         ]
       },
-      "hash": "Ga5ps2Zg44MrF0dHY-6kXTMbpmSaWmkt5zWeDQwylEY"
+      "hash": "8e2e2H427LgsGst7VlpS1hKFzP3QckgNchLBry4ZyHg"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -17867,7 +17931,7 @@
       "_stage": "computed",
       "sourcePath": "views/logical-views.likec4",
       "description": {
-        "txt": "The platform capabilities beside the read path and what realizes them. Omnigent is agent tooling with no capability, and Envoy the gateway the docs environments route through."
+        "txt": "The platform capabilities beside the read path and what realizes them. Omnigent is agent tooling with no capability, Trestle the generator and environment tooling the estate is built with, and Envoy the gateway the docs environments route through."
       },
       "title": "Technology — model tracking, notebooks, orchestration, sharing, and the gateway",
       "id": "techPlatform",
@@ -18241,6 +18305,42 @@
           "kind": "implementation"
         },
         {
+          "id": "trestle",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Trestle",
+          "modelRef": "trestle",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Generates Rust APIs, typed clients, and Python and Node bindings from annotated protobuf; scaffolds projects; plans, renders, and runs local lakehouse environments."
+          },
+          "tags": [
+            "library"
+          ],
+          "metadata": {
+            "sourceRepo": "open-lakehouse/trestle",
+            "crate": "olai-trestle",
+            "license": "Apache-2.0",
+            "language": "Rust",
+            "designDoc": "design/generator.md"
+          },
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/trestle"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "envoy",
           "parent": null,
           "level": 0,
@@ -18296,7 +18396,7 @@
           }
         ]
       },
-      "hash": "p2B2FV0ly7zwTvAM7LJ5NA8_9PXJfYZpsS0f76M8I9A"
+      "hash": "6pBwqccDkqy-sc9tYhI0uignjdpV77q8BZ1bYPpZ6b8"
     },
     "concernMatrix": {
       "_type": "element",

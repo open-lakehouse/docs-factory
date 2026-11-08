@@ -76,7 +76,7 @@ const codeChromeTransformer: ShikiTransformer = {
 // validate a resolved source-relative link against. Built from PATHS ONLY (no
 // MDX import, no frontmatter) so it stays a cheap, cycle-free copy of what
 // content.ts discovers: `blogs/<slug>/index.md` and
-// `content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}`, minus README.md.
+// `content/{delta,unitycatalog,open-lakehouse,trestle}/**/*.{md,mdx}`, minus README.md.
 // content.ts remains the runtime authority; this is a build-time mirror keyed on
 // the same docIdentity → hrefFromIdentity mapping. (A page's `slug:` frontmatter
 // override is invisible here — see remark-source-links.mjs KNOWN LIMITATION.)
@@ -106,7 +106,7 @@ function buildKnownHrefs(): Set<string> {
     if (href) hrefs.add(href);
   }
 
-  for (const project of ["delta", "unitycatalog", "open-lakehouse"]) {
+  for (const project of ["delta", "unitycatalog", "open-lakehouse", "trestle"]) {
     const root = path.join(repoRoot, "content", project);
     for (const p of collectFiles(
       root,

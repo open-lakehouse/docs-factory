@@ -100,13 +100,13 @@ views {
 
   view techPlatform {
     title "Technology — model tracking, notebooks, orchestration, sharing, and the gateway"
-    description "The platform capabilities beside the read path and what realizes them. Omnigent is agent tooling with no capability, and Envoy the gateway the docs environments route through."
+    description "The platform capabilities beside the read path and what realizes them. Omnigent is agent tooling with no capability, Trestle the generator and environment tooling the estate is built with, and Envoy the gateway the docs environments route through."
 
     include
       lakehouse.modelTracking, lakehouse.interactiveDevelopment,
       lakehouse.orchestration, lakehouse.sharing,
       openSharingSpec,
-      mlflow, marimo, rivers, omnigent, envoy
+      mlflow, marimo, rivers, omnigent, trestle, envoy
     autoLayout LeftRight
   }
 

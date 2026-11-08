@@ -73,4 +73,22 @@ model {
     }
   }
 
+  // Trestle — first-party. Deliberately has NO capability edge: it is the
+  // generator and environment tooling the estate is built with, not a lakehouse
+  // capability. Its structure is the codebase model (ADR-0010).
+  trestle = implementation "Trestle" {
+    #library
+
+    description "Generates Rust APIs, typed clients, and Python and Node bindings from annotated protobuf; scaffolds projects; plans, renders, and runs local lakehouse environments."
+    link https://github.com/open-lakehouse/trestle
+
+    metadata {
+      sourceRepo "open-lakehouse/trestle"
+      crate "olai-trestle"
+      license "Apache-2.0"
+      language "Rust"
+      designDoc "design/generator.md"
+    }
+  }
+
 }

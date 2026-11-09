@@ -1,0 +1,304 @@
+# OmniDocsDoc: keep a project's docs in step with its upstream between releases.
+#
+# Nightly, for one project in .github/omnigent/omni-docs-doc/projects.yml:
+# collect the upstream PRs merged since the ledger's watermark (`docsnip
+# upstream collect`), let the Omnigent agent update the docs on the project's
+# tracking branch, gate the result, and keep ONE rolling draft PR from that
+# branch to main. Once upstream tags a release newer than release.yml, the run
+# switches to release mode (the release-bump skill) and marks the PR ready for
+# review. Merging it is the docs' release. See docs/design/omni-docs-doc.md.
+#
+# Inert until provisioned: the job skips while the OMNIGENT_MODEL repo variable
+# is unset.
+
+name: OmniDocsDoc
+
+on:
+  schedule:
+    # Before ci.yml's nightly run at 04:17.
+    - cron: "7 3 * * *"
+  workflow_dispatch:
+    inputs:
+      project:
+        description: A key in .github/omnigent/omni-docs-doc/projects.yml
+        default: unitycatalog
+      mode:
+        description: "auto: release once upstream has tagged past release.yml"
+        type: choice
+        options: [auto, sync, release]
+        default: auto
+      max_prs:
+        description: Upstream PRs to hand the agent this run
+        default: "40"
+      dry_run:
+        description: Run the agent and the gate, but don't commit, push, or touch the PR
+        type: boolean
+        default: false
+
+# A run holds the tracking branch from checkout to push, and a cancelled one
+# would throw away a paid-for agent run, so runs queue instead.
+concurrency:
+  group: omni-docs-doc-${{ inputs.project || 'unitycatalog' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  doctor:
+    if: vars.OMNIGENT_MODEL != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    # Holds the model credentials and the GitHub App key; branch-restricted to main.
+    environment: omni-docs-doc
+    env:
+      PROJECT: ${{ inputs.project || 'unitycatalog' }}
+      MODE: ${{ inputs.mode || 'auto' }}
+      MAX_PRS: ${{ inputs.max_prs || '40' }}
+      DRY_RUN: ${{ inputs.dry_run || false }}
+      CTX: .omni-docs-doc/run
+      OMNIGENT_VERSION: "0.21.0"
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # The tracking branch merges main, which needs their merge base.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+
+      - name: Read the project
+        id: project
+        run: |
+          uv run --no-project --with pyyaml python - <<'EOF' >> "$GITHUB_OUTPUT"
+          import os, yaml
+          p = yaml.safe_load(open(".github/omnigent/omni-docs-doc/projects.yml"))["projects"][os.environ["PROJECT"]]
+          if not p.get("enabled", True):
+              raise SystemExit(f"{os.environ['PROJECT']} is disabled in projects.yml")
+          print(f"upstream={p['upstream']}")
+          print(f"stream={p.get('stream', 'main')}")
+          print(f"branch={p.get('tracking_branch', 'omni-docs-doc/' + os.environ['PROJECT'])}")
+          EOF
+
+      - name: Mint token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.OMNI_DOCS_DOC_APP_CLIENT_ID }}
+          private-key: ${{ secrets.OMNI_DOCS_DOC_APP_PRIVATE_KEY }}
+          # A push or PR made with GITHUB_TOKEN doesn't trigger ci.yml, and the
+          # rolling PR needs CI.
+          permission-contents: write
+          permission-pull-requests: write
+
+      # Open draft PR: continue its branch. Open PR out of draft: release mode
+      # finished and it waits for the merge, so hold. No open PR: the last cycle
+      # merged (or was closed, which discards it), so start over from main.
+      - name: Check out the tracking branch
+        id: branch
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          BRANCH: ${{ steps.project.outputs.branch }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          pr=$(gh pr list --head "$BRANCH" --state open --json number,isDraft --jq '.[0] // empty')
+          if [ -n "$pr" ] && [ "$(jq -r .isDraft <<<"$pr")" = false ]; then
+            echo "The release PR #$(jq -r .number <<<"$pr") waits for its merge; holding."
+            echo "held=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "held=false" >> "$GITHUB_OUTPUT"
+          if [ -n "$pr" ]; then
+            echo "pr=$(jq -r .number <<<"$pr")" >> "$GITHUB_OUTPUT"
+            git fetch -q origin "$BRANCH"
+            git checkout -q -B "$BRANCH" FETCH_HEAD
+            bot_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+            if ! git -c user.name="${APP_SLUG}[bot]" \
+                -c user.email="${bot_id}+${APP_SLUG}[bot]@users.noreply.github.com" \
+                merge -q --no-edit origin/main; then
+              echo "::error::$BRANCH doesn't merge main cleanly; resolve it on the branch by hand."
+              exit 1
+            fi
+            echo "fresh=false" >> "$GITHUB_OUTPUT"
+          else
+            git checkout -q -B "$BRANCH" origin/main
+            echo "fresh=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # The agent runs from this checkout, so its definition must be main's: a
+      # tracking-branch commit must not be able to change what runs on it.
+      - name: Check the agent is main's
+        if: steps.branch.outputs.held == 'false'
+        run: git diff --quiet origin/main -- .github/omnigent .github/workflows/omni-docs-doc.yml
+
+      - if: steps.branch.outputs.held == 'false'
+        uses: ./.github/actions/bun-setup
+      - if: steps.branch.outputs.held == 'false'
+        uses: ./.github/actions/pypi-public
+      - name: Sync dependencies
+        if: steps.branch.outputs.held == 'false'
+        run: |
+          uv sync --all-packages
+          cd site && bun install --frozen-lockfile
+
+      - name: Collect upstream PRs
+        id: collect
+        if: steps.branch.outputs.held == 'false'
+        env:
+          # Public reads only.
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          uv run docsnip upstream collect --project "$PROJECT" --out "$CTX" \
+            --mode "$MODE" --max-prs "$MAX_PRS" --github-output "$GITHUB_OUTPUT"
+
+      - name: Check out upstream
+        if: steps.branch.outputs.held == 'false' && (steps.collect.outputs.pending != '0' || steps.collect.outputs.mode == 'release')
+        env:
+          UPSTREAM: ${{ steps.project.outputs.upstream }}
+          STREAM: ${{ steps.project.outputs.stream }}
+        run: git clone -q --depth 1 --branch "$STREAM" "https://github.com/$UPSTREAM.git" "$CTX/upstream"
+
+      - name: Install Omnigent
+        if: steps.branch.outputs.held == 'false' && (steps.collect.outputs.pending != '0' || steps.collect.outputs.mode == 'release')
+        run: uv tool install --python 3.12 "omnigent==$OMNIGENT_VERSION"
+
+      # No GitHub token in this step: the agent reads the context and the
+      # upstream checkout, and the workflow does every outward write after the gate.
+      - name: Run OmniDocsDoc
+        if: steps.branch.outputs.held == 'false' && (steps.collect.outputs.pending != '0' || steps.collect.outputs.mode == 'release')
+        timeout-minutes: 90
+        env:
+          DATABRICKS_HOST: ${{ vars.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          OMNIGENT_MODEL: ${{ vars.OMNIGENT_MODEL }}
+          OMNIGENT_HARNESS: ${{ vars.OMNIGENT_HARNESS }}
+          OMNIGENT_SERVER_URL: ${{ vars.OMNIGENT_SERVER_URL }}
+          RUN_MODE: ${{ steps.collect.outputs.mode }}
+        run: |
+          set -euo pipefail
+          # claude-sdk resolves Databricks credentials from the default profile.
+          umask 077
+          printf '[DEFAULT]\nhost = %s\ntoken = %s\n' "$DATABRICKS_HOST" "$DATABRICKS_TOKEN" > ~/.databrickscfg
+          args=(--model "$OMNIGENT_MODEL" --log)
+          if [ -n "$OMNIGENT_HARNESS" ]; then args+=(--harness "$OMNIGENT_HARNESS"); fi
+          # Standalone by default. A shared server stores the session for viewing
+          # and --resume; the tools still run here.
+          if [ -n "$OMNIGENT_SERVER_URL" ]; then args+=(--server "$OMNIGENT_SERVER_URL"); else args+=(--no-session); fi
+          omni run .github/omnigent/omni-docs-doc "${args[@]}" \
+            -p "Run OmniDocsDoc for project $PROJECT in $RUN_MODE mode. The run context is $CTX/." \
+            > "$CTX/summary.md" 2> "$CTX/agent-stderr.log"
+
+      - name: Finalize the ledger
+        if: steps.branch.outputs.held == 'false'
+        run: uv run docsnip upstream finalize --project "$PROJECT" --out "$CTX"
+
+      - name: Gate
+        id: gate
+        if: steps.branch.outputs.held == 'false'
+        env:
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          RUN_MODE: ${{ steps.collect.outputs.mode }}
+          PR: ${{ steps.branch.outputs.pr }}
+        run: |
+          set -euo pipefail
+          # pypi-public rewrote uv.lock for the runner.
+          git checkout -- uv.lock
+          # A release bump also re-renders environments, API specs, and the model
+          # fragments the environments feed.
+          allowed='^(content/|\.omni-docs-doc/[^/]+\.json$)'
+          if [ "$RUN_MODE" = release ]; then
+            allowed='^(content/|envs/|emit/docs/specs/|architecture/|sites/|\.omni-docs-doc/[^/]+\.json$)'
+          fi
+          changed=$(git status --porcelain --untracked-files=all | cut -c4-)
+          if bad=$(grep -Ev "$allowed" <<<"$changed"); then
+            echo "::error::Changes outside the allowed paths:"; echo "$bad"; exit 1
+          fi
+          if [ -n "$DATABRICKS_TOKEN" ] && { git diff | grep -qF -- "$DATABRICKS_TOKEN" \
+              || grep -rqF -- "$DATABRICKS_TOKEN" "$CTX" --exclude-dir=upstream; }; then
+            echo "::error::The model credential appears in the output."; exit 1
+          fi
+          uv run docsnip check
+          docs=$(grep -Ev '^\.omni-docs-doc/' <<<"$changed" || true)
+          # Without an open PR, a ledger that only recorded skips isn't worth one;
+          # the next run skips the same PRs again.
+          if [ -n "$docs" ] || { [ -n "$changed" ] && [ -n "$PR" ]; }; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Write PR body
+        if: steps.gate.outputs.changed == 'true'
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          body="$RUNNER_TEMP/pr-body.md"
+          {
+            echo "OmniDocsDoc's rolling update of the \`$PROJECT\` docs for the next upstream release."
+            echo "It stays a draft until upstream tags the release; release mode bumps the pins and marks it ready."
+            echo
+            if [ -f "$CTX/release.md" ]; then head -c 20000 "$CTX/release.md"; echo; fi
+            if [ -s "$CTX/summary.md" ]; then echo "### Last run"; echo; head -c 10000 "$CTX/summary.md"; echo; fi
+            # GitHub caps a PR body at 65536 characters.
+            uv run docsnip upstream ledger --project "$PROJECT" | head -c 30000
+            echo
+            echo "---"
+            echo "Generated by [OmniDocsDoc]($RUN_URL)."
+          } > "$body"
+
+      - name: Commit, push, and open or update the PR
+        if: steps.gate.outputs.changed == 'true' && env.DRY_RUN != 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          BRANCH: ${{ steps.project.outputs.branch }}
+          FRESH: ${{ steps.branch.outputs.fresh }}
+          PR: ${{ steps.branch.outputs.pr }}
+          RUN_MODE: ${{ steps.collect.outputs.mode }}
+          LATEST: ${{ steps.collect.outputs.latest_release }}
+        run: |
+          set -euo pipefail
+          bot_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          git add -A -- content .omni-docs-doc
+          if [ "$RUN_MODE" = release ]; then git add -A -- envs emit/docs/specs architecture sites; fi
+          prs=$(jq -r '.pending | map("#\(.)") | join(" ")' "$CTX/context.json")
+          if [ "$RUN_MODE" = release ]; then
+            subject="chore($PROJECT): bump to $LATEST and review its claims"
+          else
+            subject="docs($PROJECT): track upstream changes"
+          fi
+          git -c user.name="${APP_SLUG}[bot]" \
+              -c user.email="${bot_id}+${APP_SLUG}[bot]@users.noreply.github.com" \
+              commit -q -m "$subject" -m "Upstream-PRs: ${prs:-none}"
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          # A fresh branch replaces the last cycle's, which merged or was closed.
+          if [ "$FRESH" = true ]; then
+            git push -q --force "$remote" "HEAD:refs/heads/$BRANCH"
+          else
+            git push -q "$remote" "HEAD:refs/heads/$BRANCH"
+          fi
+          if [ -n "$PR" ]; then
+            gh pr edit "$PR" --body-file "$RUNNER_TEMP/pr-body.md"
+          else
+            PR=$(gh pr create --draft --base main --head "$BRANCH" \
+              --title "docs($PROJECT): track upstream changes for the next release" \
+              --body-file "$RUNNER_TEMP/pr-body.md" | grep -o '[0-9]*$')
+          fi
+          # The squash-merge title is the changelog entry, so name the release.
+          if [ "$RUN_MODE" = release ]; then
+            gh pr edit "$PR" --title "docs($PROJECT): update the docs for $LATEST"
+            gh pr ready "$PR"
+          fi
+
+      - name: Upload the run
+        if: always() && steps.branch.outputs.held == 'false'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: omni-docs-doc-${{ inputs.project || 'unitycatalog' }}-${{ github.run_id }}
+          path: |
+            .omni-docs-doc/run/
+            !.omni-docs-doc/run/upstream/
+            ~/.omnigent/logs/
+          include-hidden-files: true
+          retention-days: 30
+          if-no-files-found: ignore

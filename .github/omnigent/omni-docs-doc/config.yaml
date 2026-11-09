@@ -1,0 +1,71 @@
+spec_version: 1
+name: omni-docs-doc
+description: >-
+  OmniDocsDoc, the doctor for all the docs. Reads the upstream PRs merged since
+  its last run, decides what each one means for our docs, and has the pages,
+  the known issues, and the upgrade notes changed to match, on a long-lived
+  tracking branch that merges when the upstream release ships. In release
+  mode it runs the release bump and claims review on the same branch.
+
+# No auth or model is pinned: claude-sdk resolves the caller's Databricks
+# profile (CI writes ~/.databrickscfg from secrets; locally it's yours), and
+# the workflow passes --model.
+executor:
+  type: omnigent
+  timeout: 5400
+  config:
+    harness: claude-sdk
+
+instructions: prompt.md
+
+# Phase skills belong to the sub-agents that run them; the orchestrator only
+# sequences and records verdicts.
+skills: none
+
+# cwd must be the repo root: skills are discovered from ancestor .claude/skills
+# dirs of the agent's directory, and every path in the prompts is root-relative.
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    type: none
+
+tools:
+  agents:
+    - triager
+    - fixer
+
+guardrails:
+  # Unattended: nobody answers an ASK, so outward commands DENY instead.
+  ask_timeout: 60
+  policies:
+    # The workflow commits, pushes, and opens the PR after its own gate; no
+    # agent gets a GitHub token or pushes.
+    blast_radius:
+      type: function
+      on: [tool_call]
+      function:
+        path: omnigent.policies.builtins.orchestration.blast_radius
+        arguments:
+          gate_pushes: true
+          risky_action: DENY
+    spawn_bounds:
+      type: function
+      function:
+        path: omnigent.policies.builtins.orchestration.spawn_bounds
+        arguments:
+          max_dispatches_per_turn: 4
+          dispatch_tools: [sys_session_send]
+    # Prose is the fixer's job: the orchestrator reads, runs docsnip, and
+    # records verdicts through the shell.
+    no_prose_writes:
+      type: function
+      on: [tool_call]
+      function:
+        path: omnigent.policies.builtins.cel.cel_policy
+        arguments:
+          expression: >-
+            event.type == "tool_call"
+            && event.data.name in ["sys_os_write", "sys_os_edit", "Write", "Edit", "MultiEdit", "NotebookEdit"]
+            ? {"result": "DENY", "reason": "omni-docs-doc only orchestrates; dispatch the fixer to edit files."}
+            : {"result": "ALLOW"}

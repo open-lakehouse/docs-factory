@@ -42,11 +42,35 @@ notes.
    - Exact pins in commands and scripts.
    - Upstream links pinned to `blob/vX` or `tree/vX`, so a cited source line
      doesn't move on `main`.
+   - The upgrade notes (R14 for Unity Catalog): what an upgrade to the
+     release changes for a running deployment. See [Upgrade notes](#upgrade-notes).
 4. **Commands pin exactly.** A reader's `uv run --with unitycatalog-client==X`
    matches what CI runs. A range is also a shell redirect when unquoted.
 5. **Known issues have a stable anchor** (`#known-issues`). Each server row
    says which releases it **Affects**. Third-party rows keep the client
    version they were verified with, since the defect depends on it.
+
+## Upgrade notes
+
+The one place a page may describe change between releases is the project's
+upgrade-notes page (R14, `reference/003-upgrade-notes`, for Unity Catalog). It
+lists what someone upgrading a running deployment must do or will notice.
+
+- **It covers one upgrade:** from the previous release to the one these docs
+  describe. Each cycle rewrites it, the same way R01's "Fixed in" notes drop
+  out a release later. It isn't a changelog. It links upstream's GitHub
+  releases for that.
+- **Fixed headings, in order, each present only when it has an entry:**
+  *Before you upgrade*, *Breaking and behavior changes*, *Configuration
+  changes*, *New privileges and securables*, *Deprecations and removals*.
+- **Every entry cites its upstream PR** and says what the reader does about
+  it. Purely additive features go in the task pages instead.
+- **Other pages state current behavior only.** No "now", "new in", or "no
+  longer". The history lives here.
+
+[OmniDocsDoc](omni-docs-doc.md#upgrade-notes) writes entries from upstream PRs
+with the `migration` verdict, on its tracking branch, and release mode
+re-checks each one against the tag diff.
 
 ## Tooling
 
@@ -139,5 +163,6 @@ outside R01 joins the list in the same change.
 | unitycatalog | T07 `tutorials/009-register-model-mlflow` | On an MLflow bump: that registering copies the logged model's files into managed storage and needs the `databricks` extra (boto3), and the harmless `pip` warning. |
 | unitycatalog | H15 `how-to/021-manage-models` | On an MLflow bump: the `uc:` store's refusals (aliases, stages, tags, rename, `filter_string`/`order_by`, delete without `force`), dropped `tags=`, and register's create-first behavior. |
 | unitycatalog | E08 `explanation/008-models-and-mlflow` | On an MLflow bump: *What the registry doesn't do*, the copy on register, and that the client reaches Unity Catalog through the `uc:` registry URI while runs and logged models stay on the tracking server. |
+| unitycatalog | R14 `reference/003-upgrade-notes` | Every entry against the tag diff; the title names the release. |
 | delta | `reference/090-coverage`, R02 `reference/001-table-features` | Engine support per feature. |
 | delta | H04 `how-to/003-append-and-overwrite-data` | DuckDB's write limits. |

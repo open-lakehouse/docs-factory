@@ -35,6 +35,7 @@ docs/             FACTORY META: design + decisions about the factory itself (sit
 server/           review/release backend (Connect RPC + Postgres) for the in-app review layer
 proto/            review/release service proto (docs_factory/review/v1)
 research/         existing research reports (leave alone)
+.github/omnigent/ OmniDocsDoc: the nightly Omnigent agent that tracks upstream merges (docs/design/omni-docs-doc.md)
 ```
 
 ## Load-bearing conventions
@@ -142,6 +143,7 @@ just trestle-catalog                   # snapshot the pinned Trestle's modules +
 just env-render [name]                 # re-render a generated environment (envs/<name>/env.toml) + its model fragment
 just test-snippet <script|page dir>... # run those scripts in their lanes, starting their environment
 just env-up <name> / env-down          # an environment to work against by hand; env-status shows what's up
+just omni-docs-doc [project] [--max-prs N] # run OmniDocsDoc on this checkout in a session you can watch
 ```
 
 Environments share host ports (`:8080`, `:9000`), so only one can be up on a

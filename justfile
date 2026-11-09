@@ -257,6 +257,23 @@ api-specs: _emit-deps
 bump-delta VERSION:
     uv run docsnip bump-delta {{VERSION}}
 
+# Args go to `docsnip upstream collect`, e.g. `--max-prs 5` or `--mode release`.
+# Collects the upstream PRs merged since the ledger's watermark and runs the agent
+# in a saved Omnigent session you can watch (its URL is on stderr).
+# Run OmniDocsDoc on this checkout; commits and pushes nothing.
+omni-docs-doc project='unitycatalog' *args='':
+    #!/usr/bin/env bash
+    set -euo pipefail
+    ctx=.omni-docs-doc/run
+    rm -rf "$ctx"
+    uv run docsnip upstream collect --project {{ project }} --out "$ctx" {{ args }}
+    git clone -q --depth 1 --branch "$(jq -r .stream "$ctx/context.json")" \
+      "https://github.com/$(jq -r .upstream "$ctx/context.json").git" "$ctx/upstream"
+    omni run .github/omnigent/omni-docs-doc \
+      -p "Run OmniDocsDoc for project {{ project }} in $(jq -r .mode "$ctx/context.json") mode. The run context is $ctx/." \
+      | tee "$ctx/summary.md"
+    uv run docsnip upstream finalize --project {{ project }} --out "$ctx"
+
 # Validate frontmatter, snippets, and nav.yml manifests (CI gate).
 check: _site-deps _emit-deps
     uv run docsnip check

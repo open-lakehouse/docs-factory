@@ -1,0 +1,65 @@
+# The upstream projects OmniDocsDoc tracks. `docsnip upstream` reads this file
+# (tools/docsnip/src/docsnip/upstream.py); the agent reads the context it writes.
+# See docs/design/omni-docs-doc.md "Adding a project".
+#
+# Globs: `**` crosses directories, `*` doesn't.
+projects:
+  unitycatalog:
+    upstream: unitycatalog/unitycatalog
+    # Minor releases are cut from main (branch-0.x is created at release), so
+    # main's merges are what the next release ships.
+    stream: main
+    tracking_branch: omni-docs-doc/unitycatalog
+    release_manifest: content/unitycatalog/release.yml
+    tag_prefix: v
+    # R14: written on the tracking branch the first time a PR changes what an
+    # upgrader must do (template: templates/upgrade-notes.md).
+    upgrade_notes: content/unitycatalog/reference/003-upgrade-notes/index.md
+    # A PR whose every file matches is recorded as skipped, without a model call.
+    skip_paths:
+      - "**/src/test/**"
+      - "**/tests/**"
+      - "**/test/**"
+      - "integration-tests/**"
+      - ".github/**"
+      - ".idea/**"
+      - ".gitignore"
+      - ".pre-commit-config.yaml"
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "CODE_REVIEW.md"
+    # The parts of a PR's diff the agent reads; everything else it sees only as
+    # a file list.
+    evidence_paths:
+      - "api/**"
+      - "docs/**"
+      - "etc/conf/**"
+      - "server/src/main/**"
+      - "connectors/**/src/main/**"
+      - "clients/python/**/pyproject.toml"
+      - "ai/**/pyproject.toml"
+      - "ai/**/src/**"
+      - "helm/**"
+      - "bin/**"
+      - "build.sbt"
+      - "version.sbt"
+      - "Dockerfile"
+      - "compose.yaml"
+
+  delta:
+    enabled: false
+    upstream: delta-io/delta
+    stream: master
+    tracking_branch: omni-docs-doc/delta
+    release_manifest: content/delta/release.yml
+    tag_prefix: v
+    skip_paths:
+      - "**/src/test/**"
+      - "**/tests/**"
+      - ".github/**"
+    evidence_paths:
+      - "PROTOCOL.md"
+      - "docs/**"
+      - "spark/src/main/**"
+      - "kernel/**/src/main/**"
+      - "build.sbt"

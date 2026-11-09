@@ -1,11 +1,15 @@
-# A release-bump agent (designed, not built)
+# A release-bump agent
+
+> **Built as OmniDocsDoc's release mode.** See [omni-docs-doc.md](omni-docs-doc.md).
+> The nightly agent runs the bump on its tracking branch once upstream tags a
+> release. It folds the roles below into its `fixer` (bump, upstream diff,
+> claims review, fixes) and leaves the PR to the workflow. This note keeps the
+> original role split and gates for the day one context no longer reviews the
+> release-sensitive table well.
 
 The `release-bump` skill (`.claude/skills/release-bump/`) runs a bump and its
 [release review](docs-versioning.md#release-review) in one session. This note
-covers the Omnigent agent that would take over once bumps run unattended, for
-example when an upstream release triggers one. Until then the skill is enough,
-and building the agent early would mean maintaining two copies of the
-procedure.
+covers the Omnigent agent that takes over when bumps run unattended.
 
 ## Shape
 

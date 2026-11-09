@@ -16,6 +16,7 @@ Subcommands:
   plan          — which tutorial scripts a CI run executes, per lane and shard
   durations     — fold CI-recorded script durations into the shard plan's input
   stack         — start, stop, or show the one docs environment up on this machine
+  upstream      — OmniDocsDoc: collect upstream PRs, record verdicts, render the ledger
 
 llms.txt generation lives in the docs-site emitter (emit/docs), which re-uses
 content-core for content discovery, identity, and URL derivation instead of
@@ -44,6 +45,7 @@ from . import (
     query,
     stacks,
     trestle,
+    upstream,
     versions,
 )
 from .blog import (
@@ -502,6 +504,56 @@ def cmd_durations(p, recorded: list[Path]) -> int:
     return 0
 
 
+def cmd_upstream(p, args) -> int:
+    projects = upstream.load_projects(p["root"])
+    if args.project not in projects:
+        print(
+            f"docsnip upstream: unknown project {args.project!r}; "
+            f"{upstream.PROJECTS_FILE} has {', '.join(sorted(projects))}",
+            file=sys.stderr,
+        )
+        return 1
+    project = projects[args.project]
+    if args.action == "collect":
+        try:
+            ctx = upstream.collect(
+                p["root"], project, args.out, max_prs=args.max_prs, mode=args.mode
+            )
+        except upstream.LedgerError as exc:
+            print(f"docsnip upstream collect: {exc}", file=sys.stderr)
+            return 1
+        print(json.dumps(ctx, indent=2))
+        if args.github_output:
+            with open(args.github_output, "a") as fh:
+                fh.write(f"mode={ctx['mode']}\n")
+                fh.write(f"pending={len(ctx['pending'])}\n")
+                fh.write(f"latest_release={ctx['latest_release'] or ''}\n")
+        return 0
+    if args.action == "verdict":
+        try:
+            upstream.record_verdict(
+                p["root"], project, args.out, args.pr, args.verdict,
+                args.page, args.note,
+            )  # fmt: skip
+        except upstream.LedgerError as exc:
+            print(f"docsnip upstream verdict: {exc}", file=sys.stderr)
+            return 1
+        return 0
+    if args.action == "finalize":
+        missing = upstream.finalize(p["root"], project, args.out)
+        if missing:
+            print(
+                "no verdict (collected again next run): "
+                + ", ".join(f"#{n}" for n in missing),
+                file=sys.stderr,
+            )
+        return 0
+    release = upstream.current_release(p["root"], project)
+    ledger = upstream.load_ledger(p["root"], project, release)
+    print(upstream.render_markdown(project, ledger))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="docsnip")
     parser.add_argument(
@@ -583,6 +635,29 @@ def main(argv: list[str] | None = None) -> int:
     sp_stack.add_argument(
         "env", nargs="?", default=None, help="an envs/ folder, e.g. unitycatalog (up)"
     )
+    sp_up = sub.add_parser("upstream")
+    sp_up.add_argument("action", choices=("collect", "verdict", "finalize", "ledger"))
+    sp_up.add_argument("--project", required=True, help="a key in projects.yml")
+    sp_up.add_argument(
+        "--out", type=Path, default=Path(".omni-docs-doc/run"),
+        help="the run's context dir (collect writes it, verdict/finalize read it)",
+    )  # fmt: skip
+    sp_up.add_argument("--max-prs", type=int, default=None)
+    sp_up.add_argument(
+        "--mode", choices=("auto", "sync", "release"), default="auto",
+        help="auto: release once upstream has tagged past release.yml",
+    )  # fmt: skip
+    sp_up.add_argument("--github-output", default=None)
+    sp_up.add_argument("--pr", type=int, help="verdict: the upstream PR number")
+    sp_up.add_argument(
+        "--verdict", action="append", default=[],
+        choices=[v for v in upstream.VERDICTS if v != "skipped"],
+        help="verdict: repeatable",
+    )  # fmt: skip
+    sp_up.add_argument(
+        "--page", action="append", default=[], help="verdict: a page touched"
+    )
+    sp_up.add_argument("--note", default="", help="verdict: one line for the ledger")
     sp_bump = sub.add_parser("bump-uc")
     sp_bump.add_argument("release", help="the new Unity Catalog release, X.Y.Z")
     sp_bump_delta = sub.add_parser("bump-delta")
@@ -617,6 +692,10 @@ def main(argv: list[str] | None = None) -> int:
                 parser.error("stack up needs an environment, e.g. unitycatalog")
             return stacks.up(p["root"], args.env)
         return stacks.down() if args.action == "down" else stacks.status()
+    if args.cmd == "upstream":
+        if args.action == "verdict" and args.pr is None:
+            parser.error("upstream verdict needs --pr")
+        return cmd_upstream(p, args)
     if args.cmd == "bump-uc":
         return cmd_bump(p, args.release, versions.UNITYCATALOG)
     if args.cmd == "bump-delta":

@@ -86,3 +86,6 @@ sites/*/.ssr/
 
 # marimo session caches (marimo export / edit write __marimo__/ beside a notebook)
 __marimo__/
+
+# OmniDocsDoc run context (docsnip upstream collect); the ledger beside it is committed.
+.omni-docs-doc/run/

@@ -36,8 +36,9 @@ docs/
     journey-graph.md                 one estate-wide journey catalog, spec obligations, coverage from the graph (proposal)
     lakehouse-mcp.md                 MCP server over the model, journeys, and Trestle's planner (proposal)
     multi-domain-single-deployment.md one deployment, three doc domains
+    omni-docs-doc.md                 nightly Omnigent agent: upstream merges → tracking branch → release PR
     prompt-tracking.md               assistant prompts we track, each mapped to the page it should cite
-    release-bump-agent.md            the Omnigent agent a bump could become (not built)
+    release-bump-agent.md            the release-mode roles, built as OmniDocsDoc
     site-consolidation.md            one React site for unitycatalog.io: marketing, blog, docs (proposal)
     trestle-integration.md           generated environments ↔ estate model ↔ journeys, as built
   deploy/       operational runbooks

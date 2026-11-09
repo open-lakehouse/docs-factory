@@ -1,0 +1,45 @@
+spec_version: 1
+name: triager
+description: >-
+  Reads a batch of upstream PRs and decides, per PR, what it means for the
+  docs: which verdicts apply, which pages are affected, and what the fixer must
+  change, with evidence. Read-only.
+
+executor:
+  type: omnigent
+  config:
+    harness: claude-sdk
+
+instructions: prompt.md
+
+skills: [docs-query, authoring-prime]
+
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    type: none
+
+guardrails:
+  ask_timeout: 60
+  policies:
+    blast_radius:
+      type: function
+      on: [tool_call]
+      function:
+        path: omnigent.policies.builtins.orchestration.blast_radius
+        arguments:
+          gate_pushes: true
+          risky_action: DENY
+    # The verdicts are the deliverable; the fixer applies them.
+    read_only:
+      type: function
+      on: [tool_call]
+      function:
+        path: omnigent.policies.builtins.cel.cel_policy
+        arguments:
+          expression: >-
+            event.type == "tool_call"
+            && event.data.name in ["sys_os_write", "sys_os_edit", "Write", "Edit", "MultiEdit", "NotebookEdit"]
+            ? {"result": "DENY", "reason": "triager is read-only; return the edit for the fixer instead."}
+            : {"result": "ALLOW"}

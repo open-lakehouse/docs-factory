@@ -26,7 +26,7 @@ commands they show stay unchanged.
 CI runs a shard of scripts per runner: ``DOCS_FACTORY_SELECT`` holds a JSON list
 of repo-relative script paths (from ``docsnip plan``), and every other script is
 deselected. ``DOCS_FACTORY_DURATIONS_OUT`` names a JSON file to record each
-script's duration in, which ``docsnip durations`` folds into the next plan.
+script's duration in; the next run's ``docsnip plan`` packs shards by it.
 
 Only scripts on ``status: ready`` pages gate. A script whose page is still a
 draft runs as a non-strict ``xfail``, so the docs can say "tested here" about

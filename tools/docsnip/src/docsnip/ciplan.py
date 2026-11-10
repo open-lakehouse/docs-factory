@@ -5,8 +5,9 @@ A script belongs to exactly one lane, the toolchain its job installs: ``services
 script), ``rust`` (an example of the snippets crate), or ``default``. On a pull
 request only the scripts whose inputs changed run; a change to anything every
 script depends on (the harness, docsnip, the lockfile) selects them all. Each
-lane's selection is then packed into shards by recorded duration, and every
-shard runs on its own runner. That also lifts the Delta lock
+lane's selection is then packed into shards by the durations the last full run
+on main recorded (the workflow downloads them), and every shard runs on its own
+runner. That also lifts the Delta lock
 (``content/conftest.py``): it serializes scripts on one machine, and shards don't
 share one.
 
@@ -28,13 +29,12 @@ LANES = ("default", "spark", "jvm", "rust", "services")
 # Per-lane shard cap. Every shard pays its own setup (the toolchain, the
 # ~1 GB UC image build), so a shard should carry at least TARGET_S of scripts.
 # One rust shard: building the snippets crate dominates, and every shard repeats it.
-_MAX_SHARDS = {"default": 1, "spark": 2, "jvm": 2, "rust": 1, "services": 4}
+_MAX_SHARDS = {"default": 1, "spark": 2, "jvm": 2, "rust": 1, "services": 8}
 TARGET_S = 120
 
-# Seconds assumed for a script with no recorded duration.
-DEFAULT_DURATION_S = 30
-
-DURATIONS_FILE = Path(".github") / "script-durations.json"
+# Seconds assumed for a script with no recorded duration: about a service
+# script's median, the lane where packing matters.
+DEFAULT_DURATION_S = 45
 
 # Changes here can break any script, so they select every script.
 GLOBAL_INPUTS = (
@@ -102,9 +102,20 @@ def select(
     ]
 
 
-def load_durations(repo_root: Path) -> dict[str, float]:
-    path = repo_root / DURATIONS_FILE
-    return json.loads(path.read_text()) if path.is_file() else {}
+def load_durations(recorded: Path | None) -> dict[str, float]:
+    """Fold the per-shard duration files under ``recorded`` (a file or a dir of
+    them, as ``gh run download`` lays out artifacts) into one map.
+
+    ``None`` or a missing path means nothing is recorded: every script then
+    costs :data:`DEFAULT_DURATION_S`.
+    """
+    if recorded is None or not recorded.exists():
+        return {}
+    files = sorted(recorded.rglob("*.json")) if recorded.is_dir() else [recorded]
+    durations: dict[str, float] = {}
+    for path in files:
+        durations.update(json.loads(path.read_text()))
+    return durations
 
 
 def shard(
@@ -128,7 +139,10 @@ def shard(
 
 
 def plan(
-    scripts: Iterable[ScriptMeta], repo_root: Path, changed: list[str] | None
+    scripts: Iterable[ScriptMeta],
+    repo_root: Path,
+    changed: list[str] | None,
+    durations: Mapping[str, float] | None = None,
 ) -> dict[str, list[dict]]:
     """Per lane, the matrix of shards:
     ``[{"id": "spark-1", "shard": "1/2", "scripts": [...], "rust": False}]``. The
@@ -138,7 +152,7 @@ def plan(
 
     A lane with nothing selected maps to ``[]``, which the workflow skips.
     """
-    durations = load_durations(repo_root)
+    durations = durations or {}
     by_lane: dict[str, list[str]] = {lane: [] for lane in LANES}
     rust: set[str] = set()
     for meta in select(scripts, repo_root, changed):
@@ -159,18 +173,3 @@ def plan(
             for i, b in enumerate(bins, start=1)
         ]
     return out
-
-
-def merge_durations(repo_root: Path, recorded: Iterable[Path]) -> dict[str, int]:
-    """Fold per-shard duration files into :data:`DURATIONS_FILE` and return it.
-
-    Scripts absent from ``recorded`` keep their old value; deleted scripts drop.
-    """
-    durations = load_durations(repo_root)
-    for path in recorded:
-        durations.update(json.loads(path.read_text()))
-    merged = {
-        p: round(s) for p, s in sorted(durations.items()) if (repo_root / p).is_file()
-    }
-    (repo_root / DURATIONS_FILE).write_text(json.dumps(merged, indent=2) + "\n")
-    return merged

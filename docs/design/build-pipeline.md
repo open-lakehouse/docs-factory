@@ -185,8 +185,8 @@ the two frontmatter splitters, among others).
 - **`content`** — export the LikeC4 model, `docsnip check`, then `bun test src/content-core`.
 - **`python-tests`** — docsnip's drift/vocab tests, on Python 3.11 and 3.12.
 - **`plan`** — `docsnip plan` decides which colocated tutorial scripts run and
-  packs each lane's selection into shards by the durations in
-  `.github/script-durations.json`. On a pull request it selects the scripts whose
+  packs each lane's selection into shards by the durations the last green run
+  on main recorded (its `durations-*` artifacts). On a pull request it selects the scripts whose
   page folder, project `release.yml`, or (for service scripts) `envs/` changed;
   a change to the harness, docsnip, `seed/`, or the lockfile selects all of
   them, and so do main, the nightly run, and manual runs.
@@ -194,8 +194,8 @@ the two frontmatter splitters, among others).
   `scripts-services`** — one job per toolchain (none; Java; Java with scala-cli
   and JBang; Rust, building the snippets crate once; Docker), one runner per shard, each running its shard's
   scripts to completion (`uv run`) through `DOCS_FACTORY_SELECT`. A lane with
-  nothing selected is skipped. Each shard uploads the durations it measured;
-  `just ci-durations <run-id>` folds a run's into the durations file.
+  nothing selected is skipped. Each shard uploads the durations it measured,
+  which the next run's `plan` downloads.
 - **`review-api`** — builds `content-versions.json` (via content-core) and
   typechecks the server.
 - **`preview-build`** — the full Vite build (exercises the render↔manifest

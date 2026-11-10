@@ -14,8 +14,7 @@ Subcommands:
   prose         — mechanical prose rules: names, terms, hedges, acronyms, secrets
   check         — validate + snippetcheck + versions + compat + prose (CI entry)
   plan          — which tutorial scripts a CI run executes, per lane and shard
-  durations     — fold CI-recorded script durations into the shard plan's input
-  stack         — start, stop, or show the one docs environment up on this machine
+    stack         — start, stop, or show the one docs environment up on this machine
 
 llms.txt generation lives in the docs-site emitter (emit/docs), which re-uses
 content-core for content discovery, identity, and URL derivation instead of
@@ -470,7 +469,12 @@ def cmd_check(p) -> int:
     return rc
 
 
-def cmd_plan(p, changed_from: str | None, github_output: str | None) -> int:
+def cmd_plan(
+    p,
+    changed_from: str | None,
+    github_output: str | None,
+    durations_from: Path | None = None,
+) -> int:
     """Print the CI shard matrix per lane; with ``github_output``, also append
     one ``<lane>=<json>`` line per lane to that file for the workflow."""
     changed = None
@@ -484,21 +488,14 @@ def cmd_plan(p, changed_from: str | None, github_output: str | None) -> int:
     except ScriptMetaError as exc:
         print(f"docsnip plan: {exc}", file=sys.stderr)
         return 1
-    matrix = ciplan.plan(scripts, p["root"], changed)
+    durations = ciplan.load_durations(durations_from)
+    print(f"docsnip plan: {len(durations)} recorded durations", file=sys.stderr)
+    matrix = ciplan.plan(scripts, p["root"], changed, durations)
     print(json.dumps(matrix, indent=2))
     if github_output:
         with open(github_output, "a") as fh:
             for lane, shards in matrix.items():
                 fh.write(f"{lane}={json.dumps(shards)}\n")
-    return 0
-
-
-def cmd_durations(p, recorded: list[Path]) -> int:
-    files = [
-        f for r in recorded for f in (sorted(r.rglob("*.json")) if r.is_dir() else [r])
-    ]
-    merged = ciplan.merge_durations(p["root"], files)
-    print(f"{ciplan.DURATIONS_FILE}: {len(merged)} scripts from {len(files)} file(s)")
     return 0
 
 
@@ -574,9 +571,12 @@ def main(argv: list[str] | None = None) -> int:
     sp_plan.add_argument(
         "--github-output", default=None, help="append <lane>=<json> lines here"
     )
-    sp_durations = sub.add_parser("durations")
-    sp_durations.add_argument(
-        "recorded", nargs="+", type=Path, help="duration JSON files or dirs of them"
+    sp_plan.add_argument(
+        "--durations-from",
+        type=Path,
+        default=None,
+        help="a CI run's duration JSON files (a file or a dir of them) to pack "
+        "shards by; omit or point at nothing to assume a default per script",
     )
     sp_stack = sub.add_parser("stack")
     sp_stack.add_argument("action", choices=("up", "down", "status"))
@@ -608,9 +608,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "query":
         return cmd_query(p, args.kind, args.id)
     if args.cmd == "plan":
-        return cmd_plan(p, args.changed_from, args.github_output)
-    if args.cmd == "durations":
-        return cmd_durations(p, args.recorded)
+        return cmd_plan(p, args.changed_from, args.github_output, args.durations_from)
     if args.cmd == "stack":
         if args.action == "up":
             if args.env is None:

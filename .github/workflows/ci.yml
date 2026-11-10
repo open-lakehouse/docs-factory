@@ -57,10 +57,15 @@ jobs:
 
   plan:
     # Which tutorial scripts this run executes, per lane, packed into shards by
-    # recorded duration (`docsnip plan`). A pull request runs the scripts its
-    # changes reach; main, the nightly run, and manual runs execute them all.
+    # the durations the last green run on main recorded (`docsnip plan`). A pull
+    # request runs the scripts its changes reach; main, the nightly run, and
+    # manual runs execute them all.
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      # Download the last main run's durations-* artifacts.
+      actions: read
     outputs:
       default: ${{ steps.plan.outputs.default }}
       spark: ${{ steps.plan.outputs.spark }}
@@ -78,16 +83,30 @@ jobs:
           enable-cache: true
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
+      # Every main run executes every script, so its artifacts cover them all.
+      # With none to download (a fresh repo, expired artifacts), the plan
+      # assumes a default per script.
+      - name: Download the last main run's script durations
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          run=$(gh run list --repo "$REPO" --workflow ci.yml --branch main \
+            --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty')
+          if [ -n "$run" ]; then
+            gh run download "$run" --repo "$REPO" --pattern 'durations-*' \
+              --dir "$RUNNER_TEMP/durations" || echo "::warning::no durations from run $run"
+          fi
       - id: plan
         env:
           EVENT: ${{ github.event_name }}
         run: |
+          args=(--durations-from "$RUNNER_TEMP/durations" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT" = pull_request ]; then
             git diff --name-only HEAD^1 HEAD | tee "$RUNNER_TEMP/changed.txt"
-            uv run docsnip plan --changed-from "$RUNNER_TEMP/changed.txt" --github-output "$GITHUB_OUTPUT"
-          else
-            uv run docsnip plan --github-output "$GITHUB_OUTPUT"
+            args+=(--changed-from "$RUNNER_TEMP/changed.txt")
           fi
+          uv run docsnip plan "${args[@]}"
 
   scripts-default:
     # Scripts that need neither Java nor Docker. Scripts on draft pages run as

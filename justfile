@@ -225,15 +225,6 @@ test-rust:
     cargo build --locked --package docs-factory-snippets --examples
     uv run pytest content -m "needs_rust and not needs_uc_server"
 
-# Fold the script durations a CI run measured into .github/script-durations.json,
-# which `docsnip plan` packs shards by. Use a full run (main or nightly).
-ci-durations run-id:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    dir=$(mktemp -d)
-    gh run download {{run-id}} --pattern 'durations-*' --dir "$dir"
-    uv run docsnip durations "$dir"
-
 # Re-render compatibility tables (e.g. R10's) from script claims.
 compat:
     uv run docsnip compat --fix

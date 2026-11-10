@@ -90,18 +90,37 @@ def test_shards_balance_by_duration() -> None:
 
 def test_shard_count_follows_total_duration_up_to_the_cap() -> None:
     paths = [f"s{i}" for i in range(10)]
-    assert len(ciplan.shard(paths, {}, max_shards=4)) == 3  # 300s / 120s
+    assert len(ciplan.shard(paths, {}, max_shards=8)) == 4  # 450s / 120s
     assert len(ciplan.shard(paths, {}, max_shards=2)) == 2
     assert ciplan.shard([], {}, max_shards=4) == []
 
 
-def test_merge_keeps_old_values_and_drops_deleted_scripts(tmp_path) -> None:
-    (tmp_path / "a.py").write_text("")
-    (tmp_path / "b.py").write_text("")
-    (tmp_path / ".github").mkdir()
-    (tmp_path / ciplan.DURATIONS_FILE).write_text(
-        json.dumps({"a.py": 10, "b.py": 20, "gone.py": 5})
+def test_load_durations_folds_every_shard_file_under_a_dir(tmp_path) -> None:
+    (tmp_path / "durations-services-1").mkdir()
+    (tmp_path / "durations-services-1" / "durations.json").write_text(
+        json.dumps({"a.py": 12.4})
     )
-    recorded = tmp_path / "shard.json"
-    recorded.write_text(json.dumps({"a.py": 12.4}))
-    assert ciplan.merge_durations(tmp_path, [recorded]) == {"a.py": 12, "b.py": 20}
+    (tmp_path / "durations-spark-1").mkdir()
+    (tmp_path / "durations-spark-1" / "durations.json").write_text(
+        json.dumps({"b.py": 20})
+    )
+    assert ciplan.load_durations(tmp_path) == {"a.py": 12.4, "b.py": 20}
+
+
+def test_load_durations_is_empty_without_a_recorded_run(tmp_path) -> None:
+    assert ciplan.load_durations(None) == {}
+    assert ciplan.load_durations(tmp_path / "missing") == {}
+
+
+def test_plan_packs_by_the_durations_it_is_given(tmp_path) -> None:
+    scripts = [
+        _script(
+            tmp_path,
+            f"unitycatalog/how-to/00{i}-x/snippets/s{i}.py",
+            '# compose = "compose.yaml"\n',
+        )
+        for i in range(3)
+    ]
+    slow = "content/unitycatalog/how-to/000-x/snippets/s0.py"
+    plan = ciplan.plan(scripts, tmp_path, None, {slow: 400})
+    assert [s["scripts"] for s in plan["services"]][0] == [slow]

@@ -100,8 +100,7 @@ def test_a_rust_script_with_a_compose_marks_its_services_shard(tmp_path) -> None
     meta = parse_script(path)
     assert meta is not None and lane_of(meta) == "services"
     shards = plan([meta], tmp_path, None)
-    assert [s["rust"] for s in shards["services"]] == [True]
-    assert shards["rust"] == []
+    assert [(s["lane"], s["rust"]) for s in shards] == [("services", True)]
 
 
 def test_a_git_dependency_is_added_from_its_commit(tmp_path) -> None:

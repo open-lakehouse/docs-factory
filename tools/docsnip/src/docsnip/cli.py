@@ -475,8 +475,8 @@ def cmd_plan(
     github_output: str | None,
     durations_from: Path | None = None,
 ) -> int:
-    """Print the CI shard matrix per lane; with ``github_output``, also append
-    one ``<lane>=<json>`` line per lane to that file for the workflow."""
+    """Print the CI shard matrix; with ``github_output``, also append it to
+    that file as one ``matrix=<json>`` line for the workflow."""
     changed = None
     if changed_from is not None:
         text = (
@@ -494,8 +494,7 @@ def cmd_plan(
     print(json.dumps(matrix, indent=2))
     if github_output:
         with open(github_output, "a") as fh:
-            for lane, shards in matrix.items():
-                fh.write(f"{lane}={json.dumps(shards)}\n")
+            fh.write(f"matrix={json.dumps(matrix)}\n")
     return 0
 
 
@@ -569,7 +568,7 @@ def main(argv: list[str] | None = None) -> int:
         "omit to select every script",
     )
     sp_plan.add_argument(
-        "--github-output", default=None, help="append <lane>=<json> lines here"
+        "--github-output", default=None, help="append a matrix=<json> line here"
     )
     sp_plan.add_argument(
         "--durations-from",

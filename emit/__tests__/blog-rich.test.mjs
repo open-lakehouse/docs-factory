@@ -111,9 +111,9 @@ test("openlakehouse.io frontmatter, category, and URL", () => {
     kind: "post",
   });
   const cross = openlakehouse.frontmatter(draft, {
-    canonical: "https://www.unitycatalog.io/blogs/2026-11-04-p/",
+    canonical: "https://www.unitycatalog.io/blogs/p/",
   });
-  expect(cross.originalUrl).toBe("https://www.unitycatalog.io/blogs/2026-11-04-p/");
+  expect(cross.originalUrl).toBe("https://www.unitycatalog.io/blogs/p/");
   expect(cross.originalPublisher).toBe("Unity Catalog");
   expect(category(draft.tags)).toBe("agentic");
   expect(category(["rust"])).toBe("lakehouse");
@@ -121,7 +121,7 @@ test("openlakehouse.io frontmatter, category, and URL", () => {
 });
 
 test("an openlakehouse.io cross-post credits where it was first published", async () => {
-  const canonical = "https://www.unitycatalog.io/blogs/2026-11-04-p/";
+  const canonical = "https://www.unitycatalog.io/blogs/p/";
   const { output } = await emit(openlakehouse, "Body.\n", "index.md", { canonical });
   expect(output).toContain(
     `*This post was originally published on the [Unity Catalog blog](${canonical}) by A Person.*`,

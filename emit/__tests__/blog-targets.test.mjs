@@ -52,9 +52,9 @@ test("emitOne hands the frontmatter context to the target", async () => {
       inputPath,
       target: delta,
       likec4OutDir: join(dir, ".likec4-export"),
-      frontmatterContext: { canonical: "https://www.unitycatalog.io/blogs/2026-07-03-p/" },
+      frontmatterContext: { canonical: "https://www.unitycatalog.io/blogs/p/" },
     });
-    expect(output).toContain("canonical: https://www.unitycatalog.io/blogs/2026-07-03-p/");
+    expect(output).toContain("canonical: https://www.unitycatalog.io/blogs/p/");
     expect(output).not.toContain("target:");
   } finally {
     rmSync(dir, { recursive: true, force: true });

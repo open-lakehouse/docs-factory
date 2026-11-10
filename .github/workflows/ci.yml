@@ -115,7 +115,7 @@ jobs:
     needs: plan
     if: needs.plan.outputs.default != '[]'
     runs-on: ubuntu-latest
-    # Backstop: content/conftest.py already kills a script after 10 minutes.
+    # Backstop: content/conftest.py already kills a script after 5 minutes.
     timeout-minutes: 30
     strategy:
       fail-fast: false

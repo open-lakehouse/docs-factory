@@ -11,8 +11,9 @@
 # compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
 # # deltalake 1.6.6 sometimes stalls opening a uc:// table after the credentials
-# # are vended; a run that stalls is retried on a fresh server.
-# timeout = 180
+# # are vended; a run that stalls is retried on a fresh server. A healthy run
+# # takes under 45 s.
+# timeout = 90
 # retries = 2
 # claims.pandas = [
 #   { journey = "external.read", region = "read" },

@@ -57,8 +57,9 @@ DEST=../unitycatalog-website/src/content/blog/<YYYY-MM-DD>-<slug>
   `<TrestleView src>` fetches them. Each post has its own snapshots, so re-emitting
   one never redraws another; the bundle is shared and safe to overwrite. This needs
   the TrestleView wiring (§D item 9).
-- (Optional) For a thumbnail, copy a hero image in and add `thumbnail: ./<file>` to
-  the frontmatter — else omit (schema allows it).
+- If `assets.json` has a `thumbnail`, copy its `localPath` → `$DEST/<filename>`. The
+  render's frontmatter already carries `thumbnail: ./<filename>`. Without one the
+  field is omitted (the schema allows it) and the site's checker warns.
 
 ## C. Build-verify, then report
 

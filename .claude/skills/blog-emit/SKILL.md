@@ -113,6 +113,9 @@ release, ADR-0002), unless the user explicitly asks for a draft delivery.
   - each `images[]` entry is `{ filename, localPath, altText }`; `localPath` is the
     real file on disk to upload/copy. LikeC4 views aren't images: the render's
     `<LikeC4View>` draws them from the web-component bundle.
+  - `thumbnail` is `{ filename, localPath, bytes }` or `null`: the post's card image.
+    Copy `localPath` → `<post dir>/<filename>` alongside the images. If the core
+    warned that it is over 1 MB, tell the user before delivering.
 
 ### 3. Deliver — follow the runbook from step 0
 

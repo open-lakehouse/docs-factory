@@ -53,8 +53,10 @@ missing, **HALT and ask** for the name, role, and bio rather than inventing them
 ## C. Copy
 
 - `dist/openlakehouse/index.mdx` → `$DEST/index.mdx`; each `images[]` `localPath` →
-  `$DEST/<filename>`. A colocated `thumbnail.{png,jpg,webp}` is picked up as the card
-  image; otherwise the category default is used.
+  `$DEST/<filename>`. If `assets.json` has a `thumbnail`, copy its `localPath` →
+  `$DEST/<filename>` (`thumbnail.<ext>`): the site picks a colocated
+  `thumbnail.{png,jpg,jpeg,webp,avif}` up as the card image, else it uses the
+  category default.
 - `likec4-webcomponent.mjs`, if produced → `../openlakehouse-io/public/likec4/`.
 - If `public[]` is non-empty: `cp -R dist/openlakehouse/public/. ../openlakehouse-io/public/`.
 

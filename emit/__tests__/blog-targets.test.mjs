@@ -1,11 +1,12 @@
 // A blog's `target:` list: the first entry is the primary, and every other
 // target's render carries a `canonical` URL to the primary's delivered post.
 import { expect, test } from "bun:test";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { blogTargets, crossPostCanonical, emitOne } from "../emit.mjs";
+import { blogTargets, crossPostCanonical, emitOne, findThumbnail } from "../emit.mjs";
 import delta from "../targets/delta.mjs";
+import openlakehouse from "../targets/openlakehouse.mjs";
 import unitycatalog from "../targets/unitycatalog.mjs";
 
 const SIDECAR = { unitycatalog: { post_dir: "2026-07-03-p", updated: "2026-07-17" } };
@@ -82,4 +83,34 @@ test("a standalone image keeps the blank lines between blocks", async () => {
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("the thumbnail is assets/thumbnail.<ext> unless the draft names one", () => {
+  const dir = mkdtempSync(join(tmpdir(), "blog-thumb-"));
+  try {
+    expect(findThumbnail(dir, {})).toBeNull();
+    mkdirSync(join(dir, "assets"));
+    writeFileSync(join(dir, "assets", "thumbnail.jpeg"), "x");
+    expect(findThumbnail(dir, {})).toMatchObject({ filename: "thumbnail.jpeg", bytes: 1 });
+    writeFileSync(join(dir, "assets", "card.PNG"), "xy");
+    expect(findThumbnail(dir, { hero: "assets/card.PNG" })).toMatchObject({
+      filename: "thumbnail.png",
+      localPath: join(dir, "assets", "card.PNG"),
+    });
+    expect(() => findThumbnail(dir, { thumbnail: "assets/missing.png" })).toThrow(/not found/);
+    writeFileSync(join(dir, "card.gif"), "x");
+    expect(() => findThumbnail(dir, { thumbnail: "card.gif" })).toThrow(/must be one of/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("unitycatalog and delta reference the delivered thumbnail; openlakehouse finds it by name", () => {
+  const draft = { title: "T", author: "A Person", summary: "S", thumbnail: "assets/x.png" };
+  const ctx = { thumbnail: "./thumbnail.png" };
+  expect(unitycatalog.frontmatter(draft, ctx).thumbnail).toBe("./thumbnail.png");
+  expect(delta.frontmatter(draft, ctx).thumbnail).toBe("./thumbnail.png");
+  expect(openlakehouse.frontmatter(draft, ctx).thumbnail).toBeUndefined();
+  expect(unitycatalog.frontmatter(draft).thumbnail).toBeUndefined();
+  expect(delta.frontmatter(draft).thumbnail).toBeUndefined();
 });

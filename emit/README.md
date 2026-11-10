@@ -59,7 +59,12 @@ For the `unitycatalog` (RICH, component) target, `dist/unitycatalog/`:
   React 19 can draw it), and `trestle/<slug>/<env>/`, the post's own copy of the
   snapshot plus the environment files its nodes open.
 - **`assets.json`** — a manifest of every image in the output, so a delivery
-  adapter can upload/insert images from data rather than re-parsing Markdown.
+  adapter can upload/insert images from data rather than re-parsing Markdown. Its
+  `thumbnail` is the post's card image, `{ filename, localPath, bytes }` or `null`:
+  the draft's `thumbnail:` (or `hero:`) path, else `assets/thumbnail.<ext>`
+  (png/jpg/jpeg/webp/avif). Every target delivers it beside the post as
+  `thumbnail.<ext>`, and unitycatalog and delta reference it from frontmatter.
+  The core warns above 1 MB.
 
 The `delta` target (`dist/delta/`) is the same shape with a delta-io-shaped
 frontmatter schema and a callout-vocabulary remap. The `openlakehouse` target

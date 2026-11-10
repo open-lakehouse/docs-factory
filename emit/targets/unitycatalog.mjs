@@ -80,7 +80,7 @@ export function emitDay() {
  * description?, thumbnail?, canonical? }. Deterministic — no network. Author-profile EXISTENCE
  * is reconciled by the delivery skill, not here.
  */
-function frontmatter(draft, { canonical } = {}) {
+function frontmatter(draft, { canonical, thumbnail } = {}) {
   const fm = {
     title: draft.title,
     // A single-author draft carries `author` as one string; support a list too.
@@ -92,6 +92,8 @@ function frontmatter(draft, { canonical } = {}) {
   };
   // `summary` → optional `description`; omit when absent (schema marks it optional).
   if (draft.summary) fm.description = String(draft.summary);
+  // The card image, delivered beside the post (emit.mjs findThumbnail).
+  if (thumbnail) fm.thumbnail = thumbnail;
   // A cross-post points search engines at the primary target's copy.
   if (canonical) fm.canonical = canonical;
   // Drop draft-only fields (slug/status/tags/series/target) — not in the UC schema,

@@ -197,7 +197,7 @@ test:
 # script's [tool.docs-factory] metadata names the compose the harness starts.
 # Fails hard (never skips) if Docker/the server is unavailable.
 test-services:
-    uv run --group test-services pytest -m "needs_docker or needs_uc_server"
+    DOCS_FACTORY_LANE=services uv run pytest content
 
 # A service-backed script waits while another checkout's run holds the docs
 # environment, and fails if one was left up by hand (`just env-down`). A Rust
@@ -205,25 +205,25 @@ test-services:
 # Run the named scripts, or every script under a page folder, whatever their lane.
 test-snippet +paths:
     DOCS_FACTORY_SELECT="$(python3 -c 'import json, sys; print(json.dumps(sys.argv[1:]))' {{ paths }})" \
-        uv run --group test-services pytest content -m ""
+        uv run pytest content
 
 # Run the Spark tests (opt-in): scripts with `lane = "spark"`. Needs Java 17 and
 # Maven; behind a proxy, set DOCS_FACTORY_MAVEN_MIRROR to a Maven mirror URL.
 test-spark:
-    uv run pytest -m "needs_spark and not needs_uc_server"
+    DOCS_FACTORY_LANE=spark uv run pytest content
 
 # Run the Scala and Java scripts (opt-in): needs Java 17, scala-cli, and jbang.
 # Behind a proxy, DOCS_FACTORY_MAVEN_MIRROR reaches them too. Those that call a
 # server run with test-services.
 test-jvm:
-    uv run pytest content -m "needs_jvm and not needs_uc_server"
+    DOCS_FACTORY_LANE=jvm uv run pytest content
 
 # Run the Rust scripts (opt-in): builds the snippets crate (content/_rust), whose
 # examples they are, then runs each. Those that call a server run with
 # test-services.
 test-rust:
     cargo build --locked --package docs-factory-snippets --examples
-    uv run pytest content -m "needs_rust and not needs_uc_server"
+    DOCS_FACTORY_LANE=rust uv run pytest content
 
 # Re-render compatibility tables (e.g. R10's) from script claims.
 compat:

@@ -9,23 +9,23 @@ So there are no per-tutorial ``test_*.py`` files — this plugin discovers every
 
     start the declared compose (if any) → `uv run script.py` → assert exit 0
 
-Scripts that declare a ``compose`` are marked ``needs_uc_server`` (derived, not
-hand-written), so the default ``pytest`` — whose root config deselects every
-``needs_*`` marker — skips them on a Docker-less machine, while the opt-in service lane runs them for real
-and fails hard if the compose can't start. Scripts with ``lane = "spark"`` are
-marked ``needs_spark`` the same way and run in the Spark lane, which needs Java
-and Maven. Scala and Java scripts (``*.sc``/``*.scala`` run by ``scala-cli``,
-``*.java`` by ``jbang``) carry the same table in a ``// /// docs-factory`` block
-and are marked ``needs_jvm``; Rust scripts are examples of the snippets crate
-(``content/_rust``), run with ``cargo run --example``, and are marked
-``needs_rust``. Where Maven Central is unreachable, set
+Every script belongs to one lane, the toolchain it needs
+(:func:`docsnip.ciplan.lane_of`): ``services`` for a script that declares a
+``compose`` (Docker; the run fails hard if the compose can't start), ``spark``
+for ``lane = "spark"`` (Java and Maven), ``jvm`` for Scala and Java scripts
+(``*.sc``/``*.scala`` run by ``scala-cli``, ``*.java`` by ``jbang``, with the
+same table in a ``// /// docs-factory`` block), ``rust`` for the snippets
+crate's examples (``content/_rust``, run with ``cargo run --example``), and
+``default`` for the rest. A run keeps the lane ``DOCS_FACTORY_LANE`` names
+(``default`` when unset, so a bare ``pytest`` needs neither Docker nor Java;
+``all`` keeps every lane). Where Maven Central is unreachable, set
 ``DOCS_FACTORY_MAVEN_MIRROR`` to a mirror URL; the harness points Spark's
 ``spark-defaults.conf``, Coursier, and JBang at it, so the scripts and the
 commands they show stay unchanged.
 
 CI runs a shard of scripts per runner: ``DOCS_FACTORY_SELECT`` holds a JSON list
 of repo-relative script paths (from ``docsnip plan``), and every other script is
-deselected. ``DOCS_FACTORY_DURATIONS_OUT`` names a JSON file to record each
+deselected, whatever its lane. ``DOCS_FACTORY_DURATIONS_OUT`` names a JSON file to record each
 script's duration in; the next run's ``docsnip plan`` packs shards by it.
 
 Only scripts on ``status: ready`` pages gate. A script whose page is still a
@@ -43,24 +43,16 @@ import subprocess
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
-from typing import TYPE_CHECKING
 
 import pytest
-
-if TYPE_CHECKING:
-    from testcontainers.compose import DockerCompose
 
 # tools/docsnip is a workspace package; its scriptmeta reader is the single
 # source of truth for discovering + parsing a script's inline metadata.
 from docsnip import stacks
+from docsnip.ciplan import LANES, lane_of
 from docsnip.environments import client_env
 from docsnip.frontmatter import page_status
 from docsnip.scriptmeta import ScriptMeta, parse_script, runner_for
-
-# Exit codes a process reports when killed by a native abort/segfault signal
-# (128 + signal number): SIGABRT (134) and SIGSEGV (139). subprocess also
-# reports killed-by-signal as a negative return code; both are handled below.
-_NATIVE_ABORT_CODES = frozenset({134, 139})
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -89,23 +81,36 @@ def pytest_collect_file(parent, file_path):
 
 
 def pytest_collection_modifyitems(config, items):
-    """Keep only the scripts ``DOCS_FACTORY_SELECT`` lists, when it is set.
+    """Keep the scripts ``DOCS_FACTORY_SELECT`` lists, or else those of the
+    lane ``DOCS_FACTORY_LANE`` names.
 
-    An entry is a script path or a folder (``just test-snippet <page dir>``),
-    repo-relative, which selects every script under it.
+    A ``DOCS_FACTORY_SELECT`` entry is a script path or a folder
+    (``just test-snippet <page dir>``), repo-relative, which selects every
+    script under it.
     """
     selected = os.environ.get("DOCS_FACTORY_SELECT")
-    if selected is None:
-        return
-    wanted = {Path(w).as_posix().rstrip("/") for w in json.loads(selected)}
-    keep, drop = [], []
-    for item in items:
-        if isinstance(item, TutorialScriptItem):
+    if selected is not None:
+        wanted = {Path(w).as_posix().rstrip("/") for w in json.loads(selected)}
+
+        def keep_script(item: TutorialScriptItem) -> bool:
             path = item.script_meta.path.resolve().relative_to(_REPO_ROOT)
-            hit = not wanted.isdisjoint(
+            return not wanted.isdisjoint(
                 {path.as_posix(), *map(Path.as_posix, path.parents)}
             )
-            (keep if hit else drop).append(item)
+    else:
+        lane = os.environ.get("DOCS_FACTORY_LANE", "default")
+        if lane not in (*LANES, "all"):
+            raise pytest.UsageError(
+                f"DOCS_FACTORY_LANE={lane!r}; one of: {', '.join(LANES)}, all"
+            )
+
+        def keep_script(item: TutorialScriptItem) -> bool:
+            return lane in ("all", item.lane)
+
+    keep, drop = [], []
+    for item in items:
+        if isinstance(item, TutorialScriptItem) and not keep_script(item):
+            drop.append(item)
         else:
             keep.append(item)
     if drop:
@@ -133,7 +138,7 @@ def pytest_sessionfinish(session):
 def pytest_terminal_summary(terminalreporter):
     """On GitHub Actions, annotate what ran but didn't gate.
 
-    A draft page's failing script (xfailed) and a native-crash skip both leave
+    A draft page's failing script (xfailed) and a retried timeout both leave
     the job green, so neither should go unnoticed.
     """
     if not os.environ.get("GITHUB_ACTIONS"):
@@ -143,9 +148,6 @@ def pytest_terminal_summary(terminalreporter):
         # pytest reports an xfail's reason, not its output; the author needs both.
         tail = "\n".join(report.longreprtext.splitlines()[-60:])
         print(f"::group::{report.fspath} output (tail)\n{tail}\n::endgroup::")
-    for report in terminalreporter.stats.get("skipped", []):
-        if isinstance(report.longrepr, tuple):
-            print(f"::warning file={report.fspath}::skipped: {report.longrepr[2]}")
     for path in _RETRIED:
         rel = path.resolve().relative_to(_REPO_ROOT)
         print(f"::warning file={rel}::timed out and was retried")
@@ -170,16 +172,7 @@ class TutorialScriptItem(pytest.Item):
     def __init__(self, *args, script_meta: ScriptMeta, **kwargs):
         super().__init__(*args, **kwargs)
         self.script_meta = script_meta
-        # A script needing services is Docker-gated; derive the marker so the
-        # default lane's -m filter deselects it without any hand-marking.
-        if script_meta.docs_factory.needs_services:
-            self.add_marker(pytest.mark.needs_uc_server)
-        if script_meta.docs_factory.lane == "spark":
-            self.add_marker(pytest.mark.needs_spark)
-        if script_meta.docs_factory.lane == "jvm":
-            self.add_marker(pytest.mark.needs_jvm)
-        if script_meta.docs_factory.lane == "rust":
-            self.add_marker(pytest.mark.needs_rust)
+        self.lane = lane_of(script_meta)
         page = script_meta.owning_page()
         status = page_status(page) if page else "draft"
         if status != "ready":
@@ -229,9 +222,10 @@ class TutorialScriptItem(pytest.Item):
             self._run_on_stack(env)
 
     def _run_on_stack(self, env: dict[str, str]) -> None:
-        python = self.script_meta.runner == "python"
-        base_url = _start_services(self.script_meta)
         try:
+            # Inside the try: a stack that fails to come up halfway still goes
+            # down, or every later script would find it up and fail.
+            base_url = _start_services(self.script_meta)
             if base_url is not None and self.script_meta.docs_factory.base_url_env:
                 env[self.script_meta.docs_factory.base_url_env] = base_url
             try:
@@ -240,26 +234,6 @@ class TutorialScriptItem(pytest.Item):
             except TutorialScriptTimeout as exc:
                 exc.server_log = _server_log(self.script_meta)
                 raise
-            native_abort = proc.returncode < 0 or proc.returncode in _NATIVE_ABORT_CODES
-            # A JVM that dies by a signal is a real failure, not the pyarrow flake.
-            if (
-                native_abort
-                and python
-                and self.script_meta.docs_factory.lane != "spark"
-            ):
-                # A native crash in the deltalake/pyarrow layer (SIGABRT/SIGSEGV,
-                # surfaced as exit 134/139 or a negative signal code) aborts the
-                # process before any Python `assert` in the script can run — so
-                # it is not a docs-drift failure the script is meant to catch.
-                # These aborts are flaky and environment-specific (seen only on
-                # some CI runners, green locally); skip rather than gate CI on
-                # them. A real assertion failure exits 1 and still fails hard.
-                # TODO: remove once the native-shutdown flake is root-caused.
-                pytest.skip(
-                    f"{self.script_meta.path.name} aborted with a native signal "
-                    f"(exit {proc.returncode}); treated as a flaky non-assertion "
-                    "crash, not a content-drift failure"
-                )
             if proc.returncode != 0:
                 raise TutorialScriptFailure(
                     self.script_meta, proc, server_log=_server_log(self.script_meta)
@@ -406,65 +380,42 @@ class TutorialScriptFailure(Exception):
 
 # --- compose lifecycle, keyed on the script's [tool.docs-factory] --------------
 #
-# Cached per compose file so several scripts sharing one compose start it once.
-_ACTIVE: dict[str, DockerCompose] = {}
-# Compose files whose images this session already pulled. Every script starts a
-# fresh stack, and pulling once keeps a long run under Docker Hub's rate limit.
-_PULLED: set[str] = set()
+# Every script gets a fresh stack: up before it runs, down (with volumes) after.
+# Compose files whose images this session already pulled; pulling once keeps a
+# long run under Docker Hub's rate limit.
+_PULLED: set[Path] = set()
 
 
 def _start_services(meta: ScriptMeta) -> str | None:
     """Start the compose the script declares (if any); return the server base URL.
 
-    Raising on a missing Docker daemon is deliberate: these tests are opt-in
-    (``needs_uc_server``), so once selected they must run for real or fail loudly
-    — never skip.
+    Raising on a missing Docker daemon is deliberate: a script that declares a
+    compose runs only in the ``services`` lane or when selected by path, so
+    once selected it must run for real or fail loudly, never skip.
     """
     compose_path = meta.compose_path()
     if compose_path is None:
         return None
-
-    from testcontainers.compose import DockerCompose
-
-    key = str(compose_path)
-    compose = DockerCompose(
-        context=str(compose_path.parent),
-        compose_file_name=compose_path.name,
-        pull=key not in _PULLED,
-        wait=True,
-    )
-    compose.start()
-    _PULLED.add(key)
-    _ACTIVE[key] = compose
-    # A generated environment's plan says where a host client reaches the
-    # server, through a gateway or not.
-    plan = compose_path.parent / "plan.json"
-    if plan.is_file():
-        return json.loads(plan.read_text())["client"]["host"]["UNITY_CATALOG_URL"]
-    host, port = compose.get_service_host_and_port("unitycatalog", 8080)
-    return f"http://{host}:{port}/api/2.1/unity-catalog"
+    stacks.compose_up(compose_path, pull=compose_path not in _PULLED)
+    _PULLED.add(compose_path)
+    return stacks.base_url(compose_path)
 
 
 def _server_log(meta: ScriptMeta, lines: int = 80) -> str | None:
     """The last lines of the running server's log, for a failing script's report."""
     compose_path = meta.compose_path()
-    compose = _ACTIVE.get(str(compose_path)) if compose_path else None
-    if compose is None:
+    if compose_path is None:
         return None
     try:
-        stdout, stderr = compose.get_logs("unitycatalog")
+        return stacks.compose_logs(compose_path, "unitycatalog", lines)
     except Exception as exc:  # the report must not hide the script's own failure
         return f"(could not read the server log: {exc})"
-    return "\n".join((stdout + stderr).splitlines()[-lines:])
 
 
 def _stop_services(meta: ScriptMeta) -> None:
     compose_path = meta.compose_path()
-    if compose_path is None:
-        return
-    compose = _ACTIVE.pop(str(compose_path), None)
-    if compose is not None:
-        compose.stop()
+    if compose_path is not None:
+        stacks.compose_down(compose_path)
 
 
 class TutorialScriptTimeout(TutorialScriptFailure):

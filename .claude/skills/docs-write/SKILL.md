@@ -123,7 +123,7 @@ Every command the page shows comes from a script that runs.
 - Claims for the journeys the plan named: `claims.<interface> = [{ journey,
   region }]`, or `fails = true` with an `anchor` for a documented failure.
 - Run just this script, in its lane:
-  `DOCS_FACTORY_SELECT='["content/<…>/snippets/x.py"]' uv run --group test-services pytest content`
+  `DOCS_FACTORY_SELECT='["content/<…>/snippets/x.py"]' uv run pytest content`
   (the harness starts its compose; Spark, JVM, and Rust scripts need the
   toolchains `just test-spark`/`test-jvm`/`test-rust` name). A draft page's
   script runs as a non-strict xfail, so read the output: an XFAIL is a

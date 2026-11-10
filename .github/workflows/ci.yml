@@ -176,7 +176,7 @@ jobs:
           key: ivy-${{ hashFiles('content/delta/release.yml') }}
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
-      - run: uv run pytest content -m "needs_spark and not needs_uc_server" -v -rxXs
+      - run: uv run pytest content -v -rxXs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -229,7 +229,7 @@ jobs:
           enable-cache: true
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
-      - run: uv run pytest content -m needs_jvm -v -rxXs
+      - run: uv run pytest content -v -rxXs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -267,7 +267,7 @@ jobs:
           enable-cache: true
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
-      - run: uv run pytest content -m needs_rust -v -rxXs
+      - run: uv run pytest content -v -rxXs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
@@ -277,7 +277,7 @@ jobs:
 
   scripts-services:
     # Scripts that declare a compose: the harness starts the Unity Catalog stack
-    # each one names (via testcontainers). Docker is on ubuntu-latest runners.
+    # each one names (docker compose, through docsnip.stacks). Docker is on ubuntu-latest runners.
     name: scripts-services (${{ matrix.shard }})
     needs: plan
     if: needs.plan.outputs.services != '[]'
@@ -323,8 +323,8 @@ jobs:
         with:
           enable-cache: true
       - uses: ./.github/actions/pypi-public
-      - run: uv sync --all-packages --group test-services
-      - run: uv run --group test-services pytest content -m "needs_docker or needs_uc_server" -v -rxXs
+      - run: uv sync --all-packages
+      - run: uv run pytest content -v -rxXs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

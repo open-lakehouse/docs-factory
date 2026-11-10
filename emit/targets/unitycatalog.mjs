@@ -102,9 +102,10 @@ function frontmatter(draft, { canonical } = {}) {
 const unitycatalog = {
   name: "unitycatalog",
   siteUrl: "https://www.unitycatalog.io",
-  // The site routes a post by its content-collection folder (`src/pages/blogs/[id].astro`).
+  // The site's blogLoader ids a post by its folder minus the required
+  // `YYYY-MM-DD-` prefix, and `src/pages/blogs/[id].astro` routes on that id.
   postUrl(postDir) {
-    return `${this.siteUrl}/blogs/${postDir}/`;
+    return `${this.siteUrl}/blogs/${postDir.replace(/^\d{4}-\d{2}-\d{2}-/, "")}/`;
   },
   outputFile: "index.mdx", // the content-collection entry filename
   // Base stringify options; remark-mdx does the actual serialization (JSX-aware).

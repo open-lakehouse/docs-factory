@@ -19,7 +19,7 @@ test("target is one site or a list, primary first", () => {
 
 test("a cross-post points at the primary's delivered post", () => {
   expect(crossPostCanonical("delta", unitycatalog, SIDECAR)).toBe(
-    "https://www.unitycatalog.io/blogs/2026-07-03-p/",
+    "https://www.unitycatalog.io/blogs/p/",
   );
   expect(crossPostCanonical("unitycatalog", delta, { delta: { post_dir: "d" } })).toBe(
     "https://delta.io/blog/d/",

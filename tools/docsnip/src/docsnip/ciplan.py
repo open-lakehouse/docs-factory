@@ -138,38 +138,51 @@ def shard(
     return [sorted(b) for b in bins]
 
 
+# Lanes whose scripts start a JVM: Spark, scala-cli and JBang, and the PySpark
+# and Java clients among the service scripts.
+_JAVA_LANES = frozenset({"spark", "jvm", "services"})
+
+
 def plan(
     scripts: Iterable[ScriptMeta],
     repo_root: Path,
     changed: list[str] | None,
     durations: Mapping[str, float] | None = None,
-) -> dict[str, list[dict]]:
-    """Per lane, the matrix of shards:
-    ``[{"id": "spark-1", "shard": "1/2", "scripts": [...], "rust": False}]``. The
-    ``id`` is safe in artifact names, which can't hold the ``/`` of ``shard``.
-    ``rust`` marks a shard that runs a Rust script, so a services shard builds
-    the snippets crate before its scripts' timeouts start.
+) -> list[dict]:
+    """The CI matrix: one entry per shard, across every lane.
 
-    A lane with nothing selected maps to ``[]``, which the workflow skips.
+    ``{"id": "spark-1", "lane": "spark", "shard": "1/2", "scripts": [...],
+    "java": True, "scala": False, "jbang": False, "rust": False}``. The ``id``
+    is safe in artifact names, which can't hold the ``/`` of ``shard``. The
+    toolchain flags say what the shard's runner installs: ``scala``, ``jbang``,
+    and ``rust`` follow the runners of the shard's own scripts, so a services
+    shard builds the snippets crate (before its scripts' timeouts start) only
+    when it runs a Rust script.
+
+    Nothing selected means ``[]``, which the workflow skips.
     """
     durations = durations or {}
     by_lane: dict[str, list[str]] = {lane: [] for lane in LANES}
-    rust: set[str] = set()
+    runner: dict[str, str] = {}
     for meta in select(scripts, repo_root, changed):
         rel = _rel(meta.path, repo_root)
         by_lane[lane_of(meta)].append(rel)
-        if meta.runner == "rust":
-            rust.add(rel)
-    out: dict[str, list[dict]] = {}
+        runner[rel] = meta.runner
+    out: list[dict] = []
     for lane, paths in by_lane.items():
         bins = shard(paths, durations, _MAX_SHARDS[lane])
-        out[lane] = [
-            {
-                "id": f"{lane}-{i}",
-                "shard": f"{i}/{len(bins)}",
-                "scripts": b,
-                "rust": any(p in rust for p in b),
-            }
-            for i, b in enumerate(bins, start=1)
-        ]
+        for i, b in enumerate(bins, start=1):
+            runners = {runner[p] for p in b}
+            out.append(
+                {
+                    "id": f"{lane}-{i}",
+                    "lane": lane,
+                    "shard": f"{i}/{len(bins)}",
+                    "scripts": b,
+                    "java": lane in _JAVA_LANES,
+                    "scala": "scala" in runners,
+                    "jbang": "java" in runners,
+                    "rust": "rust" in runners,
+                }
+            )
     return out

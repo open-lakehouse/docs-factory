@@ -38,7 +38,7 @@ jobs:
 
   python-tests:
     # docsnip's own tests, on every Python the workspace supports. The tutorial
-    # scripts pin their own Python and run in the scripts-* lanes.
+    # scripts pin their own Python and run in the `scripts` job.
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -67,11 +67,7 @@ jobs:
       # Download the last main run's durations-* artifacts.
       actions: read
     outputs:
-      default: ${{ steps.plan.outputs.default }}
-      spark: ${{ steps.plan.outputs.spark }}
-      jvm: ${{ steps.plan.outputs.jvm }}
-      rust: ${{ steps.plan.outputs.rust }}
-      services: ${{ steps.plan.outputs.services }}
+      matrix: ${{ steps.plan.outputs.matrix }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -108,19 +104,23 @@ jobs:
           fi
           uv run docsnip plan "${args[@]}"
 
-  scripts-default:
-    # Scripts that need neither Java nor Docker. Scripts on draft pages run as
-    # non-strict xfails (content/conftest.py), so only `status: ready` gates.
-    name: scripts-default (${{ matrix.shard }})
+  scripts:
+    # One runner per shard of one lane (ciplan.lane_of): default (no Java, no
+    # Docker), spark, jvm (scala-cli, JBang), rust (the snippets crate), and
+    # services (scripts that declare a compose; the harness starts each one's
+    # stack). The plan says which toolchains a shard needs. Scripts on draft
+    # pages run as non-strict xfails (content/conftest.py), so only
+    # `status: ready` gates.
+    name: scripts (${{ matrix.id }})
     needs: plan
-    if: needs.plan.outputs.default != '[]'
+    if: needs.plan.outputs.matrix != '[]'
     runs-on: ubuntu-latest
     # Backstop: content/conftest.py already kills a script after 5 minutes.
     timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(needs.plan.outputs.default) }}
+        include: ${{ fromJSON(needs.plan.outputs.matrix) }}
     env:
       DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
       DOCS_FACTORY_DURATIONS_OUT: durations.json
@@ -128,185 +128,37 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
-        with:
-          enable-cache: true
-      - uses: ./.github/actions/pypi-public
-      - run: uv sync --all-packages
-      - run: uv run pytest content -v -rxXs
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
-        with:
-          name: durations-${{ matrix.id }}
-          path: durations.json
-          if-no-files-found: ignore
-
-  scripts-spark:
-    # Scripts with `lane = "spark"` (PySpark, and the spark-sql shell the Delta
-    # pages start). Needs Java; Spark resolves Delta Spark from Maven Central.
-    name: scripts-spark (${{ matrix.shard }})
-    needs: plan
-    if: needs.plan.outputs.spark != '[]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.plan.outputs.spark) }}
-    env:
-      DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
-      DOCS_FACTORY_DURATIONS_OUT: durations.json
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          persist-credentials: false
-      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+      # Pinned: the image's own default moves (ubuntu-26.04 ships one Hadoop
+      # can't run on).
+      - if: matrix.java
+        uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
         with:
           distribution: temurin
           java-version: "17"
-      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
-        with:
-          enable-cache: true
-          # Keep the large pyspark wheel, which pruning would evict.
-          prune-cache: false
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          # Spark 4 keeps the jars it resolves for --packages here.
-          path: ~/.ivy2.5.2
-          key: ivy-${{ hashFiles('content/delta/release.yml') }}
-      - uses: ./.github/actions/pypi-public
-      - run: uv sync --all-packages
-      - run: uv run pytest content -v -rxXs
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
-        with:
-          name: durations-${{ matrix.id }}
-          path: durations.json
-          if-no-files-found: ignore
-
-  scripts-jvm:
-    # Scala scripts run by scala-cli and Java scripts run by JBang. Both resolve
-    # Spark and Delta Spark from Maven Central through Coursier or Maven.
-    name: scripts-jvm (${{ matrix.shard }})
-    needs: plan
-    if: needs.plan.outputs.jvm != '[]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.plan.outputs.jvm) }}
-    env:
-      DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
-      DOCS_FACTORY_DURATIONS_OUT: durations.json
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          persist-credentials: false
-      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
-        with:
-          distribution: temurin
-          java-version: "17"
-      - uses: VirtusLab/scala-cli-setup@3f5bf11a33bb88343238780c18257c8fa43789e1 # v1.18.0
+      - if: matrix.scala
+        uses: VirtusLab/scala-cli-setup@3f5bf11a33bb88343238780c18257c8fa43789e1 # v1.18.0
         with:
           scala-cli-version: "1.18.0"
           # The JVM comes from setup-java. `apps` stays at its default: emptying
           # it skips installing scala-cli too.
           jvm: ""
-      - uses: jbangdev/setup-jbang@2b1b465a7b75f4222b81426f23a01e013aa7b95c # v0.1.1
+      - if: matrix.jbang
+        uses: jbangdev/setup-jbang@2b1b465a7b75f4222b81426f23a01e013aa7b95c # v0.1.1
         with:
           version: "0.132.1"
           setup-java: "false"
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      # Spark's --packages (Ivy), scala-cli (Coursier), and JBang (Maven), per
+      # lane: each lane resolves different artifacts.
+      - if: matrix.java
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          # Coursier's cache (scala-cli) and Maven's local repository (JBang).
           path: |
+            ~/.ivy2.5.2
             ~/.cache/coursier
             ~/.m2/repository
-          key: jvm-deps-${{ hashFiles('content/delta/release.yml') }}
-      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
-        with:
-          enable-cache: true
-      - uses: ./.github/actions/pypi-public
-      - run: uv sync --all-packages
-      - run: uv run pytest content -v -rxXs
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
-        with:
-          name: durations-${{ matrix.id }}
-          path: durations.json
-          if-no-files-found: ignore
-
-  scripts-rust:
-    # Rust scripts, each an example of the snippets crate (content/_rust). The
-    # crate's dependencies build once; each script then only links and runs.
-    name: scripts-rust (${{ matrix.shard }})
-    needs: plan
-    if: needs.plan.outputs.rust != '[]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.plan.outputs.rust) }}
-    env:
-      DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
-      DOCS_FACTORY_DURATIONS_OUT: durations.json
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          persist-credentials: false
-      # rustup ships on the runner (see rust.yml).
-      - run: rustup toolchain install stable --profile minimal && rustup default stable
-      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
-        with:
-          shared-key: snippets
-      - run: cargo build --locked --package docs-factory-snippets --examples
-      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
-        with:
-          enable-cache: true
-      - uses: ./.github/actions/pypi-public
-      - run: uv sync --all-packages
-      - run: uv run pytest content -v -rxXs
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        if: always()
-        with:
-          name: durations-${{ matrix.id }}
-          path: durations.json
-          if-no-files-found: ignore
-
-  scripts-services:
-    # Scripts that declare a compose: the harness starts the Unity Catalog stack
-    # each one names (docker compose, through docsnip.stacks). Docker is on ubuntu-latest runners.
-    name: scripts-services (${{ matrix.shard }})
-    needs: plan
-    if: needs.plan.outputs.services != '[]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.plan.outputs.services) }}
-    env:
-      DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
-      DOCS_FACTORY_DURATIONS_OUT: durations.json
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          persist-credentials: false
-      # PySpark scripts start their JVM on the runner. Pin it: the image's own
-      # default moves (ubuntu-26.04 ships one Hadoop can't run on).
-      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
-        with:
-          distribution: temurin
-          java-version: "17"
-      # Java scripts that call a server run here, not in scripts-jvm.
-      - uses: jbangdev/setup-jbang@2b1b465a7b75f4222b81426f23a01e013aa7b95c # v0.1.1
-        with:
-          version: "0.132.1"
-          setup-java: "false"
-      # So do Rust scripts. Build the snippets crate first, so compiling it
-      # doesn't count against a script's timeout.
+          key: jvm-deps-${{ matrix.lane }}-${{ hashFiles('content/*/release.yml') }}
+      # rustup ships on the runner (see rust.yml). Build the snippets crate
+      # first, so compiling it doesn't count against a script's timeout.
       - if: matrix.rust
         run: rustup toolchain install stable --profile minimal && rustup default stable
       - if: matrix.rust
@@ -315,13 +167,16 @@ jobs:
           shared-key: snippets
       - if: matrix.rust
         run: cargo build --locked --package docs-factory-snippets --examples
-      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ~/.m2/repository
-          key: services-m2-${{ hashFiles('content/unitycatalog/release.yml') }}
       - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
           enable-cache: true
+          # Scripts resolve their own PEP 723 deps, pinned by the releases.
+          cache-dependency-glob: |
+            uv.lock
+            content/*/release.yml
+          cache-suffix: ${{ matrix.lane }}
+          # Keep large downloaded wheels (pyspark), which pruning would evict.
+          prune-cache: ${{ !matrix.java }}
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
       - run: uv run pytest content -v -rxXs

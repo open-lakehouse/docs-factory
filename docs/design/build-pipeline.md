@@ -186,16 +186,18 @@ the two frontmatter splitters, among others).
 - **`python-tests`** — docsnip's drift/vocab tests, on Python 3.11 and 3.12.
 - **`plan`** — `docsnip plan` decides which colocated tutorial scripts run and
   packs each lane's selection into shards by the durations the last green run
-  on main recorded (its `durations-*` artifacts). On a pull request it selects the scripts whose
-  page folder, project `release.yml`, or (for service scripts) `envs/` changed;
+  on main recorded (its `durations-*` artifacts). On a pull request it selects
+  the scripts whose page folder, project `release.yml`, or (for service
+  scripts) `envs/` changed;
   a change to the harness, docsnip, `seed/`, or the lockfile selects all of
   them, and so do main, the nightly run, and manual runs.
-- **`scripts-default` / `scripts-spark` / `scripts-jvm` / `scripts-rust` /
-  `scripts-services`** — one job per toolchain (none; Java; Java with scala-cli
-  and JBang; Rust, building the snippets crate once; Docker), one runner per shard, each running its shard's
-  scripts to completion (`uv run`) through `DOCS_FACTORY_SELECT`. A lane with
-  nothing selected is skipped. Each shard uploads the durations it measured,
-  which the next run's `plan` downloads.
+- **`scripts`** — one matrix entry per shard of each lane (default; spark;
+  jvm, with scala-cli and JBang; rust, building the snippets crate once;
+  services, with Docker), each on its own runner. The plan sets the toolchain
+  flags (`java`, `scala`, `jbang`, `rust`) a shard installs, from its lane and
+  its scripts' runners. Each shard runs its scripts to completion through
+  `DOCS_FACTORY_SELECT` and uploads the durations it measured, which the next
+  run's `plan` downloads.
 - **`review-api`** — builds `content-versions.json` (via content-core) and
   typechecks the server.
 - **`preview-build`** — the full Vite build (exercises the render↔manifest

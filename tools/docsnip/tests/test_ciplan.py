@@ -69,15 +69,23 @@ def test_an_unrelated_change_selects_nothing(tmp_path) -> None:
     assert _selected(tmp_path, ["site/src/main.tsx"]) == set()
 
 
-def test_plan_groups_by_lane_and_leaves_empty_lanes_empty(tmp_path) -> None:
+def test_plan_lists_only_lanes_with_scripts(tmp_path) -> None:
     plan = ciplan.plan(
         _repo(tmp_path), tmp_path, ["content/delta/how-to/001-read/x.md"]
     )
-    assert plan["services"] == []
-    assert [(s["id"], s["shard"]) for s in plan["spark"]] == [("spark-1", "1/1")]
-    assert plan["default"][0]["scripts"] == [
-        "content/delta/how-to/001-read/snippets/read.py"
+    assert [(s["id"], s["lane"], s["shard"]) for s in plan] == [
+        ("default-1", "default", "1/1"),
+        ("spark-1", "spark", "1/1"),
     ]
+    assert plan[0]["scripts"] == ["content/delta/how-to/001-read/snippets/read.py"]
+
+
+def test_toolchain_flags_follow_the_lane_and_the_shards_runners(tmp_path) -> None:
+    plan = {s["lane"]: s for s in ciplan.plan(_repo(tmp_path), tmp_path, None)}
+    assert not plan["default"]["java"]
+    assert plan["spark"]["java"]
+    assert plan["services"]["java"]
+    assert not any(plan["services"][k] for k in ("scala", "jbang", "rust"))
 
 
 def test_shards_balance_by_duration() -> None:
@@ -123,4 +131,4 @@ def test_plan_packs_by_the_durations_it_is_given(tmp_path) -> None:
     ]
     slow = "content/unitycatalog/how-to/000-x/snippets/s0.py"
     plan = ciplan.plan(scripts, tmp_path, None, {slow: 400})
-    assert [s["scripts"] for s in plan["services"]][0] == [slow]
+    assert plan[0]["scripts"] == [slow]

@@ -59,11 +59,12 @@ the draft `author` into the `author` list. For each id:
 
 Unlike unitycatalog, delta's schema makes **`description` and `thumbnail` required**
 (zod fails the build without them). The core emits `description` from the draft's
-`summary` and `thumbnail` from a draft `thumbnail`/`hero` field.
+`summary` and `thumbnail` from `assets.json`'s `thumbnail` (the draft's
+`thumbnail:`/`hero:` path, else `assets/thumbnail.<ext>`).
 
 - Inspect the emitted `index.mdx` frontmatter. **If `description` is absent** (the
-  draft had no `summary`) or **`thumbnail` is absent** (no `thumbnail`/`hero`, or the
-  referenced image isn't in `images[]`/on disk to copy), **HALT and report** — do not
+  draft had no `summary`) or **`thumbnail` is absent** (`assets.json` `thumbnail` is
+  `null`), **HALT and report** — do not
   fabricate a description or a placeholder thumbnail. Tell the user which is missing
   and ask them to add `summary:` and/or a `thumbnail:` image to the draft and re-run.
 - Only proceed once both resolve.
@@ -81,8 +82,8 @@ DEST=../website/src/content/blog/<YYYY-MM-DD>-<slug>
 - Create `DEST` (`mkdir -p`). Copy `dist/delta/index.mdx` → `$DEST/index.mdx`.
 - For each `images[]` entry, copy `localPath` → `$DEST/<filename>` (co-located; the
   MDX references `./<filename>`).
-- Copy the thumbnail image the frontmatter references (`thumbnail: ./<file>`) into
-  `$DEST/<file>` too, if it isn't already one of the `images[]`.
+- Copy `assets.json`'s `thumbnail.localPath` → `$DEST/<thumbnail.filename>` (the
+  frontmatter's `thumbnail: ./<filename>`).
 - If `likec4-webcomponent.mjs` was produced, copy it to
   `../website/public/likec4/likec4-webcomponent.mjs` (the stable path
   `LikeC4View.astro` loads). Safe to overwrite — generated from the whole `blogs/`

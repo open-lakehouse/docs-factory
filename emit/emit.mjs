@@ -27,9 +27,10 @@ import {
   readdirSync,
   readFileSync,
   rmSync,
+  statSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, extname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import remarkDirective from "remark-directive";
 import remarkFrontmatter from "remark-frontmatter";
@@ -281,6 +282,36 @@ export function generateTrestleWebComponent(outFile) {
   return outFile;
 }
 
+// --- thumbnail -------------------------------------------------------------
+
+const THUMBNAIL_EXTS = [".png", ".jpg", ".jpeg", ".webp", ".avif"];
+// unitycatalog-website's check-post warns above 1 MB; its guidance is ~1200×630.
+const THUMBNAIL_WARN_BYTES = 1024 * 1024;
+
+/**
+ * The post's card image: the draft's `thumbnail:` (or `hero:`) path, relative to
+ * the draft folder, else `assets/thumbnail.<ext>`. Every target delivers it as
+ * `thumbnail.<ext>` beside the post, the name openlakehouse picks up by
+ * convention; unitycatalog and delta reference it from frontmatter.
+ */
+export function findThumbnail(draftDir, meta = {}) {
+  const declared = meta.thumbnail ?? meta.hero;
+  const candidates = declared
+    ? [String(declared)]
+    : THUMBNAIL_EXTS.map((ext) => `assets/thumbnail${ext}`);
+  for (const rel of candidates) {
+    const localPath = join(draftDir, rel);
+    if (!existsSync(localPath)) continue;
+    const ext = extname(localPath).toLowerCase();
+    if (!THUMBNAIL_EXTS.includes(ext)) {
+      throw new Error(`thumbnail ${rel} must be one of ${THUMBNAIL_EXTS.join(", ")}`);
+    }
+    return { filename: `thumbnail${ext}`, localPath, bytes: statSync(localPath).size };
+  }
+  if (declared) throw new Error(`thumbnail ${declared} not found in ${draftDir}`);
+  return null;
+}
+
 // --- delivery sidecar (idempotency) ---------------------------------------
 
 // Each post carries its delivery state in a committed sidecar dotfile next to
@@ -527,6 +558,7 @@ async function main() {
   }
 
   const sidecar = readSidecar(draftDir);
+  const thumbnail = findThumbnail(draftDir, meta);
   let likec4Exported = false;
   for (const [name, target] of loaded) {
     const { likec4Dir } = await emitTarget({
@@ -538,6 +570,7 @@ async function main() {
       primaryName,
       canonical: crossPostCanonical(name, primary, sidecar),
       existing: sidecar[name] ?? null,
+      thumbnail,
       likec4Exported,
     });
     likec4Exported ||= likec4Dir != null;
@@ -553,6 +586,7 @@ async function emitTarget({
   primaryName,
   canonical,
   existing,
+  thumbnail,
   likec4Exported,
 }) {
   // dist/ root holds the shared, target-agnostic LikeC4 Mermaid; each target's
@@ -588,7 +622,7 @@ async function emitTarget({
     trestleUrlBase: trestleBase && `${trestleBase}/${slug}`,
     trestleWebComponentPath:
       trestleBase && join(publicDir, `${trestleBase}/trestle-webcomponent.mjs`),
-    frontmatterContext: { canonical },
+    frontmatterContext: { canonical, thumbnail: thumbnail && `./${thumbnail.filename}` },
     // Docs links become the page's URL on its docs site (blog-links.mjs).
     plugins: blogLinkPlugins({ repoRoot: REPO_ROOT }),
   });
@@ -627,6 +661,8 @@ async function emitTarget({
         // place. Shape is { post_dir, updated }.
         existing,
         images: manifest,
+        // { filename, localPath, bytes } or null; copied beside the post as `filename`.
+        thumbnail,
         // Paths under the site's public/ root, copied from dist/<target>/public/.
         public: publicFiles,
       },
@@ -642,6 +678,13 @@ async function emitTarget({
   console.log(
     `  ${rel(assetsPath)}  (${manifest.length} image${manifest.length === 1 ? "" : "s"})`,
   );
+  if (thumbnail) {
+    const mb = (thumbnail.bytes / 1024 / 1024).toFixed(1);
+    console.log(`  thumbnail: ${rel(thumbnail.localPath)} → ${thumbnail.filename} (${mb} MB)`);
+    if (thumbnail.bytes > THUMBNAIL_WARN_BYTES) {
+      console.warn(`  warning: thumbnail is ${mb} MB; resize it to about 1200×630`);
+    }
+  }
   if (webComponentPath) console.log(`  ${rel(webComponentPath)}  (LikeC4 web component)`);
   if (trestleWebComponentPath) {
     console.log(

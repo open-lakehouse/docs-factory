@@ -80,7 +80,7 @@ export function emitDay() {
  * description?, thumbnail?, canonical? }. Deterministic — no network. Author-profile EXISTENCE
  * is reconciled by the delivery skill, not here.
  */
-function frontmatter(draft, { canonical } = {}) {
+function frontmatter(draft, { canonical, thumbnail } = {}) {
   const fm = {
     title: draft.title,
     // A single-author draft carries `author` as one string; support a list too.
@@ -92,6 +92,8 @@ function frontmatter(draft, { canonical } = {}) {
   };
   // `summary` → optional `description`; omit when absent (schema marks it optional).
   if (draft.summary) fm.description = String(draft.summary);
+  // The card image, delivered beside the post (emit.mjs findThumbnail).
+  if (thumbnail) fm.thumbnail = thumbnail;
   // A cross-post points search engines at the primary target's copy.
   if (canonical) fm.canonical = canonical;
   // Drop draft-only fields (slug/status/tags/series/target) — not in the UC schema,
@@ -102,9 +104,10 @@ function frontmatter(draft, { canonical } = {}) {
 const unitycatalog = {
   name: "unitycatalog",
   siteUrl: "https://www.unitycatalog.io",
-  // The site routes a post by its content-collection folder (`src/pages/blogs/[id].astro`).
+  // The site's blogLoader ids a post by its folder minus the required
+  // `YYYY-MM-DD-` prefix, and `src/pages/blogs/[id].astro` routes on that id.
   postUrl(postDir) {
-    return `${this.siteUrl}/blogs/${postDir}/`;
+    return `${this.siteUrl}/blogs/${postDir.replace(/^\d{4}-\d{2}-\d{2}-/, "")}/`;
   },
   outputFile: "index.mdx", // the content-collection entry filename
   // Base stringify options; remark-mdx does the actual serialization (JSX-aware).

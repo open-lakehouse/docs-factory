@@ -67,7 +67,7 @@ function emitDay() {
  * missing (it can't fabricate a thumbnail image or a meaningful description).
  * Author-profile EXISTENCE is reconciled by the delivery skill, not here.
  */
-function frontmatter(draft, { canonical } = {}) {
+function frontmatter(draft, { canonical, thumbnail } = {}) {
   const authors = (Array.isArray(draft.author) ? draft.author : [draft.author])
     .filter(Boolean)
     .map(authorSlug);
@@ -81,11 +81,10 @@ function frontmatter(draft, { canonical } = {}) {
     author: authors,
     publishedAt: isoDate(draft.date) ?? emitDay(),
   };
-  // `thumbnail` is a REQUIRED image reference (`./<file>`). The draft may carry a
-  // `thumbnail`/`hero`; emit it as a co-located `./` path when present, else leave
-  // it out so the delivery skill halts with a clear "thumbnail required" message.
-  const thumb = draft.thumbnail ?? draft.hero;
-  if (thumb) fm.thumbnail = `./${String(thumb).replace(/^\.?\//, "")}`;
+  // `thumbnail` is a REQUIRED image reference, delivered beside the post
+  // (emit.mjs findThumbnail). Without one, leave it out so the delivery skill
+  // halts with a clear "thumbnail required" message.
+  if (thumbnail) fm.thumbnail = thumbnail;
   // A cross-post points search engines at the primary target's copy.
   if (canonical) fm.canonical = canonical;
   // Drop draft-only fields (slug/status/tags/series/target) — not in the delta schema.

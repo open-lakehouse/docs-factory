@@ -71,7 +71,10 @@ kept beside the drafts); it needs no `target`.
 an idea graduates — either to an early `status: idea` folder (worth ranking/reviewing
 before it's briefed) or straight to a brief at `status: draft`. Each folder holds
 `brief.md` and `index.md`; `assets/` (images) and `snippets/` (extracted, runnable,
-verified code — §5) are created on demand, not scaffolded up front.
+verified code — §5) are created on demand, not scaffolded up front. The post's card
+image is `assets/thumbnail.<ext>` (png, jpg, jpeg, webp, or avif; about 1200×630 and
+under 500 KB), or whatever a `thumbnail:` frontmatter path names; the emitter ships
+it to every target.
 
 ## 2. Ideas backlog (`IDEAS.md`)
 

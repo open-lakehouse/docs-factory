@@ -74,8 +74,8 @@ _DELTA_DIR = _REPO_ROOT / "content" / "delta"
 _DELTA_LOCK = Path(tempfile.gettempdir()) / "docs-factory-delta.lock"
 
 # A script that outlives this is killed and fails, instead of hanging the job.
-# Generous: a service-backed script may pull wheels and seed data on a cold cache.
-_SCRIPT_TIMEOUT_S = int(os.environ.get("DOCS_FACTORY_SCRIPT_TIMEOUT", "600"))
+# About 3x the slowest healthy script, which may pull wheels on a cold cache.
+_SCRIPT_TIMEOUT_S = int(os.environ.get("DOCS_FACTORY_SCRIPT_TIMEOUT", "300"))
 
 
 def pytest_collect_file(parent, file_path):

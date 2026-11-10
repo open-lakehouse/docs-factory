@@ -6,8 +6,9 @@ share a compose project name (``uc-docs``) also share ``container_name:
 unitycatalog``. Two stacks can't run side by side, so two checkouts (or two
 agent sessions) that each start one tear the other's down mid-run.
 
-This module serializes them. The tutorial-script harness (``content/conftest.py``)
-holds :func:`lock` from starting a script's compose until it stops it, and
+This module serializes them, and is the one place that drives ``docker
+compose``. The tutorial-script harness (``content/conftest.py``) holds
+:func:`lock` from starting a script's compose until it stops it, and
 ``docsnip stack up|down|status`` (``just env-up|env-down|env-status``) use the
 same lock for a stack started by hand. A stack is never replaced silently: a
 run that finds another environment up fails and names it.
@@ -74,6 +75,63 @@ def locked() -> bool:
         return False
 
 
+class ComposeError(RuntimeError):
+    """A ``docker compose`` command failed; carries its command and output."""
+
+
+def _docker_compose(compose: Path, *args: str, capture: bool = True) -> str:
+    """Run ``docker compose -f <compose> <args>``; return its output.
+
+    Captured by default so a failure reports what compose said. ``capture=False``
+    streams progress to the terminal, for a stack started by hand.
+    """
+    cmd = ["docker", "compose", "-f", str(compose), *args]
+    out = subprocess.PIPE if capture else None
+    proc = subprocess.run(
+        cmd, stdout=out, stderr=subprocess.STDOUT if capture else None, text=True
+    )
+    if proc.returncode != 0:
+        raise ComposeError(
+            f"`{' '.join(cmd)}` exited {proc.returncode}\n{proc.stdout or ''}"
+        )
+    return proc.stdout or ""
+
+
+def compose_up(compose: Path, *, pull: bool = False, capture: bool = True) -> None:
+    """Start ``compose`` and wait until its services are healthy."""
+    if pull:
+        # Built images (the UC server's) come from `up`, not a registry.
+        _docker_compose(
+            compose, "pull", "--quiet", "--ignore-buildable", capture=capture
+        )
+    _docker_compose(compose, "up", "--detach", "--wait", capture=capture)
+
+
+def compose_down(compose: Path, *, capture: bool = True) -> None:
+    """Stop ``compose`` and drop its volumes, so the next start is fresh."""
+    _docker_compose(compose, "down", "--volumes", capture=capture)
+
+
+def compose_logs(compose: Path, service: str, lines: int) -> str:
+    return _docker_compose(compose, "logs", "--no-color", "--tail", str(lines), service)
+
+
+def base_url(compose: Path) -> str:
+    """Where a client on the host reaches the stack's Unity Catalog server.
+
+    A generated environment's plan says, through a gateway or not; any other
+    compose publishes the server's own port.
+    """
+    plan = compose.parent / "plan.json"
+    if plan.is_file():
+        return json.loads(plan.read_text())["client"]["host"]["UNITY_CATALOG_URL"]
+    host, _, port = (
+        _docker_compose(compose, "port", "unitycatalog", "8080").strip().rpartition(":")
+    )
+    host = "localhost" if host in ("0.0.0.0", "::", "[::]") else host
+    return f"http://{host}:{port}/api/2.1/unity-catalog"
+
+
 def _is_env_compose(path: Path) -> bool:
     return path.name == "compose.yaml" and path.parent.parent.name == "envs"
 
@@ -135,15 +193,12 @@ def up(root: Path, name: str) -> int:
         if stacks:
             print(busy_message(stacks), file=sys.stderr)
             return 1
-        proc = subprocess.run(
-            ["docker", "compose", "-f", str(compose), "up", "-d", "--wait"]
-        )
-        if proc.returncode != 0:
-            return proc.returncode
-    plan = compose.parent / "plan.json"
-    if plan.is_file():
-        url = json.loads(plan.read_text())["client"]["host"]["UNITY_CATALOG_URL"]
-        print(f"{name} is up: UNITY_CATALOG_URL={url}")
+        try:
+            compose_up(compose, capture=False)
+        except ComposeError as exc:
+            print(exc, file=sys.stderr)
+            return 1
+        print(f"{name} is up: UNITY_CATALOG_URL={base_url(compose)}")
     print("stop it with `just env-down` before running scripts")
     return 0
 
@@ -157,10 +212,11 @@ def down() -> int:
             return 0
         code = 0
         for stack in stacks:
-            proc = subprocess.run(
-                ["docker", "compose", "-f", str(stack.compose), "down", "--volumes"]
-            )
-            code = code or proc.returncode
+            try:
+                compose_down(stack.compose, capture=False)
+            except ComposeError as exc:
+                print(exc, file=sys.stderr)
+                code = 1
         return code
 
 

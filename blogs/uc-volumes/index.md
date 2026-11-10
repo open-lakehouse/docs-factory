@@ -22,10 +22,12 @@ storage and compute - a key concept of the Lakehouse Architecture - is the de-fa
 standard, and even some transactional workloads are following suit.
 
 And while we as a community made great strides managing and governing tabular assets
-in object storage via catalogs, we always kept an escape hatch around.
+in object storage via catalogs and open table formats, we always kept an escape hatch around.
 This escape hatch is plain storage; data pipelines read configuration files, data scientists
 develop ideas as scratch files in some personal storage location, and many more examples
-where folks need to quickly park something for later use or reference.
+where folks need to quickly park something for later use or reference. Even more promiently,
+the usage of multimodal data (e.g. images, PDFs, videos...) is skyrocketing with the proloferation
+of agentic workloads.
 
 Those of you building or using data platforms frequently, will already anticipate the issues
 arising from such patterns: missing discoverability and fragmented governance. You will also
@@ -36,7 +38,7 @@ In the following sections we will explore how Unity Catalog leverages well-estab
 and capabilities to define a Volume securable, and see how Volumes can be leveraged to
 govern and process unstructured data.
 
-## A volume in a marimo notebook
+## Accessing volumes from a notebook
 
 Say you want to browse a volume from a notebook. [marimo](https://marimo.io)
 lists every [obstore](https://developmentseed.org/obstore/) store a notebook defines in its

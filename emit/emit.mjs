@@ -52,6 +52,7 @@ import { blogLinkPlugins } from "./blog-links.mjs";
 // directly — see emit/targets/*.mjs. This keeps one linear core pipeline while
 // letting a target flatten (md-twin) OR upgrade to components (unitycatalog).
 import remarkLikeC4Blocks from "./plugins/remark-likec4-blocks.mjs";
+import remarkStripSourceMeta from "./plugins/remark-strip-source-meta.mjs";
 import remarkTrestleMd, { trestleFiles } from "./plugins/remark-trestle-md.mjs";
 import remarkUnwrapProse from "./plugins/remark-unwrap-prose.mjs";
 
@@ -631,7 +632,12 @@ async function emitTarget({
     },
     // Docs links become the page's URL on its docs site (blog-links.mjs), as
     // a root-relative path when the post's own site serves the docs.
-    plugins: blogLinkPlugins({ repoRoot: REPO_ROOT, siteUrl: target.siteUrl }),
+    // The review app's source anchors (srcpath=…) are repo paths a published
+    // post can't use.
+    plugins: [
+      ...blogLinkPlugins({ repoRoot: REPO_ROOT, siteUrl: target.siteUrl }),
+      [remarkStripSourceMeta],
+    ],
   });
 
   if (trestleBase) {

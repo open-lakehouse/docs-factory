@@ -54,12 +54,19 @@ DEST=$UCW/src/content/blog/<YYYY-MM-DD>-<slug>
   The render's frontmatter already carries `thumbnail: ./<filename>` (the core
   finds `assets/thumbnail.<ext>` or the draft's `thumbnail`/`hero`). The build
   fails on a thumbnail whose file is missing.
+- On UPDATE, keep the delivered post's `topics` (the site curates them, and the
+  core emits none), and its `thumbnail` when the core emitted none. Without
+  `topics` the site infers them from the id.
 
 ## C. Build-verify, then report
 
 ```bash
-cd "$UCW" && bun install && bun test && bun run build && bun run links:dist
+cd "$UCW" && bunx prettier --write "src/content/blog/<post dir>/index.mdx" \
+  && bun install && bun test && bun run build && bun run links:dist
 ```
+
+The site's CI checks formatting, and Prettier reflows the core's Markdown
+(tables, list indentation); format the post before building.
 
 The build validates the frontmatter, compiles the MDX, and its crawler fails on a
 dead internal link, including a `/docs/…` link to a page the docs don't publish.
@@ -91,8 +98,8 @@ sidecar block `{ post_dir, updated }`.
 
 `bun emit.mjs --slug <slug> --target unitycatalog` → `blogs/<slug>/dist/unitycatalog/`:
 
-- `index.mdx` — frontmatter (`title`, `authors`, `category: guide`, `topics` from
-  the draft's tags when they imply any, `date`, optional `description`, and
+- `index.mdx` — frontmatter (`title`, `authors`, `category: guide`, `date`,
+  optional `description`, and
   `canonical` on a cross-post whose primary is another site), the component
   imports, then the body: `::::journey` → `<Journey><JourneyStep step="…">`,
   ```` ```likec4 ```` → `<LikeC4View viewId="…" alt="…" />`, ```` ```trestle ````

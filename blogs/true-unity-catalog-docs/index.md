@@ -316,14 +316,14 @@ which is exactly why the release review exists.
 
 Next time you read that something doesn't work with Unity Catalog, or that it
 does, check the compatibility tables on
-[docs.unitycatalog.io](https://docs.unitycatalog.io/) and follow the cell to
+[unitycatalog.io/docs](https://unitycatalog.io/docs/) and follow the cell to
 the code. Then run it. Say the cell is DuckDB appending to a managed table.
 The ✓ links to the DuckDB page, whose code comes from `duckdb_tables.py`. Save
 that script, then download and start the local environment the page uses, as
 the script's docstring says:
 
 ```bash
-curl -fsSL https://docs.unitycatalog.io/env/unitycatalog.tar.gz | tar -xz
+curl -fsSL https://unitycatalog.io/docs/env/unitycatalog.tar.gz | tar -xz
 cd uc-docs-env/unitycatalog && docker compose up -d --wait
 ```
 

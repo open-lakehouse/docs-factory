@@ -835,7 +835,7 @@
       },
       "links": [
         {
-          "url": "https://docs.unitycatalog.io/how-to/run-local-server#run-the-uc-cli"
+          "url": "https://unitycatalog.io/docs/how-to/run-local-server/#run-the-uc-cli"
         }
       ],
       "tags": [
@@ -6898,7 +6898,7 @@
           "notation": "Implementation (software / service)",
           "links": [
             {
-              "url": "https://docs.unitycatalog.io/how-to/run-local-server#run-the-uc-cli"
+              "url": "https://unitycatalog.io/docs/how-to/run-local-server/#run-the-uc-cli"
             }
           ],
           "kind": "implementation"
@@ -15190,7 +15190,7 @@
           "notation": "Implementation (software / service)",
           "links": [
             {
-              "url": "https://docs.unitycatalog.io/how-to/run-local-server#run-the-uc-cli"
+              "url": "https://unitycatalog.io/docs/how-to/run-local-server/#run-the-uc-cli"
             }
           ],
           "kind": "implementation"

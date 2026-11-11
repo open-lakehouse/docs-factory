@@ -33,6 +33,10 @@ which engines handle which Iceberg features through it) is tracked in
 > rendering and agent surfaces. Section 11's emitter requirements are answered,
 > or explicitly deferred, in
 > [`docs-site-emission.md`](./docs-site-emission.md).
+>
+> **Update 2026-11-11: the docs live at unitycatalog.io/docs.** The same emit
+> now writes into the uc-website app, which renders the docs beside the
+> marketing pages and the blog; `sites/unitycatalog-docs/` is gone.
 
 ## 1. Recommendation
 
@@ -494,9 +498,10 @@ publication still requires the DB review/release lifecycle.
 ### Legacy docs migration map
 
 Paths are legacy routes, not a promise of current reachability. The redirect
-manifest is the `redirects` list in `sites/unitycatalog-docs/vercel.json`: every
-legacy path redirects permanently to the nearest published page, and the
-emitter fails a publish if a destination isn't a route or heading it serves.
+manifest is `emit/docs/sites/unitycatalog-redirects.json`, which the emitter
+resolves into uc-website's `redirects.json` under `/docs`: every legacy path
+redirects permanently to the nearest published page, and the emitter fails a
+publish if a destination isn't a route or heading it serves.
 Until a family's new home is released, its redirect lands on an interim page.
 When the home is released, repoint the redirect in the same PR.
 

@@ -1,7 +1,9 @@
 # Docs-site emission
 
-**Status:** built for Unity Catalog (`sites/unitycatalog-docs/`) and Delta Lake
-(`sites/delta-docs/`, local preview only), sharing `sites/docs-shell/`; emitter in `emit/docs/`.
+**Status:** built. Unity Catalog emits into the uc-website app at
+`unitycatalog.io/docs` (see [Delivery](#delivery)); Delta Lake emits into
+`sites/delta-docs/` on `sites/docs-shell/` (local preview only). Emitter in
+`emit/docs/`.
 **Scope:** `emit/docs/`, `emit/targets/docs-site.mjs`, `sites/`.
 
 We used to plan on emitting `content/unitycatalog/` into the upstream UC MkDocs
@@ -239,41 +241,39 @@ inlined, so its hashes name exactly the section a reader sees change.
 
 ## Delivery
 
-`.github/workflows/uc-docs-sync.yml` delivers the UC site on every push to
-main. Its upstream repo's root **is** the site, and docs-factory owns every
-file in it except `.git/`, `.github/`, and `LICENSE`:
-1. Seed upstream main's `.docs-emit.json`, so the change report diffs against
-   what is live.
-2. Run a publish emit (`ready` pages only, no DB), then `bun run build` as a
-   gate.
-3. Run `scripts/mirror-site.sh`, which does an `rsync --delete` of the shell
-   minus build output (dereferencing the out-of-tree `shell` symlink into real
-   files), then copies the `sites/<name>/upstream/` overlay (README,
-   `.gitignore`) onto the root.
-4. Force-push the result to `docs-factory/sync` and open or update one PR
-   whose body is the change report and the source commits since the last
-   merged sync.
+The two sites deliver differently.
 
-A diff confined to `.docs-emit.json` counts as no change, because the manifest
-records the source commit and so differs on every run. If upstream main
-already matches, an open sync PR is closed.
+**Unity Catalog** emits into the uc-website app, which serves the docs at
+`unitycatalog.io/docs` beside the marketing pages and the blog (the site config
+sets `base: "/docs"`, `outDir`, `paths`, and `owned`). uc-website owns the
+pages that render them (`src/routes/docs/`, `src/components/docs/`), so
+docs-factory ships content and data, not a shell.
+`.github/workflows/uc-docs-sync.yml` delivers it on every push to main:
+1. Check out uc-website main. Its `src/generated/docs/.docs-emit.json` is the
+   last merged sync, so the change report diffs against what is live.
+2. Run a publish emit (`ready` pages only, no DB) straight into the checkout.
+   The sync writes and deletes only under the owned directories.
+3. Gate on uc-website's `bun test` (including its contract test for the emitted
+   docs), `bun run build`, and `links:dist`.
+4. Commit the owned directories, force-push to `docs-factory/sync`, and open or
+   update one PR whose body is the change report and the source commits since
+   the last merged sync.
 
-Upstream deploys with Vercel's Git integration. The mirrored site builds with
-bun alone, because uv and `envs/` are needed only to emit, and
-`sites/<name>/vercel.json` pins the build and the clean-URL routing.
+A diff confined to the manifest counts as no change, because it records the
+source commit and so differs on every run. If uc-website main already matches,
+an open sync PR is closed.
+
+**Delta Lake** still emits into its own shell, `sites/delta-docs/` on
+`sites/docs-shell/`, mounted at its host's root; it has no delivery yet.
 
 ## Deferred
-
-[`site-consolidation.md`](./site-consolidation.md) proposes merging this site
-with unitycatalog.io; it covers search, redirects, and blog delivery below.
 
 - **Delta delivery:** a sync workflow and upstream repo for `sites/delta-docs/`,
   likely by turning `uc-docs-sync.yml` into a per-site matrix. A publish emit of
   Delta fails today, and that is intended: its two `ready` pages link to draft
   pages.
-- **Search:** Pagefind over the built `dist/`.
-- **Redirects:** for legacy MkDocs paths (plan §7 migration map) and for renames
-  the manifest records.
+- **Redirects for renames** the manifest records. Legacy MkDocs paths are
+  covered by `emit/docs/sites/unitycatalog-redirects.json`.
 - **Shell CI:** a build job for the shell.
 - **Blog release automation:** a push-to-main workflow that emits each blog
   newly at `status: ready` to its `target` and opens a PR in that site repo, as

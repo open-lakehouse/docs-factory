@@ -419,38 +419,40 @@ PR, prod on push to `main`). Verify end to end:
 
 ---
 
-## UC docs site (upstream mirror)
+## UC docs (unitycatalog.io/docs)
 
 This is separate from everything above. The reader-facing Unity Catalog docs
-(`sites/unitycatalog-docs/`) are not served by the review app's Vercel project.
-`.github/workflows/uc-docs-sync.yml` mirrors the emitted site into a dedicated
-upstream repo and keeps one `docs-factory/sync` PR open there. That repo's own
-Vercel project **builds from Git**, unlike §3a: the mirrored site needs only bun.
-The workflow skips until `UC_DOCS_UPSTREAM_REPO` is set. To provision it:
+are served by the **uc-website** app (open-lakehouse/uc-website) at
+`unitycatalog.io/docs`, not by the review app's Vercel project.
+`.github/workflows/uc-docs-sync.yml` checks uc-website out, emits the `ready`
+pages straight into the directories the emitter owns there
+(`src/content/docs/`, `src/generated/docs/`, `src/vendor/docs-plugins/`,
+`public/docs/`), gates on uc-website's tests and build, and keeps one
+`docs-factory/sync` PR open. uc-website's own Vercel project builds every PR
+from Git and ships `main`. The workflow skips until `UC_DOCS_UPSTREAM_REPO` is
+set. To provision it:
 
-1. **Upstream repo.** Create it (e.g. `unitycatalog/docs`) with a `main` that
-   holds only `LICENSE` and `.github/CODEOWNERS`. The sync owns every other
-   path.
-2. **GitHub App.** Create an app with repository permissions **Contents:
-   write** and **Pull requests: write**. It needs no webhook. Install it on the
-   upstream repo only.
-3. **docs-factory settings.**
-   - Repo variable `UC_DOCS_UPSTREAM_REPO` = `owner/name`.
+1. **GitHub App.** An app with repository permissions **Contents: write** and
+   **Pull requests: write**, no webhook, installed on uc-website.
+2. **docs-factory settings.**
+   - Repo variable `UC_DOCS_UPSTREAM_REPO` = `open-lakehouse/uc-website`.
    - A `uc-docs-sync` environment, branch-restricted to `main`, holding:
      - variable `UC_DOCS_APP_CLIENT_ID`;
      - secret `UC_DOCS_APP_PRIVATE_KEY` (the app's PEM).
-4. **First sync.** Run *Sync UC docs upstream* via `workflow_dispatch` and
-   confirm the PR opens. It carries only `ready` pages: a site with none ready
-   publishes an empty shell.
-5. **Vercel.** Add a new project by importing the upstream repo, with Root
-   Directory `.`. Install, build, output, and routing come from the committed
-   `vercel.json`, so don't override them in the dashboard. Keep preview
-   deployments on, so every sync PR gets a preview.
-6. **Domain.** Add `docs.unitycatalog.io` to that project. It must match the
-   emitter's origin (`emit/docs/sites/unitycatalog-docs.mjs`, override
-   `UC_DOCS_ORIGIN`), because canonicals, the sitemap, and twins are absolute.
-7. **Branch protection** on upstream `main`: require the Vercel check. Merging
-   the sync PR is the release step.
+3. **First sync.** Run *Sync UC docs upstream* via `workflow_dispatch` and
+   confirm the PR opens with only the emitted directories changed.
+4. **Origin.** Canonicals, the sitemap, and twins are absolute URLs on
+   `https://unitycatalog.io` under `/docs` (`emit/docs/sites/unitycatalog-docs.mjs`,
+   override `UC_DOCS_ORIGIN`).
+5. **Legacy host.** Point `docs.unitycatalog.io/*` at `unitycatalog.io/docs/*`
+   (a domain-level redirect). The emitted `redirects.json` then sends the
+   legacy MkDocs paths on to their pages; its source map is
+   `emit/docs/sites/unitycatalog-redirects.json`.
+6. **Branch protection** on uc-website `main`: require its CI and the Vercel
+   check. Merging the sync PR is the release step.
+
+Locally, `just uc-docs` emits with drafts into the uc-website checkout beside
+the main docs-factory checkout (or `UC_WEBSITE_DIR`) and runs its dev server.
 
 ---
 
@@ -467,4 +469,4 @@ The workflow skips until `UC_DOCS_UPSTREAM_REPO` is set. To provision it:
 | Vercel rewrite generator | `site/scripts/gen-vercel-config.mjs`, `site/scripts/assemble-vercel-output.mjs` |
 | Branch policy | `neon.ts` |
 | Workflows | `.github/workflows/preview-deploy.yml`, `deploy-function.yml`, `register-versions.yml` |
-| UC docs delivery | `.github/workflows/uc-docs-sync.yml`, `scripts/mirror-site.sh`, `sites/unitycatalog-docs/{vercel.json,upstream/}` |
+| UC docs delivery | `.github/workflows/uc-docs-sync.yml`, `emit/docs/sites/unitycatalog-docs.mjs`, `emit/docs/sites/unitycatalog-redirects.json` |

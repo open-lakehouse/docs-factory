@@ -33,7 +33,6 @@ const DEFAULT_LOCKS = [
   "architecture/bun.lock",
   "emit/bun.lock",
   "emit/webcomponents/trestle/bun.lock",
-  "sites/unitycatalog-docs/bun.lock",
   "sites/delta-docs/bun.lock",
   "tools/review-feedback/bun.lock",
 ];

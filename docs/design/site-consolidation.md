@@ -1,6 +1,23 @@
 # Consolidating unitycatalog.io and its docs into one site
 
-**Status:** proposal. The decisions in [§8](#8-decisions-to-make) are open.
+**Status:** superseded (2026-11). unitycatalog.io was rebuilt as its own
+app, open-lakehouse/uc-website (TanStack Start), and the docs moved into it
+rather than the site moving into `sites/`. What was built:
+
+- **Docs at `/docs`** (D1 one origin), rendered by uc-website: the docs shell
+  was ported there, and docs-factory emits content and data into four
+  directories it owns ([docs-site-emission § Delivery](./docs-site-emission.md#delivery)).
+  API references are at `/docs/api/<slug>/`, not `/docs/reference/api/`.
+- **One ⌘K palette** over docs, API, blog, and pages (MiniSearch; Pagefind
+  retired), and light/dark/System site-wide.
+- **The blog stays in uc-website**, fed by the `unitycatalog` MDX target, which
+  now targets uc-website; the `site-blog` target and the post import below
+  weren't needed.
+- **Redirects** from the legacy docs paths ship as emitted data
+  (`emit/docs/sites/unitycatalog-redirects.json`); `docs.unitycatalog.io/*` →
+  `unitycatalog.io/docs/*` is a domain redirect.
+
+The proposal below is kept for its reasoning.
 **Scope:** `sites/`, `emit/targets/`, `emit/docs/`, `blogs/`, the delivery
 workflow, and the sibling `unitycatalog-website` repo.
 

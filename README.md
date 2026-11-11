@@ -34,8 +34,8 @@ written by hand.
 uv sync --all-packages   # install the Python workspace
 uv run docsnip check     # validate frontmatter, snippets, and prose
 uv run pytest            # run the tested examples
-just uc-docs             # build and preview the Unity Catalog docs at :4322
-just delta-docs          # the same for Delta Lake at :4323
+just uc-docs             # emit the Unity Catalog docs into ../uc-website and run it
+just delta-docs          # build and preview the Delta Lake docs at :4323
 ```
 
 ## Contributing

@@ -73,6 +73,7 @@ import remarkPrerequisitesEnv from "../../site/src/plugins/remark-prerequisites-
 import remarkSourceLinks from "../../site/src/plugins/remark-source-links.mjs";
 import { defaultModelDir, emitOne, generateLikeC4WebComponent } from "../emit.mjs";
 import remarkAbsoluteLinks from "../plugins/remark-absolute-links.mjs";
+import remarkBaseLinks from "../plugins/remark-base-links.mjs";
 import remarkModelLinks from "../plugins/remark-model-links.mjs";
 import remarkPromoteJourneySteps from "../plugins/remark-promote-journey-steps.mjs";
 import remarkScriptLinks from "../plugins/remark-script-links.mjs";
@@ -412,6 +413,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       ],
       [remarkUnwrapDeadLinks],
       [remarkModelLinks, { resolve: (id) => resolveModelLink(id, { route }) }],
+      // After the routed links, so only authored file links gain the base.
+      [remarkBaseLinks, { base }],
     ];
     const pages = [];
     const environments = new Map();

@@ -63,7 +63,6 @@ export function runDocsnipScripts(root = repoRoot) {
   return payload;
 }
 
-
 /**
  * Strip `--8<--` section-marker comment lines from a served script (pure, for
  * testing), then tidy the whitespace those lines leave behind: runs of ≥2 blank

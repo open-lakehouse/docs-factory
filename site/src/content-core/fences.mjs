@@ -64,8 +64,7 @@ export function dedent(lines) {
  * or YAML (`#`), SQL (`--`), or Scala, Java, or Rust (`//`) comment. Anchored
  * to the full line, so a `--8<--` inside a string is never taken for one.
  */
-export const SECTION_MARKER_LINE_RE =
-  /^\s*(?:#|--|\/\/)\s*--8<--\s*\[(?:start|end):[^\]]*\]\s*$/;
+export const SECTION_MARKER_LINE_RE = /^\s*(?:#|--|\/\/)\s*--8<--\s*\[(?:start|end):[^\]]*\]\s*$/;
 
 /**
  * Resolve a fence against its (already-read) source text.

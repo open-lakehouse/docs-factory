@@ -43,19 +43,42 @@ export function publishedDocsUrls(repoRoot, sites = DOCS_SITES) {
 }
 
 /**
+ * `url` as a root-relative path when it is on `siteUrl`'s host (`www.` or
+ * not), so a post links docs its own site serves as internal links; else as is.
+ */
+export function onSite(url, siteUrl) {
+  if (!siteUrl) return url;
+  const host = (u) => new URL(u).host.replace(/^www\./, "");
+  if (host(url) !== host(siteUrl)) return url;
+  const { pathname, search, hash } = new URL(url);
+  return `${pathname}${search}${hash}`;
+}
+
+/**
  * The `[plugin, options]` pairs a blog emit runs: resolve docs links, then
- * unwrap whatever is left pointing at a `.md` source.
+ * unwrap whatever is left pointing at a `.md` source. `siteUrl` is the post's
+ * own site: docs on it are linked by path.
  *
- * @param {{ repoRoot: string, sites?: object[], knownUrls?: Set<string>,
+ * @param {{ repoRoot: string, sites?: object[], knownUrls?: Set<string>, siteUrl?: string,
  *   onUnresolved?: (info: { url: string, mdPath: string, candidate: string | null }) => void }} o
  */
-export function blogLinkPlugins({ repoRoot, sites = DOCS_SITES, knownUrls, onUnresolved } = {}) {
+export function blogLinkPlugins({
+  repoRoot,
+  sites = DOCS_SITES,
+  knownUrls,
+  siteUrl,
+  onUnresolved,
+} = {}) {
+  const known = knownUrls ?? publishedDocsUrls(repoRoot, sites);
   return [
     [
       remarkSourceLinks,
       {
-        hrefFor: (identity) => docsUrlFor(identity, sites),
-        knownHrefs: knownUrls ?? publishedDocsUrls(repoRoot, sites),
+        hrefFor: (identity) => {
+          const url = docsUrlFor(identity, sites);
+          return url && onSite(url, siteUrl);
+        },
+        knownHrefs: new Set([...known].map((url) => onSite(url, siteUrl))),
         onUnresolved:
           onUnresolved ??
           (({ url, candidate }) =>

@@ -1,10 +1,10 @@
 /**
- * targets/unitycatalog.mjs — the UnityCatalog.io / OpenLakehouse.io site target.
+ * targets/unitycatalog.mjs — the unitycatalog.io site target.
  *
  * Unlike a FLATTENING target (md-twin), this is a RICH, component target: the sibling
- * `unitycatalog-website` repo is Astro 6 + `@astrojs/mdx`, so a draft's rich
- * constructs are emitted as an `.mdx` post that renders interactively:
- *   - `::::journey`  → `<Journey><JourneyStep>` (rich timeline, Journey.astro).
+ * `uc-website` repo (open-lakehouse/uc-website: TanStack Start, content-collections,
+ * and @mdx-js/rollup) renders a draft's rich constructs from an `.mdx` post:
+ *   - `::::journey`  → `<Journey><JourneyStep>` (rich timeline).
  *   - `likec4` block → `<LikeC4View viewId=…>` (interactive canvas via the
  *                       framework-agnostic web-component bundle emit.mjs generates).
  *   - `:::tip`/…     → LEFT AS-IS. The UC site styles the raw `:::` directive with
@@ -20,10 +20,11 @@
  *                       through.
  *
  * The post is written to `dist/unitycatalog/index.mdx` (the content-collection
- * filename) with UC-shaped YAML frontmatter. Delivery — copying the folder into the
- * sibling repo and reconciling `authors` against its `profiles` collection — is the
- * `/blog-emit` skill with `--target unitycatalog` (see its
- * references/unitycatalog-target.md runbook).
+ * filename) with UC-shaped YAML frontmatter. The site imports `.astro` component
+ * paths it doesn't have, so it strips the imports and passes its own components
+ * by name. Delivery — copying the folder into the sibling repo and reconciling
+ * `authors` against its `profiles` collection — is the `/blog-emit` skill with
+ * `--target unitycatalog` (see its references/unitycatalog-target.md runbook).
  */
 
 import remarkImagesMd from "../plugins/remark-images-md.mjs";
@@ -70,17 +71,25 @@ function humanDate(iso) {
   return `${MONTHS[Number(mo) - 1]} ${Number(d)}, ${y}`;
 }
 
+/** A post's URL id on the site: its folder name after the date, lowercased
+ *  (uc-website src/lib/post-id.mjs). */
+export function postId(postDir) {
+  return String(postDir)
+    .replace(/^\d{4}-\d{2}-\d{2}-/, "")
+    .toLowerCase();
+}
+
 export function emitDay() {
   return new Date().toISOString().slice(0, 10);
 }
 
 /**
  * Map the draft frontmatter → the UC blog collection's zod schema
- * (src/content.config.ts): { title, authors[], category:"guide", date,
- * description?, thumbnail?, canonical? }. Deterministic — no network. Author-profile EXISTENCE
- * is reconciled by the delivery skill, not here.
+ * (uc-website content-collections.ts): { title, authors[], category:"guide",
+ * date, description?, thumbnail?, canonical? }. Deterministic — no
+ * network. Author-profile EXISTENCE is reconciled by the delivery skill, not here.
  */
-function frontmatter(draft, { canonical, thumbnail } = {}) {
+function frontmatter(draft, { canonical, thumbnail, published } = {}) {
   const fm = {
     title: draft.title,
     // A single-author draft carries `author` as one string; support a list too.
@@ -88,7 +97,8 @@ function frontmatter(draft, { canonical, thumbnail } = {}) {
       .filter(Boolean)
       .map(authorSlug),
     category: "guide", // the only value the UC schema's enum accepts today
-    date: humanDate(draft.date ?? emitDay()),
+    // A new post goes out today; an update keeps its published date.
+    date: humanDate(draft.date ?? published ?? emitDay()),
   };
   // `summary` → optional `description`; omit when absent (schema marks it optional).
   if (draft.summary) fm.description = String(draft.summary);
@@ -96,18 +106,18 @@ function frontmatter(draft, { canonical, thumbnail } = {}) {
   if (thumbnail) fm.thumbnail = thumbnail;
   // A cross-post points search engines at the primary target's copy.
   if (canonical) fm.canonical = canonical;
-  // Drop draft-only fields (slug/status/tags/series/target) — not in the UC schema,
-  // and emitting `slug`/an unknown `category` would break the Astro build.
+  // Drop draft-only fields (slug/status/tags/series/target): the folder name sets
+  // the post's id, and an unknown `category` would fail the build. `topics` are
+  // the site's editorial call: it infers them, or keeps the ones it curated.
   return fm;
 }
 
 const unitycatalog = {
   name: "unitycatalog",
-  siteUrl: "https://www.unitycatalog.io",
-  // The site's blogLoader ids a post by its folder minus the required
-  // `YYYY-MM-DD-` prefix, and `src/pages/blogs/[id].astro` routes on that id.
+  siteUrl: "https://unitycatalog.io",
+  // The site routes a post by its folder name after the date (src/routes/blogs/$id.tsx).
   postUrl(postDir) {
-    return `${this.siteUrl}/blogs/${postDir.replace(/^\d{4}-\d{2}-\d{2}-/, "")}/`;
+    return `${this.siteUrl}/blogs/${postId(postDir)}/`;
   },
   outputFile: "index.mdx", // the content-collection entry filename
   // Base stringify options; remark-mdx does the actual serialization (JSX-aware).
@@ -120,11 +130,11 @@ const unitycatalog = {
   },
   stringifyExtension: remarkStringifyMdx, // SERIALIZE-only MDX (no parser hook)
   safeText: remarkMdxSafeText, // escape bare <, >, {, } in prose so MDX stays valid
-  titleAsH1: false, // BlogPost.astro renders post.data.title as the <h1>
+  titleAsH1: false, // the post page renders post.data.title as the <h1>
   unwrapProse: false, // MDX keeps authored line breaks
   frontmatter, // emit UC-shaped YAML frontmatter
-  // Where the journey/likec4 plugins import their .astro components from. The UC
-  // repo's tsconfig maps `@` → src/, so components live at src/components/blog/.
+  // Where the journey/likec4 plugins import their components from. The site
+  // strips these imports and passes Journey, LikeC4View, and TrestleView by name.
   componentImportBase: "@/components/blog",
   likec4WebComponent: true, // generate dist/unitycatalog/likec4-webcomponent.mjs
   // Trestle diagrams draw in the <trestle-view> web component; the bundle and each
@@ -142,7 +152,7 @@ const unitycatalog = {
   },
   renderLikeC4: renderLikeC4Mdx, // likec4 block → <LikeC4View viewId=… alt=…>
   renderTrestle: renderTrestleMdx, // trestle block → <TrestleView src=… alt=…>
-  // Co-located post assets: Astro resolves `./file.png` relative to index.mdx.
+  // Co-located post assets: the site resolves `./file.png` relative to index.mdx.
   renderImage(entry) {
     return { type: "image", url: `./${entry.filename}`, alt: entry.altText, title: null };
   },

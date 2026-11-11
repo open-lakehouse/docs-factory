@@ -622,9 +622,16 @@ async function emitTarget({
     trestleUrlBase: trestleBase && `${trestleBase}/${slug}`,
     trestleWebComponentPath:
       trestleBase && join(publicDir, `${trestleBase}/trestle-webcomponent.mjs`),
-    frontmatterContext: { canonical, thumbnail: thumbnail && `./${thumbnail.filename}` },
-    // Docs links become the page's URL on its docs site (blog-links.mjs).
-    plugins: blogLinkPlugins({ repoRoot: REPO_ROOT }),
+    // `published`: an update keeps the date its post went out on, which the
+    // delivered folder's `YYYY-MM-DD-` prefix records.
+    frontmatterContext: {
+      canonical,
+      thumbnail: thumbnail && `./${thumbnail.filename}`,
+      published: /^(\d{4}-\d{2}-\d{2})-/.exec(existing?.post_dir ?? "")?.[1] ?? null,
+    },
+    // Docs links become the page's URL on its docs site (blog-links.mjs), as
+    // a root-relative path when the post's own site serves the docs.
+    plugins: blogLinkPlugins({ repoRoot: REPO_ROOT, siteUrl: target.siteUrl }),
   });
 
   if (trestleBase) {

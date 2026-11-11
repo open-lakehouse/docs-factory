@@ -148,8 +148,9 @@ A post links a docs page by its source path
 (`../../content/unitycatalog/how-to/024-marimo-remote-storage/index.md`), so the
 draft still renders on GitHub. The emit rewrites each such link to the page's
 absolute URL on its project's docs site (`docs/sites/`, e.g.
-`https://docs.unitycatalog.io/how-to/marimo-remote-storage`), keeping any
-`#anchor`. Only a page that site publishes (`status: ready`) resolves. A link to
+`https://unitycatalog.io/docs/how-to/marimo-remote-storage/`), keeping any
+`#anchor`, or to its root-relative path when the post's own site serves the
+docs (`/docs/how-to/marimo-remote-storage/` on unitycatalog.io). Only a page that site publishes (`status: ready`) resolves. A link to
 a draft page, another post, or any other `.md` source is emitted as plain text,
 with a warning. See `blog-links.mjs`.
 

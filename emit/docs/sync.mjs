@@ -4,8 +4,9 @@
  *
  * Every emit renders the WHOLE site in memory. The sync then writes only files
  * whose bytes differ from what's on disk, deletes files the previous emit wrote
- * that this one didn't, and never touches anything outside OWNED, so the shell's
- * own files are safe even from a corrupt manifest.
+ * that this one didn't, and never touches anything outside the site's owned
+ * paths (OWNED for a standalone shell, `site.owned` for a site mounted in
+ * another app), so the target's own files are safe even from a corrupt manifest.
  */
 import { createHash } from "node:crypto";
 import {
@@ -22,8 +23,8 @@ import { dirname, join } from "node:path";
 export const MANIFEST_FILE = ".docs-emit.json";
 export const OWNED = ["src/content/", "src/generated/", "src/vendor/", "public/"];
 
-export function isOwned(path) {
-  return OWNED.some((prefix) => path.startsWith(prefix)) && !path.split("/").includes("..");
+export function isOwned(path, owned = OWNED) {
+  return owned.some((prefix) => path.startsWith(prefix)) && !path.split("/").includes("..");
 }
 
 export function sha256(data) {
@@ -34,14 +35,17 @@ export function sha256(data) {
  * @param {Map<string, string|Buffer>} files   target-relative path → content
  * @param {object|null} previous               the previous manifest, if any
  * @param {(path: string) => string|null} diskHash  sha256 of the file on disk, or null
+ * @param {string[]} [owned]                   path prefixes the emit may write
  * @returns {{ write: string[], remove: string[], unchanged: number, hashes: Record<string,string> }}
  */
-export function planSync(files, previous, diskHash) {
+export function planSync(files, previous, diskHash, owned = OWNED) {
   const hashes = {};
   const write = [];
   let unchanged = 0;
   for (const [path, content] of [...files].sort(([a], [b]) => a.localeCompare(b))) {
-    if (!isOwned(path)) throw new Error(`emitter tried to write outside its owned paths: ${path}`);
+    if (!isOwned(path, owned)) {
+      throw new Error(`emitter tried to write outside its owned paths: ${path}`);
+    }
     const hash = sha256(content);
     hashes[path] = hash;
     // Compare against the disk, not the manifest, so a hand edit is overwritten.
@@ -49,13 +53,13 @@ export function planSync(files, previous, diskHash) {
     else write.push(path);
   }
   const remove = Object.keys(previous?.files ?? {})
-    .filter((path) => !(path in hashes) && isOwned(path))
+    .filter((path) => !(path in hashes) && isOwned(path, owned))
     .sort();
   return { write, remove, unchanged, hashes };
 }
 
 /** Apply a plan: write, delete, then prune directories the deletes emptied. */
-export function applySync(outDir, files, plan) {
+export function applySync(outDir, files, plan, owned = OWNED) {
   for (const path of plan.write) {
     const abs = join(outDir, path);
     mkdirSync(dirname(abs), { recursive: true });
@@ -64,7 +68,7 @@ export function applySync(outDir, files, plan) {
   for (const path of plan.remove) {
     rmSync(join(outDir, path), { force: true });
     let dir = dirname(path);
-    while (isOwned(`${dir}/`) && existsSync(join(outDir, dir))) {
+    while (isOwned(`${dir}/`, owned) && existsSync(join(outDir, dir))) {
       if (readdirSync(join(outDir, dir)).length) break;
       rmdirSync(join(outDir, dir));
       dir = dirname(dir);

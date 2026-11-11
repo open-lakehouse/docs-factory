@@ -1,0 +1,110 @@
+{
+  "$comment": "Legacy docs.unitycatalog.io paths (relative to the old site root) and where they now live. The emitter prefixes the docs base and resolves each target through the site's routes; see unitycatalog-docs.mjs `redirects`.",
+  "redirects": {
+    "/ai/client": {
+      "page": "tutorials/first-python-function"
+    },
+    "/ai/quickstart": {
+      "page": "tutorials/first-python-function"
+    },
+    "/ai/usage": {
+      "page": "tutorials/first-python-function"
+    },
+    "/docker_compose": {
+      "page": "how-to/run-local-server"
+    },
+    "/env/uc-docs-env.tar.gz": {
+      "file": "/env/unitycatalog.tar.gz"
+    },
+    "/integrations/unity-catalog-celerdata": {
+      "page": "explanation/what-is-unity-catalog"
+    },
+    "/integrations/unity-catalog-daft": {
+      "page": "how-to/python-dataframes"
+    },
+    "/integrations/unity-catalog-duckdb": {
+      "page": "how-to/duckdb"
+    },
+    "/integrations/unity-catalog-kuzu": {
+      "page": "explanation/what-is-unity-catalog"
+    },
+    "/integrations/unity-catalog-puppygraph": {
+      "page": "explanation/what-is-unity-catalog"
+    },
+    "/integrations/unity-catalog-spark": {
+      "page": "how-to/configure-spark"
+    },
+    "/integrations/unity-catalog-spiceai": {
+      "page": "explanation/what-is-unity-catalog"
+    },
+    "/integrations/unity-catalog-trino": {
+      "page": "how-to/iceberg-rest"
+    },
+    "/integrations/unity-catalog-xtable": {
+      "page": "how-to/iceberg-rest"
+    },
+    "/quickstart": {
+      "page": "tutorials/getting-started"
+    },
+    "/reference/api": {
+      "api": "catalog"
+    },
+    "/reference/api/catalog": {
+      "api": "catalog"
+    },
+    "/reference/api/control": {
+      "api": "control"
+    },
+    "/reference/api/delta": {
+      "api": "delta"
+    },
+    "/reference/api/iceberg": {
+      "api": "iceberg"
+    },
+    "/server/auth": {
+      "page": "explanation/uc-basics"
+    },
+    "/server/configuration": {
+      "page": "how-to/run-local-server"
+    },
+    "/server/google-auth": {
+      "page": "explanation/uc-basics"
+    },
+    "/server/users-privileges": {
+      "page": "explanation/uc-basics"
+    },
+    "/usage/cli": {
+      "page": "how-to/run-local-server",
+      "anchor": "run-the-uc-cli"
+    },
+    "/usage/functions": {
+      "page": "tutorials/first-python-function"
+    },
+    "/usage/models": {
+      "page": "explanation/uc-basics"
+    },
+    "/usage/tables/deltalake": {
+      "page": "how-to/python-dataframes"
+    },
+    "/usage/tables/formats": {
+      "page": "how-to/table-storage-formats"
+    },
+    "/usage/tables/uniform": {
+      "page": "how-to/iceberg-rest"
+    },
+    "/usage/ui": {
+      "page": "how-to/run-local-server"
+    },
+    "/usage/volumes": {
+      "page": "how-to/manage-volumes"
+    }
+  },
+  "patterns": [
+    {
+      "source": "^/ai/integrations/[^/]+/?$",
+      "to": {
+        "page": "how-to/langchain-tools"
+      }
+    }
+  ]
+}

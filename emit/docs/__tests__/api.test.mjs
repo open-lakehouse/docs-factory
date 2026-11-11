@@ -88,10 +88,10 @@ test("apiEntries is empty without an api block and fails on an unroutable spec",
 test("the UC site routes every declared spec", () => {
   const routes = apiEntries(uc).map((a) => a.route);
   expect(routes).toEqual([
-    "/reference/api/catalog",
-    "/reference/api/control",
-    "/reference/api/delta",
-    "/reference/api/iceberg",
+    "/docs/api/catalog/",
+    "/docs/api/control/",
+    "/docs/api/delta/",
+    "/docs/api/iceberg/",
   ]);
   expect(apiEntries(uc).find((a) => a.default)?.slug).toBe("catalog");
 });

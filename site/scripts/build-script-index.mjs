@@ -190,7 +190,8 @@ function servedPaths(path, slug, hrefFor) {
     rest = parts.slice(4).join("/");
   }
   const tutorialRoute = slug ? hrefFor(identity) : null;
-  const fetchUrl = tutorialRoute ? `${tutorialRoute}/${rest}` : null;
+  // A route may end in a slash (a site whose pages are directories).
+  const fetchUrl = tutorialRoute ? `${tutorialRoute.replace(/\/$/, "")}/${rest}` : null;
   return { tutorialRoute, fetchUrl };
 }
 

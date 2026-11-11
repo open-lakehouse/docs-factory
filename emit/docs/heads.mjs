@@ -49,6 +49,7 @@ export function docPageHead(
     body,
     origin: site.origin,
     hrefFor: site.hrefFor,
+    root: `${site.origin}${site.base ?? ""}`,
     siteName: site.title,
     canonical,
     concepts: pageConcepts(projection, { identity, meta, body }, environment),

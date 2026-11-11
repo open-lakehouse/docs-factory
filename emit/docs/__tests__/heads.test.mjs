@@ -16,20 +16,21 @@ const page = {
 
 test("docPageHead uses the site's origin, routes, and title", () => {
   const head = docPageHead(uc, page);
-  expect(head.canonical).toBe(`${uc.origin}/how-to/create-tables`);
-  expect(head.twin).toBe(`${uc.origin}/how-to/create-tables.md`);
+  // The UC docs live under /docs on unitycatalog.io, as directories.
+  expect(head.canonical).toBe(`${uc.origin}/docs/how-to/create-tables/`);
+  expect(head.twin).toBe(`${uc.origin}/docs/how-to/create-tables.md`);
   expect(head.title).toBe(`Create tables — ${uc.title}`);
   expect(head.jsonLd).toMatchObject({
     "@type": "TechArticle",
     headline: "Create tables",
-    url: `${uc.origin}/how-to/create-tables`,
+    url: `${uc.origin}/docs/how-to/create-tables/`,
     description: "Create a managed or external table in Unity Catalog.",
     isPartOf: { "@type": "TechArticle", name: `${uc.title} documentation` },
   });
 });
 
 test("a cross-published copy credits its original in every head signal", () => {
-  const original = `${uc.origin}/how-to/create-tables`;
+  const original = `${uc.origin}/docs/how-to/create-tables/`;
   const host = { ...delta, hrefFor: withGuests(delta.hrefFor, new Set([guestKey(page.identity)])) };
   const head = docPageHead(host, page, { canonical: original });
   expect(head.canonical).toBe(original);
@@ -95,9 +96,10 @@ const projection = publicProjection({
 const ENV = {
   key: "unitycatalog/compose.yaml",
   title: "Unity Catalog 0.7.0",
-  bundleUrl: `${uc.origin}/env/unitycatalog.tar.gz`,
+  bundleUrl: `${uc.origin}/docs/env/unitycatalog.tar.gz`,
 };
-const SET = `${uc.origin}/concepts.json`;
+// The concept set lives with the docs' other files, under the base.
+const SET = `${uc.origin}/docs/concepts.json`;
 
 test("a how-to that runs an environment is a HowTo with its public tools", () => {
   const ld = docPageHead(uc, ready, { projection, environment: ENV }).jsonLd;
@@ -128,7 +130,7 @@ test("a how-to that runs an environment is a HowTo with its public tools", () =>
       url: "https://github.com/unitycatalog/unitycatalog",
     },
   ]);
-  expect(ld.dependencies).toBe(`Unity Catalog 0.7.0: ${uc.origin}/env/unitycatalog.tar.gz`);
+  expect(ld.dependencies).toBe(`Unity Catalog 0.7.0: ${uc.origin}/docs/env/unitycatalog.tar.gz`);
   expect(JSON.stringify(ld)).not.toContain("headwaters");
 });
 

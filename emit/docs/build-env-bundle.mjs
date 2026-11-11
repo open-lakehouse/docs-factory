@@ -22,7 +22,8 @@ const { archives } = buildEnvBundles({
   bundle: site.env.bundle,
   dirs: [dir],
   registry: loadRegistry(REPO_ROOT),
-  origin: site.origin,
+  // Archives live with the site's other files, under its base.
+  origin: `${site.origin}${site.base ?? ""}`,
   guideUrl: null,
 });
 mkdirSync(outDir, { recursive: true });

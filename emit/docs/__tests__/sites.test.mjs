@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import delta from "../sites/delta-docs.mjs";
-import { guestKey, projectRoutes, withGuests } from "../sites/routes.mjs";
+import { guestKey, projectRoutes, twinPath, withGuests } from "../sites/routes.mjs";
 import uc from "../sites/unitycatalog-docs.mjs";
 
 const SITES_DIR = join(import.meta.dir, "../../../sites");
@@ -32,6 +32,44 @@ test("withGuests routes a cross-published page under its project", () => {
   expect(href(guest)).toBe("/unitycatalog/how-to/x");
   expect(href({ ...guest, slug: "y" })).toBeNull();
   expect(href({ area: "docs", project: "delta", bucket: "how-to", slug: "x" })).toBe("/how-to/x");
+});
+
+test("a mounted site's routes carry its base and end in a slash", () => {
+  const href = projectRoutes("unitycatalog", {
+    base: "/docs",
+    apiPath: "/api",
+    trailingSlash: true,
+  });
+  expect(href({ area: "site" })).toBe("/docs/");
+  expect(href({ area: "docs", project: "unitycatalog", bucket: "how-to", slug: "duckdb" })).toBe(
+    "/docs/how-to/duckdb/",
+  );
+  expect(href({ area: "api", slug: "catalog" })).toBe("/docs/api/catalog/");
+  expect(href({ area: "api" })).toBe("/docs/api/");
+  const guest = { area: "docs", project: "delta", bucket: "how-to", slug: "read" };
+  const hosted = withGuests(href, new Set([guestKey(guest)]), {
+    base: "/docs",
+    trailingSlash: true,
+  });
+  expect(hosted(guest)).toBe("/docs/delta/how-to/read/");
+});
+
+test("twinPath drops a route's trailing slash, and a home's twin is index.md", () => {
+  expect(twinPath("/how-to/read")).toBe("/how-to/read.md");
+  expect(twinPath("/docs/how-to/duckdb/")).toBe("/docs/how-to/duckdb.md");
+  expect(twinPath("/")).toBe("/index.md");
+  expect(twinPath("https://unitycatalog.io/")).toBe("https://unitycatalog.io/index.md");
+});
+
+test("the UC docs emit into uc-website under /docs, inside its owned paths", () => {
+  expect(uc.origin).toBe("https://unitycatalog.io");
+  expect(uc.base).toBe("/docs");
+  expect(uc.hrefFor({ area: "site" })).toBe("/docs/");
+  for (const path of [...Object.values(uc.paths), uc.manifest]) {
+    expect(uc.owned.some((prefix) => path.startsWith(prefix))).toBe(true);
+  }
+  // Every public file lives under the base, so it must be owned there.
+  expect(uc.owned).toContain(`public${uc.base}/`);
 });
 
 test("the Delta site emits content/delta with no env bundle or REST APIs", () => {

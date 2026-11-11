@@ -15,6 +15,7 @@ exclude = [
   # Our own sites: checked by the emitter.
   '^https://docs\.unitycatalog\.io',
   '^https://docs-new\.unitycatalog\.io',
+  '^https://(www\.)?unitycatalog\.io/docs(/|$)',
   '^https://docs\.delta\.io',
   # Local stacks the examples start, and placeholders.
   '^https?://localhost',

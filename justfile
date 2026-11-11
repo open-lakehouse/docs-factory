@@ -65,10 +65,12 @@ emit slug *targets: _emit-deps
 
 # --- Emit a project's docs into a static target site ------------------------
 
-# emit/docs/sites/<site>.mjs names the project and URL scheme. Flags: --drafts
-# (include draft pages, for a local preview), --dry-run, --report <file.md|.json>,
-# --out <dir>. Writes only changed files and prints a page-level change report.
-# Render content/<project>/ into the static site shell sites/<site>/.
+# emit/docs/sites/<site>.mjs names the project, URL scheme, and target. Flags:
+# --drafts (include draft pages, for a local preview), --dry-run, --report
+# <file.md|.json>, --out <dir>. Writes only changed files and prints a
+# page-level change report. Renders content/<project>/ into the site's target:
+# the uc-website checkout for the UC docs (UC_WEBSITE_DIR, default
+# ../uc-website), the static shell sites/<site>/ otherwise.
 emit-docs site *flags: _emit-deps _site-deps
     cd emit && bun docs/emit-docs.mjs --site {{site}} {{flags}}
 
@@ -76,8 +78,13 @@ emit-docs site *flags: _emit-deps _site-deps
 docs-site site: (emit-docs site "--drafts")
     cd sites/{{site}} && bun install && bun run build && bun run preview
 
-# The UC docs site, previewed on :4322.
-uc-docs: (docs-site "unitycatalog-docs")
+# The UC docs (drafts included) at /docs in uc-website's dev server.
+uc-docs: (emit-docs "unitycatalog-docs" "--drafts")
+    cd "$(just uc-website-dir)" && bun install && bun run dev
+
+# The uc-website checkout the UC docs emit into.
+uc-website-dir: _emit-deps
+    @cd emit && bun -e 'console.log((await import("./docs/sites/unitycatalog-docs.mjs")).default.outDir())'
 
 # The Delta Lake docs site, previewed on :4323.
 delta-docs: (docs-site "delta-docs")
@@ -257,7 +264,7 @@ check: _site-deps _emit-deps
 # Needs lychee (`brew install lychee`). Emits both sites with drafts first, as CI does.
 # Check every external link the docs sites publish (rules in lychee.toml).
 check-links: (emit-docs "unitycatalog-docs" "--drafts") (emit-docs "delta-docs" "--drafts")
-    lychee --config lychee.toml --no-progress 'sites/*/public/**/*.md' 'architecture/model/**/*.likec4'
+    lychee --config lychee.toml --no-progress 'sites/*/public/**/*.md' "$(just uc-website-dir)/public/docs/**/*.md" 'architecture/model/**/*.likec4'
 
 # Lint + type-check the Python workspace.
 lint:

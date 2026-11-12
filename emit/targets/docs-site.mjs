@@ -23,9 +23,11 @@ import { mermaidFallback } from "../plugins/remark-trestle-md.mjs";
 import { trestleEnvSnapshot } from "./md-twin.mjs";
 
 /** Where the site serves a diagram marker's snapshot: an environment's
- * site-wide, a page's own under its `assetBase`. */
-export function trestleSnapshotUrl(entry, assetBase) {
-  return entry.env ? trestleEnvSnapshot(entry.env) : `${assetBase}/${basename(entry.snapshot)}`;
+ * site-wide (under the site's `base`), a page's own under its `assetBase`. */
+export function trestleSnapshotUrl(entry, assetBase, base = "") {
+  return entry.env
+    ? `${base}${trestleEnvSnapshot(entry.env)}`
+    : `${assetBase}/${basename(entry.snapshot)}`;
 }
 
 /** Keep only what the site renders; drafting fields (status, id, refs…) stay home. */
@@ -39,9 +41,9 @@ function frontmatter(draft) {
 
 /**
  * The target for one page. `assetBase` is the URL the page's own images are
- * served under (e.g. `/assets/how-to/duckdb`).
+ * served under (e.g. `/assets/how-to/duckdb`), and `base` the site's mount path.
  */
-export function docsSiteTarget({ assetBase }) {
+export function docsSiteTarget({ assetBase, base = "" }) {
   return {
     name: "docs-site",
     stringify: {
@@ -69,7 +71,7 @@ export function docsSiteTarget({ assetBase }) {
       mermaidFallback(entry.mermaid),
     ],
     renderTrestle: (entry) => [
-      markerNode(trestleSnapshotUrl(entry, assetBase), entry.alt),
+      markerNode(trestleSnapshotUrl(entry, assetBase, base), entry.alt),
       mermaidFallback(trestleMermaid(entry)),
     ],
   };

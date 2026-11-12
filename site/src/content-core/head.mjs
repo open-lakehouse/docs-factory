@@ -38,7 +38,17 @@ export function canonicalUrl(identity, origin = siteOrigin(), hrefFor = hrefFrom
 /** The `.md` twin URL for a page (its canonical route + `.md`), or null. */
 export function twinUrl(identity, origin = siteOrigin(), hrefFor = hrefFromIdentity) {
   const url = canonicalUrl(identity, origin, hrefFor);
-  return url ? `${url}.md` : null;
+  return url ? twinOf(url) : null;
+}
+
+/**
+ * The `.md` twin of a route or URL: without its trailing slash, plus `.md`
+ * (`/how-to/x/` → `/how-to/x.md`). A bare host or `/` has `/index.md`.
+ * @param {string} href
+ */
+export function twinOf(href) {
+  if (/^(https?:\/\/[^/]+)?\/?$/.test(href)) return `${href.replace(/\/$/, "")}/index.md`;
+  return `${href.replace(/\/$/, "")}.md`;
 }
 
 /**
@@ -175,6 +185,7 @@ export function jsonLd({
   url,
   description,
   origin = siteOrigin(),
+  root = origin,
   siteName = PAGE_TITLE_SUFFIX,
   concepts = null,
 }) {
@@ -216,7 +227,9 @@ export function jsonLd({
     });
   }
 
-  const setUrl = `${origin}${CONCEPTS_PATH}`;
+  // `root` is where the site's files live: the origin, or origin + base for a
+  // site mounted under another one.
+  const setUrl = `${root}${CONCEPTS_PATH}`;
   // `tool` is a HowTo property and `dependencies` a TechArticle one, so a page
   // that runs an environment is both.
   const howTo = Boolean(concepts?.dependencies);
@@ -273,6 +286,7 @@ export function pageHead({
   siteName = PAGE_TITLE_SUFFIX,
   concepts = null,
   canonical = null,
+  root = origin,
 }) {
   const url = canonical ?? canonicalUrl(identity, origin, hrefFor);
   const title = pageTitle(meta, identity, siteName);
@@ -287,6 +301,6 @@ export function pageHead({
     twin: twinUrl(identity, origin, hrefFor),
     og: ogTags({ title, description, url, type: ogType, siteName }),
     twitter: twitterTags({ title, description }),
-    jsonLd: jsonLd({ identity, meta, url, description, origin, siteName, concepts }),
+    jsonLd: jsonLd({ identity, meta, url, description, origin, root, siteName, concepts }),
   };
 }

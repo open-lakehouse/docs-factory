@@ -73,6 +73,7 @@ import remarkPrerequisitesEnv from "../../site/src/plugins/remark-prerequisites-
 import remarkSourceLinks from "../../site/src/plugins/remark-source-links.mjs";
 import { defaultModelDir, emitOne, generateLikeC4WebComponent } from "../emit.mjs";
 import remarkAbsoluteLinks from "../plugins/remark-absolute-links.mjs";
+import remarkBaseLinks from "../plugins/remark-base-links.mjs";
 import remarkModelLinks from "../plugins/remark-model-links.mjs";
 import remarkPromoteJourneySteps from "../plugins/remark-promote-journey-steps.mjs";
 import remarkScriptLinks from "../plugins/remark-script-links.mjs";
@@ -98,11 +99,11 @@ import { buildEnvBundles, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
 import { loadCompat, loadModel, loadProjection, modelLinkResolver, trestleRefs } from "./model.mjs";
 import { projectNav } from "./nav.mjs";
-import { redirectErrors } from "./redirects.mjs";
+import { redirectErrors, resolveRedirects } from "./redirects.mjs";
 import { searchContext, searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
 import { DOCS_SITES } from "./sites/index.mjs";
-import { guestKey, withGuests } from "./sites/routes.mjs";
+import { guestKey, twinPath, withGuests } from "./sites/routes.mjs";
 import {
   applySync,
   diffPages,
@@ -116,6 +117,15 @@ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const ENVS_DIR = join(REPO_ROOT, "envs");
 const DOCS_DIR = join(REPO_ROOT, "emit", "docs");
 const PLUGIN_DIR = join(REPO_ROOT, "site", "src", "plugins");
+
+// Where a standalone site shell (sites/<name>/) keeps each output. A site
+// mounted in another app names its own directories in `paths`.
+const DEFAULT_PATHS = {
+  content: "src/content/",
+  generated: "src/generated/",
+  vendor: "src/vendor/plugins/",
+  searchIndex: "public/search-index.json",
+};
 
 // The site page's engine reports become directives the shell renders; the twin
 // keeps docsnip's table.
@@ -215,6 +225,12 @@ function homeCanonical(identity, homes) {
 
 export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITES }) {
   const isIncluded = (meta) => isEmitted(meta, { drafts });
+  // `base` is the site's mount path ("" at its host's root). Routes carry it;
+  // `root` is where the files a reader downloads live.
+  const base = config.base ?? "";
+  const root = `${config.origin}${base}`;
+  const home = `${base}/`;
+  const paths = { ...DEFAULT_PATHS, ...config.paths };
   const contentDir = join(REPO_ROOT, "content", config.project);
   const files = new Map();
   const tmp = mkdtempSync(join(tmpdir(), "emit-docs-"));
@@ -243,7 +259,13 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       }
     };
     collectGuests(tree);
-    const site = { ...config, hrefFor: withGuests(config.hrefFor, guestKeys) };
+    const site = {
+      ...config,
+      hrefFor: withGuests(config.hrefFor, guestKeys, {
+        base,
+        trailingSlash: config.trailingSlash,
+      }),
+    };
     const { hrefFor, origin } = site;
     const all = [...own, ...[...guestKeys].map((key) => others.get(key))];
     const selected = all.filter((p) => isIncluded(p.meta));
@@ -272,7 +294,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       const api = apis.find((a) => a.slug === slug);
       operations[slug] = apiOperations(readFileSync(abs, "utf8"));
       files.set(
-        `public${api.route}.md`,
+        `public${twinPath(api.route)}`,
         renderApiTwin(api, operations[slug], { canonical: `${origin}${api.route}` }),
       );
     }
@@ -300,7 +322,10 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
         }
         return { ...s, summary: scriptSummary(source, s.kind) };
       });
-    files.set("public/scripts.json", `${JSON.stringify({ version: 2, scripts }, null, 2)}\n`);
+    files.set(
+      `public${base}/scripts.json`,
+      `${JSON.stringify({ version: 2, scripts }, null, 2)}\n`,
+    );
     const scriptUrls = new Map(scripts.map((s) => [s.gitPath, s.fetchUrl]));
 
     // Engine reports link only what this emit publishes; a draft claim counts
@@ -319,7 +344,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
         })
       : [];
     files.set(
-      "src/generated/coverage.json",
+      `${paths.generated}coverage.json`,
       `${JSON.stringify({ format: COVERAGE_FORMAT, version: COVERAGE_VERSION, engines: coverage }, null, 2)}\n`,
     );
 
@@ -333,7 +358,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
         bundle: site.env.bundle,
         dirs: site.env.dirs,
         registry,
-        origin,
+        origin: root,
         guideUrl: routes.has(guideRoute) ? `${origin}${guideRoute}` : null,
       });
       envBundle.guide = routes.has(guideRoute)
@@ -348,9 +373,9 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
           throw new Error(`envs/environments.yml: ${key}: guide ${env.guide} is not a page`);
       }
       for (const [dir, archive] of envBundle.archives)
-        files.set(`public/env/${dir}.tar.gz`, archive);
-      const index = { ...envBundle.index, concepts: `${origin}/concepts.json` };
-      files.set("public/env/environments.json", `${JSON.stringify(index, null, 2)}\n`);
+        files.set(`public${base}/env/${dir}.tar.gz`, archive);
+      const index = { ...envBundle.index, concepts: `${root}/concepts.json` };
+      files.set(`public${base}/env/environments.json`, `${JSON.stringify(index, null, 2)}\n`);
     }
 
     // 3. Pages.
@@ -388,6 +413,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       ],
       [remarkUnwrapDeadLinks],
       [remarkModelLinks, { resolve: (id) => resolveModelLink(id, { route }) }],
+      // After the routed links, so only authored file links gain the base.
+      [remarkBaseLinks, { base }],
     ];
     const pages = [];
     const environments = new Map();
@@ -398,7 +425,9 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
     let likec4Exported = false;
     for (const page of ordered) {
       const { absPath, identity, route } = page;
-      const assetBase = `/assets${route}`;
+      // Under the base, and slash-free so `${assetBase}/<file>` has one slash.
+      const pagePath = route.slice(base.length).replace(/\/$/, "");
+      const assetBase = `${base}/assets${pagePath}`;
       // The model export covers every view, so the first page that needs it pays once.
       const common = {
         inputPath: absPath,
@@ -449,7 +478,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
 
       const rendered = await emitOne({
         ...common,
-        target: docsSiteTarget({ assetBase }),
+        target: docsSiteTarget({ assetBase, base }),
         prePlugins: [[remarkCollapseCoverage, site.project]],
         plugins: [
           ...linkPlugins(route),
@@ -464,8 +493,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       });
       likec4Exported ||= rendered.likec4Dir !== null;
       common.likec4Exported = likec4Exported;
-      const file = `${route.slice(1)}.md`;
-      files.set(`src/content/${file}`, rendered.output);
+      const file = `${pagePath.slice(1)}.md`;
+      files.set(`${paths.content}${file}`, rendered.output);
 
       for (const image of rendered.manifest) {
         if (!image.localPath) continue;
@@ -476,7 +505,10 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       // remark-trestle-views fetches each diagram's snapshot from where the
       // docs-site target pointed its marker.
       for (const diagram of rendered.trestle) {
-        for (const { url, path } of trestleFiles(diagram, trestleSnapshotUrl(diagram, assetBase))) {
+        for (const { url, path } of trestleFiles(
+          diagram,
+          trestleSnapshotUrl(diagram, assetBase, base),
+        )) {
           files.set(`public${url}`, readFileSync(path));
         }
         hasTrestle = true;
@@ -522,7 +554,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
           companionsFrontmatter(owned, origin),
           environmentFrontmatter(
             environment,
-            `${origin}/env/environments.json`,
+            `${root}/env/environments.json`,
             servicesAt(origin).map((x) => x.id),
           ),
         ].filter(Boolean);
@@ -531,7 +563,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
           companionsSection(owned, origin, environment),
         );
       }
-      files.set(`public${route}.md`, twinOut);
+      files.set(`public${twinPath(route)}`, twinOut);
 
       const renderedBody = splitFrontmatter(rendered.output).body;
       // The shell renders the title as the h1, so the body's outline starts at h2.
@@ -565,7 +597,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
         diataxis,
         section: page.section,
         headings: pageHeadings,
-        twin: `${route}.md`,
+        twin: twinPath(route),
         environment: environment && {
           title: environment.title,
           bundle: environment.bundleUrl.slice(origin.length),
@@ -595,7 +627,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
         contentHash: version.contentHash,
         rootHash: version.rootHash,
         sections: renderedSections(renderedBody),
-        outputs: [`src/content/${file}`, `public${route}.md`],
+        outputs: [`${paths.content}${file}`, `public${twinPath(route)}`],
       };
     }
     if (links.errors.size) {
@@ -618,28 +650,29 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
     if (hasLikeC4) {
       const bundle = join(tmp, "likec4-webcomponent.mjs");
       generateLikeC4WebComponent(defaultModelDir(), bundle, true);
-      files.set("public/likec4/likec4-webcomponent.mjs", readFileSync(bundle));
+      files.set(`public${base}/likec4/likec4-webcomponent.mjs`, readFileSync(bundle));
     }
 
     // TrestleDiagram links each node's name and role through it.
     if (hasTrestle) {
       files.set(
-        `public${TRESTLE_ASSET_BASE}/refs.json`,
+        `public${base}${TRESTLE_ASSET_BASE}/refs.json`,
         `${JSON.stringify(trestleRefs(model, resolveModelLink), null, 2)}\n`,
       );
     }
 
     for (const name of VENDORED_PLUGINS) {
-      files.set(`src/vendor/plugins/${name}`, readFileSync(join(PLUGIN_DIR, name)));
+      files.set(`${paths.vendor}${name}`, readFileSync(join(PLUGIN_DIR, name)));
     }
 
     // 4. Site data + GEO surfaces.
     files.set(
-      "public/index.md",
+      `public${base}/index.md`,
       renderHomeTwin({
         title: site.title,
         tagline: site.tagline,
         origin,
+        home,
         nav,
         pages,
         apis,
@@ -647,22 +680,23 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       }),
     );
     // Only the API page reads it, so it stays out of the bundle every page loads.
-    files.set("src/generated/api-operations.json", `${JSON.stringify(operations, null, 2)}\n`);
+    files.set(`${paths.generated}api-operations.json`, `${JSON.stringify(operations, null, 2)}\n`);
     files.set(
-      "src/generated/site.json",
+      `${paths.generated}site.json`,
       `${JSON.stringify({ title: site.title, tagline: site.tagline, nav, pages, apis, apiIndex }, null, 2)}\n`,
     );
     const heads = {
-      "/": {
+      [home]: {
         ...pageHead({
           identity: { area: "site" },
           meta: { summary: site.tagline },
           origin,
+          root,
           hrefFor,
           siteName: site.title,
           type: "website",
         }),
-        twin: `${origin}/index.md`,
+        twin: `${root}/index.md`,
       },
     };
     for (const p of ordered) {
@@ -678,6 +712,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
           identity: { area: "api", slug: a.slug },
           meta: { title: a.title, summary: a.summary },
           origin,
+          root,
           hrefFor,
           siteName: site.title,
         }),
@@ -699,8 +734,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
     if (apiIndex && defaultApi) heads[apiIndex] = heads[defaultApi.route];
     // public/, not src/generated/: the palette fetches it on first open instead
     // of every page bundling it.
-    files.set("public/search-index.json", `${JSON.stringify({ version: 2, records: search })}\n`);
-    files.set("src/generated/heads.json", `${JSON.stringify(heads, null, 2)}\n`);
+    files.set(paths.searchIndex, `${JSON.stringify({ version: 2, records: search })}\n`);
+    files.set(`${paths.generated}heads.json`, `${JSON.stringify(heads, null, 2)}\n`);
 
     // A copy is listed where a reader of this site finds it, but credits its
     // original, so an agent that cites it cites the canonical URL.
@@ -713,22 +748,23 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
         return { ...e, canonical, twin: `${canonical}.md` };
       });
     files.set(
-      "public/llms.txt",
+      `public${base}/llms.txt`,
       renderLlmsIndex(entries, {
         title: `${site.title} documentation`,
-        summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`, and the home page at \`/index.md\`.`,
+        summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`, and the home page at \`${base}/index.md\`.`,
         home: true,
         origin,
+        root,
         apis,
         environments: envBundle && {
-          index: `${origin}/env/environments.json`,
-          guide: envBundle.guide && `${origin}${envBundle.guide.route}.md`,
+          index: `${root}/env/environments.json`,
+          guide: envBundle.guide && `${origin}${twinPath(envBundle.guide.route)}`,
         },
         concepts: true,
       }),
     );
     files.set(
-      "public/concepts.json",
+      `public${base}/concepts.json`,
       renderConcepts(projection, {
         title: site.title,
         origin,
@@ -736,14 +772,14 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       }),
     );
     files.set(
-      "public/llms-full.txt",
+      `public${base}/llms-full.txt`,
       renderLlmsFull(entries, (href) => {
-        const twin = files.get(`public${href}.md`);
+        const twin = files.get(`public${twinPath(href)}`);
         return twin ? splitFrontmatter(String(twin)).body.trim() : "";
       }),
     );
     files.set(
-      "public/sitemap.xml",
+      `public${base}/sitemap.xml`,
       renderSitemap(
         sitemapUrls(
           ordered.filter((p) => !isGuest(p.identity) || !homeCanonical(p.identity, homes)),
@@ -751,21 +787,30 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
           {
             hrefFor,
             isIncluded,
-            indexRoutes: ["/", ...apis.map((a) => a.route)],
+            indexRoutes: [home, ...apis.map((a) => a.route)],
           },
         ),
       ),
     );
-    files.set("public/robots.txt", renderRobots(origin));
+    // A site mounted in another app leaves robots.txt to its host.
+    if (config.robots !== false) files.set("public/robots.txt", renderRobots(origin));
 
+    const anchors = new Map([
+      [home, new Set()],
+      ...pages.map((p) => [p.route, new Set(p.headings.map((h) => h.id))]),
+      ...apis.map((a) => [a.route, new Set()]),
+      ...(apiIndex ? [[apiIndex, new Set()]] : []),
+    ]);
     const vercelPath = join(REPO_ROOT, "sites", config.name, "vercel.json");
-    if (existsSync(vercelPath)) {
-      const anchors = new Map([
-        ["/", new Set()],
-        ...pages.map((p) => [p.route, new Set(p.headings.map((h) => h.id))]),
-        ...apis.map((a) => [a.route, new Set()]),
-        ...(apiIndex ? [[apiIndex, new Set()]] : []),
-      ]);
+    if (config.redirects) {
+      const map = JSON.parse(readFileSync(join(REPO_ROOT, config.redirects), "utf8"));
+      const { redirects, patterns, errors } = resolveRedirects(map, site, { anchors, files });
+      if (errors.length) throw new Error(`redirects:\n  ${errors.join("\n  ")}`);
+      files.set(
+        `${paths.generated}redirects.json`,
+        `${JSON.stringify({ redirects, patterns }, null, 2)}\n`,
+      );
+    } else if (existsSync(vercelPath)) {
       const errors = redirectErrors(JSON.parse(readFileSync(vercelPath, "utf8")), {
         anchors,
         files,
@@ -779,8 +824,8 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
   }
 }
 
-function readManifest(outDir) {
-  const path = join(outDir, MANIFEST_FILE);
+function readManifest(outDir, file) {
+  const path = join(outDir, file);
   if (!existsSync(path)) return null;
   try {
     return JSON.parse(readFileSync(path, "utf8"));
@@ -792,14 +837,15 @@ function readManifest(outDir) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const site = (await import(`./sites/${args.site}.mjs`)).default;
-  const outDir = resolve(args.out ?? join(REPO_ROOT, "sites", site.name));
+  const outDir = resolve(args.out ?? site.outDir?.() ?? join(REPO_ROOT, "sites", site.name));
   if (!existsSync(join(outDir, "package.json"))) {
-    throw new Error(`${outDir} has no package.json; point --out at a site shell`);
+    throw new Error(`${outDir} has no package.json; point --out at the site to emit into`);
   }
+  const manifestFile = site.manifest ?? MANIFEST_FILE;
 
   const { files, manifestPages } = await emitDocs({ site, drafts: args.drafts });
-  const previous = readManifest(outDir);
-  const plan = planSync(files, previous, diskHasher(outDir));
+  const previous = readManifest(outDir, manifestFile);
+  const plan = planSync(files, previous, diskHasher(outDir), site.owned);
   const source = sourceState();
   const manifest = {
     schema: 1,
@@ -821,8 +867,8 @@ async function main() {
   }
   if (args.dryRun) return;
 
-  applySync(outDir, files, plan);
-  const manifestPath = join(outDir, MANIFEST_FILE);
+  applySync(outDir, files, plan, site.owned);
+  const manifestPath = join(outDir, manifestFile);
   const manifestText = `${JSON.stringify(manifest, null, 2)}\n`;
   if (!existsSync(manifestPath) || readFileSync(manifestPath, "utf8") !== manifestText) {
     writeFileSync(manifestPath, manifestText);

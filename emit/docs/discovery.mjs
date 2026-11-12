@@ -16,6 +16,7 @@ import {
   canonicalUrl,
   metaDescription,
   siteOrigin,
+  twinOf,
   twinUrl,
 } from "../../site/src/content-core/head.mjs";
 import { docIdentity, hrefFromIdentity } from "../../site/src/content-core/identity.mjs";
@@ -140,7 +141,16 @@ export function toEntry(
  */
 export function renderLlmsIndex(
   entries,
-  { title, summary, origin = "", apis = [], environments = null, concepts = false, home = false },
+  {
+    title,
+    summary,
+    origin = "",
+    root = origin,
+    apis = [],
+    environments = null,
+    concepts = false,
+    home = false,
+  },
 ) {
   const lines = [`# ${title}`, "", `> ${summary}`, ""];
   const bySection = Object.fromEntries(DIATAXIS.map((k) => [k, []]));
@@ -163,7 +173,7 @@ export function renderLlmsIndex(
       "",
       ...apis.map(
         (a) =>
-          `- [${a.title}](${origin}${a.route}) ([md](${origin}${a.route}.md), [OpenAPI](${a.specUrl})): ${a.summary}`,
+          `- [${a.title}](${origin}${a.route}) ([md](${origin}${twinOf(a.route)}), [OpenAPI](${a.specUrl})): ${a.summary}`,
       ),
       "",
     );
@@ -172,13 +182,13 @@ export function renderLlmsIndex(
   lines.push(
     "## Resources",
     "",
-    ...(home ? [`- [Home](${origin}/index.md): a map of every page, with summaries.`] : []),
-    `- [Full-text corpus](${origin}/llms-full.txt): every page's Markdown twin concatenated.`,
-    `- [Runnable scripts index](${origin}/scripts.json): CI-verified PEP 723 tutorial scripts + their runtime contracts.`,
+    ...(home ? [`- [Home](${root}/index.md): a map of every page, with summaries.`] : []),
+    `- [Full-text corpus](${root}/llms-full.txt): every page's Markdown twin concatenated.`,
+    `- [Runnable scripts index](${root}/scripts.json): CI-verified PEP 723 tutorial scripts + their runtime contracts.`,
   );
   if (concepts) {
     lines.push(
-      `- [Concepts](${origin}/concepts.json): the capabilities, specifications, and software these docs cover, how they relate, which edges a tested page proves, and what each local environment runs.`,
+      `- [Concepts](${root}/concepts.json): the capabilities, specifications, and software these docs cover, how they relate, which edges a tested page proves, and what each local environment runs.`,
     );
   }
   if (environments) {
@@ -199,13 +209,22 @@ export function renderLlmsIndex(
  * server (`start`: a page with an environment), and every nav page with its
  * summary. `nav` is the projected nav (site.json); `pages` its page records.
  */
-export function renderHomeTwin({ title, tagline, origin, nav, pages, apis = [], start = null }) {
+export function renderHomeTwin({
+  title,
+  tagline,
+  origin,
+  home = "/",
+  nav,
+  pages,
+  apis = [],
+  start = null,
+}) {
   const summaries = new Map(pages.map((p) => [p.route, p.summary]));
   const lines = [
     "---",
     `title: ${JSON.stringify(title)}`,
     `description: ${JSON.stringify(tagline)}`,
-    `canonical: ${origin}/`,
+    `canonical: ${origin}${home}`,
     "---",
     "",
     `# ${title}`,
@@ -217,7 +236,7 @@ export function renderHomeTwin({ title, tagline, origin, nav, pages, apis = [], 
       "",
       "## Run it locally",
       "",
-      `These commands need only Docker. [${start.title}](${origin}${start.route}.md) walks through them.`,
+      `These commands need only Docker. [${start.title}](${origin}${twinOf(start.route)}) walks through them.`,
       "",
       "```bash",
       ...start.environment.commands,
@@ -231,14 +250,16 @@ export function renderHomeTwin({ title, tagline, origin, nav, pages, apis = [], 
         walk(item.items, depth + 1);
       } else {
         const summary = summaries.get(item.route);
-        lines.push(`- [${item.label}](${origin}${item.route}.md)${summary ? `: ${summary}` : ""}`);
+        lines.push(
+          `- [${item.label}](${origin}${twinOf(item.route)})${summary ? `: ${summary}` : ""}`,
+        );
       }
     }
   };
   walk(nav, 2);
   if (apis.length) {
     lines.push("", "## API reference", "");
-    for (const a of apis) lines.push(`- [${a.title}](${origin}${a.route}.md): ${a.summary}`);
+    for (const a of apis) lines.push(`- [${a.title}](${origin}${twinOf(a.route)}): ${a.summary}`);
   }
   // A section that opens with a subsection leaves two blank lines; keep one.
   return `${lines.join("\n").replace(/\n{3,}/g, "\n\n")}\n`;
@@ -298,7 +319,9 @@ export function conceptEnvironments(site, registry) {
       const guide = env.guide
         ? `${routeFor(bucket, slug)}${anchor ? `#${anchor}` : ""}`
         : routeFor(site.env.guide.bucket, site.env.guide.slug);
-      return { key, title: env.title, archive: archiveUrl(key, `${site.origin}/env`), guide };
+      // Archives live with the site's other files, under its base.
+      const archiveBase = `${site.origin}${site.base ?? ""}/env`;
+      return { key, title: env.title, archive: archiveUrl(key, archiveBase), guide };
     });
 }
 

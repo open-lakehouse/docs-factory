@@ -39,17 +39,21 @@ jobs:
       # and generates LikeC4 views' Mermaid with site/'s likec4.
       - run: uv sync --package docsnip
       - run: cd site && bun install --frozen-lockfile
-      # --drafts: a draft's links are worth fixing before it's approved.
+      # --drafts: a draft's links are worth fixing before it's approved. The UC
+      # docs normally emit into a uc-website checkout; a scratch target with a
+      # package.json is enough to check their links.
       - name: Emit the docs sites
         run: |
+          mkdir -p "$RUNNER_TEMP/uc-website" && echo '{}' > "$RUNNER_TEMP/uc-website/package.json"
           cd emit && bun install --frozen-lockfile
-          bun docs/emit-docs.mjs --site unitycatalog-docs --drafts
+          bun docs/emit-docs.mjs --site unitycatalog-docs --drafts --out "$RUNNER_TEMP/uc-website"
           bun docs/emit-docs.mjs --site delta-docs --drafts
       - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         with:
           args: >-
             --config lychee.toml --no-progress
             'sites/*/public/**/*.md'
+            '${{ runner.temp }}/uc-website/public/**/*.md'
             'architecture/model/**/*.likec4'
           token: ${{ secrets.GITHUB_TOKEN }}
           fail: true

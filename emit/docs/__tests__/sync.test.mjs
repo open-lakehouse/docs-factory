@@ -57,6 +57,20 @@ test("planSync refuses to write outside the owned paths", () => {
   );
 });
 
+test("a site mounted in another app owns only its own directories", () => {
+  const owned = ["src/content/docs/", "public/docs/"];
+  expect(isOwned("public/docs/llms.txt", owned)).toBe(true);
+  // The host's own public files and pages are out of reach.
+  expect(isOwned("public/llms.txt", owned)).toBe(false);
+  expect(isOwned("src/content/blog/post/index.md", owned)).toBe(false);
+  expect(() => planSync(new Map([["public/robots.txt", "x"]]), null, () => null, owned)).toThrow(
+    /outside its owned paths/,
+  );
+  const previous = { files: { "public/docs/old.md": "x", "public/favicon.ico": "y" } };
+  const plan = planSync(new Map([["public/docs/a.md", "a"]]), previous, () => null, owned);
+  expect(plan.remove).toEqual(["public/docs/old.md"]);
+});
+
 test("applySync writes, deletes, and prunes emptied directories", () => {
   const out = mkdtempSync(join(tmpdir(), "sync-"));
   try {

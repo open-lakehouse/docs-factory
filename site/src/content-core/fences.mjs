@@ -60,13 +60,22 @@ export function dedent(lines) {
 }
 
 /**
+ * A whole-line region marker: `# --8<-- [start:attach]`, as a Python, shell,
+ * or YAML (`#`), SQL (`--`), or Scala, Java, or Rust (`//`) comment. Anchored
+ * to the full line, so a `--8<--` inside a string is never taken for one.
+ */
+export const SECTION_MARKER_LINE_RE = /^\s*(?:#|--|\/\/)\s*--8<--\s*\[(?:start|end):[^\]]*\]\s*$/;
+
+/**
  * Resolve a fence against its (already-read) source text.
  *
  * Returns the SAME object shape for both the render adapter and the manifest:
  *   - text:      the resolved snippet text, DEDENTED and with the trailing
  *                newline stripped — exactly what the rendered code block shows.
  *   - startLine: 1-based source line the inlined region begins at (the line
- *                after the start marker; 1 for a whole-file fence).
+ *                after the start marker; 1 for a whole-file fence, whose
+ *                region markers are dropped: they're for the fences that
+ *                inline one region, not for a reader of the whole file).
  *   - endLine:   1-based source line the region ends at (the line before the
  *                end marker; the file's last line for a whole-file fence).
  *   - region:    "start..end" for a region fence, "" for whole-file.
@@ -79,9 +88,13 @@ export function resolveFence(srcText, { start, end } = {}) {
   const lines = normalized.split("\n");
 
   if (!start && !end) {
-    // Whole file, minus a single trailing newline. endLine counts the content
-    // lines of the returned text (a lone trailing newline is not its own line).
-    const text = normalized.replace(/\n$/, "");
+    // Whole file, minus its region markers and a single trailing newline.
+    // endLine counts the content lines of the returned text (a lone trailing
+    // newline is not its own line).
+    const text = lines
+      .filter((line) => !SECTION_MARKER_LINE_RE.test(line))
+      .join("\n")
+      .replace(/\n$/, "");
     return {
       text,
       startLine: 1,

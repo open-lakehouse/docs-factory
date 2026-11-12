@@ -52,6 +52,7 @@ import { blogLinkPlugins } from "./blog-links.mjs";
 // directly — see emit/targets/*.mjs. This keeps one linear core pipeline while
 // letting a target flatten (md-twin) OR upgrade to components (unitycatalog).
 import remarkLikeC4Blocks from "./plugins/remark-likec4-blocks.mjs";
+import remarkStripSourceMeta from "./plugins/remark-strip-source-meta.mjs";
 import remarkTrestleMd, { trestleFiles } from "./plugins/remark-trestle-md.mjs";
 import remarkUnwrapProse from "./plugins/remark-unwrap-prose.mjs";
 
@@ -622,9 +623,21 @@ async function emitTarget({
     trestleUrlBase: trestleBase && `${trestleBase}/${slug}`,
     trestleWebComponentPath:
       trestleBase && join(publicDir, `${trestleBase}/trestle-webcomponent.mjs`),
-    frontmatterContext: { canonical, thumbnail: thumbnail && `./${thumbnail.filename}` },
-    // Docs links become the page's URL on its docs site (blog-links.mjs).
-    plugins: blogLinkPlugins({ repoRoot: REPO_ROOT }),
+    // `published`: an update keeps the date its post went out on, which the
+    // delivered folder's `YYYY-MM-DD-` prefix records.
+    frontmatterContext: {
+      canonical,
+      thumbnail: thumbnail && `./${thumbnail.filename}`,
+      published: /^(\d{4}-\d{2}-\d{2})-/.exec(existing?.post_dir ?? "")?.[1] ?? null,
+    },
+    // Docs links become the page's URL on its docs site (blog-links.mjs), as
+    // a root-relative path when the post's own site serves the docs.
+    // The review app's source anchors (srcpath=…) are repo paths a published
+    // post can't use.
+    plugins: [
+      ...blogLinkPlugins({ repoRoot: REPO_ROOT, siteUrl: target.siteUrl }),
+      [remarkStripSourceMeta],
+    ],
   });
 
   if (trestleBase) {

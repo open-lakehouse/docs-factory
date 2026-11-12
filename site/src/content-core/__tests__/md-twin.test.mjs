@@ -78,7 +78,8 @@ test("homeCanonical names a blog post's delivered primary, else the fallback", (
   const post = { area: "blogs", slug: "p" };
   const meta = { target: ["unitycatalog", "delta"] };
   const emitted = { unitycatalog: { post_dir: "2026-07-03-p" } };
-  expect(homeCanonical(post, { meta, emitted })).toBe("https://www.unitycatalog.io/blogs/p/");
+  // unitycatalog.io serves a post at its folder name after the date.
+  expect(homeCanonical(post, { meta, emitted })).toBe("https://unitycatalog.io/blogs/p/");
   expect(homeCanonical(post, { meta, emitted: {} })).toMatch(/\/blog\/p$/);
   expect(homeCanonical(post, { meta: { target: "openlakehouse" }, emitted })).toMatch(/\/blog\/p$/);
 });

@@ -41,7 +41,7 @@ catalog = os.environ.get("UC_CATALOG", "unity")
 
 UC_SPARK = "io.unitycatalog:unitycatalog-spark_4.1_2.13:0.5.0"
 DELTA_SPARK = "io.delta:delta-spark_4.1_2.13:4.3.0"
-# Juist in case we are behind a proxy.
+# Just in case we are behind a proxy.
 repositories = os.environ.get("MAVEN_REPO", "")
 
 spark = (

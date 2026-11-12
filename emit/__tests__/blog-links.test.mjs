@@ -4,7 +4,7 @@ import { expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { blogLinkPlugins, docsUrlFor, publishedDocsUrls } from "../blog-links.mjs";
+import { blogLinkPlugins, docsUrlFor, onSite, publishedDocsUrls } from "../blog-links.mjs";
 import { projectRoutes } from "../docs/sites/routes.mjs";
 import { emitOne } from "../emit.mjs";
 import unitycatalog from "../targets/unitycatalog.mjs";
@@ -61,4 +61,12 @@ test("docs links resolve to published pages; drafts and other posts unwrap", asy
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("a docs URL on the post's own site becomes a root-relative path", () => {
+  const url = "https://unitycatalog.io/docs/how-to/duckdb/#attach";
+  expect(onSite(url, "https://unitycatalog.io")).toBe("/docs/how-to/duckdb/#attach");
+  expect(onSite(url, "https://www.unitycatalog.io")).toBe("/docs/how-to/duckdb/#attach");
+  expect(onSite(url, "https://delta.io")).toBe(url);
+  expect(onSite(url, undefined)).toBe(url);
 });

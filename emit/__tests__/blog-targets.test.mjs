@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { blogTargets, crossPostCanonical, emitOne, findThumbnail } from "../emit.mjs";
 import delta from "../targets/delta.mjs";
 import openlakehouse from "../targets/openlakehouse.mjs";
-import unitycatalog from "../targets/unitycatalog.mjs";
+import unitycatalog, { postId } from "../targets/unitycatalog.mjs";
 
 const SIDECAR = { unitycatalog: { post_dir: "2026-07-03-p", updated: "2026-07-17" } };
 
@@ -19,8 +19,9 @@ test("target is one site or a list, primary first", () => {
 });
 
 test("a cross-post points at the primary's delivered post", () => {
+  // unitycatalog.io routes a post by its folder name after the date.
   expect(crossPostCanonical("delta", unitycatalog, SIDECAR)).toBe(
-    "https://www.unitycatalog.io/blogs/p/",
+    "https://unitycatalog.io/blogs/p/",
   );
   expect(crossPostCanonical("unitycatalog", delta, { delta: { post_dir: "d" } })).toBe(
     "https://delta.io/blog/d/",
@@ -113,4 +114,17 @@ test("unitycatalog and delta reference the delivered thumbnail; openlakehouse fi
   expect(openlakehouse.frontmatter(draft, ctx).thumbnail).toBeUndefined();
   expect(unitycatalog.frontmatter(draft).thumbnail).toBeUndefined();
   expect(delta.frontmatter(draft).thumbnail).toBeUndefined();
+});
+
+test("a unitycatalog.io post id is its folder after the date, lowercased", () => {
+  expect(postId("2026-08-24-uc-metric-views")).toBe("uc-metric-views");
+  expect(postId("2026-07-03-Unity-Catalog-Delta-API")).toBe("unity-catalog-delta-api");
+});
+
+test("an update keeps the post's published date", () => {
+  const draft = { title: "T", author: "A Person" };
+  expect(unitycatalog.frontmatter(draft, { published: "2026-08-24" }).date).toBe("August 24, 2026");
+  expect(
+    unitycatalog.frontmatter({ ...draft, date: "2026-07-03" }, { published: "2026-08-24" }).date,
+  ).toBe("July 3, 2026");
 });

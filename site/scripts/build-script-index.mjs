@@ -20,6 +20,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { SECTION_MARKER_LINE_RE } from "../src/content-core/fences.mjs";
 import { hrefFromIdentity } from "../src/content-core/identity.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -61,13 +62,6 @@ export function runDocsnipScripts(root = repoRoot) {
   }
   return payload;
 }
-
-// A pymdownx/mkdocs snippet marker line, e.g. `# --8<-- [start:attach]` or
-// `-- --8<-- [end:attach]`. These are whole-line Python/shell (`#`), SQL (`--`),
-// or Scala/Java (`//`) comments that delimit the regions `file=… start=… end=…` fences inline (see
-// fences.mjs / snippetcheck.py). Anchored to a full line so we never clip a
-// `--8<--` that appears inside a string.
-const SECTION_MARKER_LINE_RE = /^\s*(?:#|--|\/\/)\s*--8<--\s*\[(?:start|end):[^\]]*\]\s*$/;
 
 /**
  * Strip `--8<--` section-marker comment lines from a served script (pure, for

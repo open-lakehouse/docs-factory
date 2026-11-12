@@ -5,7 +5,7 @@ description: |
   the deterministic emitter core (resolves file= snippets, renders
   journeys/callouts/LikeC4 and Trestle diagrams per the target), then delivers the
   result and records the delivery for idempotent re-emits. Targets:
-    - unitycatalog — a rich native Astro MDX post in the sibling unitycatalog-website
+    - unitycatalog — a rich native MDX post in the sibling uc-website
       repo (interactive LikeC4, <Journey> timelines, :::callouts).
     - delta — a rich native Astro MDX post in the sibling delta-io/website repo
       (../website), same rich rendering.
@@ -64,7 +64,7 @@ that one (this is the progressive-disclosure seam; don't load the others):
 
 | target        | runbook                                      | delivers to                              |
 | ------------- | -------------------------------------------- | ---------------------------------------- |
-| `unitycatalog`| [`references/unitycatalog-target.md`](references/unitycatalog-target.md) | `../unitycatalog-website` (Astro MDX)     |
+| `unitycatalog`| [`references/unitycatalog-target.md`](references/unitycatalog-target.md) | `uc-website` (TanStack Start MDX)         |
 | `delta`       | [`references/delta-target.md`](references/delta-target.md)               | `../website` — delta-io/website (Astro MDX) |
 | `openlakehouse` | [`references/openlakehouse-target.md`](references/openlakehouse-target.md) | `../openlakehouse-io` (Vite + React MDX) |
 

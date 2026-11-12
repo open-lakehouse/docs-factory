@@ -1,201 +1,118 @@
 # `unitycatalog` target — delivery runbook
 
 The delivery step (step 3 of `/blog-emit --target unitycatalog`) copies the core's
-rich `.mdx` post into the sibling `unitycatalog-website` repo. This runbook is the
-CREATE-or-UPDATE mechanics (§§A–C); the one-time site wiring (§D) is **already
-installed** — it's a reference/re-verify checklist, not a to-do — except the
-cross-post canonical (§D item 8).
+rich `.mdx` post into the sibling **uc-website** repo (open-lakehouse/uc-website:
+TanStack Start, content-collections, `@mdx-js/rollup`, Bun). This runbook is the
+CREATE-or-UPDATE mechanics (§§A–C); §D is what the site already provides.
 
-The sibling repo is expected at `../unitycatalog-website`. Confirm it exists and is
-on a clean working branch before writing into it. No MCP needed — it's a repo the
-user owns, so this is a human-in-the-loop copy: this never pushes/opens a PR — that
-is the user's action.
+**Where the repo is:** `$UC_WEBSITE_DIR`, else `uc-website` beside the *main*
+docs-factory checkout. From a worktree, `../uc-website` is wrong; resolve it the
+way the docs emitter does:
 
-## A0. A cross-post needs canonical wiring (BEFORE copying)
+```bash
+UCW="${UC_WEBSITE_DIR:-$(dirname "$(git rev-parse --path-format=absolute --git-common-dir)")/../uc-website}"
+```
 
-If `assets.json` has a `canonical` (this post is cross-posted, and `unitycatalog` is
-not its primary), the render's frontmatter carries `canonical: <url>`. The site must
-both accept that field and put it in `<link rel="canonical">`, or a build fails on the
-unknown field or the copy competes with the primary in search. Check the wiring
-(§D item 8). **If it is missing, HALT and report**; don't strip the field to make the
-build pass.
+Confirm it exists and is on a clean working branch (never `main`) before writing
+into it. The docs emitter writes there too (`src/content/docs/` and friends);
+blog delivery never touches those directories. This never pushes or opens a PR
+unless the user asks.
 
-## A. Reconcile the author → profile (the sharp edge — BEFORE copying)
+## A. Reconcile the author → profile (BEFORE copying)
 
-The site's blog schema requires `authors: [reference("profiles")]`; a build FAILS if
-any author id has no `src/content/profiles/<id>/` entry. The core already slugified
-the draft `author` into the `authors` list in `index.mdx` frontmatter. For each id:
+The schema checks every `authors` id against `src/content/profiles/<id>/index.md`,
+and the build FAILS on an unknown one. For each id in the render's frontmatter:
 
-- Check `../unitycatalog-website/src/content/profiles/<id>/index.md` exists.
-- **If missing, HALT and report** — do not invent a profile (it needs a real `name`,
-  `title`, and `photo.jpg` you can't fabricate). Tell the user:
-  "Author profile `<id>` not found in unitycatalog-website. Create
-  `src/content/profiles/<id>/{index.md,photo.jpg}` (or map the draft's `author` to an
-  existing profile id) and re-run." Only proceed once every author id resolves.
+- Check `$UCW/src/content/profiles/<id>/index.md` exists.
+- **If missing, HALT and report**: don't invent a profile (it needs a real
+  `name`, `title`, and `photo`). Ask the user to add
+  `src/content/profiles/<id>/{index.md,photo.jpg}`, or to map the draft's
+  `author` to an existing id.
 
 ## B. Copy into the sibling repo — CREATE or UPDATE
 
-Determine the dated post dir name: `<YYYY-MM-DD>-<slug>` where the date is the draft's
-`date` frontmatter (ISO). On UPDATE, reuse `existing.post_dir` verbatim (so the
-collection `id` stays stable).
+The post dir is `<YYYY-MM-DD>-<slug>`: the draft's `date` (ISO), else today on
+CREATE. On UPDATE, reuse `existing.post_dir` verbatim, so the post's id and URL
+stay stable. The site's URL for it is `/blogs/<slug>/` (the folder name after the
+date, lowercased), which is what `postUrl` and cross-post canonicals use.
 
 ```
-DEST=../unitycatalog-website/src/content/blog/<YYYY-MM-DD>-<slug>
+DEST=$UCW/src/content/blog/<YYYY-MM-DD>-<slug>
 ```
 
-- Create `DEST` (`mkdir -p`). Copy `dist/unitycatalog/index.mdx` → `$DEST/index.mdx`.
-- For each `images[]` entry, copy `localPath` → `$DEST/<filename>` (co-located; the
-  MDX references `./<filename>`, which Astro's image pipeline resolves).
+- `mkdir -p "$DEST"`; copy `dist/unitycatalog/index.mdx` → `$DEST/index.mdx`.
+- For each `images[]` entry, copy `localPath` → `$DEST/<filename>` (co-located;
+  the MDX references `./<filename>`, which the site's image pipeline resolves).
 - If `likec4-webcomponent.mjs` was produced, copy it to
-  `../unitycatalog-website/public/likec4/likec4-webcomponent.mjs` (a shared, stable
-  path `LikeC4View.astro` loads). Safe to overwrite — it's generated from the whole
-  `blogs/` model.
-- If `assets.json` lists `public` files, copy `dist/unitycatalog/public/` over
-  `../unitycatalog-website/public/` (`cp -R dist/unitycatalog/public/. ../unitycatalog-website/public/`):
-  the `<trestle-view>` bundle at `public/trestle/trestle-webcomponent.mjs`, and each
-  diagram's snapshot and environment files under `public/trestle/<slug>/`, where
-  `<TrestleView src>` fetches them. Each post has its own snapshots, so re-emitting
-  one never redraws another; the bundle is shared and safe to overwrite. This needs
-  the TrestleView wiring (§D item 9).
-- If `assets.json` has a `thumbnail`, copy its `localPath` → `$DEST/<filename>`. The
-  render's frontmatter already carries `thumbnail: ./<filename>`. Without one the
-  field is omitted (the schema allows it) and the site's checker warns.
+  `$UCW/public/likec4/likec4-webcomponent.mjs` (the shared path `LikeC4View`
+  loads; generated from the whole model, so safe to overwrite). The docs keep
+  their own copy under `public/docs/likec4/`.
+- If `assets.json` lists `public` files, copy `dist/unitycatalog/public/.` over
+  `$UCW/public/`: the `<trestle-view>` bundle at `public/trestle/` and each
+  diagram's snapshot under `public/trestle/<slug>/`.
+- If `assets.json` has a `thumbnail`, copy its `localPath` → `$DEST/<filename>`.
+  The render's frontmatter already carries `thumbnail: ./<filename>` (the core
+  finds `assets/thumbnail.<ext>` or the draft's `thumbnail`/`hero`). The build
+  fails on a thumbnail whose file is missing.
+- On UPDATE, keep the delivered post's `topics` (the site curates them, and the
+  core emits none), and its `thumbnail` when the core emitted none. Without
+  `topics` the site infers them from the id.
 
 ## C. Build-verify, then report
 
 ```bash
-cd ../unitycatalog-website && pnpm install && pnpm build
+cd "$UCW" && bunx prettier --write "src/content/blog/<post dir>/index.mdx" \
+  && bun install && bun test && bun run build && bun run links:dist
 ```
 
-Must pass zod schema validation + MDX compile. Then `pnpm preview` and confirm the
-post renders: journey timeline, `:::` callouts as styled asides, and the LikeC4
-canvas and any Trestle diagram hydrate (a real browser check — a static HTML grep is not sufficient for the
-diagram). Then **report** the post dir + preview URL. The skill's shared step 4
-records the `unitycatalog` sidecar block `{ post_dir, updated }`. Opening a PR is the
-**user's** action — prepare the branch/diff if asked, but never push/open it unbidden.
+The site's CI checks formatting, and Prettier reflows the core's Markdown
+(tables, list indentation); format the post before building.
 
----
+The build validates the frontmatter, compiles the MDX, and its crawler fails on a
+dead internal link, including a `/docs/…` link to a page the docs don't publish.
+Then `bun run preview` and check the post in a real browser: journey steps (one
+number each), `:::` callouts as styled asides, and LikeC4 or Trestle diagrams
+hydrating. Report the post dir and preview URL; the skill's step 4 records the
+sidecar block `{ post_dir, updated }`.
 
-## D. One-time site wiring (installed except items 8–9 — reference / re-verify)
+## D. What the site provides (reference / re-verify)
 
-The below is the enabling wiring the site needed the first time this target was used.
-It is **already present** in `../unitycatalog-website`; treat this as documentation
-and a re-verify checklist. Only if a `pnpm build` fails on a missing piece, restore it
-(exact, pinned versions per the repo's convention — no `^`/`~`).
-
-The site is **Astro 6, pnpm, Tailwind v4 (via `astro-orbit`)**, blog posts under
-`src/content/blog/<YYYY-MM-DD-slug>/index.{md,mdx}` (a `blogLoader` requires the
-dated folder name), authors are `reference("profiles")`, `category` is the enum
-`"guide"`, `date` is a human string (e.g. `July 3, 2026`).
+- **Schema** (`content-collections.ts`): `title`, `authors` (profile ids),
+  `category: guide`, optional `topics` (`guide`, `releases`, `getting-started`,
+  `ai`, `integrations`, `governance`; the site infers them from the id when
+  absent), `date` (a human string such as `July 3, 2026`), optional
+  `description`, `thumbnail`, `slug`, and `canonical` (a cross-post's original,
+  which the page puts in `<link rel="canonical">`).
+- **Components** (`src/components/blog/index.ts`): `Journey`, `JourneyStep`,
+  `LikeC4View`, `TrestleView`, passed to every post by name.
+  `plugins/post-module.ts` strips the render's `import … from
+  "@/components/blog/*.astro"` lines, so the core's imports don't need to resolve.
+- **Callouts**: `:::tldr|tip|note|info|warning|caution|danger` directives, styled
+  by `src/lib/remark-callouts.mjs`; the core leaves them as written.
+- **Code blocks**: Expressive Code, which turns a fence's `title="x.py"` into a
+  filename tab.
+- **Docs links**: the core emits links to docs pages as root-relative `/docs/…`
+  paths, since the docs are on this site (`emit/blog-links.mjs` `onSite`).
 
 ## What the docs-factory core emits (for reference)
 
-`bun emit.mjs --slug <slug> --target unitycatalog` →
-`blogs/<slug>/dist/unitycatalog/`:
+`bun emit.mjs --slug <slug> --target unitycatalog` → `blogs/<slug>/dist/unitycatalog/`:
 
-- `index.mdx` — frontmatter first (`title`, `authors: [<profile-id>]`,
-  `category: guide`, `date`, optional `description`, and `canonical` on a
-  cross-post whose primary is another site), then default imports
-  `import Journey from "@/components/blog/Journey.astro"` (+ `JourneyStep`,
-  `LikeC4View`), then body. `::::journey`→`<Journey><JourneyStep step="…">`;
-  ```` ```likec4 ````→`<LikeC4View viewId="…" alt="…" />`;
-  ```` ```trestle ````→`<TrestleView src="/trestle/<slug>/…trestle-graph.json" alt="…" />`
-  (+ its default import); `:::` callouts LEFT as directives;
-  MDX-significant chars in prose (`<`,`>`,`{`,`}`) escaped to HTML entities.
-- `assets.json` — image manifest (`filename` = `./<filename>` in the MDX;
-  `localPath` = file to copy in). LikeC4 views ship no PNG.
-- `likec4-webcomponent.mjs` — the `<likec4-view>` custom-element bundle (present
-  when the post has a diagram). Attributes: `view-id`, `dynamic-variant`.
-- `public/` — files for the site's `public/` (listed in `assets.json` `public`),
-  present when the post has a Trestle diagram: `trestle/trestle-webcomponent.mjs`,
-  the `<trestle-view>` bundle (built from `emit/webcomponents/trestle`, React
-  inside; attributes `src`, `label`, `color-mode`), and `trestle/<slug>/<env>/`, the
-  snapshot plus the environment files the diagram's nodes open.
+- `index.mdx` — frontmatter (`title`, `authors`, `category: guide`, `date`,
+  optional `description`, and
+  `canonical` on a cross-post whose primary is another site), the component
+  imports, then the body: `::::journey` → `<Journey><JourneyStep step="…">`,
+  ```` ```likec4 ```` → `<LikeC4View viewId="…" alt="…" />`, ```` ```trestle ````
+  → `<TrestleView src="/trestle/<slug>/…" alt="…" />`, callouts left as
+  directives, and MDX-significant prose characters escaped.
+- `assets.json` — the image manifest, `public` files, and `existing` (null →
+  CREATE, set → UPDATE in place).
+- `likec4-webcomponent.mjs` and `public/` — present when the post has a LikeC4 or
+  Trestle diagram.
 
-### The wiring pieces (all present today)
+## Gotchas
 
-1. **MDX + directive deps** (exact-pinned; MDX 6.x peers on Astro `^6.4.0`, so
-   Astro is bumped within 6.x to satisfy it):
-   ```bash
-   pnpm add -E astro@6.4.8 @astrojs/mdx@6.0.3 remark-directive@4.0.0
-   ```
-
-2. **`astro.config.mjs`** — register the MDX integration, the `@/*`→`src/*` Vite
-   alias, and the callout remark plugins on the base Markdown pipeline (MDX extends
-   it, so `.md` and `.mdx` both get callouts):
-   ```js
-   import { fileURLToPath } from "node:url";
-   import mdx from "@astrojs/mdx";
-   import remarkDirective from "remark-directive";
-   import remarkCallouts from "./src/lib/remark-callouts.mjs";
-   // …
-   vite: { resolve: { alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) } } },
-   markdown: { remarkPlugins: [remarkDirective, remarkCallouts] },
-   integrations: [ mdx(), astroOrbit(), /* …existing… */ ],
-   ```
-
-3. **`tsconfig.json`** — the `@/*` path (no `baseUrl`; deprecated in TS 6+):
-   ```json
-   "compilerOptions": { "paths": { "@/*": ["./src/*"] } }
-   ```
-
-4. **`src/content.config.ts`** — broaden the blog loader glob:
-   `pattern: "**/index.{md,mdx}"` (was `**/index.md`). Zod schema unchanged.
-
-5. **`src/pages/blogs/[id].astro`** — pass the components to `<Content>`:
-   ```astro
-   import Journey from "../../components/blog/Journey.astro";
-   import JourneyStep from "../../components/blog/JourneyStep.astro";
-   import LikeC4View from "../../components/blog/LikeC4View.astro";
-   const mdxComponents = { Journey, JourneyStep, LikeC4View };
-   // …
-   <Content components={mdxComponents} />
-   ```
-   (Callouts need NO component — they're `:::` directives styled to `<aside>` by
-   the remark handler.)
-
-6. **Components + CSS** in `src/components/blog/`:
-   - `Journey.astro` — `<ol class="jr">` wrapping the steps (CSS-counter numbered).
-   - `JourneyStep.astro` — `<li class="jr-step">` with bubble/title/body slot.
-   - `LikeC4View.astro` — emits `<likec4-view view-id={viewId} dynamic-variant="sequence">`
-     + `<script type="module" src="/likec4/likec4-webcomponent.mjs" is:inline>`
-     (the `is:inline` is REQUIRED — a bundled `import` of a `/public` path fails the
-     Vite build).
-   - `blog-rich.css` — `.jr-*` / `.callout-*` / `likec4-view` styling, scoped under
-     `.blog-article`, mapped onto astro-orbit's `--color-*` tokens. Imported once by
-     `src/components/pages/blog/BlogPost.astro`.
-   - `src/lib/remark-callouts.mjs` — the directive→`<aside class="callout"
-     data-type>` handler (inline SVG icons; recurses so callouts nested in a journey
-     step transform too; dependency-free tree walk, no `unist-util-visit`).
-
-7. **`public/likec4/likec4-webcomponent.mjs`** — the delivery step drops the
-   generated bundle here (loaded by `LikeC4View.astro`).
-
-8. **Cross-post canonical — NOT installed yet.** Needed only for a post whose primary
-   is another site (§A0). `src/layouts/Layout.astro` always renders
-   `<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />`. Wire:
-   - `src/content.config.ts`: add `canonical: z.string().url().optional()` to the
-     blog schema.
-   - `src/layouts/Layout.astro`: add an optional `canonical?: string` prop and render
-     `href={canonical ?? new URL(Astro.url.pathname, Astro.site)}`.
-   - `src/pages/blogs/[id].astro`: pass `canonical={post.data.canonical}` to `<Layout>`.
-
-9. **Trestle diagrams — `TrestleView`.** Needed by a post with a ```` ```trestle ````
-   block. `src/components/blog/TrestleView.astro` renders
-   `<trestle-view src={src} label={alt} color-mode="dark">` inside a `<figure>` with
-   the alt text as a visually hidden `<figcaption>` (the text equivalent in the
-   prerendered HTML), and loads
-   `<script type="module" src="/trestle/trestle-webcomponent.mjs" is:inline>`.
-   `[id].astro` adds it to `mdxComponents`. `LikeC4View.astro` takes the same `alt`.
-
-## Gotchas confirmed during bring-up
-
-- **Astro components are default exports** — the emitter imports `Journey` etc. as
-  DEFAULT imports from per-component `.astro` files, not named imports.
-- **Do not add `remark-mdx` to the emit parser.** The core uses a serialize-only
-  MDX extension (`mdast-util-mdx`'s `mdxToMarkdown`) so a bare `<>` in draft prose
-  isn't parsed as JSX at parse time; prose is separately entity-escaped.
-- **`is:inline` on the LikeC4 script** — otherwise Vite tries to bundle the
-  `/public` path and the build fails to resolve it.
-- The repo's `pnpm typecheck` has a **pre-existing** unrelated error in
-  `src/lib/searchPlugin.ts` (present on `main`); it is not introduced by this work.
+- **Don't add `remark-mdx` to the emit parser.** The core serializes MDX only, so
+  a bare `<>` in draft prose isn't parsed as JSX; prose is entity-escaped instead.
+- **An UPDATE keeps the published date**: a draft without `date` takes it from
+  `existing.post_dir`, so a re-emit doesn't re-date a live post.

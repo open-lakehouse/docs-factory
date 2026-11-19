@@ -130,6 +130,11 @@ def _table(root: Path) -> list[str]:
     return [line for line in text.splitlines() if line.startswith("|")]
 
 
+def _footnotes(root: Path) -> list[str]:
+    text = (root / "content/proj/reference/002-matrix/index.md").read_text()
+    return [line for line in text.splitlines() if line.startswith("[^")]
+
+
 def test_fix_renders_claims_evidence_and_unknowns(tmp_path) -> None:
     root = _repo(
         tmp_path,
@@ -211,8 +216,9 @@ def test_an_asserted_failure_links_its_anchor_and_note(tmp_path) -> None:
     compat.fix(root)
     assert (
         _table(root)[2]
-        == "| Read | — | [✗](../../how-to/engine/index.md#read-it) on S3 |"
+        == "| Read | — | [✗](../../how-to/engine/index.md#read-it)[^ops-1] |"
     )
+    assert "[^ops-1]: on S3" in _footnotes(root)
 
 
 @pytest.mark.parametrize(
@@ -462,10 +468,30 @@ def test_a_private_page_shows_draft_claims_and_apis(tmp_path) -> None:
     page.write_text(page.read_text().replace("status: ready", "status: private"))
     compat.fix(root)
     assert _table(root)[2:] == [
-        "| Read (`table.read`) | [✓](../../how-to/engine/index.md#read-it) "
-        "`spark.read` (draft) | — |",
+        "| Read (`table.read`) | [(✓)](../../how-to/engine/index.md#read-it)"
+        "[^ops-1] | — |",
         "| Write (`table.write`) | — | [✗](../../how-to/engine/index.md#read-it) |",
     ]
+    assert _footnotes(root) == ["[^ops-1]: `spark.read`"]
+
+
+def test_cells_with_the_same_detail_share_a_footnote(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims(
+            "claims.spark = [",
+            '  { journey = "table.read", region = "read", note = "by path" },',
+            '  { journey = "table.write", region = "read", note = "by path" },',
+            "]",
+        ),
+    )
+    compat.fix(root)
+    assert _table(root)[2:] == [
+        "| Read | [✓](../../how-to/engine/index.md#read-it)[^ops-1] | — |",
+        "| Write | [✓](../../how-to/engine/index.md#read-it)[^ops-1] | ✗ |",
+    ]
+    assert _footnotes(root) == ["[^ops-1]: by path"]
+    assert compat.fix(root) == []
 
 
 def test_another_projects_scripts_pin_their_own_versions(tmp_path) -> None:
@@ -1041,7 +1067,11 @@ def _engine_pages(root: Path) -> Path:
 
 def _lines(page: Path) -> list[str]:
     text = page.read_text()
-    return [line for line in text.splitlines() if line.startswith(("|", "Verified"))]
+    return [
+        line
+        for line in text.splitlines()
+        if line.startswith(("|", "Verified", "- ", "  - "))
+    ]
 
 
 def test_an_engine_report_lists_what_works_and_what_doesnt(tmp_path) -> None:
@@ -1053,8 +1083,10 @@ def test_an_engine_report_lists_what_works_and_what_doesnt(tmp_path) -> None:
         "| Journeys | Verified here | Doesn't work | Upstream docs only "
         "| Not verified here |",
         "| --- | --- | --- | --- | --- |",
-        "| ops (1 of 2) | [Read](../../how-to/engine/index.md#read-it) | — | — "
-        "| Write |",
+        "| ops | 1 of 2 | — | — | 1 |",
+        "- **ops**",
+        "  - Verified here: [Read](../../how-to/engine/index.md#read-it)",
+        "  - Not verified here: Write",
     ]
     # DuckDB has no model element: its interface key is its engine id.
     assert _lines(ref / "004-hub/index.md") == [
@@ -1117,10 +1149,13 @@ def test_an_engine_report_keeps_each_claims_qualifier(tmp_path) -> None:
         _EMBED.replace("compat:ops", "compat:engine:duckdb")
     )
     compat.fix(root)
+    lines = _lines(ref / "003-duckdb/index.md")
+    assert "| ops | 1 of 2 | 1 | — | — |" in lines
     assert (
-        "| ops (1 of 2) | [Read](../../how-to/engine/index.md#read-it) (by path) "
-        "| [Write](../../how-to/engine/index.md#read-it) | — | — |"
-    ) in _lines(ref / "003-duckdb/index.md")
+        "  - Verified here: [Read](../../how-to/engine/index.md#read-it) (by path)"
+        in lines
+    )
+    assert "  - Doesn't work: [Write](../../how-to/engine/index.md#read-it)" in lines
 
 
 def test_an_interface_names_the_package_it_goes_through(tmp_path) -> None:
@@ -1153,15 +1188,13 @@ def test_an_engine_draft_claim_shows_only_on_a_private_page(tmp_path) -> None:
     root = _repo(tmp_path, _SPARK_READS, status="draft")
     ref = _engine_pages(root)
     compat.fix(root)
-    assert "| ops (0 of 2) | — | — | — | Read, Write |" in _lines(
-        ref / "003-spark/index.md"
-    )
+    assert "  - Not verified here: Read, Write" in _lines(ref / "003-spark/index.md")
     page = ref / "003-spark/index.md"
     page.write_text(page.read_text().replace("status: ready", "status: private"))
     compat.fix(root)
     assert (
-        "| ops (0 of 2) | [Read (draft)](../../how-to/engine/index.md#read-it) | — "
-        "| — | Write |" in _lines(page)
+        "  - Verified here: [Read (draft)](../../how-to/engine/index.md#read-it)"
+        in _lines(page)
     )
 
 

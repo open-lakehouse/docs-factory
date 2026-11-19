@@ -538,9 +538,14 @@ is a journey, and the script that runs it claims the cell. A script claims cells
   must implement its spec, renders that outcome for each interface reaching
   the spec. The review app labels the cell "blocked by" the server, and a
   release that adds the endpoint flips them all by deleting one entry.
-- A table embedded on a `private` page also shows draft pages' claims, marked
-  "(draft)", with each cell's `api` and links to its evidence. Private pages are
-  never emitted, so nothing unreviewed reaches readers.
+- A table embedded on a `private` page also shows draft pages' claims, with
+  the mark in parentheses (`(✓)`), each cell's `api`, and links to its
+  evidence. Private pages are never emitted, so nothing unreviewed reaches
+  readers.
+- A cell is only its mark and link, so a row reads at a glance. Its `note`
+  (and on a private page its `api`) goes to a footnote under the table, and
+  cells with the same detail share one. An engine report is a table of counts
+  per group, with each group's journeys listed under it.
 
 A path (`architecture/journeys/paths.yml`) says what a journey's participants
 must support, keyed by participant role. A `client` lists the table formats it

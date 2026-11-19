@@ -1498,13 +1498,14 @@ def _render_cell(
     embed: Path,
     content_root: Path,
     detailed: bool,
-) -> str:
-    """One cell. ``detailed`` (a private page) adds draft markers, the API, and
-    evidence links, and always shows documented cells."""
+) -> tuple[str, str | None]:
+    """One cell: its mark and link, and the detail its footnote carries.
+    ``detailed`` (a private page) adds draft marks, the API, and evidence
+    links, and always shows documented cells."""
     if found.status == "unknown" or (
         found.status == "documented" and not (table.documented or detailed)
     ):
-        return "—"
+        return "—", None
     shown = found.shown
     link: str | None = None
     if shown is not None:
@@ -1522,31 +1523,39 @@ def _render_cell(
         if found.status == "documented" or detailed:
             link = _evidence_link(ev, matrix, embed, content_root)
     symbol = {"tested": "✓", "documented": "docs"}.get(found.status, "✗")
-    parts = [f"[{symbol}]({link})" if link else symbol]
-    if detailed and api:
-        parts.append(f"`{api}`")
-    if note:
-        parts.append(note)
+    # Parentheses mark a draft page's claim: provisional until the page is
+    # ready and its script gates CI.
     if detailed and found.draft:
-        parts.append("(draft)")
-    return " ".join(parts)
+        symbol = f"({symbol})"
+    mark = f"[{symbol}]({link})" if link else symbol
+    detail = [f"`{api}`"] if detailed and api else []
+    if note:
+        detail.append(note)
+    return mark, "; ".join(detail) or None
 
 
 def render(
     result: Result, matrix: Matrix, table: Table, embed: Path, content_root: Path
 ) -> list[str]:
-    """The table's Markdown lines for a page that embeds it."""
+    """The table's Markdown lines for a page that embeds it.
+
+    A cell is only its mark, so a row reads at a glance; its API and note go to
+    a footnote under the table. Labels carry the table key because one page
+    embeds several tables, and identical details share one footnote."""
     detailed = page_status(embed) == "private"
     ifaces = [matrix.interfaces[c] for c in table.columns if c in matrix.interfaces]
     lines = [
         "| Operation | " + " | ".join(_header(i, matrix) for i in ifaces) + " |",
         "| --- |" + " --- |" * len(ifaces),
     ]
+    notes: dict[str, str] = {}
+    prefix = re.sub(r"[^\w-]+", "-", table.id)
     for row in table.rows:
         journey = matrix.journeys[row]
         label = f"{journey.title} (`{row}`)" if detailed else journey.title
-        cells = [
-            _render_cell(
+        cells = []
+        for i in ifaces:
+            mark, detail = _render_cell(
                 cell(result, matrix, i.key, row, drafts=detailed),
                 i.key,
                 matrix,
@@ -1555,9 +1564,14 @@ def render(
                 content_root,
                 detailed,
             )
-            for i in ifaces
-        ]
+            if detail is not None:
+                ref = notes.setdefault(detail, f"{prefix}-{len(notes) + 1}")
+                mark += f"[^{ref}]"
+            cells.append(mark)
         lines.append(f"| {label} | " + " | ".join(cells) + " |")
+    if notes:
+        lines.append("")
+        lines.extend(f"[^{ref}]: {detail}" for detail, ref in notes.items())
     return lines
 
 
@@ -1713,28 +1727,34 @@ def _verified_count(rows: list[tuple[Journey, Cell]]) -> str:
     return f"{done} of {len(rows)}"
 
 
+_ENGINE_BUCKETS = {
+    "works": "Verified here",
+    "no": "Doesn't work",
+    "docs": "Upstream docs only",
+    "unknown": "Not verified here",
+}
+
+
 def render_engine(
     result: Result, matrix: Matrix, engine: Engine, embed: Path, content_root: Path
 ) -> list[str]:
     """The engine's journeys per table: what an example here verifies, what it
-    shows failing, what only upstream docs say, and what no example runs."""
+    shows failing, what only upstream docs say, and what no example runs.
+
+    The table only counts, so each group is one short row; the journeys behind
+    each count are listed under it."""
     detailed = page_status(embed) == "private"
     groups = _engine_rows(result, matrix, engine, drafts=detailed)
     lines = [
         f"Verified here: {_verified_count([p for _, r in groups for p in r])} "
         "journeys.",
         "",
-        "| Journeys | Verified here | Doesn't work | Upstream docs only "
-        "| Not verified here |",
+        "| Journeys | " + " | ".join(_ENGINE_BUCKETS.values()) + " |",
         "| --- | --- | --- | --- | --- |",
     ]
+    lists: list[tuple[str, dict[str, list[str]]]] = []
     for group, rows in groups:
-        listed: dict[str, list[str]] = {
-            "works": [],
-            "no": [],
-            "docs": [],
-            "unknown": [],
-        }
+        listed: dict[str, list[str]] = {bucket: [] for bucket in _ENGINE_BUCKETS}
         for journey, found in rows:
             if found.status == "unknown":
                 listed["unknown"].append(journey.title)
@@ -1760,11 +1780,18 @@ def render_engine(
             linked = f"[{label}]({href})" if href else label
             bucket = {"tested": "works", "documented": "docs"}.get(found.status, "no")
             listed[bucket].append(f"{linked} ({note})" if note else linked)
-        lines.append(
-            f"| {group.title} ({_verified_count(rows)}) | "
-            + " | ".join(", ".join(items) or "—" for items in listed.values())
-            + " |"
-        )
+        counts = [_verified_count(rows)] + [
+            str(len(listed[b])) if listed[b] else "—" for b in ("no", "docs", "unknown")
+        ]
+        lines.append(f"| {group.title} | " + " | ".join(counts) + " |")
+        lists.append((group.title, listed))
+    for title, listed in lists:
+        lines += ["", f"- **{title}**"]
+        lines += [
+            f"  - {_ENGINE_BUCKETS[bucket]}: {', '.join(items)}"
+            for bucket, items in listed.items()
+            if items
+        ]
     return lines
 
 
@@ -1851,7 +1878,7 @@ def _rollup(
             content_root,
             detailed,
         )
-        return rendered != "—"
+        return rendered[0] != "—"
 
     speaking = tuple(
         col for col in group.columns if any(says(col, row) for row in group.rows)

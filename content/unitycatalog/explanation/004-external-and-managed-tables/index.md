@@ -147,18 +147,18 @@ What each client can do with a table, as tested in CI:
 | List tables | [✓](../../how-to/configure-spark/index.md#check-the-connection) | [✓](../../how-to/duckdb/index.md#list-tables) | [✓](../../how-to/python-dataframes/index.md#list-tables) | [✓](../../how-to/python-dataframes/index.md#list-tables) | ✗ | — | — | [✓](../../tutorials/getting-started/index.md#browse-the-sample-data) | — |
 | Read an external table | — | [✓](../../how-to/register-external-table/index.md#read-the-data) | [✓](../../how-to/register-external-table/index.md#read-the-data) | [✓](../../how-to/register-external-table/index.md#read-the-data) | [✓](../../how-to/python-dataframes/index.md#read-a-table) | — | — | — | — |
 | Read with vended S3 credentials | — | — | [✓](../../how-to/python-dataframes/index.md#read-a-table) | — | [✓](../../how-to/python-dataframes/index.md#read-a-table) | — | — | — | — |
-| Append to an external table | — | — | [✓](../../how-to/python-dataframes/index.md#append-rows) | [✗](../../how-to/python-dataframes/index.md#append-rows) on local storage | [✓](../../how-to/python-dataframes/index.md#append-rows) | — | — | — | — |
+| Append to an external table | — | — | [✓](../../how-to/python-dataframes/index.md#append-rows) | [✗](../../how-to/python-dataframes/index.md#append-rows)[^asset-lakehouse-table-1] | [✓](../../how-to/python-dataframes/index.md#append-rows) | — | — | — | — |
 | Create a managed table | [✓](../../how-to/managed-delta-tables/index.md#create-a-managed-table) | [✓](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — | — |
 | Create a managed table from a query | [✓](../../how-to/replace-and-overwrite-tables/index.md#create-a-table-from-a-query) | ✗ | — | — | — | — | — | — | — |
 | Read a managed table | [✓](../../how-to/managed-delta-tables/index.md#read-the-table) | [✓](../../how-to/duckdb/index.md#query-a-table) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | — | — | — | — |
-| Append to a managed table | [✓](../../how-to/managed-delta-tables/index.md#write-to-the-table) | [✓](../../how-to/duckdb/index.md#append-rows) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) on local storage | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | — | — | — | — |
+| Append to a managed table | [✓](../../how-to/managed-delta-tables/index.md#write-to-the-table) | [✓](../../how-to/duckdb/index.md#append-rows) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations)[^asset-lakehouse-table-1] | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | — | — | — | — |
 | Update rows in a managed table | [✓](../../how-to/managed-delta-tables/index.md#write-to-the-table) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — | — |
 | Delete rows from a managed table | [✓](../../how-to/managed-delta-tables/index.md#write-to-the-table) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — | — |
 | Change a managed table's columns | [✓](../../how-to/change-table-schema/index.md#add-columns-and-comments) | [✗](../../how-to/change-table-schema/index.md#choose-a-client) | ✗ | ✗ | ✗ | — | — | ✗ | ✗ |
 | Set a managed table's properties | [✓](../../how-to/change-table-schema/index.md#set-and-remove-table-properties) | — | ✗ | ✗ | ✗ | — | — | ✗ | ✗ |
 | Rename a managed table or column | [✗](../../how-to/change-table-schema/index.md#rename-a-table-or-column) | — | — | — | — | — | — | — | — |
-| Change an external table's columns | [✓](../../how-to/change-table-schema/index.md#change-the-delta-log) sync through the Delta API | [✗](../../how-to/change-table-schema/index.md#choose-a-client) | — | — | — | — | — | — | — |
-| Set an external table's properties | [✓](../../how-to/change-table-schema/index.md#change-the-delta-log) sync through the Delta API | [✗](../../how-to/change-table-schema/index.md#choose-a-client) | — | — | — | — | — | — | — |
+| Change an external table's columns | [✓](../../how-to/change-table-schema/index.md#change-the-delta-log)[^asset-lakehouse-table-2] | [✗](../../how-to/change-table-schema/index.md#choose-a-client) | — | — | — | — | — | — | — |
+| Set an external table's properties | [✓](../../how-to/change-table-schema/index.md#change-the-delta-log)[^asset-lakehouse-table-2] | [✗](../../how-to/change-table-schema/index.md#choose-a-client) | — | — | — | — | — | — | — |
 | Replace a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#replace-a-tables-definition-and-rows) | — | — | — | — | — | — | — | — |
 | Overwrite a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#overwrite-all-rows) | — | — | — | — | — | — | — | — |
 | Replace rows that match a condition | [✓](../../how-to/replace-and-overwrite-tables/index.md#replace-the-rows-that-match-a-condition) | — | — | — | — | — | — | — | — |
@@ -166,7 +166,7 @@ What each client can do with a table, as tested in CI:
 | Drop a managed table | [✓](../../how-to/managed-delta-tables/index.md#drop-a-managed-table) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — | — |
 | Read an earlier version of a managed table | [✓](../../how-to/managed-delta-tables/index.md#read-an-earlier-version) | — | — | — | — | — | — | — | — |
 | Write to a managed table by path | [✗](../../how-to/managed-delta-tables/index.md#dont-write-to-the-tables-path) | — | ✗ | ✗ | ✗ | — | — | — | — |
-| Read a Parquet, CSV, or JSON table | — | [✓](../../how-to/table-storage-formats/index.md#read-the-data) by path from the table's location | [✓](../../how-to/table-storage-formats/index.md#read-the-data) by path from the table's location | — | — | — | — | — | — |
+| Read a Parquet, CSV, or JSON table | — | [✓](../../how-to/table-storage-formats/index.md#read-the-data)[^asset-lakehouse-table-3] | [✓](../../how-to/table-storage-formats/index.md#read-the-data)[^asset-lakehouse-table-3] | — | — | — | — | — | — |
 | Create a managed Iceberg table | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | — | — |
 | Append to an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — |
 | Read an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — |
@@ -176,7 +176,7 @@ What each client can do with a table, as tested in CI:
 | Rename an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — |
 | Move an Iceberg table to another schema | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — | — |
 | Drop an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — |
-| Join Delta and Iceberg tables | [✓](../../how-to/iceberg-rest/index.md#join-delta-and-iceberg-tables-in-spark) UC connector and Iceberg REST catalogs in one session | — | — | — | — | — | — | — | — |
+| Join Delta and Iceberg tables | [✓](../../how-to/iceberg-rest/index.md#join-delta-and-iceberg-tables-in-spark)[^asset-lakehouse-table-4] | — | — | — | — | — | — | — | — |
 | Read a Delta table as Iceberg | ✗ | ✗ | — | — | — | ✗ | — | — | — |
 | Register an existing Iceberg table | ✗ | ✗ | ✗ | ✗ | — | ✗ | ✗ | — | — |
 | Commit to several tables at once | ✗ | ✗ | ✗ | ✗ | — | ✗ | ✗ | — | — |
@@ -186,9 +186,15 @@ What each client can do with a table, as tested in CI:
 | Register an external Delta table | — | — | — | — | — | — | — | [✓](../../how-to/register-external-table/index.md#register-the-table) | [✓](../../how-to/register-external-table/index.md#register-the-table) |
 | Register a Parquet, CSV, or JSON table | — | — | — | — | — | — | — | [✓](../../how-to/table-storage-formats/index.md#register-the-tables) | [✓](../../how-to/table-storage-formats/index.md#register-the-tables) |
 | View a table | — | — | — | — | — | — | — | [✓](../../how-to/register-external-table/index.md#view-the-table) | [✓](../../how-to/table-storage-formats/index.md#read-the-data) |
-| Read a table's rows from a client | — | — | — | — | — | — | — | [✓](../../how-to/register-external-table/index.md#read-the-data) | [✓](../../how-to/register-external-table/index.md#read-the-data) with deltalake |
+| Read a table's rows from a client | — | — | — | — | — | — | — | [✓](../../how-to/register-external-table/index.md#read-the-data) | [✓](../../how-to/register-external-table/index.md#read-the-data)[^asset-lakehouse-table-5] |
 | Write sample rows | — | — | — | — | — | — | — | [✓](../../tutorials/getting-started/index.md#write-and-read-rows) | — |
 | Drop a table | — | — | — | — | — | — | — | [✓](../../how-to/table-storage-formats/index.md#drop-the-tables) | [✓](../../how-to/table-storage-formats/index.md#drop-the-tables) |
+
+[^asset-lakehouse-table-1]: on local storage
+[^asset-lakehouse-table-2]: sync through the Delta API
+[^asset-lakehouse-table-3]: by path from the table's location
+[^asset-lakehouse-table-4]: UC connector and Iceberg REST catalogs in one session
+[^asset-lakehouse-table-5]: with deltalake
 <!-- /compat:asset:lakehouse.table -->
 
 ## When to use which

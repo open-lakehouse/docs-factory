@@ -450,6 +450,10 @@ declared `compose` file exists.
 
 ### Compatibility claims
 
+What the coverage data is, how a cell earns its state, and which parts
+matter to Delta and to Unity Catalog are recorded in the private
+[coverage data](open-lakehouse/reference/003-coverage-data.md) page.
+
 A script can also say what it proves about an engine or client, so a
 compatibility table can cite it. Journeys are estate-wide
 ([ADR-0009](../architecture/adr/ADR-0009-journeys-as-path-patterns.md)), so

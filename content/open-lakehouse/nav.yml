@@ -4,7 +4,8 @@
 #
 # `id:` / `planned:` values are backlog ids: E01–E06, H01–H02 and R01 from
 # docs/design/format-compatibility-plan.md §4; E07–E11, R02, T01 and H03–H04
-# for the Trestle section. Planned slots render for reviewers only.
+# for the Trestle section; R03 is the private coverage-data record. Planned
+# slots render for reviewers only.
 nav:
   - section: Concepts
     items:
@@ -55,3 +56,5 @@ nav:
       - page: reference/format-crosswalk
         id: R01
         label: Delta and Iceberg feature crosswalk
+      - page: reference/coverage-data
+        id: R03

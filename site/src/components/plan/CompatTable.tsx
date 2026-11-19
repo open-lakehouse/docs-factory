@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import {
+  type CompatCell,
   type CompatInterface,
   type CompatJourney,
   type CompatMatrix,
@@ -108,6 +109,7 @@ export default function CompatTable({
   const selected = parseCell(state.cell);
   const scoped = Boolean(scope.model || scope.path);
   const share = answered(model.totals);
+  // An empty interface (`<journey>:`) opens the journey's own detail row.
   const toggleCell = (journey: string, iface: string) =>
     set({ cell: state.cell === `${journey}:${iface}` ? null : `${journey}:${iface}` });
 
@@ -470,22 +472,23 @@ function Row({
   onCell: (iface: string) => void;
 }) {
   const open = columns.find((c) => c.key === selected);
+  const expanded = selected === "";
   return (
     <>
       <tr>
-        <th scope="row">
-          <JourneyRef id={journey.id}>{journey.title}</JourneyRef>{" "}
-          <code className="muted text-xs">{journey.id}</code>
-          <span className="ctable-row-meta">
-            {showPath && journey.path && <PathRef id={journey.path} />}
-            {journey.feature && (
-              <span className="muted">
-                {journey.feature.name}
-                {journey.feature.since && ` · ${journey.feature.since}`}
-              </span>
-            )}
-          </span>
-          <p className="muted">{journey.summary}</p>
+        <th scope="row" className="ctable-row-head">
+          <button
+            type="button"
+            className="ctable-row-toggle"
+            aria-expanded={expanded}
+            aria-label={`${expanded ? "Hide" : "Show"} details for ${journey.title}`}
+            onClick={() => onCell("")}
+          >
+            <ChevronDown className={cn("size-3.5", !expanded && "-rotate-90")} aria-hidden />
+          </button>
+          <JourneyRef id={journey.id}>
+            <span title={journey.summary}>{journey.title}</span>
+          </JourneyRef>
         </th>
         {columns.map((c) => {
           if (!inGroup.has(c.key)) return <td key={c.key} className="ctable-out" />;
@@ -507,12 +510,23 @@ function Row({
                 onClick={() => onCell(c.key)}
               >
                 {bucket === "draft" ? MARK[cell?.status ?? "unknown"] : MARK[bucket]}
-                {bucket === "draft" && <span className="compat-draft">draft</span>}
               </button>
             </td>
           );
         })}
       </tr>
+      {expanded && (
+        <tr className="compat-detail-row">
+          <td colSpan={columns.length + 1}>
+            <JourneyDetail
+              journey={journey}
+              matrix={matrix}
+              columns={columns.filter((c) => inGroup.has(c.key))}
+              showPath={showPath}
+            />
+          </td>
+        </tr>
+      )}
       {open && (
         <tr className="compat-detail-row">
           <td colSpan={columns.length + 1}>
@@ -520,14 +534,7 @@ function Row({
               iface={open}
               journey={journey}
               matrix={matrix}
-              cell={
-                journey.cells[open.key] ?? {
-                  status: "unknown",
-                  draft: false,
-                  proofs: [],
-                  evidence: [],
-                }
-              }
+              cell={journey.cells[open.key] ?? UNKNOWN_CELL}
             />
             <Link to={implHref(open.model ?? "")} className="text-xs" hidden={!open.model}>
               Open {likec4model.findElement(open.model ?? "")?.title ?? open.model} →
@@ -536,5 +543,53 @@ function Row({
         </tr>
       )}
     </>
+  );
+}
+
+const UNKNOWN_CELL: CompatCell = { status: "unknown", draft: false, proofs: [], evidence: [] };
+
+/** A journey's metadata and every answered cell in its row, opened from the row header. */
+function JourneyDetail({
+  journey,
+  matrix,
+  columns,
+  showPath,
+}: {
+  journey: CompatJourney;
+  matrix: CompatMatrix;
+  columns: CompatInterface[];
+  showPath: boolean;
+}) {
+  const answeredCols = columns.filter((c) => bucketOf(journey.cells[c.key]) !== "unknown");
+  const unanswered = columns.filter((c) => bucketOf(journey.cells[c.key]) === "unknown");
+  return (
+    <div className="compat-detail compat-journey-detail">
+      <p>{journey.summary}</p>
+      <p className="ctable-row-meta">
+        <code className="muted">{journey.id}</code>
+        {showPath && journey.path && <PathRef id={journey.path} />}
+        {journey.feature && (
+          <span className="muted">
+            {journey.feature.name}
+            {journey.feature.since && ` · ${journey.feature.since}`}
+          </span>
+        )}
+      </p>
+      {answeredCols.map((c) => (
+        <CellDetail
+          key={c.key}
+          iface={c}
+          journey={journey}
+          matrix={matrix}
+          cell={journey.cells[c.key] ?? UNKNOWN_CELL}
+          modelContext={false}
+        />
+      ))}
+      {unanswered.length > 0 && (
+        <p className="muted">
+          Nothing answers it yet for {unanswered.map((c) => c.label).join(", ")}.
+        </p>
+      )}
+    </div>
   );
 }

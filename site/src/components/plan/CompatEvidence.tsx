@@ -228,11 +228,14 @@ export function CellDetail({
   journey,
   matrix,
   cell,
+  modelContext = true,
 }: {
   iface: CompatInterface | undefined;
   journey: CompatJourney;
   matrix: CompatMatrix;
   cell: CompatCell;
+  /** Off where several cells stack under one journey and the model check would repeat. */
+  modelContext?: boolean;
 }) {
   const label = iface?.label ?? "Unknown interface";
   return (
@@ -241,7 +244,9 @@ export function CellDetail({
         <strong>{label}</strong>: {STATUS_LABEL[cell.status]}
         {cell.draft && " (only a draft page proves it)"}
       </p>
-      <JourneyModelContext journey={journey} iface={iface} matrix={matrix} cell={cell} />
+      {modelContext && (
+        <JourneyModelContext journey={journey} iface={iface} matrix={matrix} cell={cell} />
+      )}
       {cell.proofs.length === 0 && cell.evidence.length === 0 && (
         <p className="muted">No script or evidence covers this cell yet.</p>
       )}

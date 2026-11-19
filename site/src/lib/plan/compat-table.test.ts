@@ -6,6 +6,7 @@ import { bucketOf } from "../estate-graph";
 import {
   buildTable,
   DEFAULT_STATE,
+  parseCell,
   parseState,
   scopedMatrices,
   stateParams,
@@ -90,4 +91,11 @@ test("state round-trips through the URL, and old links still land", () => {
   expect(parseState(new URLSearchParams("since=deltaSpec:v3")).group).toBe("spec");
   expect(parseState(new URLSearchParams("group=asset")).group).toBe("asset");
   expect(stateParams(DEFAULT_STATE).toString()).toBe("");
+});
+
+test("a cell key with no interface opens the journey's row", () => {
+  expect(parseCell("read.scan:duckdb-sql")).toEqual({ journey: "read.scan", iface: "duckdb-sql" });
+  expect(parseCell("read.scan:")).toEqual({ journey: "read.scan", iface: "" });
+  expect(parseState(stateParams(state({ cell: "read.scan:" }))).cell).toBe("read.scan:");
+  expect(parseCell(null)).toBeNull();
 });

@@ -1,4 +1,4 @@
-import { Fragment, useMemo } from "react";
+import { Fragment, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { matrices } from "../../compat";
 import {
@@ -34,6 +34,8 @@ export default function SpecPage() {
   const impl = params.get("impl");
   const spec = catalog.specs[id];
   const all = useMemo(() => specColumns(id, matrices), [id]);
+  // `<role>:<obligation>`: the row whose covering journeys are open.
+  const [open, setOpen] = useState<string | null>(null);
   if (!spec) {
     return (
       <PlanPage title="No obligations recorded">
@@ -92,7 +94,6 @@ export default function SpecPage() {
                 <thead>
                   <tr>
                     <th scope="col">Obligation</th>
-                    <th scope="col">Since</th>
                     {columns.map((c) => {
                       const n = c.roles[role];
                       const share = n ? answered(n) : null;
@@ -116,32 +117,59 @@ export default function SpecPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {rows.map((o) => (
-                    <tr key={o.name}>
-                      <th scope="row">
-                        <code>{o.name}</code>
-                      </th>
-                      <td className="muted text-xs">{o.since ?? ""}</td>
-                      {columns.map((c) => {
-                        const status = c.status.get(`${o.name}:${role}`) ?? "untracked";
-                        return (
-                          <td key={`${c.project}:${c.interface}`}>
-                            <span
-                              className={`compat-cell compat-${status}`}
-                              title={STATUS_TITLE[status] ?? status}
-                            >
-                              {STATUS_MARK[status] ?? status}
-                            </span>
+                  {rows.map((o) => {
+                    const key = `${role}:${o.name}`;
+                    const covering = o.journeys[role] ?? [];
+                    const expanded = open === key;
+                    return (
+                      <Fragment key={o.name}>
+                        <tr>
+                          <th scope="row">
+                            <code>{o.name}</code>
+                            {o.since && <span className="block muted text-xs">{o.since}</span>}
+                          </th>
+                          {columns.map((c) => {
+                            const status = c.status.get(`${o.name}:${role}`) ?? "untracked";
+                            return (
+                              <td key={`${c.project}:${c.interface}`}>
+                                <span
+                                  className={`compat-cell compat-${status}`}
+                                  title={STATUS_TITLE[status] ?? status}
+                                >
+                                  {STATUS_MARK[status] ?? status}
+                                </span>
+                              </td>
+                            );
+                          })}
+                          <td>
+                            {covering.length === 0 ? (
+                              <span className="muted text-xs">none</span>
+                            ) : (
+                              <button
+                                type="button"
+                                className="model-element-link text-xs"
+                                aria-expanded={expanded}
+                                onClick={() => setOpen(expanded ? null : key)}
+                              >
+                                {covering.length} {covering.length === 1 ? "journey" : "journeys"}
+                              </button>
+                            )}
                           </td>
-                        );
-                      })}
-                      <td className="graph-chips">
-                        {(o.journeys[role] ?? []).map((j) => (
-                          <JourneyRef key={j} id={j} />
-                        ))}
-                      </td>
-                    </tr>
-                  ))}
+                        </tr>
+                        {expanded && (
+                          <tr className="compat-detail-row">
+                            <td colSpan={columns.length + 2}>
+                              <div className="graph-chips">
+                                {covering.map((j) => (
+                                  <JourneyRef key={j} id={j} />
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

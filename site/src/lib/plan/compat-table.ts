@@ -243,7 +243,8 @@ export function stateParams(s: TableState): URLSearchParams {
   return p;
 }
 
-/** `<journey>:<interface>`: journey ids are dotted and interface keys dashed. */
+/** `<journey>:<interface>`: journey ids are dotted and interface keys dashed. An
+ * empty interface (`<journey>:`) is the journey's own row. */
 export function parseCell(raw: string | null): { journey: string; iface: string } | null {
   const i = raw?.lastIndexOf(":") ?? -1;
   if (!raw || i <= 0) return null;

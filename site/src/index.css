@@ -692,6 +692,12 @@ body {
 .ctable-group-title { font-weight: 600; color: var(--heading); }
 .ctable-group .compat-col-stat { margin-top: 0; }
 .ctable-out { background: repeating-linear-gradient(-45deg, transparent 0 4px, color-mix(in srgb, var(--surface) 80%, transparent) 4px 5px); }
+.ctable-row-head { white-space: nowrap; }
+.ctable-row-head > a { white-space: normal; }
+.ctable-row-toggle { margin-right: 0.3rem; color: var(--muted-foreground); vertical-align: middle; }
+.ctable-row-toggle:hover { color: var(--foreground); }
+.compat-journey-detail { display: grid; gap: 0.6rem; }
+.compat-journey-detail > p { margin: 0; }
 .ctable-row-meta { display: inline-flex; flex-wrap: wrap; gap: 0.4rem; margin-left: 0.4rem; font-size: 0.72rem; vertical-align: middle; }
 .ctable-request th { font-weight: 400; font-size: 0.82rem; }
 
@@ -1351,6 +1357,8 @@ a.roadmap-slot-title:hover { color: var(--accent); }
   z-index: 1;
   background: var(--background);
 }
+/* Inside .graph-scroll the sticky offset is from the scroller, so it covered the first row. */
+.compat-table.graph-grid thead th { position: static; }
 .compat-col-stat {
   display: flex;
   align-items: center;

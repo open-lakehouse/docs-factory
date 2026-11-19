@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { matrices } from "../../compat";
 import {
@@ -91,7 +91,6 @@ export default function JourneyPage() {
             <thead>
               <tr>
                 <th>Interface</th>
-                <th>Version</th>
                 <th>Cell</th>
                 <th>Evidence</th>
               </tr>
@@ -99,38 +98,54 @@ export default function JourneyPage() {
             <tbody>
               {p.columns.map((c) => {
                 const key = `${p.project}:${c.key}`;
-                const n = (c.cell?.proofs.length ?? 0) + (c.cell?.evidence.length ?? 0);
+                const proofs = c.cell?.proofs.length ?? 0;
+                const evidence = c.cell?.evidence.length ?? 0;
+                const expanded = open === key;
                 return (
-                  <tr key={key}>
-                    <td>{c.label}</td>
-                    <td className="muted">{c.version ?? "—"}</td>
-                    <td>
-                      <BucketMark bucket={bucketOf(c.cell)} />
-                    </td>
-                    <td>
-                      {n === 0 ? (
-                        <span className="muted text-xs">nothing yet</span>
-                      ) : open === key ? (
-                        <ul className="compat-detail-list">
-                          {c.cell?.proofs.map((pr) => (
-                            <ProofItem key={`${pr.script}:${pr.anchor}`} proof={pr} />
-                          ))}
-                          {c.cell?.evidence.map((e) => (
-                            <EvidenceItem key={`${e.source}:${e.why}`} evidence={e} />
-                          ))}
-                        </ul>
-                      ) : (
-                        <button
-                          type="button"
-                          className="model-element-link text-xs"
-                          onClick={() => setOpen(key)}
-                        >
-                          {c.cell?.proofs.length ?? 0} proofs, {c.cell?.evidence.length ?? 0}{" "}
-                          evidence
-                        </button>
-                      )}
-                    </td>
-                  </tr>
+                  <Fragment key={key}>
+                    <tr>
+                      <td>
+                        {c.label}
+                        {c.version && <span className="muted text-xs"> {c.version}</span>}
+                      </td>
+                      <td>
+                        <BucketMark bucket={bucketOf(c.cell)} />
+                      </td>
+                      <td>
+                        {proofs + evidence === 0 ? (
+                          <span className="muted text-xs">nothing yet</span>
+                        ) : (
+                          <button
+                            type="button"
+                            className="model-element-link text-xs"
+                            aria-expanded={expanded}
+                            onClick={() => setOpen(expanded ? null : key)}
+                          >
+                            {[
+                              proofs && `${proofs} ${proofs === 1 ? "proof" : "proofs"}`,
+                              evidence && `${evidence} evidence`,
+                            ]
+                              .filter(Boolean)
+                              .join(", ")}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                    {expanded && (
+                      <tr className="compat-detail-row">
+                        <td colSpan={3}>
+                          <ul className="compat-detail-list">
+                            {c.cell?.proofs.map((pr) => (
+                              <ProofItem key={`${pr.script}:${pr.anchor}`} proof={pr} />
+                            ))}
+                            {c.cell?.evidence.map((e) => (
+                              <EvidenceItem key={`${e.source}:${e.why}`} evidence={e} />
+                            ))}
+                          </ul>
+                        </td>
+                      </tr>
+                    )}
+                  </Fragment>
                 );
               })}
             </tbody>

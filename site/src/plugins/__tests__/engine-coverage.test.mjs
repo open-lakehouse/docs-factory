@@ -11,16 +11,38 @@ const embed = (id) => [
   html(`<!-- /compat:${id} -->`),
 ];
 
-test("the emitter collapses each embed to a directive and keeps other tables", () => {
-  const tree = { type: "root", children: [...embed("engine:apacheSpark"), ...embed("ops")] };
+test("the emitter collapses each embed to a directive and keeps Markdown-only tables", () => {
+  const tree = {
+    type: "root",
+    children: [
+      ...embed("engine:apacheSpark"),
+      ...embed("ops"),
+      ...embed("asset:lakehouse.table"),
+      ...embed("crosswalk"),
+    ],
+  };
   collapseCoverageEmbeds(tree, "unitycatalog");
-  expect(tree.children[0]).toEqual({
-    type: "containerDirective",
-    name: "engine-coverage",
-    attributes: { project: "unitycatalog", engine: "apacheSpark" },
-    children: [],
-  });
-  expect(tree.children.slice(1).map((c) => c.type)).toEqual(["html", "table", "html"]);
+  expect(tree.children.slice(0, 3)).toEqual([
+    {
+      type: "containerDirective",
+      name: "engine-coverage",
+      attributes: { project: "unitycatalog", engine: "apacheSpark" },
+      children: [],
+    },
+    {
+      type: "containerDirective",
+      name: "compat-grid",
+      attributes: { project: "unitycatalog", table: "ops" },
+      children: [],
+    },
+    {
+      type: "containerDirective",
+      name: "compat-grid",
+      attributes: { project: "unitycatalog", table: "asset:lakehouse.table" },
+      children: [],
+    },
+  ]);
+  expect(tree.children.slice(3).map((c) => c.type)).toEqual(["html", "table", "html"]);
 });
 
 test("the preview turns markers into components, taking the project from the path", () => {
@@ -30,7 +52,7 @@ test("the preview turns markers into components, taking the project from the pat
   });
   const [esm, hub, report] = tree.children;
   expect(esm.value).toBe(
-    'import { EngineCoverage, EngineSupport } from "@/components/engine-coverage";',
+    'import { CompatGrid, EngineCoverage, EngineSupport } from "@/components/engine-coverage";',
   );
   expect(hub).toMatchObject({ type: "mdxJsxFlowElement", name: "EngineSupport" });
   expect(report.attributes.map((a) => [a.name, a.value])).toEqual([

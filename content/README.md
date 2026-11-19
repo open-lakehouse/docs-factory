@@ -629,7 +629,10 @@ linked by the heading its report sits under. Each project's
 The docs sites and the review preview replace the rendered table with an
 interactive report: a bar per table, expandable to each journey's example and
 script (`remark-engine-coverage.mjs`, counted by `content-core/coverage.mjs`).
-The `.md` twins keep the table.
+A `compat:<table>` or `compat:asset:<id>` embed becomes the same matrix on its
+own, one line per journey, whose rows open each cell's proof. The `.md` twins
+and GitHub keep the Markdown tables; `compat:interfaces` and `compat:crosswalk`
+stay Markdown everywhere.
 
 Keep journeys, paths, and `tables.*` rows/columns authored. They are reader-task and editorial choices. The model supplies
 validation and breadth; it never creates a journey or a green cell.

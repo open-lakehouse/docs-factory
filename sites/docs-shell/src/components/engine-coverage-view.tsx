@@ -1,6 +1,7 @@
 // An engine's coverage report (content-core/coverage.mjs `engineReport`): a
 // journeys × interfaces matrix per journey group, whose cells open the example
-// and script behind them, and a hub grid of engines × groups.
+// and script behind them, and a hub grid of engines × groups. A docs table or
+// asset rollup (`tableReports`) renders as one such matrix on its own.
 //
 // site/src/components/ and sites/docs-shell/src/components/ hold byte-identical
 // copies of this file and engine-coverage.css;
@@ -53,7 +54,7 @@ interface Column {
   counts: Counts;
 }
 
-interface GroupReport {
+export interface GroupReport {
   id: string;
   title: string;
   counts: Counts;
@@ -268,7 +269,6 @@ function Detail({ journey, variant }: { journey: JourneyReport; variant: Variant
 }
 
 function GroupMatrix({ engine, group }: { engine: string; group: GroupReport }) {
-  const [selected, setSelected] = useState<string | null>(null);
   const id = groupAnchor(engine, group.id);
   const details = useRef<HTMLDetailsElement>(null);
   // Groups start collapsed; one the overview links to opens on arrival.
@@ -292,81 +292,99 @@ function GroupMatrix({ engine, group }: { engine: string; group: GroupReport }) 
           {group.counts.proven}/{total(group.counts)}
         </span>
       </summary>
-      <div className="cov-scroll">
-        <table className="cov-matrix">
-          <thead>
-            <tr>
-              <th scope="col">Journey</th>
-              {group.columns.map((c) => (
-                <th key={c.key} scope="col">
-                  <span className="cov-col-label">{c.label}</span>
-                  {c.version && <span className="cov-num"> {c.version}</span>}
-                  <span className="cov-col-stat">
-                    <Bar counts={c.counts} />
-                    <span className="cov-num">
-                      {c.counts.proven}/{total(c.counts)}
-                    </span>
-                  </span>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {group.journeys.map((journey) => {
-              const open = journey.variants.find((v) => `${journey.id}:${v.key}` === selected);
-              // A click anywhere on the row opens it: on a cell, that interface;
-              // elsewhere, the first one with something to show.
-              const fallback =
-                journey.variants.find((v) => v.bucket !== "unknown") ?? journey.variants[0];
-              const toggle = (key: string | undefined) => {
-                const id = `${journey.id}:${key ?? fallback?.key}`;
-                setSelected(open && (!key || selected === id) ? null : id);
-              };
-              return (
-                <Fragment key={journey.id}>
-                  <tr
-                    className={`cov-row${open ? " is-open" : ""}`}
-                    onClick={(e) =>
-                      toggle(
-                        (e.target as HTMLElement).closest<HTMLElement>("[data-variant]")?.dataset
-                          .variant,
-                      )
-                    }
-                  >
-                    <th scope="row" title={journey.summary}>
-                      {journey.title}
-                    </th>
-                    {journey.variants.map((v) => {
-                      const id = `${journey.id}:${v.key}`;
-                      return (
-                        <td key={v.key} data-variant={v.key}>
-                          <button
-                            type="button"
-                            className={`cov-cell cov-${v.bucket}${selected === id ? " is-selected" : ""}`}
-                            aria-expanded={selected === id}
-                            aria-label={`${journey.title}, ${v.label}: ${LABEL[v.bucket]}`}
-                            title={LABEL[v.bucket]}
-                          >
-                            {MARK[v.bucket]}
-                          </button>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                  {open && (
-                    <tr className="cov-detail-row">
-                      <td colSpan={group.columns.length + 1}>
-                        <Detail journey={journey} variant={open} />
-                      </td>
-                    </tr>
-                  )}
-                </Fragment>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      <JourneyGrid group={group} />
     </details>
+  );
+}
+
+/** One row per journey, one mark per interface; a row opens its proof below it. */
+function JourneyGrid({ group }: { group: GroupReport }) {
+  const [selected, setSelected] = useState<string | null>(null);
+  return (
+    <div className="cov-scroll">
+      <table className="cov-matrix">
+        <thead>
+          <tr>
+            <th scope="col">Journey</th>
+            {group.columns.map((c) => (
+              <th key={c.key} scope="col">
+                <span className="cov-col-label">{c.label}</span>
+                {c.version && <span className="cov-num"> {c.version}</span>}
+                <span className="cov-col-stat">
+                  <Bar counts={c.counts} />
+                  <span className="cov-num">
+                    {c.counts.proven}/{total(c.counts)}
+                  </span>
+                </span>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {group.journeys.map((journey) => {
+            const open = journey.variants.find((v) => `${journey.id}:${v.key}` === selected);
+            // A click anywhere on the row opens it: on a cell, that interface;
+            // elsewhere, the first one with something to show.
+            const fallback =
+              journey.variants.find((v) => v.bucket !== "unknown") ?? journey.variants[0];
+            const toggle = (key: string | undefined) => {
+              const id = `${journey.id}:${key ?? fallback?.key}`;
+              setSelected(open && (!key || selected === id) ? null : id);
+            };
+            return (
+              <Fragment key={journey.id}>
+                <tr
+                  className={`cov-row${open ? " is-open" : ""}`}
+                  onClick={(e) =>
+                    toggle(
+                      (e.target as HTMLElement).closest<HTMLElement>("[data-variant]")?.dataset
+                        .variant,
+                    )
+                  }
+                >
+                  <th scope="row" title={journey.summary}>
+                    {journey.title}
+                  </th>
+                  {journey.variants.map((v) => {
+                    const id = `${journey.id}:${v.key}`;
+                    return (
+                      <td key={v.key} data-variant={v.key}>
+                        <button
+                          type="button"
+                          className={`cov-cell cov-${v.bucket}${selected === id ? " is-selected" : ""}`}
+                          aria-expanded={selected === id}
+                          aria-label={`${journey.title}, ${v.label}: ${LABEL[v.bucket]}`}
+                          title={LABEL[v.bucket]}
+                        >
+                          {MARK[v.bucket]}
+                        </button>
+                      </td>
+                    );
+                  })}
+                </tr>
+                {open && (
+                  <tr className="cov-detail-row">
+                    <td colSpan={group.columns.length + 1}>
+                      <Detail journey={journey} variant={open} />
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/** A docs table or asset rollup: the same matrix, open, with its legend. */
+export function CompatGridView({ group }: { group: GroupReport }) {
+  return (
+    <section className="cov cov-grid" aria-label={group.title}>
+      <JourneyGrid group={group} />
+      <Legend counts={group.counts} />
+    </section>
   );
 }
 

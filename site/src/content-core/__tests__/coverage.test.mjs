@@ -1,6 +1,6 @@
 // engineReport: an engine's journeys counted and linked for one consumer.
 import { expect, test } from "bun:test";
-import { engineReport } from "../coverage.mjs";
+import { engineReport, tableReports } from "../coverage.mjs";
 
 const page = (slug) => ({ project: "proj", bucket: "how-to", slug });
 const proof = (slug, { ready = true, works = true } = {}) => ({
@@ -123,4 +123,16 @@ test("with drafts, a draft claim counts as draft", () => {
     href: null,
     draft: true,
   });
+});
+
+test("a docs table is one grid, and an asset rollup keeps only what something answers", () => {
+  const withAssets = { ...matrix, journeys: matrix.journeys.map((j) => ({ ...j, asset: "t" })) };
+  const grids = tableReports(withAssets, options);
+  expect(Object.keys(grids)).toEqual(["ops", "asset:t"]);
+  expect(grids.ops.journeys.map((j) => j.id)).toEqual(["read", "write", "drop", "merge"]);
+  // Without drafts, Write's only claim is silent, and Merge has none.
+  expect(grids["asset:t"].journeys.map((j) => j.id)).toEqual(["read", "drop"]);
+  expect(grids["asset:t"].columns.map((c) => c.key)).toEqual(["sql", "py"]);
+  const drafted = tableReports(withAssets, { ...options, drafts: true });
+  expect(drafted["asset:t"].journeys.map((j) => j.id)).toEqual(["read", "write", "drop"]);
 });

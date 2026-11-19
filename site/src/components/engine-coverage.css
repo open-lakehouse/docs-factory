@@ -372,3 +372,12 @@ a.cov-hub-cell:hover {
     order: 3;
   }
 }
+
+/* A docs table or asset rollup on its own: the matrix, then its legend. */
+.cov-grid > .cov-legend {
+  padding: 0.6rem 1rem;
+  border-top: 1px solid var(--border);
+}
+.cov-grid .cov-matrix th[scope="row"] {
+  min-width: 12rem;
+}

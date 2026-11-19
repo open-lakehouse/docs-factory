@@ -54,6 +54,7 @@ import {
   COVERAGE_FORMAT,
   COVERAGE_VERSION,
   coverageReports,
+  tableReports,
 } from "../../site/src/content-core/coverage.mjs";
 import {
   declaredEnvironment,
@@ -328,25 +329,27 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
     );
     const scriptUrls = new Map(scripts.map((s) => [s.gitPath, s.fetchUrl]));
 
-    // Engine reports link only what this emit publishes; a draft claim counts
-    // only in a --drafts preview.
+    // Engine and table reports link only what this emit publishes; a draft
+    // claim counts only in a --drafts preview.
     const matrixPath = join(contentDir, "compatibility.json");
-    const coverage = existsSync(matrixPath)
-      ? coverageReports(JSON.parse(readFileSync(matrixPath, "utf8")), {
-          href: (page, anchor) => {
-            const route = routeFor(page.bucket, page.slug);
-            if (page.project !== site.project || !routes.has(route)) return null;
-            return anchor ? `${route}#${anchor}` : route;
-          },
-          scriptUrl: (gitPath) => scriptUrls.get(gitPath) ?? null,
-          drafts,
-          pageTitle: (page) => byRoute.get(routeFor(page.bucket, page.slug))?.meta.title ?? null,
-        })
-      : [];
-    files.set(
-      `${paths.generated}coverage.json`,
-      `${JSON.stringify({ format: COVERAGE_FORMAT, version: COVERAGE_VERSION, engines: coverage }, null, 2)}\n`,
-    );
+    const matrix = existsSync(matrixPath) ? JSON.parse(readFileSync(matrixPath, "utf8")) : null;
+    const reportOptions = {
+      href: (page, anchor) => {
+        const route = routeFor(page.bucket, page.slug);
+        if (page.project !== site.project || !routes.has(route)) return null;
+        return anchor ? `${route}#${anchor}` : route;
+      },
+      scriptUrl: (gitPath) => scriptUrls.get(gitPath) ?? null,
+      drafts,
+      pageTitle: (page) => byRoute.get(routeFor(page.bucket, page.slug))?.meta.title ?? null,
+    };
+    const coverage = {
+      format: COVERAGE_FORMAT,
+      version: COVERAGE_VERSION,
+      engines: matrix ? coverageReports(matrix, reportOptions) : [],
+      tables: matrix ? tableReports(matrix, reportOptions) : {},
+    };
+    files.set(`${paths.generated}coverage.json`, `${JSON.stringify(coverage, null, 2)}\n`);
 
     // The env archives. Their guide link only resolves when this emit publishes the page.
     const registry = loadRegistry(REPO_ROOT);

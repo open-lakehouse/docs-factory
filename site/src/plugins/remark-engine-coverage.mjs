@@ -27,12 +27,15 @@ function directive(name, attributes) {
 /**
  * Replace each marker region (open comment, rendered table, close comment) with
  * its directive. `project` is the content project the page belongs to.
+ * `grids: false` keeps table and asset embeds as Markdown, for a host whose
+ * components don't render `<CompatGrid>` yet.
  */
-export function collapseCoverageEmbeds(tree, project) {
+export function collapseCoverageEmbeds(tree, project, { grids = true } = {}) {
   const kids = tree.children;
   for (let i = 0; i < kids.length; i++) {
     const m = kids[i].type === "html" && OPEN_RE.exec(kids[i].value);
     if (!m || MARKDOWN_ONLY.has(m[1])) continue;
+    if (!grids && !m[1].startsWith("engine:") && m[1] !== "engines") continue;
     const close = `<!-- /compat:${m[1]} -->`;
     const end = kids.findIndex((c, j) => j > i && c.type === "html" && c.value.trim() === close);
     if (end < 0) continue;

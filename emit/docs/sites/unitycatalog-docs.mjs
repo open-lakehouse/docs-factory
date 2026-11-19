@@ -54,6 +54,9 @@ export default {
     // uc-website folds these into its site-wide ⌘K index at build time.
     searchIndex: "src/generated/docs/search.json",
   },
+  // uc-website keeps its own coverage components, which render engine reports
+  // but not `<CompatGrid>` yet; until they do, docs tables stay Markdown there.
+  compatGrids: false,
   owned: ["src/content/docs/", "src/generated/docs/", "src/vendor/docs-plugins/", "public/docs/"],
   manifest: "src/generated/docs/.docs-emit.json",
   // uc-website serves its own robots.txt and lists public/docs/sitemap.xml in

@@ -632,7 +632,8 @@ script (`remark-engine-coverage.mjs`, counted by `content-core/coverage.mjs`).
 A `compat:<table>` or `compat:asset:<id>` embed becomes the same matrix on its
 own, one line per journey, whose rows open each cell's proof. The `.md` twins
 and GitHub keep the Markdown tables; `compat:interfaces` and `compat:crosswalk`
-stay Markdown everywhere.
+stay Markdown everywhere. A site sets `compatGrids: false` to keep table
+embeds Markdown (uc-website, until its components render `<CompatGrid>`).
 
 Keep journeys, paths, and `tables.*` rows/columns authored. They are reader-task and editorial choices. The model supplies
 validation and breadth; it never creates a journey or a green cell.

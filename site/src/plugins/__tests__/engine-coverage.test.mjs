@@ -60,3 +60,14 @@ test("the preview turns markers into components, taking the project from the pat
     ["engine", "duckdb"],
   ]);
 });
+
+test("without grids, only engine embeds collapse", () => {
+  const tree = { type: "root", children: [...embed("engine:duckdb"), ...embed("ops")] };
+  collapseCoverageEmbeds(tree, "unitycatalog", { grids: false });
+  expect(tree.children.map((c) => c.name ?? c.type)).toEqual([
+    "engine-coverage",
+    "html",
+    "table",
+    "html",
+  ]);
+});

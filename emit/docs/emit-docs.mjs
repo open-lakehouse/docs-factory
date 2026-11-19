@@ -130,7 +130,8 @@ const DEFAULT_PATHS = {
 
 // The site page's engine reports become directives the shell renders; the twin
 // keeps docsnip's table.
-const remarkCollapseCoverage = (project) => (tree) => collapseCoverageEmbeds(tree, project);
+const remarkCollapseCoverage = (site) => (tree) =>
+  collapseCoverageEmbeds(tree, site.project, { grids: site.compatGrids ?? true });
 
 // The preview plugins the target renders directives with. Copied verbatim so a
 // page renders the same in both; the shell's vite.config.ts loads them by name.
@@ -482,7 +483,7 @@ export async function emitDocs({ site: config, drafts = false, homes = DOCS_SITE
       const rendered = await emitOne({
         ...common,
         target: docsSiteTarget({ assetBase, base }),
-        prePlugins: [[remarkCollapseCoverage, site.project]],
+        prePlugins: [[remarkCollapseCoverage, site]],
         plugins: [
           ...linkPlugins(route),
           [remarkScriptLinks, { scripts: scriptUrls }],

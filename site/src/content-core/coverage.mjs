@@ -207,7 +207,9 @@ const ROLLUP = "asset:";
  */
 function rollupGrid(matrix, asset, drafts) {
   const tabled = new Set(matrix.tables.flatMap((t) => t.rows));
-  const rows = matrix.journeys.filter((j) => j.asset === asset && tabled.has(j.id)).map((j) => j.id);
+  const rows = matrix.journeys
+    .filter((j) => j.asset === asset && tabled.has(j.id))
+    .map((j) => j.id);
   if (!rows.length) return null;
   const shown = new Set(
     matrix.tables.filter((t) => t.rows.some((r) => rows.includes(r))).flatMap((t) => t.columns),

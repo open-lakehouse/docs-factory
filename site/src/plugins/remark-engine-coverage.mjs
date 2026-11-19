@@ -70,7 +70,10 @@ export default function remarkEngineCoverage() {
         used = true;
       } else if (child.name === "compat-grid" && attrs.table) {
         tree.children[i] = jsxFlow("CompatGrid", {
-          attributes: [stringAttr("project", attrs.project ?? ""), stringAttr("table", attrs.table)],
+          attributes: [
+            stringAttr("project", attrs.project ?? ""),
+            stringAttr("table", attrs.table),
+          ],
         });
         used = true;
       }

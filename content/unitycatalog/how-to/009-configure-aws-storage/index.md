@@ -123,11 +123,13 @@ ID.
 ```json file=./snippets/storage-role-policy.json title="uc-storage-lake permission policy"
 ```
 
-The server narrows each vended credential to object reads (`s3:GetO*`) and
-prefix-scoped `s3:ListBucket`, or for writes, also `s3:PutO*`, `s3:DeleteO*`,
-and the multipart actions. Actions the storage role lacks stay denied, so grant
-everything your engines need. Engines such as Spark may also call
-`s3:GetBucketLocation`.
+The server narrows each vended credential to `s3:GetObject` and prefix-scoped
+`s3:ListBucket`. For writes, it also adds `s3:PutObject`, `s3:DeleteObject`,
+`s3:AbortMultipartUpload`, and `s3:ListMultipartUploadParts`. For buckets
+encrypted with AWS Key Management Service (KMS) keys (SSE-KMS), it adds
+`kms:Decrypt`, plus `kms:GenerateDataKey*` for writes, limited to KMS calls made
+through S3. Actions the storage role lacks stay denied, so grant everything your
+engines need. Engines such as Spark may also call `s3:GetBucketLocation`.
 
 Then register the role with Unity Catalog:
 

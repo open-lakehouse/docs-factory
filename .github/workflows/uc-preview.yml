@@ -1,0 +1,160 @@
+name: UC preview
+
+# Publishes a Unity Catalog server image and Python client built from an
+# unreleased UC commit, so the docs environments can run ahead of a release.
+# Today: the S3-compatible storage stack (unitycatalog#2289, rebased onto UC
+# main) for 0.8 (#439). Moving UC_SHA in a commit publishes a new preview; the
+# tag carries the short SHA, so a published preview never changes underneath
+# the environments that pin it.
+on:
+  push:
+    branches: [feat/s3]
+    paths: [".github/workflows/uc-preview.yml"]
+  workflow_dispatch:
+
+# A cancelled run can leave per-arch tags without their manifest.
+concurrency:
+  group: uc-preview-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions: {}
+
+env:
+  UC_REPO: roeap/unitycatalog
+  UC_SHA: 096cd9cca8e45bd7f42ea88e901037255b0c6ff0
+  IMAGE: ghcr.io/open-lakehouse/docs-factory/unitycatalog
+  VERSION: 0.8.0-preview
+
+jobs:
+  # The tests the rebased commit touches, plus the schema-step checks its
+  # renumbered migrations (V17, V18) must pass.
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ env.UC_REPO }}
+          ref: ${{ env.UC_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Targeted tests
+        run: >-
+          build/sbt -J-Xmx4G
+          "server/testOnly io.unitycatalog.server.migrate.*
+          *ExternalLocationCRUDTest *CredentialCRUDTest *S3Compatible*
+          *CloudCredentialVendorTest *CachingCloudCredentialVendorTest
+          *DeltaCredentialsMapperTest *FileOperationsTest *S3BucketRegionsTest
+          *CredentialRepositoryTest *CredentialDAOTest"
+          "cli/testOnly *ExternalLocationCRUDTest *CredentialCRUDTest"
+          "hadoop/testOnly *S3CredPropsTest *AwsVendedTokenProviderTest *CredentialUtilTest"
+
+  image:
+    strategy:
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            arch: amd64
+          - runner: ubuntu-24.04-arm
+            arch: arm64
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ env.UC_REPO }}
+          ref: ${{ env.UC_SHA }}
+          persist-credentials: false
+      - name: Log in to GHCR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTOR: ${{ github.actor }}
+        run: echo "$GH_TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
+      - name: Build and push
+        env:
+          ARCH: ${{ matrix.arch }}
+        # The source label links the package to this repository; revision and
+        # url name the UC commit the image was built from.
+        # A rebuild isn't byte-identical, so an existing tag is kept rather than
+        # moved under the environments that pin it.
+        run: |
+          tag="$IMAGE:$VERSION.${UC_SHA::7}-$ARCH"
+          if docker buildx imagetools inspect "$tag" >/dev/null 2>&1; then
+            echo "$tag exists"; exit 0
+          fi
+          docker buildx create --use --driver docker-container
+          docker buildx build . \
+            --platform "linux/$ARCH" \
+            --label "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
+            --label "org.opencontainers.image.revision=$UC_SHA" \
+            --label "org.opencontainers.image.url=https://github.com/$UC_REPO/commit/$UC_SHA" \
+            --label "org.opencontainers.image.version=$VERSION.${UC_SHA::7}" \
+            --tag "$tag" \
+            --push
+
+  manifest:
+    needs: [test, image]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      packages: write
+    steps:
+      - name: Log in to GHCR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTOR: ${{ github.actor }}
+        run: echo "$GH_TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
+      - name: Tag the multi-arch image
+        run: |
+          tag="$IMAGE:$VERSION.${UC_SHA::7}"
+          docker buildx imagetools create \
+            --tag "$tag" --tag "$IMAGE:$VERSION" \
+            "$tag-amd64" "$tag-arm64"
+          docker buildx imagetools inspect "$tag"
+
+  wheel:
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ env.UC_REPO }}
+          ref: ${{ env.UC_SHA }}
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      # Not build-python-package.sh: its pinned twine rejects the metadata 2.5
+      # the current hatchling writes.
+      - name: Generate and build the client
+        run: |
+          build/sbt pythonClient/generate
+          cd clients/python/target && uv build --wheel --out-dir dist
+      - name: Publish the prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release="uc-preview-${UC_SHA::7}"
+          if gh release view "$release" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$release" clients/python/target/dist/*.whl \
+              --repo "$GITHUB_REPOSITORY" --clobber
+          else
+            gh release create "$release" clients/python/target/dist/*.whl \
+              --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" \
+              --prerelease --latest=false \
+              --title "Unity Catalog preview ${UC_SHA::7}" \
+              --notes "Unity Catalog built from [$UC_REPO@${UC_SHA::7}](https://github.com/$UC_REPO/commit/$UC_SHA) for the docs environments, until the release it previews. Server image: \`$IMAGE:$VERSION.${UC_SHA::7}\`. Not a Unity Catalog release."
+          fi

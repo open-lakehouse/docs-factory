@@ -123,6 +123,7 @@ nav:
         id: H47
       - page: how-to/datafusion-iceberg-rust
         id: H55
+      - page: how-to/olake-go
       - planned: H19
         title: Read UniForm tables from Trino through Iceberg REST
       - page: how-to/integrations

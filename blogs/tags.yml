@@ -68,4 +68,7 @@ ui-components:
   description: "Reusable/headless front-end component distribution"
 apache-spark:
   description: "Apache Spark Query Engine"
+data-sharing:
+  description: "Delta Sharing / OpenSharing: sharing governed data across organizations"
+  element: openSharingSpec
 # add new tags above this line

@@ -17,6 +17,96 @@ Source pointers in §6 were verified against a local unitycatalog checkout on
 2026-07-03; verified discrepancies are logged in §9 rather than fixed on import.
 -->
 
+## 0.8 refresh (2026-11-27)
+
+This post becomes the **storage post for the Unity Catalog 0.8 release**. Its
+governance companion is `blogs/uc-authorization/`. 0.8 adds what this post was
+missing: a local, S3-compatible backend that UC vends scoped credentials for.
+That fills the `TODO` in "Try this at home" and makes the "default-safe" argument
+runnable on a laptop. The sections below this one stay as imported, and this
+section overrides them where they conflict.
+
+**What changes in the brief:**
+
+- **§1 thesis gains a second half.** The handrail now works on any S3-compatible
+  store: MinIO, Ceph, SeaweedFS, RustFS, Garage. Not just AWS.
+- **§5 outline.** Add a section "S3-compatible storage" `[code]` after "Grants
+  and credential vending". Rewrite "Try this at home" `[code]` on a local
+  RustFS (or MinIO) with STS, run from a Trestle environment.
+- **§6 sources.** Re-pin from `v0.5.0` to `v0.8.0`; until it's tagged, use
+  `f59e83d3`. The original pointers are now three releases stale.
+- **§9 verification.** The 0.5-era CLI and Spark notes need redoing against
+  0.8 (Spark 4.3 connector, Delta 4.4.1).
+
+**0.8 facts** (read at unitycatalog `f59e83d3`, not run):
+
+- **The `s3_compatible` credential (experimental, off by default).** Turned on
+  with `server.s3-compatible-storage.enabled=true`. The stack is #2170
+  `dfc1e454` (spec), #2171 `76801b61` (credential), #2172 `cdc1006b` (vending),
+  #2173 `466cf326` (Hadoop/CLI), #2174 `d45a106f` (tests), #2175 `557667da`
+  (Helm key) and #2169 `03dc48b1` (credentials stored as text).
+- **Secrets are encrypted at rest.** The secret access key is write-only,
+  encrypted with AES-256-GCM, and bound to its credential id and field. The key
+  is `UC_SERVER_CREDENTIAL_ENCRYPTION_KEY` (#2171).
+- **Vending, with STS.** With `assume_role`, UC calls AssumeRole at the
+  storage's `sts_endpoint`, or at the S3 endpoint when none is set. The session
+  policy is scoped to the path, with no KMS statement
+  (`AwsPolicyGenerator.generatePolicy(…, isS3Compatible)`) (#2172).
+- **Vending, without STS** (Ceph, Garage): `server.s3-compatible-storage.static-key-vending`
+  picks between two modes:
+  - `endpoint-only` (the default): engines bring their own keys.
+  - `static-key`: clients get the key pair, refetched hourly.
+- **Region.** It's discovered with an anonymous `HeadBucket` and cached, with
+  `us-east-1` as the fallback.
+- **What the server tells engines.** Delta API config carries `s3.endpoint` and
+  `client.region`; Iceberg REST config adds `s3.path-style-access`.
+- **What engines do with it.** The Hadoop/Spark connector and the CLI set S3A
+  endpoint, region and path-style per bucket from the vend. That lets AWS S3
+  and local storage coexist (#2173).
+- **UC's own tests** run MinIO, SeaweedFS and RustFS with STS, and Ceph and
+  Garage without (`server/src/test/.../teststorage`). A scope test checks that
+  a vended session can't reach a sibling path, a prefix twin, or the bucket
+  root. These suites run manually, not in CI (#2174).
+- **Assumed to land (open):** #2289 moves the endpoint from the credential to
+  the **external location**.
+  - It renames the credential to `s3_compatible_access_key`.
+  - It adds `addressing_style` (`PATH` | `VIRTUAL_HOSTED`).
+  - The CLI's `--s3_endpoint` becomes `external_location --endpoint`.
+
+  Don't write API or CLI samples until it merges. Related open PRs: #2264
+  (non-host bucket names), #2267 (shared region lookup), #2265 (Iceberg loads
+  without an ETag).
+- **Related merged storage work:**
+  - Server-side cache for vended credentials: #1958 `a9b66f6a`, #2007, with
+    hit/miss metrics in #1991.
+  - GCS downscoped tokens stop at the path boundary (#2094).
+  - External-location delete and validation fixes (#1989, #2163, #2240).
+  - Local FileIO doesn't follow symlinks (#1972).
+- **GCS credentials (open; assume they land for 0.8):** #2273 (vend from
+  storage credentials), #2260 (service-account key), #2379 (keyless
+  `gcp_server_identity`). Azure stays "Beyond 0.8" (roadmap #2327).
+
+**Runnable path and our environments.** Today `envs/uc-aws` (and `uc-local`,
+`uc-mlflow`) fake AWS:
+- an Envoy that answers for `s3.amazonaws.com` and `sts.*`;
+- an `sts-shim` in front of RustFS that drops the `kms:` statement RustFS
+  rejects and re-signs. Its wildcard expansion has been inert since 0.7.0
+  (#1817).
+
+With `s3_compatible`, a new environment can run RustFS with its own STS and no
+shim. This needs a Trestle release:
+- the feature flag and encryption key in `server.properties`;
+- `s3_compatible` credential and location bootstrap;
+- the shim and AWS hostnames made optional.
+
+Keep `uc-aws` for the real-AWS `aws_iam_role` path. UC's harness pins RustFS
+1.0.4; ours is 1.0.1.
+
+**New open questions:**
+- Does a single vended endpoint resolve from the host, from in-network clients
+  and from the server? Today the AWS-hostname trick hides this.
+- Is "experimental" in 0.8 a word the post should lead with, or caveat?
+
 ## 1. Hook / thesis
 
 Unity Catalog turns storage from a sprawl of committed credentials and unscalable

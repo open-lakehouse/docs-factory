@@ -32,6 +32,8 @@ blogs/
 | Unity Catalog storage | [`unity-catalog-storage/`](./unity-catalog-storage/) | — | unity-catalog, governance, lakehouse | draft | unitycatalog |
 | The UC Delta API | [`unity-catalog-delta-api/`](./unity-catalog-delta-api/) | — | unity-catalog, delta-lake, iceberg, lakehouse | draft | unitycatalog |
 | One catalog, both formats, any engine | [`uc-iceberg-rest/`](./uc-iceberg-rest/) | — | unity-catalog, iceberg, apache-spark, table-formats | draft | unitycatalog |
+| Unity Catalog 0.8: finer privileges, movable ownership, and an external policy engine | [`uc-authorization/`](./uc-authorization/) | — | unity-catalog, governance | idea | — |
+| Open Sharing: share what Unity Catalog governs | [`uc-open-sharing/`](./uc-open-sharing/) | — | unity-catalog, data-sharing, governance, delta-lake | idea | — |
 | Unity Catalog Functions for agents, apps, and engines | [`uc-functions/`](./uc-functions/) | — | unity-catalog, lakehouse, agents | draft | unitycatalog |
 | Trust but Verify: Building the New Unity Catalog Documentation | [`true-unity-catalog-docs/`](./true-unity-catalog-docs/) | — | unity-catalog, delta-lake, lakehouse | draft | unitycatalog |
 | Whose agent is it anyway? | [`omnigent-agent-scoping/`](./omnigent-agent-scoping/) | — | agents, governance | draft | openlakehouse |

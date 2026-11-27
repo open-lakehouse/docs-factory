@@ -6,7 +6,7 @@ services:
     build:
       context: ./image
     pull_policy: build
-    image: uc-docs-unitycatalog:0.7.0
+    image: uc-docs-unitycatalog:preview-096cd9c
     # The server ignores SIGTERM as PID 1.
     init: true
     restart: unless-stopped

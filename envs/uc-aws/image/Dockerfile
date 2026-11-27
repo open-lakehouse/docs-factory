@@ -1,5 +1,8 @@
 # The Unity Catalog server image, adjusted for a local docs environment.
-FROM unitycatalog/unitycatalog:v0.7.0
+# A preview of 0.8 (unitycatalog#2289 on UC main), published by
+# .github/workflows/uc-preview.yml. Back to the release image
+# once 0.8.0 is out (#439).
+FROM ghcr.io/open-lakehouse/docs-factory/unitycatalog:0.8.0-preview.096cd9c
 
 USER root
 # gcompat: on x86-64 the CLI's bundled snappy library needs glibc, and the

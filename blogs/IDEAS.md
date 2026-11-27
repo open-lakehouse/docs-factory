@@ -342,6 +342,18 @@ verified `snippets/` (§5) over sketches; be honest about pre-release status (§
   today; agent-skills-over-volumes is the illustrative *extension* — mark it
   forward-looking, don't present it as shipped (§6).
 
+- [x] **The agentic factory: safe because the control plane is checked** — agents
+  are nondeterministic workers that are wrong some of the time. The factory is safe
+  because the deterministic control plane around them (leases, one session per step,
+  approval of a revision, fail-closed authz) is modeled and checked, and the same
+  executable model of catalog-managed commits checks UC servers we don't write.
+  → graduated to a brief: `blogs/agentic-factory/`.
+  `audience:` engineers building agent orchestration or catalogs, who know Rust and
+  have heard of TLA+ · `repos:` luminescent-lakehouse (factory-core, factory-server),
+  mangrove (delta-api coordinator, acceptance), lakehouse-data (omnigent/factory) ·
+  `src:` lakehouse-data docs/proposals/formal-verification.md,
+  omnigent/docs/research/2026-11-formal-verification.md (PR #109)
+
 ## Notes
 
 - **Two arcs, split by register.** [`SERIES.md`](./SERIES.md) now runs two arcs

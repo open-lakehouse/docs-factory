@@ -71,4 +71,6 @@ apache-spark:
 data-sharing:
   description: "Delta Sharing / OpenSharing: sharing governed data across organizations"
   element: openSharingSpec
+formal-methods:
+  description: "Model checking, property-based testing and proofs of protocols and code"
 # add new tags above this line

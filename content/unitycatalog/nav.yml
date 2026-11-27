@@ -171,6 +171,8 @@ nav:
             title: Configure GCS credential vending
           - page: how-to/managed-storage-s3
             id: H28
+          - page: how-to/credential-encryption-key
+            id: H56
           - planned: H29
             title: Migrate legacy storage configuration
           - planned: H42
